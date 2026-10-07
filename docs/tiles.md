@@ -48,3 +48,9 @@ so a named 1x1 stamp (e.g. a `sign` with `name:`) becomes walkable. Use `to`/`na
 3. Build it from `K.S.house` (cottages), `K.lobe/blob/cyl/roof` (draw.js) and the palette `K.P`; outline with `K.outer(b, S.omap([[tones, outlineColour]], fallback))`, then `K.shadow` last.
 4. `solid` is `h` strings of `w` chars; omit it for fully solid. Doors: put `D` in the bottom row; trees/canopies: `over` = number of top rows.
 5. Register the file in `src/art/tiles/files.json`, run `node tools/build-index.mjs`, then `node tests/run.mjs` (tiles-art.test.mjs checks size, determinism, collision rows and map coverage).
+
+## Field-move flags (engine contract)
+
+* Terrain `paddle: true` (set on `water` only, not `sea`): with Disc: Paddle in the bag, the player can face it, press A and paddle over it. `water: true` alone still blocks.
+* The `bush` stamp is snippable (Disc: Snip): A on it removes it and its collision; the cut is stored as flag `snip:<map>:<x>,<y>`. Any other stamp is a plain obstacle.
+* Props with `gate: 'paddle' | 'snip'` (see `tests/maps.test.mjs`) must be unreachable on foot but reachable once those moves are allowed.

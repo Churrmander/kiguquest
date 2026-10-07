@@ -102,7 +102,7 @@
     faceDk: P.d5,
   };
   K.terrain('water', {
-    water: true, encounter: 'water', autotile: true, frames: FR, animSpeed: 12, step: 'water',
+    water: true, paddle: true, encounter: 'water', autotile: true, frames: FR, animSpeed: 12, step: 'water',
     paint: (m, f) => shore(m, f, GRASS_BANK),
   });
 

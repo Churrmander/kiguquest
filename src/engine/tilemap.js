@@ -73,6 +73,37 @@
     }
     ledge(x, y) { return this.inBounds(x, y) ? this.tdef(x, y).ledge || null : null; }
     encounterKind(x, y) { return this.inBounds(x, y) ? this.tdef(x, y).encounter || null : null; }
+    /** Field move Snip: take a placed stamp out of the world (and its collision). Remembered so syncSnips can put it back. */
+    removeStamp(p) {
+      const i = this.placements.indexOf(p);
+      if (i < 0) return;
+      this.placements.splice(i, 1);
+      this._solidCells(p, 0);
+      this.objs = this.placements.filter((q) => q.layer !== 'floor');
+      this.floors = this.placements.filter((q) => q.layer === 'floor');
+      (this.snipped = this.snipped || new Map()).set('snip:' + this.id + ':' + p.x + ',' + p.y, p);
+    }
+    _solidCells(p, v) {
+      for (let yy = 0; yy < p.h; yy++) for (let xx = 0; xx < p.w; xx++) {
+        const gx = p.x + xx, gy = p.y + yy;
+        if (p.def.solid[yy][xx] === '#' && this.inBounds(gx, gy)) this.blocked[gy * this.w + gx] = v;
+      }
+    }
+    /** Make the map agree with the save's flags: bushes with a `snip:<map>:<x>,<y>` flag are gone, all others are standing.
+     *  Idempotent both ways, so a cached map never leaks one game's cuts into another. */
+    syncSnips(flags) {
+      for (const p of this.placements.slice()) if (p.id === 'bush' && flags['snip:' + this.id + ':' + p.x + ',' + p.y]) this.removeStamp(p);
+      if (!this.snipped) return;
+      for (const [k, p] of Array.from(this.snipped)) {
+        if (flags[k]) continue;
+        this.snipped.delete(k);
+        this.placements.push(p);
+        this._solidCells(p, 1);
+        this.objs = this.placements.filter((q) => q.layer !== 'floor');
+        this.floors = this.placements.filter((q) => q.layer === 'floor');
+      }
+    }
+
     warpAt(x, y) { return this.warps.get(x + ',' + y) || null; }
     stepSound(x, y) { return (this.tdef(x, y).step || 'step'); }
 

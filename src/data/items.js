@@ -43,7 +43,7 @@
   I('town_map', 'Town Map', 'key', 0, 'A map of Tsumugi.');
   I('cream_thread', 'Cream Thread', 'key', 0, "A spool of Poppy's cream cotton. A good seam begins with good thread.");
   I('d_handkerchief', "'D' Handkerchief", 'key', 0, "Hand-stitched, with a tidy 'D' in the corner. Every hem is knotted twice.");
-  I('disc_snip', 'Disc: Snip', 'key', 0, 'Teaches a Kigu to snip small trees.');
-  I('disc_paddle', 'Disc: Paddle', 'key', 0, 'Teaches a Kigu to paddle over water.');
+  I('disc_snip', 'Disc: Snip', 'key', 0, 'Lets your Kigu snip small bushes. Face one and press A.');
+  I('disc_paddle', 'Disc: Paddle', 'key', 0, 'Lets your Kigu paddle across calm water. Face the water and press A.');
   I('everspool_silk', 'Everspool Silk', 'key', 0, 'A length of golden-green silk from the Everspool. It never frays and never runs out.');
 })(typeof globalThis !== 'undefined' ? globalThis : window);

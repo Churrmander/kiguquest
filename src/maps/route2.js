@@ -84,6 +84,10 @@
   M.pickup('cake', 7, 40, 'snack_cake', 2);
   M.pickup('spool', 20, 38, 'bond_spool', 3);
   M.pickup('balm', 20, 14, 'aloe_balm', 1);
+  // gated: two things drifting in the river, out of reach of the bridge. Needs Disc: Paddle (Bryn gives it in Hemline).
+  const gated = (kind) => { M.def.props[M.def.props.length - 1].gate = kind; };
+  M.pickup('drift1', 5, 22, 'revive_tea', 1); gated('paddle');
+  M.pickup('drift2', 17, 23, 'fancy_cake', 1); gated('paddle');
   M.pickup('spray', 4, 9, 'scent_spray', 1);
   M.hidden('stump_sugar', 3, 17, 'sugar_cube', 1, 'hidden Sugar Cube under the stump');
 

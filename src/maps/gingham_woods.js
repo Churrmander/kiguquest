@@ -60,6 +60,12 @@
   M.pickup('bell', 27, 15, 'wake_bell', 1);
   M.pickup('tea', 21, 9, 'mint_tea', 1);
   M.pickup('plum', 4, 14, 'plum_treat', 1);
+  // gated: two one-tile alcoves in the treeline, each sealed by a bush. Needs Disc: Snip (Poppy gives it in Thimble).
+  const gated = (kind) => { M.def.props[M.def.props.length - 1].gate = kind; };
+  M.rect(10, 11, 1, 2, '.').rect(20, 24, 1, 2, '.');
+  M.stamp('bush', 10, 11).stamp('bush', 20, 24);
+  M.pickup('nook1', 10, 12, 'sugar_cube', 1); gated('snip');
+  M.pickup('nook2', 20, 25, 'scent_spray', 1); gated('snip');
   M.hidden('stump_cube', 8, 21, 'sugar_cube', 1, 'hidden Sugar Cube under the stump');
   M.hidden('stump_numb', 26, 17, 'numb_away', 1, 'hidden Numb Away under the stump');
 

@@ -76,6 +76,14 @@
       const set = spr.frames[this.dir] || spr.frames.down;
       const f = this.moving ? (this.parity ? 1 : 2) : 0;
       const bmp = set[Math.min(f, set.length - 1)];
+      if (this.swim) { // paddling: a ripple ring instead of a shadow, and she sits a little lower in the water
+        const bob = (frame >> 4) & 1;
+        fb.blendRect(X + 1, Y + 13, 14, 3, '#7fc8ff', 0.55);
+        fb.blendRect(X + 3, Y + 12, 10, 1, '#ffffff', 0.35);
+        fb.blendRect(X + 3, Y + 16, 10, 1, '#2a6fb0', 0.45);
+        fb.blit(bmp, X, Y - 6 - bob);
+        return;
+      }
       // soft shadow
       fb.blendRect(X + 3, Y + 12, 10, 3, '#000000', 0.22);
       fb.blit(bmp, X, Y - 8 - Math.round(this.hop));
@@ -154,6 +162,21 @@
     *warp(map, x, y, dir) { yield* this.ow.teleport(map, x, y, dir); }
     *trainerBattle(def) { return yield* this.ow.trainerBattle(def); }
     *wildBattle(sp, lv) { return yield* this.ow.wildBattle(sp, lv); }
+    /** Field move Paddle: offer to step off the shore onto calm water (needs Disc: Paddle). */
+    *paddle(dir) {
+      if (yield* this.ask('The water looks calm.\\nPaddle across it?')) { NP.snd.sfx('splash'); yield* this.walk('player', [dir, 1]); }
+    }
+    /** Field move Snip: clear a bush (needs Disc: Snip). The cut is remembered in a flag and re-applied whenever the map loads. */
+    *snip(pl) {
+      if (!NP.state.bag.disc_snip) { yield* this.sayT('field.snip.no', 'A small bush is in the way.\\pA pair of snips could clear it.'); return; }
+      if (yield* this.ask('A small bush is in the way.\\nSnip it?')) {
+        NP.snd.sfx('leaf');
+        this.map.removeStamp(pl);
+        NP.state.flags['snip:' + this.map.id + ':' + pl.x + ',' + pl.y] = true;
+        yield* this.wait(10);
+        yield* this.say('{player} snipped the bush away!');
+      }
+    }
   }
   // clean walk() implementation
   Ctx.prototype.walk = function* (w, steps, spd) {
@@ -202,6 +225,7 @@
     loadMap(id, x, y, dir, o) {
       o = o || {};
       this.map = this.tileMap(id);
+      this.map.syncSnips(NP.state.flags);
       const def = this.map.def;
       this.actors = [];
       for (const n of def.npcs || []) this.actors.push(new Actor({ id: n.id, kind: 'npc', x: n.x, y: n.y, dir: n.dir || 'down', look: n.look, def: n, hidden: !!n.hidden }));
@@ -364,8 +388,16 @@
       return null;
     }
 
+    /** the player is paddling exactly when the tile under her is water, so there is no extra state to save or lose */
+    paddling() {
+      const p = this.player, m = this.map;
+      return !!(m && m.inBounds(p.x, p.y) && m.tdef(p.x, p.y).water);
+    }
+
     canEnter(a, nx, ny, dir) {
-      if (this.map.solid(nx, ny)) return false;
+      const swim = a === this.player && this.paddling();
+      if (this.map.solid(nx, ny, swim)) return false;
+      if (swim && this.map.tdef(nx, ny).water && !this.map.tdef(nx, ny).paddle) return false; // the open sea stays a coastline
       const o = this.actorAt(nx, ny, a);
       return !o;
     }
@@ -410,7 +442,7 @@
         this.bump();
         return;
       }
-      p.step(d, run ? 2 : 1, false);
+      p.step(d, run && !this.paddling() ? 2 : 1, false);
     }
 
     bump() {
@@ -505,6 +537,12 @@
       const [dx, dy] = DIRV[p.dir];
       const x = p.x + dx, y = p.y + dy;
       const a = this.actors.find((q) => q.visible && q.x === x && q.y === y);
+      // field move: facing calm water with Disc: Paddle in the bag, A offers to step onto it
+      if (!a && m.inBounds(x, y) && m.tdef(x, y).paddle && !this.paddling() && NP.state.bag.disc_paddle) {
+        const dir = p.dir;
+        this.runScript(function* (c) { yield* c.paddle(dir); });
+        return;
+      }
       if (a) {
         if (a.kind === 'prop') { this.runScript(a.def.script, a); return; }
         const d = a.def;
@@ -533,6 +571,9 @@
           return;
         }
       }
+      // field move: a bush in front of you can be snipped away
+      const bush = m.placements.find((q) => q.id === 'bush' && q.x === x && q.y === y);
+      if (bush) { NP.snd.sfx('select'); this.runScript(function* (c) { yield* c.snip(bush); }); }
     }
 
     npcAI() {
@@ -622,6 +663,7 @@
         list.push({ sortY: a.py + 16 + (a.kind === 'prop' ? 0 : 0), draw: (f, X, Y) => a.draw(f, X, Y, fr) });
       }
       const p = this.player;
+      p.swim = this.paddling();
       list.push({ sortY: p.py + 16.5, draw: (f, X, Y) => p.draw(f, X, Y, fr) });
       this.map.draw(fb, cx, cy, fr, list);
       // emotes

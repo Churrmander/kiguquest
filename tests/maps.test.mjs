@@ -79,22 +79,43 @@ for (const id of ids) {
   for (const kind of Object.keys(def.encounters || {})) for (const e of def.encounters[kind]) if (!NP.data.species[e.sp]) bad(id, 'encounter uses unknown species ' + e.sp);
 
   // reachability: flood from every spawn; warps and pickups must be reachable (ledges and doors count as walkable)
-  const seen = new Uint8Array(tm.w * tm.h);
-  const q = [];
-  for (const s of Object.values(def.spawns || {})) { q.push([s.x, s.y]); seen[s.y * tm.w + s.x] = 1; }
-  while (q.length) {
-    const [x, y] = q.pop();
-    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
-      const nx = x + dx, ny = y + dy;
-      if (!tm.inBounds(nx, ny) || seen[ny * tm.w + nx] || tm.solid(nx, ny)) continue;
-      seen[ny * tm.w + nx] = 1;
-      q.push([nx, ny]);
+  // `fieldMoves`: paddleable water and snippable bushes count as walkable (what the player can do once she has both Discs)
+  const flood = (fieldMoves) => {
+    const seen = new Uint8Array(tm.w * tm.h);
+    const q = [];
+    for (const s of Object.values(def.spawns || {})) { q.push([s.x, s.y]); seen[s.y * tm.w + s.x] = 1; }
+    const bushAt = new Set(tm.placements.filter((p) => p.id === 'bush').map((p) => p.x + ',' + p.y));
+    const open = (x, y) => {
+      if (!tm.solid(x, y)) return true;
+      if (!fieldMoves || !tm.inBounds(x, y)) return false;
+      const t = tm.tdef(x, y);
+      if (t.water && t.paddle && !t.solid && !tm.blocked[y * tm.w + x]) return true;
+      return bushAt.has(x + ',' + y);
+    };
+    while (q.length) {
+      const [x, y] = q.pop();
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const nx = x + dx, ny = y + dy;
+        if (!tm.inBounds(nx, ny) || seen[ny * tm.w + nx] || !open(nx, ny)) continue;
+        seen[ny * tm.w + nx] = 1;
+        q.push([nx, ny]);
+      }
     }
-  }
-  const reach = (x, y) => tm.inBounds(x, y) && seen[y * tm.w + x];
+    return seen;
+  };
+  const onFoot = flood(false), withMoves = flood(true);
+  const reach = (x, y) => tm.inBounds(x, y) && onFoot[y * tm.w + x];
+  const reachWith = (x, y) => tm.inBounds(x, y) && withMoves[y * tm.w + x];
   for (const w of tm.warps.values()) if (!reach(w.x, w.y)) bad(id, 'warp tile ' + w.x + ',' + w.y + ' (to ' + w.to + ') cannot be reached from any spawn');
   const touch = (x, y) => [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => reach(x + dx, y + dy));
-  for (const p of def.props || []) if (!touch(p.x, p.y)) bad(id, 'prop ' + p.id + ' at ' + p.x + ',' + p.y + ' cannot be reached');
+  const touchWith = (x, y) => [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => reachWith(x + dx, y + dy));
+  for (const p of def.props || []) {
+    if (p.gate) { // behind a field move: unreachable on foot, reachable with Paddle/Snip
+      if (!['paddle', 'snip'].includes(p.gate)) bad(id, 'prop ' + p.id + ' has unknown gate ' + p.gate);
+      if (touch(p.x, p.y)) bad(id, 'prop ' + p.id + ' is marked gated (' + p.gate + ') but can be reached on foot');
+      if (!touchWith(p.x, p.y)) bad(id, 'prop ' + p.id + ' is gated (' + p.gate + ') but cannot be reached even with field moves');
+    } else if (!touch(p.x, p.y)) bad(id, 'prop ' + p.id + ' at ' + p.x + ',' + p.y + ' cannot be reached');
+  }
   for (const n of def.npcs || []) {
     if (n.hidden) continue;
     if (!touch(n.x, n.y)) bad(id, 'npc ' + n.id + ' at ' + n.x + ',' + n.y + ' is walled in');

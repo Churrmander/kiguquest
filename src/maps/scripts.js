@@ -43,7 +43,7 @@
     c.state.badges[0] = true;
     yield* c.jingleWait('j_button');
     yield* c.sayT('script.poppy.5', '{player} received the Fluff Button!');
-    yield* c.sayT('script.poppy.6', 'It lets your Kigu up to Lv20 obey you fully. Also, take this Disc.\\pIt teaches a Kigu to Snip, to cut down small trees.');
+    yield* c.sayT('script.poppy.6', 'It lets your Kigu up to Lv20 obey you fully. Also, take this Disc.\\pIt lets your Kigu snip small bushes out of your way. Face a bush and press A.');
     yield* c.giveItem('disc_snip', 1);
     c.set('badge1');
     yield* c.sayT('script.poppy.7', 'Poppy: And here, a spool of my cream cotton. It is what I learned on.\\pA good seam begins with good thread.');
@@ -69,7 +69,7 @@
     c.set('badge2');
     yield* c.jingleWait('j_button');
     yield* c.sayT('script.bryn.7', '{player} received the Buzz Button!');
-    yield* c.sayT('script.bryn.8', 'Bryn: With it, your Kigu obey you up to Lv30. Also this Disc: Paddle!\\pIt teaches a Kigu to paddle across water. For when the planks run out.');
+    yield* c.sayT('script.bryn.8', 'Bryn: With it, your Kigu obey you up to Lv30. Also this Disc: Paddle!\\pIt lets your Kigu paddle across calm water. Face the water and press A.\\pFor when the planks run out.');
     yield* c.giveItem('disc_paddle', 1);
     yield* c.sayT('script.bryn.9', 'Bryn: And this.\\pA length of silk from the Everspool.\\pGolden-green, and the straightest thread in the world.\\pIt has never once been pressed flat. Keep it somewhere you can see it.');
     yield* c.giveItem('everspool_silk', 1);
