@@ -86,5 +86,6 @@ export function boot(seed) {
     },
     pos() { const p = bot.ow.player; return [bot.ow.map.id, p.x, p.y]; },
   };
+  if (globalThis.__onBoot) globalThis.__onBoot(bot); // instrumentation hook (tools/balance-bot.mjs records battles through it)
   return bot;
 }

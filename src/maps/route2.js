@@ -77,7 +77,7 @@
     intro: 'Fish are not biting, so I will bite you instead. Metaphorically.', win: 'There goes my supper...', after: 'The river is calm today. The Pressers upstream keep checking its width.' });
   M.trainer('kei', 7, 16, 'net_kid', 'right', { cls: 'Net Kid', name: 'Kei', sight: 3, reward: 6, ai: 1, team: [['webbi', 9], ['silkie', 10]],
     intro: 'Shh! Do not scare the webs! ...Oh. Battle? Okay!', win: 'My webs got tangled up in yours.', after: 'There are webs in the woods. They are stronger than they look.' });
-  M.trainer('brock', 17, 9, 'hiker', 'left', { cls: 'Hiker', name: 'Brock', sight: 4, reward: 8, ai: 1, team: [['molli', 11], ['kumi', 11], ['molli', 12]],
+  M.trainer('brock', 17, 9, 'hiker', 'left', { cls: 'Hiker', name: 'Brock', sight: 4, reward: 8, ai: 1, team: [['molli', 10], ['kumi', 10], ['molli', 11]],
     intro: 'Good boots, good socks, good Kigu. That is the whole secret!', win: 'My boots are fine. It is my pride that has a blister.', after: 'The woods past this road are quiet. Quiet is a kind of trail marker.' });
 
   M.npc('picnic', 19, 16, 'lady', 'left', null, { script: 'restfree', note: 'free rest spot' });

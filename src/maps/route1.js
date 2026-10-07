@@ -79,7 +79,7 @@
           yield* c.face('player', 'up');
           yield* c.say('{rival}: Did you think you would beat me to Thimble Village? Not a chance.\\pI have been training my Kigu all morning. Let me show you how strong we are!');
           const rs = c.state.rivalStarter || 'ottopi';
-          const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'tomo', ai: 2, reward: 10, team: team([[rs, 6], ['peepi', 5]]) });
+          const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'tomo', ai: 2, reward: 10, team: team([[rs, 5], ['peepi', 4]]) });
           c.set('rival1_done');
           if (won) yield* c.say('{rival}: ...Tch. So you are not just lucky.\\pFine. I will be waiting in Thimble Village. Do not get sleepy on me!');
           else yield* c.say('{rival}: Ha! Better get your Kigu some rest before you try again.');

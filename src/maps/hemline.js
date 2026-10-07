@@ -84,7 +84,7 @@
     intro: 'Bryn says: ten stitches, ten bees, ten seconds. I am the ten seconds!', win: 'Eleven seconds. Oops.', after: 'Bryn is at the back. She is faster than she sounds.' });
   salon.trainer('salon_t2', 3, 5, 'tailor_m', 'right', { cls: 'Tailor', name: 'Dov', sight: 3, reward: 8, ai: 1, team: [['silkie', 12], ['sprubun', 12]],
     intro: 'Nobody reaches Bryn without showing me a clean hem first.', win: 'Clean hem. Very clean. Go on through.', after: 'Mind the bees. They do not bite. Much.' });
-  salon.reg().brynTeam = team([['webbi', 13], ['cocoona', 14], ['honeybelle', 16]]);
+  salon.reg().brynTeam = team([['webbi', 12], ['cocoona', 13], ['honeybelle', 15]]);
 
   // -------------------------------------------------------------------------------------- houses
   L.room({ id: 'hemline_house1', name: 'Hemmer\'s House', w: 9, h: 8, doorX: 3, exit: { to: 'hemline', door: 'house1' } })
