@@ -46,6 +46,10 @@
     yield* c.sayT('script.poppy.6', 'It lets your Kigu up to Lv20 obey you fully. Also, take this Disc.\\pIt teaches a Kigu to Snip, to cut down small trees.');
     yield* c.giveItem('disc_snip', 1);
     c.set('badge1');
-    yield* c.sayT('script.poppy.7', "Poppy: The road to Route 2 will reopen soon. Next stop, Gingham Woods!\\p(The adventure continues in a later chapter...)");
+    yield* c.sayT('script.poppy.7', 'Poppy: And here, a spool of my cream cotton. It is what I learned on.\\pA good seam begins with good thread.');
+    yield* c.giveItem('cream_thread', 1);
+    yield* c.sayT('script.poppy.8', "Poppy: One more thing. My old teacher stitched this handkerchief. See the little 'D'?\\pShe knotted every hem twice. I have not seen her in many years...\\pIf you ever meet someone who sews like this, tell her the kettle is on.");
+    yield* c.giveItem('d_handkerchief', 1);
+    yield* c.sayT('script.poppy.9', 'Poppy: Now go and see Tsumugi, {player}. Every seam road has a story.\\pAnd remember: every stitch counts!');
   };
 })(typeof globalThis !== 'undefined' ? globalThis : window);

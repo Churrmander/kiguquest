@@ -45,7 +45,7 @@
             if (ch === 'D') door = { x: gx, y: gy };
           }
         }
-        if (!door && (s.to || s.name)) door = sd.door ? { x: s.x + sd.door[0], y: s.y + sd.door[1] } : { x: s.x + (sd.w >> 1), y: s.y + sd.h - 1 };
+        if (!door && s.to) door = sd.door ? { x: s.x + sd.door[0], y: s.y + sd.door[1] } : { x: s.x + (sd.w >> 1), y: s.y + sd.h - 1 };
         if (door) {
           this.blocked[door.y * this.w + door.x] = 0;
           if (s.name) this.doors[s.name] = door;

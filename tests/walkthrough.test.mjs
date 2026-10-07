@@ -64,8 +64,9 @@ assert.ok(t.mash(() => t.idle(), 4000), 'shop closed');
 assert.ok(t.travel(4, 7), 'store exit');
 assert.equal(t.ow.map.id, 'thimble');
 
-// the salon
-assert.ok(t.travel(12, 6), 'salon door');
+// the salon: walking north towards the door triggers Rival #2 (Tomo, fresh from losing to Poppy)
+assert.ok(t.travel(12, 6, 900), 'salon door');
+assert.ok(st.flags.rival2_done, 'rival #2 ambushed us outside the salon');
 assert.equal(t.ow.map.id, 'salon', 'in salon: ' + t.pos());
 assert.ok(t.travel(4, 4, 600), 'walk to poppy, at ' + t.pos());
 t.tap('up'); t.tick(6);
@@ -73,9 +74,16 @@ t.tap('a');
 assert.ok(t.mash(() => t.idle(), 60000), 'poppy fight resolves');
 assert.ok(st.badges[0], 'got the first Button');
 assert.ok(st.bag.disc_snip);
-// save, reload, and we are standing in the salon
+assert.ok(st.bag.cream_thread && st.bag.d_handkerchief, "Poppy's cream thread and 'D' handkerchief");
+// stepping back out with the Button starts the Starch Society's first inspection (Presser Tuck battles us)
+assert.ok(t.travel(4, 11), 'salon exit');
+assert.ok(t.mash(() => t.idle() && st.flags.presser1_done, 60000), 'first Society scene resolves');
+assert.equal(t.ow.map.id, 'thimble', 'back in the village: ' + t.pos());
+assert.ok(st.flags.presser1_done, 'Society inspection scene happened');
+// save, reload, and we are standing in the village with everything kept
 assert.ok(NP.State.save());
 const back = NP.State.load();
-assert.equal(back.pos.map, 'salon');
+assert.equal(back.pos.map, 'thimble');
 assert.ok(back.badges[0]);
+assert.ok(back.flags.presser1_done && back.flags.rival2_done);
 console.log('walkthrough ok; badges', st.badges, 'lead', NP.state.party[0].species, NP.state.party[0].level);

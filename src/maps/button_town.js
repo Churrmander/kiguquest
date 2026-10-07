@@ -28,7 +28,7 @@
       { id: 'lab', x: 14, y: 4, name: 'lab', to: 'lab' },
       { id: 'house_m', x: 4, y: 13, variant: 'blue', name: 'tomo', to: 'tomo_house' },
       { id: 'house_s', x: 19, y: 13, variant: 'green', name: 'neighbor', to: 'neighbor_house' },
-      { id: 'tree', x: 10, y: 3 }, { id: 'tree', x: 15, y: 2 }, { id: 'tree', x: 21, y: 10 }, { id: 'tree', x: 8, y: 18 }, { id: 'tree', x: 17, y: 14 },
+      { id: 'tree', x: 10, y: 3 }, { id: 'tree', x: 15, y: 2 }, { id: 'tree', x: 21, y: 10 }, { id: 'tree', x: 8, y: 17 }, { id: 'tree', x: 17, y: 14 },
       { id: 'sign', x: 11, y: 10, name: 'sign_town' }, { id: 'sign', x: 21, y: 8, name: 'sign_lab' },
       { id: 'mailbox', x: 9, y: 8 }, { id: 'flowerbed', x: 6, y: 11 }, { id: 'bench', x: 16, y: 10 }, { id: 'lamp', x: 14, y: 10 },
     ],
@@ -164,7 +164,7 @@
 
   K.room({
     id: 'tomo_house', name: "{rival}'s House", w: 9, h: 8, doorX: 3, exit: { to: 'button_town', door: 'tomo' },
-    stamps: [{ id: 'bookshelf', x: 1, y: 0 }, { id: 'table_s', x: 5, y: 3 }, { id: 'bed', x: 6, y: 2 }, { id: 'plant', x: 7, y: 5 }],
+    stamps: [{ id: 'bookshelf', x: 1, y: 0 }, { id: 'table_s', x: 4, y: 4 }, { id: 'bed', x: 6, y: 2 }, { id: 'plant', x: 7, y: 5 }],
     npcs: [{ id: 'tomo_mom', x: 3, y: 3, look: 'elder_f', dir: 'down',
       say: ['{rival} left for the lab before breakfast.\\pThat boy would sleep in the Professor\'s doorway if he could.'] }],
   });

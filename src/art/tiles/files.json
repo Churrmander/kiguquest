@@ -3,5 +3,12 @@
   "src/art/tiles/draw.js",
   "src/art/tiles/terrain_ground.js",
   "src/art/tiles/terrain_water.js",
+  "src/art/tiles/terrain_forest.js",
+  "src/art/tiles/terrain_indoor.js",
+  "src/art/tiles/stamp_lib.js",
+  "src/art/tiles/stamp_buildings.js",
+  "src/art/tiles/stamp_nature.js",
+  "src/art/tiles/stamp_props.js",
+  "src/art/tiles/stamp_indoor.js",
   "src/art/tiles/api.js"
 ]

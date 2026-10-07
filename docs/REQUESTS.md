@@ -39,7 +39,8 @@ then run `node tools/build-index.mjs`. Don't leave them broken: `node tests/run.
   - plain NPC dialogue (NPCs with `say:`): `<mapId>.<npcId>`, e.g. `button_town.kid_a`
   - trainers: `<mapId>.<npcId>.intro`, `.win`, `.lose`, `.after`, e.g. `route1.lia.intro`
   - sign / interact tiles: `<mapId>@<x>,<y>`, e.g. `button_town@11,10`
-  - shared scripts (numbered in the order they are spoken in `src/maps/scripts.js`): `script.tea.1..4`, `script.pc.1`, `script.shop.1..2`, `script.poppy.1..7`
+  - shared scripts (numbered in the order they are spoken in `src/maps/scripts.js`): `script.tea.1..4`, `script.pc.1`, `script.shop.1..2`, `script.poppy.1..9`
+  - chapter 1 scenes in `src/maps/thimble.js` (all have inline fallbacks, `{rival}`/`{player}` expand): Rival #2 `thimble.rival2.1|win|lose`; the first Starch Society inspection `thimble.inspect.1..6`, `.win.1|2`, `.lose`, `.4b`, `.poppy.1|2`; bridge Pressers `thimble.guard1.a|b`, `thimble.guard2`. The Pressers are Tuck (battles you) and Fold (would rather be baking)
   - NPCs with a custom `script:` (Prof. Bobbin, Mom, Mimi, the rival) are not overridable yet; ask here if you want keys for them.
 
 ## Audio

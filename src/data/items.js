@@ -41,6 +41,8 @@
   I('tailor_license', 'Tailor License', 'key', 0, 'Proof that you are an apprentice Tailor.');
   I('button_case', 'Button Case', 'key', 0, 'Holds the Buttons you earn.');
   I('town_map', 'Town Map', 'key', 0, 'A map of Tsumugi.');
+  I('cream_thread', 'Cream Thread', 'key', 0, "A spool of Poppy's cream cotton. A good seam begins with good thread.");
+  I('d_handkerchief', "'D' Handkerchief", 'key', 0, "Hand-stitched, with a tidy 'D' in the corner. Every hem is knotted twice.");
   I('disc_snip', 'Disc: Snip', 'key', 0, 'Teaches a Kigu to snip small trees.');
   I('disc_paddle', 'Disc: Paddle', 'key', 0, 'Teaches a Kigu to paddle over water.');
 })(typeof globalThis !== 'undefined' ? globalThis : window);
