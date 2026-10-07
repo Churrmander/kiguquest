@@ -158,7 +158,7 @@
 
   // ------------------------------------------------------------------------------------ Tea House
   K.room({
-    id: 'tea_house', name: 'Tea House', w: 11, h: 9, doorX: 4, floor: 'floor_wood', wall: 'wall_wood', music: 'tea_house', exit: { to: 'thimble', door: 'tea' },
+    id: 'tea_house', name: 'Tea House', teaHouse: true, w: 11, h: 9, doorX: 4, floor: 'floor_wood', wall: 'wall_wood', music: 'tea_house', exit: { to: 'thimble', door: 'tea' },
     carpet: [3, 3, 4, 1], carpetTerrain: 'carpet_red',
     stamps: [
       { id: 'tea_healer', x: 4, y: 3 }, { id: 'pc_terminal', x: 9, y: 2 }, { id: 'table_s', x: 6, y: 5 }, { id: 'chair', x: 6, y: 6 },

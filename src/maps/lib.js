@@ -293,7 +293,7 @@
 
   /** Standard Tea House (healer counter + storage terminal). o: { id, exit:{to,door}, guests:[{id,x,y,look,dir,say}] } */
   L.tea = function (o) {
-    const M = L.room({ id: o.id, name: o.name || 'Tea House', w: 11, h: 9, doorX: 4, music: 'tea_house', exit: o.exit, carpet: [3, 3, 4, 1], recLevel: o.recLevel });
+    const M = L.room({ id: o.id, name: o.name || 'Tea House', w: 11, h: 9, doorX: 4, music: 'tea_house', exit: o.exit, carpet: [3, 3, 4, 1], recLevel: o.recLevel, teaHouse: true });
     M.stamp('tea_healer', 4, 3).stamp('pc_terminal', 9, 2).stamp('table_s', 6, 5).stamp('chair', 6, 6)
       .stamp('window', 2, 1).stamp('window', 7, 1).stamp('plant', 1, 3).stamp('plant', 9, 6);
     M.interact(4, 3, 'tea').interact(5, 3, 'tea').interact(9, 3, 'pc');

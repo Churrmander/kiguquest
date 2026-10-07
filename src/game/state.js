@@ -15,6 +15,7 @@
         party: [], box: [], bag: {}, money: 1000, flags: {}, badges: [], steps: 0, frames: 0, repel: 0,
         pos: { map: 'lab', x: 5, y: 9, dir: 'up' },
         healPoint: { map: 'player_house', spawn: 'door' },
+        visited: {},
         dex: { seen: {}, caught: {} }, starter: null, rivalStarter: null,
         opts: { textSpeed: 1, battleAnim: true, battleStyle: 'shift' },
         saved: 0,

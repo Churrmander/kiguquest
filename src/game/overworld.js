@@ -146,7 +146,7 @@
       }
       return k;
     }
-    setHealPoint() { NP.state.healPoint = { map: this.ow.map.id, spawn: 'door' }; }
+    setHealPoint() { NP.state.healPoint = { map: this.ow.map.id, spawn: 'door' }; (NP.state.visited = NP.state.visited || {})[this.ow.map.id] = 1; }
     *healAnim() {
       NP.snd.stop(200);
       yield* this.ow.fadeOut(10, '#ffe8f0');
@@ -226,6 +226,7 @@
       o = o || {};
       this.map = this.tileMap(id);
       this.map.syncSnips(NP.state.flags);
+      (NP.state.visited = NP.state.visited || {})[id] = 1;
       const def = this.map.def;
       this.actors = [];
       for (const n of def.npcs || []) this.actors.push(new Actor({ id: n.id, kind: 'npc', x: n.x, y: n.y, dir: n.dir || 'down', look: n.look, def: n, hidden: !!n.hidden }));
@@ -340,20 +341,41 @@
       return res;
     }
 
+    /** The closest Tea House by doors and roads (fewest map hops) among those she has unlocked: been inside, or visited the town in
+     *  front of it. "Unlocked" keeps an early blackout from skipping ahead (losing to Rival #1 must not wake you up in Thimble). */
+    nearestTeaHouse() {
+      const vis = NP.state.visited || {};
+      const next = (id) => Array.from(this.tileMap(id).warps.values()).map((w) => w.to).filter((t) => NP.maps[t]);
+      const unlocked = (id) => !!vis[id] || next(id).some((n) => vis[n]);
+      const seen = new Set([this.map.id]);
+      for (let ring = [this.map.id]; ring.length;) {
+        const nxt = [];
+        for (const id of ring) {
+          if (NP.maps[id].teaHouse && unlocked(id)) return id;
+          for (const n of next(id)) if (!seen.has(n)) { seen.add(n); nxt.push(n); }
+        }
+        ring = nxt;
+      }
+      return null;
+    }
+
     *blackout(cfg) {
       const st = NP.state;
       yield* this.say('{player} is out of usable Kigu!\\p{player} blacked out...');
       st.money = Math.floor(st.money / 2);
       NP.State.healAll();
-      const hp = st.healPoint;
-      const tm = this.tileMap(hp.map);
-      const sp = tm.def.spawns && tm.def.spawns[hp.spawn] || { x: 1, y: 1, dir: 'down' };
+      // the nearest unlocked Tea House; else the last place she rested (her bedroom at the start); else anywhere that exists,
+      // so a bad or missing heal point can never leave the game stuck
+      const tea = this.nearestTeaHouse(), hp = st.healPoint;
+      const id = tea || (hp && NP.maps[hp.map] ? hp.map : null) || (NP.maps.player_house ? 'player_house' : Object.keys(NP.maps)[0]);
+      const spawns = NP.maps[id].spawns || {};
+      const sp = spawns[tea ? 'door' : (hp && hp.spawn)] || spawns.door || { x: 1, y: 1, dir: 'down' };
       this.msg.close();
-      this.loadMap(hp.map, sp.x, sp.y, sp.dir, { noEnter: true });
+      this.loadMap(id, sp.x, sp.y, sp.dir, { noEnter: true });
       NP.snd.play(this.musicId, { restart: true });
       NP.Game.fadeTo(0, 14);
       yield* this.wait(14);
-      yield* this.say('You hurried back to the last place you rested.\\pYour Kigu were tucked in and had a good nap.');
+      yield* this.say(tea ? 'You hurried to the nearest Tea House.\\pYour Kigu were tucked in and had a good nap.' : 'You hurried back to the last place you rested.\\pYour Kigu were tucked in and had a good nap.');
     }
 
     *wildBattle(sp, lv) {
