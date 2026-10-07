@@ -47,7 +47,7 @@
     yield* c.walk(crease, ['left', 1, 'down', 3, 'right', 1], 2);
     crease.dir = 'down';
     yield* c.sayT(k('crease.intro'), 'Crease: Two Pressers, pressed flat. Hm. Messy, but brisk. I like brisk.\\pLet me measure you myself.');
-    yield* c.trainerBattle({ cls: 'Pleat', name: 'Crease', look: 'pleat', ai: 2, reward: 14, music: 'battle_admin', team: L.team([['peepi', 12], ['silkie', 13], ['webbi', 14]]) });
+    yield* c.trainerBattle({ cls: 'Pleat', name: 'Crease', look: 'pleat', ai: 2, reward: 14, music: 'battle_admin', team: L.team([['peepi', 13], ['silkie', 14], ['webbi', 15]]) });
     c.music('society_theme');
     yield* c.sayT(k('crease.win.1'), 'Crease: One crease. ...One. On my own sleeve.\\pI hate that.');
     yield* c.walk(crease, ['left', 1, 'up', 2], 2);

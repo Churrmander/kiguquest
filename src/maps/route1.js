@@ -42,8 +42,8 @@
     ],
     encounters: {
       grass: [
-        { sp: 'peepi', min: 2, max: 4, w: 30 }, { sp: 'nibbi', min: 2, max: 4, w: 30 },
-        { sp: 'mittsy', min: 3, max: 5, w: 25 }, { sp: 'silkie', min: 3, max: 4, w: 10 },
+        { sp: 'peepi', min: 3, max: 5, w: 30 }, { sp: 'nibbi', min: 3, max: 5, w: 30 },
+        { sp: 'mittsy', min: 4, max: 6, w: 25 }, { sp: 'silkie', min: 4, max: 5, w: 10 },
       ],
     },
     props: [

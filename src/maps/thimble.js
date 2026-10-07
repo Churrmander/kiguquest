@@ -12,7 +12,7 @@
     yield* c.face('player', 'up');
     yield* c.emote('player', 'exclaim');
     yield* c.sayT('thimble.rival2.1', '{rival}: {player}! You made it.\\pI just challenged Poppy. She beat me with cardigans. CARDIGANS!\\pBut I worked out her pattern, and now I am going to use it on you. Come on!');
-    const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'tomo', ai: 2, reward: 14, team: team([[c.state.rivalStarter || 'ottopi', 6], ['peepi', 5], ['nibbi', 5]]) });
+    const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'tomo', ai: 2, reward: 14, team: team([[c.state.rivalStarter || 'ottopi', 7], ['peepi', 6], ['nibbi', 6]]) });
     c.set('rival2_done');
     if (won) yield* c.sayT('thimble.rival2.win', '{rival}: ...Fine. Poppy beat me, and you beat me. Two for two.\\pBut I am not done. I will train until my Kigu are as tough as a bridge plank!\\p...Speaking of bridges, the guards in the white collars are weirdly picky about planks. Whatever. Go on, Poppy is waiting.');
     else yield* c.sayT('thimble.rival2.lose', '{rival}: Ha! Poppy\'s cardigans were no match for me, and neither are you!\\pGo and rest your Kigu at the Tea House, then try again.');
@@ -75,10 +75,11 @@
   K.rect(g, 10, 10, 2, 2, 'c'); K.rect(g, 14, 10, 2, 2, 'c');
   K.rect(g, 3, 17, 4, 2, 'f'); K.rect(g, 19, 18, 4, 2, 'f'); K.rect(g, 8, 13, 3, 1, 'f');
   K.rect(g, 15, 13, 1, 4, 'F');
+  K.rect(g, 9, 15, 3, 4, ',');                       // a small meadow of tall grass beside the road
 
   K.reg({
     id: 'thimble', name: 'Thimble Village', music: 'town_thimble', battleBg: 'grass', border: 'treeline',
-    legend: { '.': 'grass', T: 'treeline', c: 'cobble', p: 'path', f: 'flowers', F: 'fence' },
+    legend: { '.': 'grass', T: 'treeline', c: 'cobble', p: 'path', f: 'flowers', F: 'fence', ',': 'tallgrass' },
     rows: K.rows(g),
     stamps: [
       { id: 'tea_house', x: 3, y: 3, name: 'tea', to: 'tea_house' },
@@ -106,6 +107,12 @@
       if (c.flag('badge1') && !c.flag('presser1_done')) yield* inspection(c);
     },
     spawns: { south: { x: 12, y: 19, dir: 'up' }, north: { x: 22, y: 1, dir: 'down' } },
+    encounters: {
+      grass: [
+        { sp: 'peepi', min: 4, max: 6, w: 30 }, { sp: 'nibbi', min: 4, max: 6, w: 30 },
+        { sp: 'mittsy', min: 5, max: 7, w: 25 }, { sp: 'silkie', min: 5, max: 6, w: 15 },
+      ],
+    },
     warps: [
       { xs: [12, 13], y: 21, to: 'route1', spawn: 'north', sound: 'none' },
       { xs: [22, 23], y: 0, to: 'route2', spawn: 'south', sound: 'none' },
@@ -204,7 +211,7 @@
           intro: 'Halt! Nobody reaches Poppy without sewing a line past me.', win: 'You threaded that one perfectly...', after: 'Go on, Poppy is waiting.' } },
     ],
   });
-  NP.maps.salon.poppyTeam = team([['nibbi', 6], ['peepi', 7], ['mittsy', 8]]);
+  NP.maps.salon.poppyTeam = team([['nibbi', 7], ['peepi', 8], ['mittsy', 9]]);
 
   // -------------------------------------------------------------------------------------- houses
   K.room({

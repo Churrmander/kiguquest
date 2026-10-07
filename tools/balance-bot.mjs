@@ -91,7 +91,7 @@ function fight(f, starter, lead, seed) {
 
 if (PROGRESS) {
   // wild battles a player plausibly fights on each outdoor map before the trainers there; the lowest-level Kigu leads (rotation)
-  const WILDS = { route1: 6, route2: 6, gingham_woods: 8 };
+  const WILDS = { route1: 6, thimble: 6, route2: 6, gingham_woods: 8 };
   const pickWild = (map, rng) => {
     const tbl = NP.maps[map].encounters.grass; let r = rng.next() * tbl.reduce((a, e) => a + e.w, 0);
     for (const e of tbl) { r -= e.w; if (r <= 0) return [e.sp, e.min + Math.floor(rng.next() * (e.max - e.min + 1))]; }
