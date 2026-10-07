@@ -1,0 +1,7 @@
+[
+  "src/art/tiles/kit.js",
+  "src/art/tiles/draw.js",
+  "src/art/tiles/terrain_ground.js",
+  "src/art/tiles/terrain_water.js",
+  "src/art/tiles/api.js"
+]

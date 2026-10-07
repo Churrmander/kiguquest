@@ -1,0 +1,10 @@
+[
+  "src/art/icons/kit.js",
+  "src/art/icons/glyphs.js",
+  "src/art/icons/labels.js",
+  "src/art/icons/items-spools.js",
+  "src/art/icons/items-kit.js",
+  "src/art/icons/items-heal.js",
+  "src/art/icons/items-use.js",
+  "src/art/icons/items-held.js"
+]
