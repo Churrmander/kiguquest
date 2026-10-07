@@ -114,4 +114,10 @@
     face: { eyes: 'wide', mouth: 'grin' }, outfit: out('dress', 'sky', 'white'), shoes: 'blue' });
   def('old_tailor', { name: 'Old Tailor', build: 'elder', sex: 'm', skin: 'warm', hair: hair('fluff', 'white'), eyes: 'brown', facial: 'mustache', facialColor: 'white',
     face: { eyes: 'happy', mouth: 'smile', brows: 'worried' }, outfit: out('vest', 'plum', 'gold', 'cream'), bottom: { type: 'pants', color: 'slate' }, shoes: 'brown', acc: ['roundglasses:#c8a020', 'tape'] });
+
+  // ---- story one-offs: the Spindle Shrine guardian, Pressed (bleached white, blue piping) and herself again (chapter 2)
+  def('cocoona_pressed', { name: 'Pressed Cocoona', build: 'child', sex: 'f', skin: 'pale', hair: hair('pigtails', 'white'), eyes: 'sky',
+    face: { eyes: 'normal', mouth: 'flat' }, outfit: out('hoodie', 'white', 'starch', 'white'), bottom: { type: 'shorts', color: 'white' }, legs: 'white', shoes: 'white' });
+  def('cocoona', { name: 'Cocoona', build: 'child', sex: 'f', skin: 'fair', hair: hair('pigtails', 'blonde'), eyes: 'amber',
+    face: { eyes: 'happy', mouth: 'grin', blush: true }, outfit: out('hoodie', 'cream', 'gold', 'white'), bottom: { type: 'shorts', color: 'khaki' }, legs: 'white', shoes: 'brown' });
 })(typeof globalThis !== 'undefined' ? globalThis : window);

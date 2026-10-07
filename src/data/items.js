@@ -45,4 +45,5 @@
   I('d_handkerchief', "'D' Handkerchief", 'key', 0, "Hand-stitched, with a tidy 'D' in the corner. Every hem is knotted twice.");
   I('disc_snip', 'Disc: Snip', 'key', 0, 'Teaches a Kigu to snip small trees.');
   I('disc_paddle', 'Disc: Paddle', 'key', 0, 'Teaches a Kigu to paddle over water.');
+  I('everspool_silk', 'Everspool Silk', 'key', 0, 'A length of golden-green silk from the Everspool. It never frays and never runs out.');
 })(typeof globalThis !== 'undefined' ? globalThis : window);

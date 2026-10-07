@@ -69,7 +69,8 @@
   K.rect(g, 0, 20, 10, 2, 'T'); K.rect(g, 16, 20, 10, 2, 'T');
   K.rect(g, 12, 6, 2, 16, 'c');                      // main road
   K.rect(g, 3, 7, 21, 2, 'c');                       // cross street
-  K.rect(g, 22, 0, 2, 9, 'p');                       // closed road to Route 2
+  K.rect(g, 22, 0, 2, 9, 'p');                       // road to Route 2 (closed until `route2_open`)
+  K.rect(g, 21, 2, 1, 1, 'T');                       // seals the road beside the guards (the General Store walls the rest)
   K.rect(g, 3, 15, 6, 1, 'c'); K.rect(g, 17, 16, 7, 1, 'c');
   K.rect(g, 10, 10, 2, 2, 'c'); K.rect(g, 14, 10, 2, 2, 'c');
   K.rect(g, 3, 17, 4, 2, 'f'); K.rect(g, 19, 18, 4, 2, 'f'); K.rect(g, 8, 13, 3, 1, 'f');
@@ -92,21 +93,41 @@
     ],
     interact: [
       { x: 11, y: 9, say: 'THIMBLE VILLAGE\\nWhere every stitch counts.' },
-      { x: 22, y: 5, say: 'ROUTE 2  Closed\\nInspection in progress.\\nBy order of the Society for Tidy Living.' },
+      { x: 22, y: 5, script: function* (c) {
+        if (c.flag('route2_open')) yield* c.sayT('thimble.sign_r2.open', 'ROUTE 2  Licensed Tailors only.\\nPlanks uneven. Cross at your own risk.');
+        else yield* c.sayT('thimble.sign_r2.closed', 'ROUTE 2  Closed\\nInspection in progress.\\nBy order of the Society for Tidy Living.');
+      } },
     ],
     // Rival #2 ambushes anyone who steps up to the Salon door (12,7 is the only tile the door can be entered from; 13,7 is the road beside it)
     triggers: [{ x: 12, y: 7, w: 2, h: 1, id: 'rival2', when: (c) => !c.flag('rival2_done') && !c.flag('badge1'), script: rival2 }],
     // stepping back out of the Salon with the Button starts the Society's first inspection
-    onEnter: function* (c) { if (c.flag('badge1') && !c.flag('presser1_done')) yield* inspection(c); },
-    spawns: { south: { x: 12, y: 19, dir: 'up' } },
-    warps: [{ xs: [12, 13], y: 21, to: 'route1', spawn: 'north', sound: 'none' }],
+    onEnter: function* (c) {
+      if (c.flag('route2_open')) { c.hideNpc('guard1'); c.hideNpc('guard2'); }
+      if (c.flag('badge1') && !c.flag('presser1_done')) yield* inspection(c);
+    },
+    spawns: { south: { x: 12, y: 19, dir: 'up' }, north: { x: 22, y: 1, dir: 'down' } },
+    warps: [
+      { xs: [12, 13], y: 21, to: 'route1', spawn: 'north', sound: 'none' },
+      { xs: [22, 23], y: 0, to: 'route2', spawn: 'south', sound: 'none' },
+    ],
     npcs: [
-      { id: 'guard1', x: 22, y: 3, look: 'grunt_m', dir: 'down',
+      { id: 'guard1', x: 22, y: 3, look: 'grunt_m', dir: 'down', hideIf: 'route2_open',
         script: function* (c) {
-          if (c.flag('presser1_done')) yield* c.sayT('thimble.guard1.b', 'The Inspector is expected any day now.\\pUntil she signs off on the planks, nobody crosses. Flat is fair!');
-          else yield* c.sayT('thimble.guard1.a', 'Halt! This bridge is under inspection by the Society for Tidy Living.\\pThe planks are uneven. Uneven planks are a hazard. Nobody crosses until every one is level.');
+          if (!c.flag('presser1_done')) {
+            yield* c.sayT('thimble.guard1.a', 'Halt! This bridge is under inspection by the Society for Tidy Living.\\pThe planks are uneven. Uneven planks are a hazard. Nobody crosses until every one is level.');
+            return;
+          }
+          // after the first inspection: the guards stand down (once) and the road to Route 2 opens
+          yield* c.sayT('thimble.guard1.b', ['...Hm. The village report says you are a licensed Tailor with a Button.\\pA licensed Tailor with a Button may cross at their own risk.\\pThe planks are uneven.']);
+          yield* c.sayT('thimble.guard2.b', ['Please mind the third plank from the end, Tailor. It is... a little crooked.\\pWe have not had the heart to press it.\\pFlat is fair!']);
+          const a = c.npc('guard1'), b = c.npc('guard2');
+          yield* c.walk(a, ['up', 3]);
+          c.hideNpc('guard1');
+          yield* c.walk(b, ['up', 3]);
+          c.hideNpc('guard2');
+          c.set('route2_open');
         } },
-      { id: 'guard2', x: 23, y: 3, look: 'grunt_f', dir: 'down',
+      { id: 'guard2', x: 23, y: 3, look: 'grunt_f', dir: 'down', hideIf: 'route2_open',
         script: function* (c) { yield* c.sayT('thimble.guard2', 'Stay in line, please.\\p...Your collar is a little untidy. May I? ...There. Much better. Flat is fair!'); } },
       // cast for the Rival #2 and first-inspection scenes (hidden until their scripts place them)
       { id: 'tomo_t', x: 12, y: 6, look: 'tomo', dir: 'down', hidden: true, say: ['{rival}: ...'] },

@@ -104,6 +104,28 @@
     yield* c.sayT(id + '.done', ['{player} had a Kigu Snip the tree down!']);
   };
 
+  // ------------------------------------------------------------------------------------------ things that change with story flags
+  /** A stamp definition (an entry of def.stamps) whose variant follows a flag: `before` until the flag is set, `after` once it is.
+   *  The getter is read when the TileMap is built; L.syncStamps(c) (call it from onEnter) refreshes an already-built map. */
+  L.variantByFlag = function (stampDef, flag, before, after) {
+    stampDef.dyn = true;
+    Object.defineProperty(stampDef, 'variant', { enumerable: true, configurable: true, get() { return (NP.state && NP.state.flags[flag]) ? after : before; } });
+    return stampDef;
+  };
+  L.syncStamps = function (c) {
+    const tm = c.map;
+    for (const s of tm.def.stamps || []) {
+      if (!s.dyn) continue;
+      const p = tm.placements.find((q) => q.id === s.id && q.x === s.x && q.y === s.y);
+      if (p) p.variant = s.variant;
+    }
+  };
+  /** An NPC definition whose look follows a flag. */
+  L.lookByFlag = function (npcDef, flag, before, after) {
+    Object.defineProperty(npcDef, 'look', { enumerable: true, configurable: true, get() { return (NP.state && NP.state.flags[flag]) ? after : before; } });
+    return npcDef;
+  };
+
   // ------------------------------------------------------------------------------------------ the builder
   L.map = function (o) {
     const W = o.w, H = o.h;
@@ -286,7 +308,7 @@
     M.stamp('counter_l', 3, 3).stamp('counter_m', 4, 3).stamp('counter_r', 5, 3)
       .stamp('shop_shelf', 1, 2).stamp('shop_shelf', 2, 2).stamp('shop_shelf', 7, 2).stamp('shop_shelf', 8, 2).stamp('plant', 8, 5);
     M.interact(3, 3, 'shopx').interact(4, 3, 'shopx').interact(5, 3, 'shopx');
-    M.npc('clerk', 4, 2, 'shopkeeper', 'down', null, { script: 'shopx', note: 'Clerk (shared script "shopx": stock + badge-gated stock)' });
+    M.npc('clerk', 4, 2, 'shopkeeper', 'down', null, { script: 'shopx', note: 'Clerk (shared script "shopx": stock + Button-gated stock)' });
     for (const gst of o.guests || []) M.npc(gst.id, gst.x, gst.y, gst.look, gst.dir, gst.say, { note: gst.note });
     return M;
   };

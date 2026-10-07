@@ -85,7 +85,7 @@
         ui.text(fb, p.name + '   Buttons ' + p.badges, 60, 76, 'light');
         ui.text(fb, 'Sketchbook ' + p.dex + '   ' + NP.util.pad(Math.floor(p.frames / 216000), 1) + 'h ' + NP.util.pad(Math.floor(p.frames / 3600) % 60, 2) + 'm', 60, 87, 'light', { color: '#707890', shadow: null });
       }
-      Font.draw(fb, 'A fan-made monster-collecting RPG', 120, 150, { color: '#ffffffb0', shadow: '#00000060', align: 'center' });
+      Font.draw(fb, 'Befriend Kigu. Stitch your story.', 120, 150, { color: '#ffffffb0', shadow: '#00000060', align: 'center' });
       this.drawUI(fb, f);
     }
   }

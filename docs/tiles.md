@@ -1,6 +1,6 @@
 # World tile notes (level-designer cheat sheet)
 
-Every id in BIBLE §5 marked P1 exists (53 stamps, 29 terrains in total). No ids were added beyond that list; what follows are the
+Every id in BIBLE §5 marked P1 exists, plus the chapter-2 additions at the bottom of the table (55 stamps, 31 terrains in total). What follows are the
 decisions BIBLE left open (sizes, solid rows, variants). `solid` rows are written top to bottom: `#` blocked, `.` walkable, `D` door.
 
 | id | size | solid rows | over | variants / notes |
@@ -25,11 +25,19 @@ decisions BIBLE left open (sizes, solid rows, variants). `solid` rows are writte
 | `tv` `plant` `sewing_machine` `stove` `sink` | 1x1 | `#` | 0 | none |
 | `counter_l/m/r/c` | 1x1 | `#` | 0 | l/m/r tile into one bar; `c` = middle piece with a cash register |
 | `rug_a` / `rug_b` | 3x2 / 2x2 | all `.` | 0 | `layer: 'floor'` (drawn under actors, walkable) |
+| `shrine` | 5x4 | `#####` `#####` `#####` `..D..` | 1 | `default pressed`. The Spindle Shrine: red-roofed hall, giant silk spool on a stone plinth with steps and an arched doorway, lanterns, ribbons. `D` = bottom centre (the approach row either side of it is walkable). `pressed` = drained white/pale blue-grey, threads dead straight, ribbons flat |
+| `gate_house` | 5x3 | `##.##` `##.##` `##.##` | 2 | `default pressed`. Stone-and-timber gatehouse: the centre column is an open arch you walk straight through north-south (all three rows walkable); roof, tie-beam and arch (rows 0-1) draw above actors. `default` has a hanging sign, a shuttered window and a red pennant; `pressed` adds the Starch Society banner (white, blue piping, flat stripes, collar crest) over the window and a white-and-blue pennant. No `D`: do not give it `to`/`name` |
 
 Terrains (all from the BIBLE list): `floor_wood` `floor_tile` `floor_stone` plain floors (no autotile); `carpet_red/blue/green` and
 `mat` are autotiles with their own group (a border is drawn on every side not touching the same id); `wall_wood/plaster/stone` are
 solid autotiles in the shared group `wall` (the tile with floor to its south shows the skirting; wall tiles beside floor or in an
 inside corner show the flat wall top); `void` is solid black; `stairs_up/down` are walkable and visual only (a map warp does the work).
+
+`bridge_h` / `bridge_v` (not autotiles, 3 position-picked variants each: plain, red cloth patch, ribbon bow): walkable plank bridge over water
+(`water:false`, `step:'wood'`, no encounter). `bridge_h` has rails on the top/bottom edges and planks running left-right; `bridge_v` has rails
+left/right and planks top-bottom. They repeat seamlessly end to end (a 1-wide span of any length), animate in step with `water`
+(same 8 frames / speed) and live in the `water` autotile group, so neighbouring water draws no bank against them. Lay a bridge from
+land to land; the end tiles just butt up against the grass.
 
 Caveat for map authors: `tilemap.js` unblocks the default door tile of any stamp that has a `name` or `to` but no `D` in `solid`,
 so a named 1x1 stamp (e.g. a `sign` with `name:`) becomes walkable. Use `to`/`name` only on door stamps.

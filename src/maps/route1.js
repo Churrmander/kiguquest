@@ -61,7 +61,7 @@
           intro: 'You have a Kigu too? Let us compare stitches!', win: 'Oh! Your seams are tighter than mine.', after: 'Keep your Kigu rested. Thimble Village has a Tea House.' } },
       { id: 'bo', x: 12, y: 25, look: 'net_kid', dir: 'left',
         trainer: { cls: 'Net Kid', name: 'Bo', sight: 3, reward: 5, ai: 0, team: team([['mittsy', 4]]),
-          intro: 'I caught my Mittsy in this very grass!', win: 'She fell asleep on me...', after: 'Mittsy naps a lot, but she naps fiercely.' } },
+          intro: 'I befriended my Mittsy in this very grass!', win: 'She fell asleep on me...', after: 'Mittsy naps a lot, but she naps fiercely.' } },
       { id: 'suzu', x: 15, y: 15, look: 'picnicker', dir: 'left',
         trainer: { cls: 'Picnicker', name: 'Suzu', sight: 4, reward: 6, ai: 1, team: team([['sprubun', 4], ['peepi', 4]]),
           intro: 'Picnic time is over! Battle time!', win: 'My sandwiches are going to get cold...', after: 'Thimble Village has a Salon with a Master Tailor. Good luck!' } },

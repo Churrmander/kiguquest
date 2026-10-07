@@ -60,7 +60,7 @@ for (const [id, s] of Object.entries(NP.stamps)) {
   ok(NP.art.tiles.stamp(id, s.variants[0], 0).w === s.w * T, id + ' wrapper');
 }
 // variants of a stamp must actually differ
-for (const id of ['salon', 'house_m', 'house_s', 'house_l', 'flowerbed', 'chair']) {
+for (const id of ['salon', 'house_m', 'house_s', 'house_l', 'flowerbed', 'chair', 'shrine', 'gate_house']) {
   const s = NP.stamps[id];
   const seen = new Set();
   for (const v of s.variants) { const b = s.draw(v, 0); seen.add(Array.from(b.u32).join(',')); }
@@ -88,6 +88,40 @@ for (const id of ['floor_wood', 'floor_tile', 'floor_stone', 'carpet_red', 'carp
 ok(NP.terrain.wall_wood.group === 'wall' && NP.terrain.wall_stone.group === 'wall', 'walls share a group');
 ok(NP.terrain.wall_plaster.draw(255, 0, 0).equals(NP.terrain.wall_plaster.draw(255, 0, 0)), 'wall draw stable');
 ok(!NP.terrain.wall_wood.draw(0xff, 0, 0).equals(NP.terrain.wall_wood.draw(0xff & ~16, 0, 0)), 'wall base differs when floor is to the south');
+
+// ------------------------------------------------------------------------------------------------ chapter-2 additions
+// bridges: walkable, not water, wooden step, animated in sync with `water`, <=16 colours, opaque, identical left/right and top/bottom
+// seams (they must repeat end to end).
+for (const id of ['bridge_h', 'bridge_v']) {
+  const t = NP.terrain[id];
+  ok(t, 'missing terrain ' + id);
+  ok(!t.solid && !t.water && !t.encounter, id + ': walkable, not water, no encounters');
+  assert.equal(t.step, 'wood', id + ' step sound');
+  assert.equal(t.frames, NP.terrain.water.frames, id + ' frames match water');
+  assert.equal(t.animSpeed, NP.terrain.water.animSpeed, id + ' animSpeed matches water');
+  ok(t.group === NP.terrain.water.group, id + ' shares the water group so shores do not draw against it');
+  for (let v = 0; v < t.variants; v++) for (let f = 0; f < t.frames; f++) {
+    const a = t.draw(0, f, v);
+    ok(a.equals(t.draw(0, f, v)), id + ' not deterministic');
+    ok(a.countColors() <= 16, id + ' uses ' + a.countColors() + ' colours');
+    for (let i = 0; i < a.u32.length; i++) assert.equal(a.u32[i] >>> 24, 255, id + ': opaque');
+    // seamless along the span: the far edge (last column for h, last row for v) is the same in every variant, so any two
+    // variants can sit next to each other, and the tile repeats on itself
+    const base = t.draw(0, f, 0);
+    for (let k = 0; k < 16; k++) {
+      const i = id === 'bridge_h' ? k * 16 + 15 : 15 * 16 + k;
+      ok(a.u32[i] === base.u32[i], id + ' v' + v + ' f' + f + ': far edge differs from variant 0 at ' + k);
+    }
+  }
+}
+ok(!NP.terrain.bridge_h.draw(0, 0, 0).equals(NP.terrain.bridge_v.draw(0, 0, 0)), 'bridge_h and bridge_v differ');
+// the shrine and the gatehouse
+assert.deepEqual(Array.from(NP.stamps.shrine.variants), ['default', 'pressed']);
+assert.deepEqual([NP.stamps.shrine.w, NP.stamps.shrine.h, NP.stamps.shrine.over], [5, 4, 1]);
+assert.deepEqual(Array.from(NP.stamps.shrine.solid), ['#####', '#####', '#####', '..D..']);
+assert.deepEqual(Array.from(NP.stamps.gate_house.variants), ['default', 'pressed']);
+assert.deepEqual([NP.stamps.gate_house.w, NP.stamps.gate_house.h, NP.stamps.gate_house.over], [5, 3, 2]);
+assert.deepEqual(Array.from(NP.stamps.gate_house.solid), ['##.##', '##.##', '##.##']);
 
 // ------------------------------------------------------------------------------------------------ map coverage
 const mapIds = Object.keys(NP.maps);

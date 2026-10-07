@@ -52,4 +52,27 @@
     yield* c.giveItem('d_handkerchief', 1);
     yield* c.sayT('script.poppy.9', 'Poppy: Now go and see Tsumugi, {player}. Every seam road has a story.\\pAnd remember: every stitch counts!');
   };
+  S.bryn = function* (c) {
+    const st = c.state;
+    if (st.badges && st.badges[1]) {
+      yield* c.sayT('script.bryn.1', 'Bryn: Little threads, big hive!\\pSeamstead City is east along the seam road.\\pGo on. And keep an eye on anyone who says everything is on sale.');
+      return;
+    }
+    yield* c.sayT('script.bryn.2', 'Bryn: Welcome to the Hemline Salon!\\pI am Bryn: Master Tailor, Warden of the woods, honey-maker, hem-checker.\\pAlso late for three things!\\pLittle threads, big hive!');
+    if (c.flag('shrine1_done')) yield* c.sayT('script.bryn.3', 'Bryn: Mimi told me everything.\\pThe Everspool, the Pressers, the Cocoona, the rinse.\\pFour things I needed to hear and one I hoped I would not.\\pSomebody had to say it out loud, so: the Society is a problem. There. I said it.');
+    yield* c.sayT('script.bryn.4', 'Bryn: But a Button has to be earned, so! Show me your stitches.\\pMy bees and I are ready!');
+    const won = yield* c.trainerBattle({ cls: 'Master', name: 'Bryn', look: 'bryn', ai: 2, reward: 14, master: true, music: 'battle_master', team: c.map.def.brynTeam });
+    if (!won) { yield* c.sayT('script.bryn.5', 'Bryn: Ooh, so close! Rest your Kigu, have some tea, and come back. I will be here.\\pProbably. Unless the bees need me.'); return; }
+    yield* c.sayT('script.bryn.6', 'Bryn: Every seam held. Even the sticky ones! Please take this Button.\\pYou earned every thread.');
+    st.badges = st.badges || [];
+    st.badges[1] = true;
+    c.set('badge2');
+    yield* c.jingleWait('j_button');
+    yield* c.sayT('script.bryn.7', '{player} received the Buzz Button!');
+    yield* c.sayT('script.bryn.8', 'Bryn: With it, your Kigu obey you up to Lv30. Also this Disc: Paddle!\\pIt teaches a Kigu to paddle across water. For when the planks run out.');
+    yield* c.giveItem('disc_paddle', 1);
+    yield* c.sayT('script.bryn.9', 'Bryn: And this.\\pA length of silk from the Everspool.\\pGolden-green, and the straightest thread in the world.\\pIt has never once been pressed flat. Keep it somewhere you can see it.');
+    yield* c.giveItem('everspool_silk', 1);
+    yield* c.sayT('script.bryn.10', 'Bryn: Seamstead City is next, east along the seam road.\\pBig, bright, loud, and full of uniforms.\\pCrisp & Co. has a store there. Everything is on sale.\\pThat is the trick, so mind what you are offered!\\pLittle threads, big hive!');
+  };
 })(typeof globalThis !== 'undefined' ? globalThis : window);
