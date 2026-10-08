@@ -66,3 +66,4 @@ for (const type of Object.keys(NP.art.human._.OUTFITS)) {
   check(s.overworld().frames.down[2], 16, 24, type, 32);
 }
 console.log('human-art: ok (' + H.ids().length + ' looks)');
+

@@ -161,6 +161,23 @@
   }
   A.humanFront = (look) => portrait('front', look);
   A.humanBack = (look) => portrait('back', look);
+  /** Back-view battle pose for the send-out animation. pose: 'ready' | 'windup' | 'throw' | 'follow'; lean = whole-body sway in px (the
+   *  head swings further than the feet). Imported strips (NP.art.human.hd[look].battle[pose], 64x64 rows) win over the procedural lean. */
+  A.humanThrow = (look, pose, lean) => memo('ht|' + look + '|' + pose + '|' + lean, () => {
+    const base = A.humanBack(look);
+    if (!lean && pose === 'ready') return base;
+    const out = new Bitmap(base.w, base.h), lift = pose === 'throw' ? 1 : 0;
+    for (let y = 0; y < base.h; y++) {
+      const k = Math.pow(Math.max(0, 1 - y / base.h), 1.4), dx = Math.round(lean * k);
+      for (let x = 0; x < base.w; x++) {
+        const c = base.u32[y * base.w + x];
+        if (!(c >>> 24)) continue;
+        const X = x + dx, Y = y - (y < base.h * 0.6 ? lift : 0);
+        if (X >= 0 && X < out.w && Y >= 0) out.u32[Y * out.w + X] = c;
+      }
+    }
+    return out;
+  });
 
   // ------------------------------------------------------------------ kigu
   function blob(id, back) {

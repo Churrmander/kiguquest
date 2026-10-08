@@ -350,6 +350,19 @@ Each row is one look id. Build "adult" is about 4 heads tall. "Stout" means broa
 
 `cocoona` and `cocoona_pressed` are Kigu (the Spindle Shrine guardian and her Pressed form). They currently use child-built stand-in looks in `looks.js` so they can walk around the overworld. **Do not generate human sheets for them and do not convert them into human characters.** They stay Kigu; their sprites will be done later with the rest of the Kigu art, and the stand-ins stay in the game until then. The same goes for any other Kigu that appears as a map NPC.
 
+## Battle send-out strip (protagonists only)
+
+In battle the hero is seen from behind and throws a Bond Spool to send out a Kigu. For each hero, in addition to the walk sheet, generate ONE extra strip, original design in the same style (do not copy any existing game's pose sheet; the style reference is only for the level of polish):
+
+- Back view only, 5 cells in a row, equal size (about 64x64 each), same character, scale and palette as the walk sheet:
+  1. **Ready** - standing, spool in the throwing hand, relaxed.
+  2. **Wind-up** - body leaning back, throwing arm drawn back and up.
+  3. **Throw** - body leaning forward, arm fully extended, spool leaving the hand.
+  4. **Follow-through** - arm across the body, weight on the front foot.
+  5. **Step aside** - upright again, one step to the left (she slides off screen after this).
+- Same camera as the walk sheet (raised, top of hair/hat visible). Magenta background, no text, no spool in the air (the game draws the spool and sparkle).
+- Delivery name: `<id>_battle.png`. Until these exist the game fakes the throw by swaying the back-view portrait.
+
 ## Consistency checklist
 
 - **Proportions:** everyone is about 4 heads tall. Children may be about 3.5, tall adults up to 4.5. No huge heads. Stout characters are wider, not shorter.

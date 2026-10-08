@@ -34,5 +34,13 @@ const feet = (hd) => {
 const a = feet(false), b = feet(true);
 console.log('feet row generated', a, 'hd', b);
 assert.ok(Math.abs(a - b) <= 2, 'feet line up between the generated and HD sprite');
+
+// battle send-out poses: the procedural throw leans the back portrait, and 'ready' is the plain back sprite
+{
+    const A = NP.assets, base = A.humanBack('hero_f');
+  assert.ok(A.humanThrow('hero_f', 'ready', 0) === base, 'ready is the plain back sprite');
+  const w = A.humanThrow('hero_f', 'windup', -3), th = A.humanThrow('hero_f', 'throw', 4);
+  assert.ok(w.w === 64 && th.h === 64 && !w.equals(base) && !th.equals(base) && !w.equals(th), 'wind-up and throw are distinct 64x64 poses');
+}
 H.hd.enabled = false;
 console.log('hd OK', o.w + 'x' + o.h);
