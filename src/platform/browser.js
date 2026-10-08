@@ -49,6 +49,7 @@
   root.addEventListener('pointerdown', unlock);
   root.addEventListener('blur', () => NP.Input.reset());
   let muted = false;
+  try { if (NP.art && NP.art.human && NP.art.human.hd && /[?&]hd\b/.test(root.location.search)) NP.art.human.hd.enabled = true; } catch (e) { /* */ }
 
   // ---- loop
   let last = performance.now(), acc = 0;

@@ -82,12 +82,12 @@
         fb.blendRect(X + 1, Y + 13, 14, 3, '#7fc8ff', 0.55);
         fb.blendRect(X + 3, Y + 12, 10, 1, '#ffffff', 0.35);
         fb.blendRect(X + 3, Y + 16, 10, 1, '#2a6fb0', 0.45);
-        fb.blit(bmp, X, Y - 6 - bob);
+        fb.blit(bmp, X + ((16 - bmp.w) >> 1), Y - 6 - bob - ((bmp.h || 24) - 24));
         return;
       }
       // soft shadow
       fb.blendRect(X + 3, Y + 12, 10, 3, '#000000', 0.22);
-      fb.blit(bmp, X, Y - 8 - Math.round(this.hop));
+      fb.blit(bmp, X + ((16 - bmp.w) >> 1), Y - (bmp.h - 16) - Math.round(this.hop));
     }
   }
 
