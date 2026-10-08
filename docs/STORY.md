@@ -50,7 +50,7 @@ Festival (§6). *Now:* the hero is 12 or 13, turns apprentice, and the Society i
 ## 4. The cast
 
 ### The hero ({player}, boy or girl)
-Lives with Mom in Button Town; the red-and-white jacket and the satchel. Wants "a Kigu of my own, someday" — and gets one on page one. A steady
+Lives with Mom in Button Town; the tailor's overalls (flat cap for the boy, red beret for the girl), the spool-pouch belt and the satchel. Wants "a Kigu of my own, someday" — and gets one on page one. A steady
 needle: the hero's gift is not power but *noticing and stopping to help*, which is exactly what a Stitch Bond needs. **Arc:** apprentice → the person who
 mends the land. Never speaks; the writing gives them things to be kind *to*.
 

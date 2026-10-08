@@ -85,7 +85,11 @@ for (const id of ids) {
     const q = [];
     for (const s of Object.values(def.spawns || {})) { q.push([s.x, s.y]); seen[s.y * tm.w + s.x] = 1; }
     const bushAt = new Set(tm.placements.filter((p) => p.id === 'bush').map((p) => p.x + ',' + p.y));
+    // flag gates (switch barriers, locked doors) count as open here: this test is about layout; tests/chapter3 checks the closed state
+    const gateCells = new Set();
+    for (const g of Object.values(def.gates || {})) if (g.closed !== 'h') for (const [gx, gy] of g.cells) gateCells.add(gx + ',' + gy);
     const open = (x, y) => {
+      if (gateCells.has(x + ',' + y)) return true;
       if (!tm.solid(x, y)) return true;
       if (!fieldMoves || !tm.inBounds(x, y)) return false;
       const t = tm.tdef(x, y);

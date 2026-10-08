@@ -34,6 +34,7 @@
     unlock();
     if (e.code === 'KeyM' && !e.repeat) { muted = !muted; try { NP.audio && NP.audio.setVolume && NP.audio.setVolume({ music: muted ? 0 : 0.55, sfx: muted ? 0 : 0.55 }); } catch (x) { /* */ } return; }
     if (e.code === 'KeyF' && !e.repeat) { if (document.fullscreenElement) document.exitFullscreen(); else canvas.requestFullscreen && canvas.requestFullscreen(); return; }
+    if (e.code === 'KeyV' && !e.repeat) { if (NP.view3d) NP.view3d.toggle(); return; }
     const b = KEYS[e.code];
     if (!b) return;
     e.preventDefault();
@@ -48,6 +49,7 @@
   root.addEventListener('pointerdown', unlock);
   root.addEventListener('blur', () => NP.Input.reset());
   let muted = false;
+  try { if (NP.art && NP.art.human && NP.art.human.hd && /[?&]hd\b/.test(root.location.search)) NP.art.human.hd.enabled = true; } catch (e) { /* */ }
 
   // ---- loop
   let last = performance.now(), acc = 0;

@@ -359,13 +359,19 @@
         if (v < 0) continue;
         out.u32[i] = this.ramps[v >> 2][v & 3];
       }
-      if (o.outline !== false) {
+      if (o.outline !== false) { // false = none, 'flat' = single colour, anything else = selective
         const src = this.ink;
         for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
           const i = y * W + x;
           if (src[i] >= 0) continue;
           const n = (xx, yy) => xx >= 0 && yy >= 0 && xx < W && yy < H && src[yy * W + xx] >= 0;
-          if (n(x - 1, y) || n(x + 1, y) || n(x, y - 1) || n(x, y + 1)) out.u32[i] = lineC;
+          const nb = [[x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1]].find(([xx, yy]) => n(xx, yy));
+          if (!nb) continue;
+          // DS-style selective outline: each material is outlined in a darkened version of its own colour (skin brown, hair deep gold...),
+          // pulled towards the line colour so it still reads as a line. o.outline === 'flat' keeps the old single dark line.
+          const v = src[nb[1] * W + nb[0]];
+          if (o.outline === 'flat' || (v >> 2) === 0) out.u32[i] = lineC;
+          else out.u32[i] = Color.mix(this.ramps[v >> 2][0], lineC, 0.5) >>> 0;
         }
       }
       out.quantize15();

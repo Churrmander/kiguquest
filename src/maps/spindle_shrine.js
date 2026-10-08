@@ -19,7 +19,7 @@
     yield* c.sayT(k('inc.1'), 'Crease: Not one crease out of place!\\p...Hm? Visitors. At a shrine under inspection.');
     yield* c.sayT(k('inc.2'), 'Pin: Flat is fair! Please stay behind the line, Tailor.');
     yield* c.sayT(k('inc.3'), 'Crease: Pleat Crease, of the Starch Society for Tidy Living.\\pI am measuring the Everspool.\\pA silk spool that never runs out. The straightest thread in the world.\\pDo you know how rare that is?');
-    yield* c.sayT(k('inc.4'), 'Crease: The guardian kept fussing at us, so we pressed her. See how calm she is?\\pIsn\'t she, dear?');
+    yield* c.sayT(k('inc.4'), 'Crease: The guardian fussed at us, so we pressed her.\\pSee how calm she is? Isn\'t she, dear?');
     yield* c.sayT(k('inc.5'), 'Cocoona: ...Yes, Tailor.');
     yield* c.sayT(k('inc.6'), '{player} stared.\\pThe Cocoona was bleached white, with neat blue piping.\\pShe did not blink at all.');
     yield* c.sayT(k('inc.7'), 'Crease: A shrine cannot be tidy while its guardian fusses at every visitor.\\pWe are helping.\\pYou, though, are a little crooked at the hem. Pin! Welt! Iron this one out.');

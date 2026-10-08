@@ -27,14 +27,14 @@ for (const id of H.ids()) {
   for (const d of ['down', 'up', 'left', 'right']) {
     assert.equal(o.frames[d].length, 3, id + ' ' + d);
     o.frames[d].forEach((b, f) => {
-      check(b, 16, 24, `${id} ow ${d}${f}`, 16);
+      check(b, 16, 24, `${id} ow ${d}${f}`, 32);
       const bb = b.bbox();
       assert.ok(bb && bb.y + bb.h >= 23, `${id} ${d}${f} should reach row 23`);
     });
   }
   const f = H.front(id), b = H.back(id);
-  check(f, 64, 64, id + ' front', 16);
-  check(b, 64, 64, id + ' back', 16);
+  check(f, 64, 64, id + ' front', 32);
+  check(b, 64, 64, id + ' back', 32);
   const bb = f.bbox();
   assert.ok(bb.y + bb.h >= 61 && bb.y + bb.h <= 64, id + ' front feet anchor');
   assert.ok(bb.h >= 40 && bb.h <= 62, id + ' front height ' + bb.h);
@@ -51,18 +51,19 @@ for (const id of ['hero_m', 'prof_bobbin', 'madame_damask', 'child_f']) {
 assert.ok(!H.front('hero_m').equals(H.front('hero_f')));
 // make(): ad-hoc looks
 const q = H.make({ build: 'adult', sex: 'f', hair: { style: 'bob', color: 'mint' }, outfit: { type: 'dress', main: 'sky' }, acc: ['bow:#f06a9c'] });
-check(q.front(), 64, 64, 'make front', 16);
-check(q.back(), 64, 64, 'make back', 16);
+check(q.front(), 64, 64, 'make front', 32);
+check(q.back(), 64, 64, 'make back', 32);
 assert.equal(q.overworld().frames.up.length, 3);
 // every hair style / outfit / build renders
 for (const style of NP.art.human._.HAIRSTYLES) for (const build of ['child', 'teen', 'tall', 'stout']) {
   const s = H.make({ build, hair: { style, color: 'brown' } });
-  check(s.front(), 64, 64, style + build, 16);
-  check(s.overworld().frames.left[1], 16, 24, style + build, 16);
+  check(s.front(), 64, 64, style + build, 32);
+  check(s.overworld().frames.left[1], 16, 24, style + build, 32);
 }
 for (const type of Object.keys(NP.art.human._.OUTFITS)) {
   const s = H.make({ outfit: { type, main: 'teal', trim: 'white' } });
-  check(s.front(), 64, 64, type, 16); check(s.back(), 64, 64, type, 16);
-  check(s.overworld().frames.down[2], 16, 24, type, 16);
+  check(s.front(), 64, 64, type, 32); check(s.back(), 64, 64, type, 32);
+  check(s.overworld().frames.down[2], 16, 24, type, 32);
 }
 console.log('human-art: ok (' + H.ids().length + ' looks)');
+

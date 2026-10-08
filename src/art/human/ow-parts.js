@@ -459,6 +459,16 @@
     else if (c.dir === 'up') { for (let r = 0; r < 6; r++) for (let x = SK[r][0] - (r ? 1 : 0); x <= SK[r][1] + (r ? 1 : 0); x++) P.px(x, hy + r, m, r === 0 && x < 9 ? 3 : x > 10 ? 1 : 2); P.px(7, hy + 2, M2(c, a, '#f6f4f0'), 3); }
     else { for (let r = 0; r < 4; r++) for (let x = SK[r][0] - (r ? 1 : 0); x <= SK[r][1] + (r ? 1 : 0) + (r > 2 ? 0 : 0); x++) P.px(x, hy + r, m, r === 0 && x < 9 ? 3 : 2); P.hline(0, hy + 3, 8, m, 1); P.hline(1, hy + 4, 3, m, 0); }
   });
+  reg('beret', (c, a, ph) => { // soft round beret, tipped to one side, with a little gold button (a:main/button)
+    if (ph !== 'head') return;
+    const { P, hy } = c; const m = M(c, a, '#b8302e'), g = M2(c, a, '#e8c870');
+    P.begin('beret');
+    const rows = c.dir === 'up' ? 4 : 3;
+    for (let r = 0; r < rows; r++) for (let x = SK[r][0] - 1 + (r === 0 ? 1 : 0); x <= SK[r][1] + 1 + (r < 2 && c.dir === 'down' ? 1 : 0); x++) P.px(x, hy + r - 1, m, r === 0 && x < 9 ? 3 : x > 10 ? 1 : 2);
+    if (c.dir === 'down') { P.hline(5, hy - 2, 5, m, 3); P.px(3, hy + rows - 1, m, 1); P.px(12, hy + rows - 1, m, 1); P.px(11, hy, g, 3); }
+    else if (c.dir === 'up') { P.hline(5, hy - 2, 5, m, 3); P.px(10, hy, g, 2); }
+    else { P.hline(4, hy - 2, 5, m, 3); P.hline(0, hy + 1, 3, m, 1); P.px(8, hy - 1, g, 3); }
+  });
   reg('flatcap', (c, a, ph) => {
     if (ph !== 'head') return;
     const { P, hy } = c; const m = M(c, a, '#3e4050');

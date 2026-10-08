@@ -13,12 +13,12 @@
   const out = (type, main, trim, under) => ({ type, main, trim, under });
 
   // ---- P1: heroes, rival, friends, professor ----
-  def('hero_m', { name: 'Hero (boy)', build: 'teen', sex: 'm', skin: 'fair', hair: hair('spiky', 'chestnut'), eyes: 'brown',
-    face: { eyes: 'normal', mouth: 'grin', brows: 'normal' }, outfit: out('jacket', 'red', 'white', 'white'), bottom: { type: 'pants', color: 'navy' }, shoes: 'white',
-    acc: ['satchel:#a0642e'] });
-  def('hero_f', { name: 'Hero (girl)', build: 'teen', sex: 'f', skin: 'fair', hair: hair('ponytail', 'chestnut'), eyes: 'brown',
-    face: { eyes: 'normal', mouth: 'smile' }, outfit: out('jacket', 'red', 'white', 'white'), bottom: { type: 'shorts', color: 'navy' }, legs: 'white', shoes: 'white',
-    acc: ['satchel:#a0642e', 'bow:#f6f4f0'] });
+  def('hero_m', { name: 'Hero (boy)', build: 'teen', sex: 'm', skin: 'fair', hair: hair('messy', '#b87a40'), eyes: 'blue',
+    face: { eyes: 'normal', mouth: 'smile', brows: 'normal' }, outfit: out('overalls', 'white', 'denim', 'white'), bottom: { type: 'pants', color: '#34487c' }, shoes: 'chocolate',
+    acc: ['flatcap:#4a4452/#c8a050', 'satchel:#a0642e', 'belt:#7c4e30', 'spools'] });
+  def('hero_f', { name: 'Hero (girl)', build: 'teen', sex: 'f', skin: 'fair', hair: hair('ponytail', 'blonde'), eyes: 'blue',
+    face: { eyes: 'normal', mouth: 'smile' }, outfit: out('overalls', 'white', 'denim', 'white'), bottom: { type: 'shorts', color: 'denim' }, legs: 'white', shoes: 'chocolate',
+    acc: ['beret:#b8302e/#e8c870', 'satchel:#a0642e', 'belt:#7c4e30', 'spools'] });
   def('tomo', { name: 'Tomo', build: 'teen', sex: 'm', skin: 'pale', hair: hair('sidepart', 'ink'), eyes: 'grey',
     face: { eyes: 'serious', mouth: 'flat', brows: 'stern' }, outfit: out('jacket', 'charcoal', 'starch', 'white'), bottom: { type: 'pants', color: 'slate' }, shoes: 'black',
     acc: ['glasses:#4a3a58', 'scarf:starch'] });

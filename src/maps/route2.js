@@ -16,7 +16,7 @@
     yield* c.walk(a, ['down', 3]);
     yield* c.walk(b, ['down', 3]);
     yield* c.sayT('route2.insp.3', 'Tally: Halt, Tailor! The Society is measuring this bridge.\\pEvery plank, every nail.\\pFlat is fair!');
-    yield* c.sayT('route2.insp.4', 'Notch: And since you are here, we will measure you too. Hold still.\\pCollar, three millimetres wide of standard. Hem, two millimetres crooked.');
+    yield* c.sayT('route2.insp.4', 'Notch: Since you are here, we will measure you too. Hold still.\\pCollar: three millimetres off standard.\\pHem: two millimetres crooked.');
     yield* c.sayT('route2.insp.5', 'Tally: A hem that crooked could snag a plank!\\pFor the safety of the bridge, we must iron you out.');
     yield* c.sayT('route2.insp.6', '{player}\'s Kigu stuck her tongue out at the folding ruler.');
     const won = yield* c.trainerBattle({ cls: 'Presser', name: 'Tally', look: 'grunt_m', ai: 1, reward: 8, music: 'battle_society', team: L.team([['mittsy', 9], ['silkie', 9]]) });
@@ -74,7 +74,7 @@
   M.trainer('mina', 4, 32, 'schoolgirl', 'right', { cls: 'Schoolgirl', name: 'Mina', sight: 3, reward: 6, ai: 0, team: [['nibbi', 8], ['peepi', 9]],
     intro: 'I walked all the way from Hemline for a field trip.\\pSo I am going to battle everyone on the way home!', win: 'Teacher says to learn from every loss. This is a lot of learning.', after: 'Hemline is past the woods. They hem everything there, even the curtains.' });
   M.trainer('gus', 13, 17, 'fisher', 'left', { cls: 'Fisher', name: 'Gus', sight: 3, reward: 8, ai: 1, team: [['ribbi', 10], ['ottopi', 10]],
-    intro: 'Fish are not biting, so I will bite you instead. Metaphorically.', win: 'There goes my supper...', after: 'The river is calm today. The Pressers upstream keep checking its width.' });
+    intro: 'The fish are not biting today. You will have to do.', win: 'There goes my supper...', after: 'The river is calm today. The Pressers upstream keep checking its width.' });
   M.trainer('kei', 7, 16, 'net_kid', 'right', { cls: 'Net Kid', name: 'Kei', sight: 3, reward: 6, ai: 1, team: [['webbi', 9], ['silkie', 10]],
     intro: 'Shh! Do not scare the webs! ...Oh. Battle? Okay!', win: 'My webs got tangled up in yours.', after: 'There are webs in the woods. They are stronger than they look.' });
   M.trainer('brock', 17, 9, 'hiker', 'left', { cls: 'Hiker', name: 'Brock', sight: 4, reward: 8, ai: 1, team: [['molli', 10], ['kumi', 10], ['molli', 11]],

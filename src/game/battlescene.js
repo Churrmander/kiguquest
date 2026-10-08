@@ -20,6 +20,7 @@
       this.hero = null;       // hero back sprite state {x}
       this.foeTrainer = null; // trainer front sprite state {x}
       this.thrown = null;     // spool in flight
+      this.burst = null;      // send-out sparkle {x, y, t 0..1}
       this.menuInfo = null;
       this.expShown = null;
       this.levelBox = null;
@@ -175,6 +176,7 @@
           }
         } else {
           yield* this.msgWait('Go! ' + mon.name + '!', { auto: 14 });
+          if (this.hero && NP.Game.opts.battleAnim !== false) yield* this.heroThrow();
           if (this.hero) { const h = this.hero; for (let i = 0; i < 18; i++) { h.x -= 4; yield; } this.hero = null; }
           this.setDisp(mon);
           const d = this.disp[0];
@@ -190,6 +192,26 @@
       NP.snd.cry(mon.kigu.species);
       for (let i = 1; i <= 14; i++) { d.alpha = i / 14; d.offy = -10 * (1 - i / 14); yield; }
       d.offy = 0;
+    }
+
+    /** The send-out: the hero winds up, throws a Bond Spool in an arc, it bursts in a sparkle, then she steps aside (caller slides her off). */
+    *heroThrow() {
+      const h = this.hero;
+      h.pose = 'windup';
+      for (let i = 0; i < 10; i++) { h.lean = -Math.min(3, (i >> 1) + 1); yield; }
+      h.pose = 'throw'; h.lean = 4;
+      NP.snd.sfx('throw');
+      const p0 = { x: h.x + 14, y: 70 }, p1 = { x: h.x + 36, y: 100 };
+      for (let i = 0; i <= 18; i++) {
+        const t = i / 18;
+        if (i === 5) { h.pose = 'follow'; h.lean = 2; }
+        this.thrown = { kind: 'bond', f: i >> 1, x: p0.x + (p1.x - p0.x) * t, y: p0.y + (p1.y - p0.y) * t - Math.sin(t * Math.PI) * 34 };
+        yield;
+      }
+      this.thrown = null;
+      for (let i = 0; i < 12; i++) { this.burst = { x: p1.x, y: p1.y - 4, t: i / 12 }; if (i === 0) NP.snd.sfx('save'); yield; }
+      this.burst = null;
+      h.pose = 'ready'; h.lean = 0;
     }
 
     *evMove(e) {
@@ -534,7 +556,12 @@
         fb.blit(A().humanFront(this.cfg.trainer.look), Math.round(f.x - 32), 58 - 62);
       }
       this.drawKigu(fb, 1);
-      if (this.hero) fb.blit(A().humanBack(NP.State.lookId()), Math.round(this.hero.x - 32), 104 - 62);
+      if (this.hero) fb.blit(A().humanThrow(NP.State.lookId(), this.hero.pose || 'ready', this.hero.lean || 0), Math.round(this.hero.x - 32), 104 - 62);
+      if (this.burst) { // sparkle burst: eight rays that grow then fade out
+        const f = this.burst, r = 3 + f.t * 16, r0 = f.t * 6;
+        for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4 + f.t * 0.8; fb.line(Math.round(f.x + Math.cos(a) * r0), Math.round(f.y + Math.sin(a) * r0), Math.round(f.x + Math.cos(a) * r), Math.round(f.y + Math.sin(a) * r), k & 1 ? '#fff4b0' : '#ffffff'); }
+        if (f.t < 0.5) fb.circle(Math.round(f.x), Math.round(f.y), Math.round(6 - f.t * 10), '#ffffff', true);
+      }
       this.drawKigu(fb, 0);
       if (this.fx) fb.blit(this.fx.bmp, Math.round(this.fx.x - this.fx.bmp.w / 2), Math.round(this.fx.y - this.fx.bmp.h / 2));
       if (this.thrown) {

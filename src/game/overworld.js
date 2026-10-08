@@ -73,7 +73,8 @@
         return;
       }
       const spr = A().human(this.look);
-      const set = spr.frames[this.dir] || spr.frames.down;
+      const vd = NP.view3d ? NP.view3d.viewDir(this.dir) : this.dir;
+      const set = spr.frames[vd] || spr.frames.down;
       const f = this.moving ? (this.parity ? 1 : 2) : 0;
       const bmp = set[Math.min(f, set.length - 1)];
       if (this.swim) { // paddling: a ripple ring instead of a shadow, and she sits a little lower in the water
@@ -81,12 +82,12 @@
         fb.blendRect(X + 1, Y + 13, 14, 3, '#7fc8ff', 0.55);
         fb.blendRect(X + 3, Y + 12, 10, 1, '#ffffff', 0.35);
         fb.blendRect(X + 3, Y + 16, 10, 1, '#2a6fb0', 0.45);
-        fb.blit(bmp, X, Y - 6 - bob);
+        fb.blit(bmp, X + ((16 - bmp.w) >> 1), Y - 6 - bob - ((bmp.h || 24) - 24));
         return;
       }
       // soft shadow
       fb.blendRect(X + 3, Y + 12, 10, 3, '#000000', 0.22);
-      fb.blit(bmp, X, Y - 8 - Math.round(this.hop));
+      fb.blit(bmp, X + ((16 - bmp.w) >> 1), Y - (bmp.h - 16) - Math.round(this.hop));
     }
   }
 
@@ -439,7 +440,9 @@
       if (p.moving) return;
       if (Input.pressed.start) { this.runMenu(); return; }
       if (Input.pressed.a) { this.interact(); return; }
-      const d = Input.dir();
+      const v3 = NP.view3d;
+      if (v3 && v3.on) v3.q = v3.quarterFor(this.map, p.x, p.y);
+      const d = v3 ? v3.screenToMap(Input.dir()) : Input.dir();
       if (!d) { this.turnT = 0; return; }
       if (d !== p.dir && this.turnT === 0) { p.dir = d; this.turnT = 6; return; }
       if (this.turnT > 0) { this.turnT--; if (this.turnT > 0) return; }
@@ -669,6 +672,7 @@
     camera() {
       const p = this.player, m = this.map;
       let cx = Math.round(p.px + 8 - 120), cy = Math.round(p.py + 8 - 80);
+      if (NP.view3d && NP.view3d.on) return [cx, cy]; // the 3D view pivots on the player and draws a border margin round the map
       const mw = m.w * 16, mh = m.h * 16;
       cx = mw <= 240 ? -Math.floor((240 - mw) / 2) : Math.max(0, Math.min(mw - 240, cx));
       cy = mh <= 160 ? -Math.floor((160 - mh) / 2) : Math.max(0, Math.min(mh - 160, cy));
@@ -677,20 +681,25 @@
 
     draw(fb, frame) {
       const [cx, cy] = this.camera();
+      if (NP.view3d && NP.view3d.on) NP.view3d.aim(this.map, this.player.x, this.player.y);
       fb.clear('#000000');
       const list = [];
       const fr = NP.Game.frame;
       for (const a of this.actors) {
         if (!a.visible) continue;
-        list.push({ sortY: a.py + 16 + (a.kind === 'prop' ? 0 : 0), draw: (f, X, Y) => a.draw(f, X, Y, fr) });
+        list.push({ sortY: a.py + 16, x: a.px + 8, draw: (f, X, Y) => a.draw(f, X, Y, fr) });
       }
       const p = this.player;
       p.swim = this.paddling();
-      list.push({ sortY: p.py + 16.5, draw: (f, X, Y) => p.draw(f, X, Y, fr) });
+      list.push({ sortY: p.py + 16.5, x: p.px + 8, draw: (f, X, Y) => p.draw(f, X, Y, fr) });
       this.map.draw(fb, cx, cy, fr, list);
       // emotes
       for (const a of this.actors.concat([p])) {
-        if (a.emoteT > 0 && a.visible) fb.blit(A().emote(a.emote), Math.round(a.px - cx), Math.round(a.py - cy) - 22);
+        if (a.emoteT > 0 && a.visible) {
+          const q = NP.view3d && NP.view3d.on ? NP.view3d.project(a.px + 8, a.py + 16) : null;
+          if (NP.view3d && NP.view3d.on) { if (q) fb.blit(A().emote(a.emote), Math.round(q.x) - 8, Math.round(q.y - 30 * q.scale) - 8); }
+          else fb.blit(A().emote(a.emote), Math.round(a.px - cx), Math.round(a.py - cy) - 22);
+        }
       }
       if (this.popup > 0 && this.map.def.name) {
         const slide = Math.min(1, this.popup / 10, (110 - this.popup) / 10 + 0.0);
