@@ -73,7 +73,8 @@
         return;
       }
       const spr = A().human(this.look);
-      const set = spr.frames[this.dir] || spr.frames.down;
+      const vd = NP.view3d ? NP.view3d.viewDir(this.dir) : this.dir;
+      const set = spr.frames[vd] || spr.frames.down;
       const f = this.moving ? (this.parity ? 1 : 2) : 0;
       const bmp = set[Math.min(f, set.length - 1)];
       if (this.swim) { // paddling: a ripple ring instead of a shadow, and she sits a little lower in the water
@@ -439,7 +440,9 @@
       if (p.moving) return;
       if (Input.pressed.start) { this.runMenu(); return; }
       if (Input.pressed.a) { this.interact(); return; }
-      const d = Input.dir();
+      const v3 = NP.view3d;
+      if (v3 && v3.on) v3.q = v3.quarterFor(this.map, p.x, p.y);
+      const d = v3 ? v3.screenToMap(Input.dir()) : Input.dir();
       if (!d) { this.turnT = 0; return; }
       if (d !== p.dir && this.turnT === 0) { p.dir = d; this.turnT = 6; return; }
       if (this.turnT > 0) { this.turnT--; if (this.turnT > 0) return; }
@@ -678,6 +681,7 @@
 
     draw(fb, frame) {
       const [cx, cy] = this.camera();
+      if (NP.view3d && NP.view3d.on) NP.view3d.aim(this.map, this.player.x, this.player.y);
       fb.clear('#000000');
       const list = [];
       const fr = NP.Game.frame;

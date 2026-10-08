@@ -7,10 +7,13 @@
  *     (classic mode-7: per-row scale, nearest-neighbour sampling), faded towards a fog colour with distance.
  *  2. Billboards: stamps (houses, trees, props) and actors are drawn as upright sprites, scaled by the depth of their base point,
  *     sorted far-to-near. Actors are first drawn flat into a small scratch bitmap through their normal draw(fb, camX, camY).
+ *  Camera direction is NOT a player setting: each map (def.camera = quarter turns, 0 = looking north, 1 = east, 2 = south, 3 = west)
+ *  and each area inside a map (def.cameraZones = [{x,y,w,h,camera}]) says where the camera looks, and it eases round by itself as the
+ *  player walks in (V.aim). Controls and sprite facings are remapped by quarter turn (V.screenToMap / V.viewDir).
  *  Camera: pivots on the map pixel at screen centre (camX+120, camY+80) — the overworld passes the player — and sits `f` map pixels
  *  behind it looking north (yaw 0). The pivot lands on screen row `pivotRow`, where the scale is exactly 1 (pixel-perfect there).
  *
- *  Tuning: NP.view3d.cfg = { f, hz, pivotRow, fogStart, fogEnd, fog, yaw }.   Presets: NP.view3d.preset('street'|'town'|'flat-ish').
+ *  Tuning: NP.view3d.cfg = { f, hz, pivotRow, fogStart, fogEnd, fog }.   Presets: NP.view3d.preset('street'|'town'|'flat-ish').
  *  API: on, toggle(), draw(tm, fb, camX, camY, tick, actors), project(mapX, mapY) -> {x, y, scale} | null (for emotes, arrows...).
  */
 (function (root) {
@@ -20,15 +23,38 @@
   const T = 16, SW = 240, SH = 160, MARGIN = 14;
 
   const PRESETS = {
-    street: { f: 210, hz: -64, pivotRow: 102, fogStart: 120, fogEnd: 520, fog: '#bcd8f2', yaw: 0 },
-    town: { f: 260, hz: -90, pivotRow: 98, fogStart: 160, fogEnd: 640, fog: '#c4dcef', yaw: 0 },
-    'flat-ish': { f: 420, hz: -160, pivotRow: 92, fogStart: 300, fogEnd: 1200, fog: '#cfe3f3', yaw: 0 },
+    street: { f: 210, hz: -64, pivotRow: 102, fogStart: 120, fogEnd: 520, fog: '#bcd8f2' },
+    town: { f: 260, hz: -90, pivotRow: 98, fogStart: 160, fogEnd: 640, fog: '#c4dcef' },
+    'flat-ish': { f: 420, hz: -160, pivotRow: 92, fogStart: 300, fogEnd: 1200, fog: '#cfe3f3' },
   };
 
   const V = {
     on: false,
     cfg: Object.assign({}, PRESETS.street),
     _ground: null, _last: null,
+    yaw: null,       // current camera heading in radians (null until the first frame: then it snaps, afterwards it eases)
+    q: 0,            // target heading in quarter turns, 0..3
+    DIRS: ['up', 'right', 'down', 'left'],
+    /** quarter turns the camera should have at map tile (x, y): the first matching zone, else the map's own, else 0 */
+    quarterFor(tm, x, y) {
+      const d = tm && tm.def || {};
+      for (const z of d.cameraZones || []) if (x >= z.x && x < z.x + (z.w || 1) && y >= z.y && y < z.y + (z.h || 1)) return z.camera & 3;
+      return (d.camera || 0) & 3;
+    },
+    /** called once per drawn frame by the overworld: set the target heading and ease the camera towards it */
+    aim(tm, x, y) {
+      V.q = V.quarterFor(tm, x, y);
+      const target = V.q * Math.PI / 2;
+      if (V.yaw === null) { V.yaw = target; return; }
+      let diff = target - V.yaw;
+      diff -= Math.round(diff / (2 * Math.PI)) * 2 * Math.PI;
+      if (Math.abs(diff) < 0.004) { V.yaw = target; return; }
+      V.yaw += Math.sign(diff) * Math.min(Math.abs(diff), Math.max(Math.abs(diff) * 0.1, 0.014));
+    },
+    /** pressed screen direction -> map direction (screen-up walks the way the camera looks) */
+    screenToMap(d) { if (!d || !V.on) return d; return V.DIRS[(V.DIRS.indexOf(d) + V.q) & 3]; },
+    /** a map-space facing -> the facing the sprite should show from this camera */
+    viewDir(d) { if (!V.on || !V.q) return d; return V.DIRS[(V.DIRS.indexOf(d) - V.q + 4) & 3]; },
     toggle() { V.on = !V.on; return V.on; },
     preset(name) { Object.assign(V.cfg, PRESETS[name] || PRESETS.street); },
   };
@@ -55,7 +81,7 @@
 
   // ------------------------------------------------------------------------------------------------ projection
   function frameState(camX, camY) {
-    const c = V.cfg, hh = c.pivotRow - c.hz, s = Math.sin(c.yaw || 0), co = Math.cos(c.yaw || 0);
+    const c = V.cfg, hh = c.pivotRow - c.hz, yaw = V.yaw || 0, s = Math.sin(yaw), co = Math.cos(yaw);
     return { f: c.f, hz: c.hz, hh, px: camX + 120, py: camY + 80, Rx: co, Ry: s, Fx: s, Fy: -co };
   }
   function project(st, x, y) {

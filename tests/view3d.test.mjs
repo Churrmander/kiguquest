@@ -38,10 +38,34 @@ for (const id of Object.keys(NP.maps)) {
 }
 assert.ok(n >= 25, 'rendered ' + n + ' maps');
 
+// camera heading is set by the area, not by the player: map default, zones, easing, remapped controls and facings
+V.on = true;
+assert.equal(V.quarterFor(NP.maps.route3 && new NP.TileMap(NP.maps.route3), 5, 5), 1, 'Route 3 looks east');
+const sm = new NP.TileMap(NP.maps.seamstead);
+assert.equal(V.quarterFor(sm, 5, 5), 0, 'Seamstead looks north in town');
+assert.equal(V.quarterFor(sm, 30, 14), 1, 'Seamstead swings east at the Route 4 gate');
+ow.loadMap('seamstead', 17, 16, 'up', { noEnter: true }); t.tick(3);
+for (let i = 0; i < 5; i++) ow.draw(fbA, i);
+assert.equal(V.yaw, 0);
+ow.loadMap('route3', 10, 10, 'down', { noEnter: true }); t.tick(3);
+ow.draw(fbA, 0);
+assert.ok(V.yaw > 0 && V.yaw < Math.PI / 2, 'camera is easing round, not snapping: ' + V.yaw);
+for (let i = 0; i < 120; i++) ow.draw(fbA, i);
+assert.ok(Math.abs(V.yaw - Math.PI / 2) < 1e-6, 'camera arrived at the east heading');
+assert.equal(V.screenToMap('up'), 'right'); assert.equal(V.screenToMap('right'), 'down');
+assert.equal(V.screenToMap('down'), 'left'); assert.equal(V.screenToMap('left'), 'up');
+assert.equal(V.viewDir('right'), 'up'); assert.equal(V.viewDir('up'), 'left');
+const x0 = t.ow.player.x;
+t.go('up'); t.tick(30);
+assert.ok(t.ow.player.x > x0, 'pressing screen-up walks east when the camera looks east');
+assert.ok(!('rotate' in V) && !('setYaw' in V) && !('yaw' in V.cfg), 'no player-facing camera rotation setting');
+
 // presets and toggle
 V.preset('town'); ow.draw(fbA, 0); V.preset('street');
-assert.equal(V.toggle(), false);
 ow.loadMap('seamstead', 17, 16, 'up', { noEnter: true }); t.tick(10);
+V.on = false; ow.draw(fbB, 0); const ref = Uint32Array.from(fbB.u32);
+V.on = true; ow.draw(fbA, 0);
+assert.equal(V.toggle(), false);
 ow.draw(fbB, 0);
-assert.ok(flat.every((v, i) => v === fbB.u32[i]), 'turning 3D off restores the flat view exactly');
+assert.ok(ref.every((v, i) => v === fbB.u32[i]), 'turning 3D off restores the flat view exactly');
 console.log('view3d OK,', n, 'maps');

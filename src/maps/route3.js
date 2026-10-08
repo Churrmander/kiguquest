@@ -7,6 +7,7 @@
   const M = L.map({
     id: 'route3', name: 'Route 3  Seam Road', music: 'route_meadow', battleBg: 'grass', border: 'treeline', w: W, h: H,
     legend: { '.': 'grass', T: 'treeline', c: 'cobble', ',': 'tallgrass', f: 'flowers', F: 'fence', p: 'path' },
+    camera: 1,   // 3D view looks east along the seam road
   });
   M.rect(0, 0, W, 2, 'T').rect(0, 20, W, 2, 'T').rect(0, 2, 2, 18, 'T').rect(W - 2, 2, 2, 18, 'T');
   M.rect(0, 10, W, 2, 'c');                                  // the seam road itself

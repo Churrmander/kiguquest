@@ -25,6 +25,7 @@
     onEnter: function* (c) { if (c.flag('crisp_done')) { c.hideNpc('dark1'); c.hideNpc('dark2'); } },
   });
   M.trigger({ x: 10, y: 14, w: 1, h: 2, id: 'rival3', when: (c) => !c.flag('rival3_done'), script: rival3 });
+  M.def.cameraZones = [{ x: 26, y: 0, w: 10, h: H, camera: 1 }];   // 3D view swings east as you approach the Route 4 gate
   M.rect(0, 0, W, 2, 'T').rect(0, 26, W, 2, 'T').rect(0, 2, 2, 24, 'T').rect(W - 2, 2, 2, 24, 'T');
   M.rect(0, 14, W, 2, 'c');                                   // avenue: west = Route 3, east = Route 4 (Ch. 4)
   M.rect(13, 11, 10, 8, 'c');                                 // the plaza
