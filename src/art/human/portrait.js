@@ -790,6 +790,17 @@
     rowSpan(P, cy - 9, 21, 42, M2c(c, a, '#d8363a'), 2); rowSpan(P, cy - 8, 21, 42, M2c(c, a, '#d8363a'), 1);
     for (let k = 0; k < 6; k++) P.px(24 + k * 3, cy - 13 + (k % 2), m, 3);
   };
+  ACC.beret = (c, a, ph) => {
+    if (ph !== 'head') return;
+    const { P, cy } = c; const m = Mc(c, a, '#b8302e');
+    P.begin('beret');
+    P.ellipse(30, cy - 11, 17, 8.5, m, 2);
+    P.ellipse(24, cy - 14, 8, 3.5, m, 3);
+    rowSpan(P, cy - 5, 16, 46, m, 1); rowSpan(P, cy - 4, 18, 44, m, 1);
+    P.px(31, cy - 20, m, 3); P.px(32, cy - 20, m, 2);
+    const g = M2c(c, a, '#e8c870');
+    if (c.front) { P.ellipse(43.5, cy - 8.5, 2, 2, g, 2); P.px(43, cy - 9, g, 3); } else { P.ellipse(40, cy - 12, 1.5, 1.5, g, 2); }
+  };
   ACC.headband = (c, a, ph) => {
     if (ph !== 'head') return;
     const { P, cy } = c; const m = Mc(c, a, '#d8363a');
