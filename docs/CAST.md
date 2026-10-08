@@ -386,7 +386,7 @@ Each row is one look id. Build "adult" is about 4 heads tall. "Stout" means broa
 
 Resolved in this brief as shown. Please confirm the ones marked *decision needed*.
 
-1. **Hero jacket (DONE).** BIBLE §4 and STORY §4 say "red-and-white jacket". `looks.js` (DONE) is white shirt, navy overalls, dark grey flat cap. Kept `looks.js`.
+1. **Hero outfit (resolved).** Decision: the new looks win for both heroes (overalls, flat cap / red beret, satchel, spool-pouch belt). BIBLE section 4 and STORY section 4 have been updated to match.
 2. **Cocoona is a Kigu (resolved).** Decision: Cocoona and Pressed Cocoona stay Kigu. Their `looks.js` entries are placeholders until the Kigu sprites are updated; no human sheet is needed.
 3. **Priorities (P1\*).** BIBLE §4 marks `bryn`, `madame_damask` and `pleat` as P2. STORY places Bryn in chapter 2, Damask in chapter 3 and Pleat Crease and Serge in chapters 2–3. Marked P1\* here.
 4. **Bobbin's age.** STORY calls her elderly, but §13 gives about 57 (Hester about 60, Sashiko about 80). Kept the elder build; apparent age is 60s.

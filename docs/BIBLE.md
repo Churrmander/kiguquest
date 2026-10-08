@@ -124,7 +124,7 @@ species a ~10-line look spec.
 
 ## 4. Humans (look ids)
 
-**P1:** `hero_m` (boy, red-and-white jacket, satchel), `hero_f` (girl, same palette family), `tomo` (rival: serious boy, glasses,
+**P1:** `hero_m` (boy: messy light-brown hair, dark grey flat cap, white shirt, navy overalls, satchel, spool-pouch belt), `hero_f` (girl: blonde ponytail, red beret with gold button, white tee, denim overall-shorts, satchel, spool-pouch belt), `tomo` (rival: serious boy, glasses,
 blue scarf), `mimi` (cheerful friend girl, pink cardigan, big bow), `prof_bobbin` (elderly woman professor: round glasses,
 tape-measure scarf, lab coat), `mom`, `aide_f`, `aide_m` (lab aides), `villager_f1`, `villager_f2`, `villager_m1`, `villager_m2`,
 `elder_m`, `elder_f`, `child_m`, `child_f`, `shopkeeper` (apron), `tea_maid` (Tea House healer: maid uniform with pink bow),
