@@ -8,7 +8,7 @@ Brief for generating character reference sheets (pixel art) for every human in t
 - Entries marked **PROPOSED** are story characters with no `looks.js` id yet. Their looks are suggestions and need approval before they go into the game.
 - Priority: **P1** = needed in chapters 1–3. **P2** = later. **P1\*** = P1 here but P2 in BIBLE §4 (see conflicts).
 
-Coverage: all 47 ids in `looks.js` (2 DONE, 45 described, incl. 2 Kigu-coded one-offs), 12 PROPOSED characters, and 3 PROPOSED Pleat variants.
+Coverage: all 47 ids in `looks.js` (2 DONE, 45 described, excl. 2 Kigu stand-ins, see section 8), 12 PROPOSED characters, and 3 PROPOSED Pleat variants.
 
 ---
 
@@ -345,25 +345,9 @@ Each row is one look id. Build "adult" is about 4 heads tall. "Stout" means broa
 
 ---
 
-## 8. Story one-offs (Kigu-coded)
+## 8. Kigu stand-ins (NOT human sheets - leave as Kigu)
 
-These two look ids are child-built human looks in `looks.js`. BIBLE §3 treats Cocoona as a Kigu. Confirm which pipeline makes them (see conflicts).
-
-### `cocoona` — Cocoona (Spindle Shrine guardian) · P1
-*Story: guardian of the Spindle Shrine in Gingham Woods. Pressed by the Society in chapter 2, then restored.*
-- **Look:** child girl. Fair skin. Blonde pigtails (#f2cf6a). Amber eyes (#d08a28).
-- **Outfit:** cream hoodie (#f4e6c4) with gold trim (#e8b830), white inner. Khaki shorts (#c4ac72). White legs. Brown shoes.
-- **Expression / pose:** happy eyes, grin, blush.
-- **Must keep:** pigtails; cream hoodie with gold trim; blush.
-
-### `cocoona_pressed` — Pressed Cocoona · P1
-*Story: bleached white with blue piping. Calm, obedient, says "Yes, Tailor."*
-- **Look:** child girl. Pale skin. White pigtails (#ecebf2). Sky-blue eyes (#4a9ae0).
-- **Outfit:** white hoodie (#f6f4f0) with blue starch piping (#4c7ee0). White shorts and legs. White shoes.
-- **Expression / pose:** normal eyes, flat mouth. Arms at the sides.
-- **Must keep:** fully white outfit; blue starch piping; white pigtails.
-
----
+`cocoona` and `cocoona_pressed` are Kigu (the Spindle Shrine guardian and her Pressed form). They currently use child-built stand-in looks in `looks.js` so they can walk around the overworld. **Do not generate human sheets for them and do not convert them into human characters.** They stay Kigu; their sprites will be done later with the rest of the Kigu art, and the stand-ins stay in the game until then. The same goes for any other Kigu that appears as a map NPC.
 
 ## Consistency checklist
 
@@ -403,7 +387,7 @@ These two look ids are child-built human looks in `looks.js`. BIBLE §3 treats C
 Resolved in this brief as shown. Please confirm the ones marked *decision needed*.
 
 1. **Hero jacket (DONE).** BIBLE §4 and STORY §4 say "red-and-white jacket". `looks.js` (DONE) is white shirt, navy overalls, dark grey flat cap. Kept `looks.js`.
-2. **Cocoona is a Kigu, not a human (decision needed).** BIBLE §3 #18 is a Kigu in a pale-green cocoon sleeping bag. `looks.js` `cocoona` and `cocoona_pressed` are child human looks in cream and white hoodies. Kept `looks.js` colours. Confirm whether they belong in the human or Kigu pipeline.
+2. **Cocoona is a Kigu (resolved).** Decision: Cocoona and Pressed Cocoona stay Kigu. Their `looks.js` entries are placeholders until the Kigu sprites are updated; no human sheet is needed.
 3. **Priorities (P1\*).** BIBLE §4 marks `bryn`, `madame_damask` and `pleat` as P2. STORY places Bryn in chapter 2, Damask in chapter 3 and Pleat Crease and Serge in chapters 2–3. Marked P1\* here.
 4. **Bobbin's age.** STORY calls her elderly, but §13 gives about 57 (Hester about 60, Sashiko about 80). Kept the elder build; apparent age is 60s.
 5. **Bryn's props.** STORY gives goggles and a pushed-up beekeeper veil. `looks.js` has neither. Kept `looks.js`. Add them only if approved.
