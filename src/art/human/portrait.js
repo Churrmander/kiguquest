@@ -926,7 +926,7 @@
     accs('body');
     hairLocks(c);
     accs('head');
-    const bmp = P.render({ maxColors: 16 });
+    const bmp = P.render({ maxColors: 32 });
     return bmp;
   };
 })(typeof globalThis !== 'undefined' ? globalThis : window);

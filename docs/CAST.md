@@ -20,7 +20,8 @@ Fill the prompt template once per character. Make one sheet per character and ne
 
 ```
 Single character reference sheet. 32-bit DS-era pixel art: crisp square pixels, NO anti-aliasing, no blur, no soft gradients.
-Strong dark coloured outline in #2c1c30 (dark plum, never pure black). Limited rich palette, roughly 16-24 colours for the character.
+DS/DSi-era look (not Game Boy): rich saturated colour, soft 3-4 tone shading, soft selective outline in a darkened version of each material's colour (never pure black).
+CAMERA: seen from a raised, slightly top-down angle (about 55-60 degrees): the top of the hair/hat is clearly visible, shoulders and torso a little foreshortened, short legs, large head, bold simple shapes. Limited rich palette, roughly 16-24 colours for the character.
 2-3 tone cel shading, light from the top-left. Original design only: nothing copied from any existing game, franchise or show.
 Plain flat magenta background (#ff00ff). No ground, no shadow, no scenery, no props outside the character.
 

@@ -424,7 +424,7 @@
       drawHair(c, 'front');
       accs(c, 'head');
     }
-    const bmp = P.render({ maxColors: 14 });
+    const bmp = P.render({ maxColors: 26 });
     return dir === 'right' ? bmp.flippedX() : bmp;
   }
 

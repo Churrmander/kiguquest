@@ -78,10 +78,9 @@ Put checks in `tests/<area>.test.mjs` (plain `node:assert`, exit non-zero on fai
 
 ## 3. Art style guide (applies to ALL art)
 
-Target: the look of a late-era 16-bit handheld RPG — bright, saturated, crisp, readable at 240×160.
+Target: the look of a DS/DSi-era (5th-generation handheld) RPG — NOT Game Boy / GBA. Rich saturated colour, soft multi-tone shading, coloured selective outlines, characters drawn from a raised camera (the crown of the head/hat is visible, bodies slightly foreshortened). Still crisp, readable pixels at 240×160.
 
-* **Palette discipline.** 15-bit colour (call `bmp.quantize15()` on final output). Each *sprite* ≤ 16 colours including outline
-  (enforce it in a test). Tiles: ≤ 16 colours per tile is ideal, never a smooth gradient.
+* **Palette discipline.** 15-bit colour (call `bmp.quantize15()` on final output). Humans: ≤ 26 colours (map) / ≤ 32 (portraits), outlines included (enforced in a test); Kigu stay ≤ 16 until their sprites are updated. Tiles: ≤ 16 colours per tile is ideal, never a smooth gradient.
 * **Outlines.** 1px dark outline in a hue-shifted very dark colour of the material (not pure black) around characters, buildings
   and objects; terrain has soft or no outline. Use `Bitmap.outline()`.
 * **Shading.** Flat cel shading, 2–3 tones per material (`Color.ramp(base)` gives a hue-shifted ramp: shadows cooler, highlights
