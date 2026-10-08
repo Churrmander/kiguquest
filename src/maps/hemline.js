@@ -33,7 +33,7 @@
   // ---- scenery
   M.sign(11, 10, 'HEMLINE\\nWe\'ll take you in.', 'town sign');
   M.sign(2, 10, 'HEMLINE\\nWest: Gingham Woods\\nSpindle Shrine', 'west sign');
-  M.sign(24, 10, 'EAST: SEAMSTEAD CITY\\nTwo days by seam road.', 'east sign (the road to Seamstead is not built yet)');
+  M.sign(24, 10, 'EAST: SEAMSTEAD CITY\\nTwo days by seam road.', 'east sign (Route 3 Seam Road)');
   M.stamp('lamp', 9, 9).stamp('lamp', 15, 9).stamp('lamp', 20, 9);
   M.stamp('well', 9, 13).stamp('cloth_line', 5, 14).stamp('cloth_line', 14, 15).stamp('bench', 17, 10).stamp('barrel', 19, 7).stamp('crate', 25, 7).stamp('haystack', 16, 20);
   M.stamp('flowerbed', 8, 3).stamp('flowerbed', 18, 3).stamp('barrel', 8, 7);
@@ -41,7 +41,7 @@
   M.stamp('bush', 25, 14).stamp('bush', 2, 18).stamp('boulder', 25, 20).stamp('rock', 9, 20);
 
   M.spawn('west', 2, 11, 'right').spawn('east', 25, 12, 'left');
-  M.edge('w', 11, 12, 'spindle_shrine', 'east');
+  M.edge('w', 11, 12, 'spindle_shrine', 'east').edge('e', 11, 12, 'route3', 'west');
 
   // ---- townsfolk: the hemmers' grievance, one line at a time
   M.npc('hemmer', 7, 10, 'tailor_m', 'down', ['Measure twice. Hem once.\\pThat was on my shop sign. Then the Society "inspected" it.\\pNow the sign says nothing at all.']);
