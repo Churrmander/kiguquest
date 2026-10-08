@@ -22,7 +22,7 @@
   f1.stamp('cloth_shelf', 3, 0).stamp('cloth_shelf', 6, 0).stamp('display_case', 7, 4).stamp('mannequin', 8, 6).stamp('plant', 1, 6).stamp('table_s', 2, 4);
   f1.npc('clerk1', 5, 4, 'shopkeeper', 'down', null, { script: 'shopx', note: 'Crisp & Co. clerk (shared shop)' });
   f1.def.shopStock = ['snack_cake', 'fancy_cake', 'aloe_balm', 'mint_tea', 'numb_away'];
-  f1.npc('greeter', 4, 8, 'tea_maid', 'up', ['Welcome to Crisp & Co.! Everything is flat! Everything is fair!\\pMay I just smooth your collar? Thank you. You look so much better.']);
+  f1.npc('greeter', 4, 8, 'tea_maid', 'up', ['Welcome to Crisp & Co.! Everything is flat! Everything is fair!\\pZip says we are the most respectable store in town.\\pMay I just smooth your collar? You look so much better.']);
   f1.trainer('c1_t1', 9, 5, 'grunt_f', 'left', { cls: 'Presser', name: 'Fold', sight: 3, reward: 9, ai: 1, music: 'battle_society', team: [['silkie', 16], ['mittsy', 16]],
     intro: 'Customers must walk in straight lines. Yours is a squiggle. We shall fix it.', win: 'The squiggle... won.', after: 'The stairs are up on the right. Walk straight. Please.' });
   f1.reg();
@@ -31,8 +31,8 @@
   const f2 = floor({ id: 'crisp_2', name: 'Crisp & Co.  Uniforms', w: 14, h: 10, up: 'crisp_3', down: 'crisp_1' });
   f2.stamp('mannequin', 4, 2).stamp('mannequin', 6, 2).stamp('mannequin', 8, 2).stamp('cloth_shelf', 10, 0).stamp('cloth_shelf', 4, 0).stamp('table_l', 5, 5);
   f2.trainer('c2_t1', 4, 6, 'grunt_m', 'right', { cls: 'Presser', name: 'Pinch', sight: 4, reward: 10, ai: 1, music: 'battle_society', team: [['mittsy', 17], ['silkie', 17]],
-    intro: 'All our uniforms are one size, which we call Fine. You are not Fine. Be Fine.', win: 'I am not feeling Fine either.', after: 'There is a hat department. It is very... flat.' });
-  f2.trainer('c2_t2', 10, 6, 'pleat', 'left', { cls: 'Presser', name: 'Tuck', sight: 3, reward: 10, ai: 1, music: 'battle_society', team: [['silkie', 17], ['sparkin|mittsy', 17]],
+    intro: 'Our uniforms come in one size. We call it Fine.\\pYou are not Fine. Be Fine.', win: 'I am not feeling Fine either.', after: 'There is a hat department. It is very... flat.' });
+  f2.trainer('c2_t2', 10, 6, 'pleat', 'left', { cls: 'Presser', name: 'Lint', sight: 3, reward: 10, ai: 1, music: 'battle_society', team: [['silkie', 17], ['sparkin|mittsy', 17]],
     intro: 'Staff only beyond this rack! ...Well, you can see that. Staff only anyway!', win: 'Staff Only, but you won. Nobody trained me for this.', after: 'The Hats floor has the Staff Pass. Do not tell Serge I said so.' });
   f2.npc('shopper2', 11, 3, 'lady', 'down', ['They gave me a uniform. It fits. It fits perfectly.\\p...I did not choose it. It fits perfectly.']);
   f2.reg();
@@ -58,9 +58,9 @@
     c.music('society_theme');
     yield* c.sayT('crisp_b1.serge.1', ['Rows of white Kigu stand in the dark, perfectly still.', 'Their costumes are pressed flat as paper. They are smiling.']);
     yield* c.walk(c.npc('serge'), ['down', 2]);
-    yield* c.sayT('crisp_b1.serge.2', ['Serge: Welcome to the Pressing Floor! Please, mind your step.\\pWe do not walk here. We glide. Everything here is so calm.', 'Serge: You are the Tailor who "rinsed" the shrine. We heard.\\pDo not worry. Nobody is hurt here. They are simply... finished.']);
+    yield* c.sayT('crisp_b1.serge.2', ['Serge: Welcome to the Pressing Floor! Quality is consistency.\\pPlease mind your step. We do not walk here. We glide.', 'Serge: You are the Tailor who "rinsed" the shrine. We heard.\\pDo not worry. Nobody is hurt here. They are simply resting.']);
     const won = yield* c.trainerBattle({ cls: 'Presser', name: 'Serge', look: 'pleat', ai: 2, reward: 20, music: 'battle_admin', team: T([['silkie', 20], ['mittsy', 20], ['sparkin|mittsy', 21], ['webelle|silkie', 21]]) });
-    if (!won) { yield* c.sayT('crisp_b1.serge.lose', ['Serge: Tsk. Please, go and rest upstairs. I will smile until you return.']); return; }
+    if (!won) { yield* c.sayT('crisp_b1.serge.lose', ['Serge: Oh, dear. Please go and rest upstairs.\\pI will keep smiling until you come back.']); return; }
     c.set('crisp_serge_done');
     yield* c.sayT('crisp_b1.serge.win', ['Serge: ...Oh. I seem to have creased.\\pThat is a very strange feeling. I do not like it. I... do not mind it.']);
     c.music('city_seamstead');
@@ -68,14 +68,14 @@
     c.showNpc('damask');
     c.music('society_theme');
     yield* c.sayT('crisp_b1.damask.1', ['Damask: Splendid. A child who creases a Pleat. How rare.', 'Damask: I am Madame Damask. I do not fight children.\\pI press them flat with kindness. It leaves no marks.']);
-    yield* c.sayT('crisp_b1.damask.2', ['Damask: I should like you to come to tea. Not today. Soon. In the old harbour city.\\pBring your friend. And your stitches. It will be very quiet.', 'Damask: Serge. Tidy this up. Gently.']);
+    yield* c.sayT('crisp_b1.damask.2', ['Damask: I should like you to come to tea. Not today.\\pSoon. In the old harbour city. Bring your friend, and your stitches.\\pIt will be very quiet.', 'Damask: Serge. Tidy this up. Gently.']);
     yield* c.walk(c.npc('damask'), ['right', 4]);
     c.hideNpc('damask');
     c.set('damask_tea');
     c.music('city_seamstead');
-    yield* c.sayT('crisp_b1.after.1', ['The pressed Kigu begin to blink. One by one, they sit down on the floor, surprised.', 'Serge: ...They can go home. I suppose. I will make some tea.']);
+    yield* c.sayT('crisp_b1.after.1', ['The pressed Kigu blink. One by one, they sit down, surprised.', 'Serge: ...They can go home. I suppose. I will make some tea.']);
     c.set('crisp_done');
-    yield* c.sayT('crisp_b1.after.2', ['Tomo\'s Father: My son. His name is {rival}. I remember. Tell him I am coming home.']);
+    yield* c.sayT('crisp_b1.after.2', ['Tomo\'s Father: {rival}. That is his name. I remember it now.\\pTell him I am coming home.']);
   }
   const b1 = floor({ id: 'crisp_b1', name: 'Crisp & Co.  Pressing Floor', w: 16, h: 12, up: 'crisp_3', upSpawn: 'bstairs' });
   // the one stairs cell is warped from crisp_3's side; this floor's own stairs go back up

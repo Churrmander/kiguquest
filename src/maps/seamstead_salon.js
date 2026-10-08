@@ -7,19 +7,19 @@
 
   function* zip(c) {
     const st = c.state;
-    if (st.badges && st.badges[2]) { yield* c.sayT('script.zip.1', 'Zip: Thread, buzz, pulse! You are all wired up, {player}.\\pRoute 4 is east of the avenue. Mind the dust. And the tents. And the camels.\\p...There are no camels. I am told there are no camels.'); return; }
-    if (!c.flag('crisp_done')) { yield* c.sayT('script.zip.0', 'Zip: The power is out, and the Society says it is "balanced". Do something about Crisp & Co. first, would you?'); return; }
-    yield* c.sayT('script.zip.2', 'Zip: Whoa! You pulled both levers! The Salon is ON, baby!\\pI am Zip, Master Tailor, Warden of the lights, bad at apologising.\\pSo: sorry I was off stage. The Society cut my power and I did not want to cause a fuss. That was dumb!\\pNow let me make a fuss. A big, bright, very loud fuss!');
+    if (st.badges && st.badges[2]) { yield* c.sayT('script.zip.1', 'Zip: Thread, buzz, pulse! You are all wired up, {player}!\\pRoute 4 is east of the avenue. Mind the dust.\\pAnd the tents. And the camels. ...There are no camels. I checked.'); return; }
+    if (!c.flag('crisp_done')) { yield* c.sayT('script.zip.0', 'Zip: Argh! The lights are out, and the Society says that is "balanced"!\\pDo something about Crisp & Co. first, would you? Pretty please?'); return; }
+    yield* c.sayT('script.zip.2', 'Zip: Whoa! You pulled both levers! The Salon is ON, baby!\\pI am Zip, Master Tailor, Warden of the lights.\\pI put my name on Crisp & Co. I never once went down to look.\\pSo: I am sorry. Now let me make a fuss. A big, bright, very loud fuss!');
     const won = yield* c.trainerBattle({ cls: 'Master', name: 'Zip', look: 'zip|rocker', ai: 2, reward: 22, master: true, music: 'battle_master', team: c.map.def.zipTeam });
-    if (!won) { yield* c.sayT('script.zip.3', 'Zip: Aww, unplugged! Recharge at the Tea House and I will hold the final chord.'); return; }
-    yield* c.sayT('script.zip.4', 'Zip: Every wire held! Take the Volt Button, {player}. You earned every volt.');
+    if (!won) { yield* c.sayT('script.zip.3', 'Zip: Aww, unplugged! Recharge at the Tea House.\\pI will hold the final chord for you.'); return; }
+    yield* c.sayT('script.zip.4', 'Zip: Every wire held! Take the Volt Button, {player}.\\pYou earned every volt.');
     st.badges = st.badges || []; st.badges[2] = true;
     c.set('badge3');
-    NP.snd.jingle && NP.snd.jingle('j_button');
+    yield* c.jingleWait('j_button');
     yield* c.sayT('script.zip.5', '{player} received the Volt Button!');
-    yield* c.sayT('script.zip.6', 'Zip: With it, your Kigu obey you up to Lv40. Also take this Zip Cable.\\pIf the lights ever go out again... plug in and play loud!');
+    yield* c.sayT('script.zip.6', 'Zip: With it, your Kigu obey you up to Lv40. Also take this Zip Cable.\\pIf the lights ever go out again, plug in and stand out!');
     yield* c.giveItem('zip_cable', 1);
-    yield* c.sayT('script.zip.7', 'Zip: One more thing. Madame Damask? She does not hate the city. She hates the noise.\\pDo not let her turn you down. Or up. Just... on.');
+    yield* c.sayT('script.zip.7', 'Zip: One more thing. Madame Damask came to a show once.\\pShe did not clap. She nodded, very politely, until I stopped.\\pDo not let her smooth your loud bits, {player}.');
   }
   NP.scripts.zip = zip;
 

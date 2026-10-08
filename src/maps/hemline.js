@@ -33,7 +33,7 @@
   // ---- scenery
   M.sign(11, 10, 'HEMLINE\\nWe\'ll take you in.', 'town sign');
   M.sign(2, 10, 'HEMLINE\\nWest: Gingham Woods\\nSpindle Shrine', 'west sign');
-  M.sign(24, 10, 'EAST: SEAMSTEAD CITY\\nTwo days by seam road.', 'east sign (Route 3 Seam Road)');
+  M.sign(24, 10, 'EAST: SEAMSTEAD CITY\\nA short walk by seam road.', 'east sign (Route 3 Seam Road)');
   M.stamp('lamp', 9, 9).stamp('lamp', 15, 9).stamp('lamp', 20, 9);
   M.stamp('well', 9, 13).stamp('cloth_line', 5, 14).stamp('cloth_line', 14, 15).stamp('bench', 17, 10).stamp('barrel', 19, 7).stamp('crate', 25, 7).stamp('haystack', 16, 20);
   M.stamp('flowerbed', 8, 3).stamp('flowerbed', 18, 3).stamp('barrel', 8, 7);
@@ -44,6 +44,7 @@
   M.edge('w', 11, 12, 'spindle_shrine', 'east').edge('e', 11, 12, 'route3', 'west');
 
   // ---- townsfolk: the hemmers' grievance, one line at a time
+  M.npc('peddler', 17, 5, 'gentleman', 'left', ['Mr. Sharp, humble peddler. Nothing suspicious!\\pThe chef\'s hat? I am not a chef. Keep your eyes sharp, friend!']);
   M.npc('hemmer', 7, 10, 'tailor_m', 'down', ['Measure twice. Hem once.\\pThat was on my shop sign. Then the Society "inspected" it.\\pNow the sign says nothing at all.']);
   M.npc('hemmer2', 14, 9, 'tailor_f', 'down', ['Their ready-made uniforms cost half what mine do.\\pThey are all one size, which they call "Fine".\\pI cannot compete with "Fine".']);
   M.npc('kid', 15, 17, 'child_m', 'up', ['The Pressers said my dad\'s shop sign was a quarter inch crooked.\\pIt is a hanging sign. It swings!'], { move: 'turn' });
@@ -93,6 +94,6 @@
     .reg();
   L.room({ id: 'hemline_house2', name: 'House', w: 8, h: 7, doorX: 3, exit: { to: 'hemline', door: 'house2' } })
     .stamp('bed', 6, 2).stamp('tv', 1, 2).stamp('rug_b', 3, 3)
-    .npc('grandma', 3, 2, 'elder_f', 'down', ['Bryn\'s grandmother kept the woods before her.\\pBryn does it now, bees and all.\\pShe says the Society is a problem. I say: she is right, and she needs a sandwich.'])
+    .npc('grandma', 3, 2, 'elder_f', 'down', ['Bryn\'s grandmother kept the woods before her.\\pBryn does it now, bees and all.\\pShe says the Society is a problem. I say she is right.\\pShe also needs a sandwich.'])
     .reg();
 })(typeof globalThis !== 'undefined' ? globalThis : window);
