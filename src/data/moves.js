@@ -32,7 +32,7 @@
   // --- Ember
   M('cinder', 'Cinder', 'ember', S, 40, 100, 25, { status: st('brn', 10) }, 'A small shower of sparks.');
   M('scorch_tail', 'Scorch Tail', 'ember', P, 70, 100, 15, { status: st('brn', 10) }, 'Whips a burning tail.');
-  M('foxfire', 'Fox Fire', 'ember', T, null, 85, 15, { status: st('brn') }, 'A weird blue flame burns the foe.');
+  M('foxfire', 'Fox Fire', 'ember', T, null, 85, 15, { status: st('brn'), sideCond: 'foxfire' }, 'Burns the foe and powers up your Ember moves for 5 turns.');
   M('foxfire_blast', 'Foxfire Blast', 'ember', S, 90, 100, 15, { status: st('brn', 10) }, 'A sweeping wave of fox-fire.');
   // --- Tide
   M('bubble_pop', 'Bubble Pop', 'tide', S, 30, 100, 30, null, 'Pops bubbles on the foe.');
