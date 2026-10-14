@@ -4,11 +4,11 @@
   const NP = root.NP, K = NP.mapkit;
   const team = (list) => list.map(([sp, lv]) => ({ sp, lv }));
 
-  // ---- Rival #2: Tomo has just lost to Poppy and is waiting outside the Salon door. Conversation only: Rival #1 (Route 1) is the only
+  // ---- Rival #2: the rival has just lost to Poppy and is waiting outside the Salon door. Conversation only: Rival #1 (Route 1) is the only
   //      rival fight before the first Salon, so the player is never forced into two rival battles in a row on low HP.
   function* rival2(c) {
     const t = c.npc('tomo_t');
-    c.placeNpc(t, 12, 6, 'down'); // he stands in the doorway, so he blocks the way in
+    c.placeNpc(t, 12, 6, 'down'); // they stand in the doorway, so they block the way in
     c.showNpc('tomo_t');
     yield* c.face('player', 'up');
     yield* c.emote('player', 'exclaim');
@@ -17,7 +17,7 @@
     yield* c.sayT('thimble.rival2.3', '{rival}: Her Fluff Kigu hit softer than they look.\\pDo not let them tuck you in. Here, take these.\\pMum packed far too many snack cakes.');
     yield* c.giveItem('snack_cake', 3);
     c.set('rival2_done');
-    yield* c.sayT('thimble.rival2.win', '{rival}: Next time we meet, I will have a plan.\\pProbably. Go on. Poppy is waiting.');
+    yield* c.sayT('thimble.rival2.win', '{rival}: Next time we meet, I will have a plan. A great one.\\pGo on, {player}. Poppy is waiting, and you are going to be brilliant.');
     yield* c.face(t, 'up');
     yield* c.wait(12);
     c.hideNpc('tomo_t'); // steps back inside

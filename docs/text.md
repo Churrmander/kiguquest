@@ -54,7 +54,7 @@ a class, add `addBank` entries in `src/data/text/classes.js` (ask the Writer). A
 
 | var | meaning | var | meaning |
 |---|---|---|---|
-| `{player}` `{rival}` | names (default rival *Tomo*) | `{kigu}` | a Kigu's display name |
+| `{player}` `{rival}` | names (defaults Dahlia and Draco; the rival is the other one) | `{kigu}` | a Kigu's display name |
 | `{mon}` | battle label: "Konko", "Wild Mittsy", "Foe Peepi" | `{foe}` | the opposing Kigu's label |
 | `{trainer}` `{cls}` `{name}` | "Tailor Lia" / "Tailor" / "Lia" | `{item}` `{move}` `{old}` | item / move / forgotten-move name |
 | `{stat}` | Attack, Sp. Def, Speed, accuracy... | `{n}` `{lv}` `{hp}` `{exp}` `{money}` `{count}` | numbers (write `$` in the text) |
@@ -73,7 +73,7 @@ Rules: a `{var}` not in this table fails the test. Do not put a variable at the 
 * The test (`tests/text.test.mjs`) formats every line with worst-case variable values (an 8-letter `{player}`, a 10-letter `{kigu}`...),
   wraps it exactly like `NP.ui.Message.paginate`, and fails if any message is over 2 lines. Keys starting with `sys.ui.` are
   single-line notes drawn directly on a panel (<= 224 px). `sys.battle.prompt` is the half-width "What will X do?" box (112 px x 2).
-* Speaker prefix: only in scenes where the speaker is not obvious (2+ speakers, off-screen voices): `Mimi: Hi!`, `{rival}: Hmph.`
+* Speaker prefix: only in scenes where the speaker is not obvious (2+ speakers, off-screen voices): `Mimi: Hi!`, `{rival}: Race you!`
   Plain NPCs never need a name prefix.
 * Typography: straight quotes and apostrophes, `...` (three dots), `-` for a dash. Available glyphs include `♥ ★ ♪ …`; avoid anything else.
   No ALL CAPS shouting except signs, which use a first line in capitals (`THIMBLE VILLAGE`) then a line break.

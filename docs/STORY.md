@@ -7,7 +7,7 @@ level designers have not built yet are marked (proposed) — `docs/levels.md` is
 ## 1. Pitch and tone
 
 > A land stitched together out of friendships is about to be ironed flat by the person who loves it most.
-> A kid with a thimble of courage, a stiff-necked rival, a cheerful friend with a bottle of fabric softener, and eight very different
+> A kid with a thimble of courage, a childhood friend who is also a rival, a cheerful friend with a bottle of fabric softener, and eight very different
 > Master Tailors have to show one grieving woman that a patch is not a flaw.
 
 **Tone: warm, funny, cosy, with real stakes.**
@@ -20,7 +20,7 @@ level designers have not built yet are marked (proposed) — `docs/levels.md` is
 * **All-ages.** No fanservice, no gore, no death (Kigu "fall asleep"; "lost" means "separated", and everyone is found). No swearing
   ("darn" is the strongest word in Tsumugi). Never snark at the player; teasing is for friends and only goes one way: up.
 * **The player never speaks.** They nod (yes/no prompts). Other characters talk *to* them: "you", or {player} when narrating.
-  Never gender the player (no he/she); Kigu are always "she", Tomo is "he", Mimi is "she".
+  Never gender the player (no he/she); Kigu are always "she", the rival is never gendered in player-facing text (they/them in docs), Mimi is "she".
 
 **Craft rules for every line:** (1) vary rhythm — a short line after a long one; (2) the last line of a box carries the joke or the feeling;
 (3) be specific ("a lemon macaron", not "a snack"); (4) one verbal tic per character, used sparingly; (5) people talk about what they
@@ -30,7 +30,7 @@ level designers have not built yet are marked (proposed) — `docs/levels.md` is
 
 1. **Individuality vs. uniformity.** The land is a *patchwork*; the Starch Society wants a *plain white weave*. Every Kigu costume is
    different; a Pressed Kigu's is bleached white with blue piping. The hero ends with eight *different* Buttons on one jacket.
-2. **Bonds you choose.** Kigu *choose* their Tailors (never captured: she shakes the spool because she is deciding). Tomo and Mimi choose to stay
+2. **Bonds you choose.** Kigu *choose* their Tailors (never captured: she shakes the spool because she is deciding). The rival and Mimi choose to stay
    friends. The twins choose. The Society's sin is taking the choosing away.
 3. **Mending, not erasing.** You don't iron out a tear, you mend it — visibly, proudly (the Grand Tailor's coat is all patches). The villain is not
    destroyed; she is *invited to sew again*. Pressing is a fine tool for a seam; it is a terrible philosophy for a world.
@@ -49,19 +49,21 @@ Festival (§6). *Now:* the hero is 12 or 13, turns apprentice, and the Society i
 
 ## 4. The cast
 
+### The protagonists: Dahlia and Draco
+Dahlia and Draco grew up next door to each other in Button Town. Their back gardens share a fence with a washing line that has tangled both their kites at least twice. They have one tree house between them, with one wobbly plank that only one of them will admit to falling through. They swapped lunch boxes once and never agreed who won. Every Saturday they raced to the bakery, usually to a tie. The kite that got stuck in the Salon banner in Thimble is still up there. That is why the banner hangs "two degrees crooked", and neither of them has ever said sorry.
+
+**Who they are.** The one you play is the steady one: careful with a needle, the first to stop and help a lost Kigu, the one who notices. The other is the rival: sunny, a bit show-offy, loyal, quick to laugh, and sulky for exactly three seconds after a loss. Dahlia is the default name for the girl and Draco for the boy. You can rename either of them. Whichever one you do not play is always the rival.
+
+**Why they both set out.** Professor Bobbin takes both of them on as apprentices on the same morning, because they have been turning up at her lab since they could walk. Both want to see the whole of Tsumugi. From the top of the tree house, years ago, they promised each other they would see every Salon together. Neither of them wants to arrive second. Both of them will cheer the other one on when they do.
+
 ### The hero ({player}, boy or girl)
 Lives with Mom in Button Town; the tailor's overalls (flat cap for the boy, red beret for the girl), the spool-pouch belt and the satchel. Wants "a Kigu of my own, someday" — and gets one on page one. A steady
 needle: the hero's gift is not power but *noticing and stopping to help*, which is exactly what a Stitch Bond needs. **Arc:** apprentice → the person who
 mends the land. Never speaks; the writing gives them things to be kind *to*.
 
-### {rival} — Tomo (the rival, default name Tomo)
-Serious boy, glasses, blue scarf, a notebook of everyone's battle stats. Clipped, formal, says "Hmph." (in seven moods; see §11). Tidy and disciplined because
-his father taught him that discipline is love; his father is a floor manager at **Crisp & Co.** in Seamstead, and his letters home have been getting *so tidy lately*.
-**Arc:** (1) Lab — takes the starter that beats yours, cocky. (2) Route 1 exit — first fight, "I'll be waiting in Thimble." (3) Thimble — lost to Poppy, is rattled that you
-didn't. (4) Seamstead — defends Crisp & Co. and his dad; the raid shakes him. (5) Quarry — quieter; asks for a battle "to measure" himself; shares the letters.
-(6) Kite Hill — goes looking for his father; Dart teases him until he laughs. (7) Loomhaven — finds his father pressed at the Works, frees him, holds the line
-against Pressers during the climax. (8) The Last Seam — the friendly final fight: *"You were never in my way. You were the map."* He asks Prof. Bobbin to take him on.
-Wins his Buttons on his own; never becomes Grand Tailor; doesn't need to.
+### {rival} — the rival (Draco if you play Dahlia, Dahlia if you play Draco)
+Sunny, a bit show-offy, loyal, quick to laugh. Hates losing for exactly three seconds, then cheers the winner loudest. Teases the player *up*, never down; no insults, no sulking, no "Hmph." Drawn with the other hero's look (no look of its own). Their dad is a floor manager at **Crisp & Co.** in Seamstead, and his letters home have been getting *so tidy lately*. Their mum is warm and a little worried about those letters, and the rival is worried too, though they do not say so yet.
+**Arc:** (1) Lab: you both get a Kigu on the same morning. The rival takes the one that beats yours, as a dare: "Fair is fair!" (2) Route 1: the first friendly challenge, at the top of Meadow Lane. (3) Thimble: loses to Poppy and turns up outside the Salon with snack cakes and tips. (4) Seamstead: defends Crisp & Co. because their dad works there; the raid shakes them. (5) Quarry: quieter; asks for a battle "to measure" how far you have both come. (6) Kite Hill: goes looking for their dad; Dart teases them until they laugh. (7) The Starch Works: finds their dad pressed on the Pressing Floor, and gets him back. (8) The Last Seam: the friendly final fight: *"You were never in my way. You were the map."* They ask Prof. Bobbin to take them on as an apprentice. They win their Buttons on their own, never become Grand Tailor, and do not need to.
 
 ### Mimi (the cheerful friend)
 Pink cardigan, enormous bow, talks in exclamation marks, always has a spare snack. Dreams of *designing Kigu costumes*, not battling. She brings the
@@ -76,8 +78,8 @@ Bobbin; Hester took the Guild's title "Damask" when she became Guildmistress). T
 Seeds: a photo on her desk of two laughing girls, one tidy, one not; "my sister folded everything in thirds"; the Quarry is named for their family.
 Reveals in Loomhaven. Her line to the hero at the start: "Go and see Tsumugi. Meet the Masters. The threads will show you the rest."
 
-### Mom, Tomo's mom, the town
-Mom bakes and heals you with cocoa. Tomo's mom worries about her husband's tidy letters. Neighbours are warm, nosy and slightly over-informed about other people's Kigu.
+### Mom, {rival}'s mum, the town
+Mom bakes and heals you with cocoa. {rival}'s mum has known you since you were both in nappies, and treats you like family. She worries about her husband's tidy letters. Neighbours are warm, nosy and slightly over-informed about other people's Kigu.
 
 ### "Mr. Sharp" — the recurring peddler (spoiler: Sharps, the fourth Needle)
 A cheerful travelling seller in a different absurd disguise in every town (false moustache, a chef's hat, a sailor cap) who always insists he is "just a humble peddler,
@@ -95,10 +97,10 @@ Each Master is written to the same seven-slot script (`script.<name>.1..7`, see 
 | 2 | **Bryn** (Hemline, Salon 2) | Buzz | early 20s, goggles, beekeeper veil pushed up, sticky fingers (honey), talks at bee speed; very brave | "Little threads, big hive!" | Warden of Gingham Woods after her grandmother; her town's hemmers are being undercut by Crisp & Co.'s cheap uniform contracts. First person to say aloud that the Society is a problem. | golden-green silk (from the Everspool) / Disc: Paddle |
 | 3 | **Zip** (Seamstead City, Salon 3) | Volt | 30s, showman, sparkle goggles, coat of zipper-pulls, loves applause and is generous to a fault | "Plug in and stand out!" | The city's celebrity designer whose endorsement made Crisp & Co. respectable. When the raid exposes them he apologises on stage and turns the city's lights on for the final push. Redemption arc. | yellow copper-thread / Disc (Volt move) |
 | 4 | **Gusset** (Bobbin Quarry, Salon 4) | Terra | 60, gruff quarry foreman, barely speaks, hums while working; embroiders tiny flowers on his hard hat | "Solid seams." | Sold the Society "pressing stone" without knowing; he is the first to realise the slabs are Press plates and gives the hero the Quarry's maps. Old friend of Prof. Bobbin ("Tell her I still have her spare tape measure"). | sand-coloured linen / Disc: Shove |
-| 5 | **Dart** (Kite Hill, Salon 5) | Gale | 19, mail-balloon pilot, scarf, freckles; fearless, competitive, impatient, fiercely loyal; patches her balloon with a thousand mismatched patches | "Wind's up!" | Keeps the skies: her balloons see the Society's starch convoys heading for Woolen Peak, and she carries the hero over the pass. Teases Tomo; they become friends. | sky-blue kite string / Disc: Glide |
+| 5 | **Dart** (Kite Hill, Salon 5) | Gale | 19, mail-balloon pilot, scarf, freckles; fearless, competitive, impatient, fiercely loyal; patches her balloon with a thousand mismatched patches | "Wind's up!" | Keeps the skies: her balloons see the Society's starch convoys heading for Woolen Peak, and she carries the hero over the pass. Teases the rival until they laugh. | sky-blue kite string / Disc: Glide |
 | 6 | **Purl** (Woolen Peak, Salon 6) | Frost | 70s-ish, serene, dry, knits *during* battle; enormous hand-knit sweater | "Cast on." (and, when it's over, "Cast off.") | His old wool mill in the pass was quietly "leased" to the Society as the Starch Works; his sheep-Kigu went quiet. He has evidence and a map, and knits the hero a scarf that keeps out the cold of the Works. | icy-teal wool / Disc: Climb |
 | 7 | **Rue** (Loomhaven, Salon 7) | Spook | 40s, soft voice, lantern-keeper's coat, funny in a deadpan way; "It's not spooky. It's shy." | "Nothing is ever truly lost." | Keeps the **Lost & Found** for everything the Snarl scattered. In a drawer: **Hester's mother's thimble**, lost thirty years ago. She knows why Damask became Damask. | violet mourning-silk / Disc (Spook move) |
-| 8 | **Brocade** (Selvage, Salon 8 — final city, proposed) | Drake | mid-20s, tall, black braid, gold-dragon brocade coat, perfect posture; formal, exacting, secretly kind; collects chipped teacups mended with gold | "Stand tall. Stitch true." | Warden of the Gate and the best argument *for* order: she shows that structure can serve people. Damask's former protégée and Tomo's mentor-to-be. After the climax she hangs a broken Press plate in her Salon "as scaffolding, not a wall." | indigo-and-gold brocade / Disc (Drake move) |
+| 8 | **Brocade** (Selvage, Salon 8 — final city, proposed) | Drake | mid-20s, tall, black braid, gold-dragon brocade coat, perfect posture; formal, exacting, secretly kind; collects chipped teacups mended with gold | "Stand tall. Stitch true." | Warden of the Gate and the best argument *for* order: she shows that structure can serve people. Damask's former protégée and the rival's mentor-to-be. After the climax she hangs a broken Press plate in her Salon "as scaffolding, not a wall." | indigo-and-gold brocade / Disc (Drake move) |
 
 **How Masters speak:** Poppy — soft, teasing, mother-hen. Bryn — breathless, lists. Zip — stage patter, then sincerity. Gusset — five words, then a surprise. Dart — short, bold, slang from the airfield.
 Purl — slow, exact, knitting words ("cast on", "drop a stitch", "purl"). Rue — whisper-polite, gallows-gentle humour. Brocade — complete sentences, no contractions until she warms up.
@@ -145,7 +147,7 @@ the tension slackens and colour returns.
 
 **Warpa** (Dream/Ember, white-and-crimson robe, vertical threads from her sleeves): steady, patient, remembers everything. **Weftie** (Dream/Tide, white-and-blue, horizontal ribbons): curious, restless,
 always wants to see what's over there. At the Works they are held in two tension frames. **The hero can free only one** (cut her thread with the Disc: Snip Poppy gave you — the first gift pays off):
-the one freed takes the hero's thread in her sleeve and joins the party (suggest Lv 45ish). Damask takes the other to Loomhaven. The text supports both (`{twin}` / `{twin2}`; story keys end `.warpa` / `.weftie`).
+the one freed takes the hero's thread in her sleeve and joins the party (suggest Lv 45ish). Damask takes the other to Loomhaven. The text supports both (`{twin}` / `{twin2}`; story keys end `.warpa` / `.weftie`). The rival stands beside the hero for this choice: *"Whichever you pick, I have got your back."*
 
 **The Four Needles** (Elite Four; Guild seniors, named for real needles): each is a kind of mending.
 
@@ -162,25 +164,25 @@ hero "little stitch." Taught both sisters to sew a straight line; "I forgot to t
 
 ## 8. Chapter by chapter (tied to BIBLE §9)
 
-Scene ids are the `story.*` / `script.*` keys in `docs/text.md`. **Rival** = Tomo fight.
+Scene ids are the `story.*` / `script.*` keys in `docs/text.md`. **Rival** = a friendly rival battle.
 
-**Ch. 0 — Button Town, the lab.** Morning. Laundry, sea breeze, a kid who wants a Kigu. Bobbin hands out the three starters (Konko / Ottopi / Sprubun); Tomo takes the one that beats yours; you get
+**Ch. 0 — Button Town, the lab.** Morning. Laundry, sea breeze, a kid who wants a Kigu. Bobbin hands out the three starters (Konko / Ottopi / Sprubun); the rival takes the one that beats yours, as a dare; you get
 5 Bond Spools, snack cakes, the Sketchbook. Mom's cocoa. *Scenes:* `lab_intro`, `starter`, `town_gate`, `mom`.
 **Ch. 1 — Meadow Lane → Thimble Village (Salon 1, Fluff).** Tailors on the lane; **Rival #1** at the top of the lane ("I'll be waiting in Thimble"). Mimi gives a Silk Spool. The bridge to Route 2 is closed: "inspectors in
-stiff white collars said the planks were uneven." Poppy's Salon. **Rival #2** outside the Salon (he lost; you didn't) - a conversation and a gift of snack cakes, NOT a battle, so there are never two rival fights back to back. Poppy gives Disc: Snip, cream thread, the 'D' handkerchief, and "go and see Tsumugi."
+stiff white collars said the planks were uneven." Poppy's Salon. **Rival #2** outside the Salon (they lost; you didn't) - a conversation and a gift of snack cakes, NOT a battle, so there are never two rival fights back to back. Poppy gives Disc: Snip, cream thread, the 'D' handkerchief, and "go and see Tsumugi."
 **Ch. 2 — Route 2 → Gingham Woods → Hemline (Salon 2, Buzz).** *Society shrine incident:* at the **Spindle Shrine**, Pressers led by Pleat Crease are "inspecting" the **Everspool** (a silk spool that never
 runs out; the straightest thread in the world); they have Pressed the shrine's guardian Cocoona. You drive them off; Crease snips a sample and leaves ("The Society is patient"). Mimi's first Soft Rinse works. Hemline: Bryn;
 the hemmers' grievance; Bryn gives a length of Everspool silk. *Scenes:* `route2_inspectors`, `spindle_shrine`, `rinse`, `script.bryn`.
-**Ch. 3 — Seamstead City (Salon 3, Volt).** Big, bright, jazzy. **Rival #3** on the plaza: Tomo defends Crisp & Co. ("my father works there"). **Crisp & Co. raid:** a department-store dungeon (Linens, Uniforms, Hats...), Pleat Serge's
-smile, the basement **Pressing Floor** where a hundred white Kigu stand in rows. Tomo's father is on the floor, pleasant and empty. Serge fights; then Madame Damask appears for the first time and invites the hero to tea
+**Ch. 3 — Seamstead City (Salon 3, Volt).** Big, bright, jazzy. **Rival #3** on the plaza: the rival defends Crisp & Co. ("my dad works there"). **Crisp & Co. raid:** a department-store dungeon (Linens, Uniforms, Hats...), Pleat Serge's
+smile, the basement **Pressing Floor** where a hundred white Kigu stand in rows. The rival's dad is on the floor, pleasant and empty. Serge fights; then Madame Damask appears for the first time and invites the hero to tea
 ("I do not fight children. I press them flat with *kindness*"). She leaves. Zip apologises on stage. *Scenes:* `crisp_*`, `damask_tea`, `script.zip`.
 **Ch. 4 — Route 4, the Dust Bowl Desert, Bobbin Quarry (Salon 4, Terra).** Wind, canvas tents, dry humour. Pressers carrying stone slabs. **Rival #4** at the Quarry gate: a battle "to measure." Gusset's quarry orders show
 the slabs are Press plates. *Scenes:* `desert_*`, `rival4`, `script.gusset`.
 **Ch. 5 — Routes 5/6 and the cave (proposed name: Spark Cellar).** Echoes, magnets, sparks; Pressers siphoning the cave's static to run the Works. A Presser is lost and scared; the hero walks him out. Mimi's Soft Rinse, improved.
-**Ch. 6 — Kite Hill (Salon 5, Gale).** Airfield, patched balloons. **Rival #5**: Tomo goes looking for his father; Dart teases him until he laughs. Dart flies you over the pass. *Scenes:* `rival5`, `script.dart`, `balloon`.
+**Ch. 6 — Kite Hill (Salon 5, Gale).** Airfield, patched balloons. **Rival #5**: the rival goes looking for their dad; Dart teases them until they laugh. Dart flies you over the pass. *Scenes:* `rival5`, `script.dart`, `balloon`.
 **Ch. 7 — Woolen Peak (Salon 6, Frost).** Snow, knit-everything. Purl's evidence: sheep-Kigu gone quiet, the old mill lit all night. He knits you a scarf. *Scenes:* `script.purl`, `mill_watch`.
 **Ch. 8 — The Starch Works.** Infiltration in a delivery cart (Mimi drives). Pleat Calender ("Right on schedule"). The Tension Hall: the twins in their frames. **Choose which twin to free.** Damask on the speaker:
-"Bring her to Loomhaven, Calender. It is nearly time." Tomo finds his father. *Scenes:* `works_*`, `twin_choice`.
+"Bring her to Loomhaven, Calender. It is nearly time." The rival finds their dad. *Scenes:* `works_*`, `twin_choice`.
 **Ch. 9 — Loomhaven (Salon 7, Spook) and the Great Loom.** An old harbour city hung with lanterns for the festival; murals of the legend; Rue's Lost & Found and the thimble. **Rival #6** ("If you can't beat me you can't beat her").
 **The climax:** the Lantern Festival; Damask at the Great Loom with the other twin; the battle; she starts the Press anyway; white spreads; Bobbin arrives ("Hester."); the hero returns the thimble; the
 hero braids the eight Button-threads and ties the twins together; the Press slackens; colour returns; Mimi and the townsfolk with buckets. Damask sits down. Nobody is taken away in handcuffs; she is given tea. *Scenes:* `loom_*`, `script.rue`.
@@ -192,7 +194,7 @@ the sky; credits. *Post-story:* the Press becomes a festival steamer; Damask run
 ## 9. Recurring jokes and motifs
 
 * **Bobbin's tape measure:** she loses it while wearing it. (Payoff: Damask recognises it — *"You kept Mother's measure."*)
-* **Tomo's "Hmph."** Seven moods: cocky (1), sulky (2), defensive (3), puzzled (4), proud (5), softened "Hm." (6), fond (7, final).
+* **"Race you!"** The rival's running gag. Every town has a race to the next gate, and the rival sulks for exactly three seconds before cheering the winner loudest.
 * **Mimi's bow** "got bigger". And her **snack pockets**: she produces the exact snack a situation needs.
 * **Sign puns** (one per town, never explained): THIMBLE "Where every stitch counts." HEMLINE "We'll take you in." SEAMSTEAD "Bursting at the seams!" KITE HILL "Hold on to your hat." WOOLEN PEAK "Knit-picking welcome."
   LOOMHAVEN "A room with a loom."
@@ -207,7 +209,7 @@ the sky; credits. *Post-story:* the Press becomes a festival steamer; Damask run
 Hall of Fame (the Wall of Stitches): the Grand Tailor sews your name in. The twins appear above the Atelier's roof and weave the last seam, a thread of light from horizon to horizon; colour rolls over Tsumugi.
 Credits vignettes: Poppy adds a cardigan in your size to the window; Bryn's bees make a new honey ("Everspool Blend"); Zip's marquee says "SHOWING TONIGHT: EVERYONE"; Gusset's hard hat has a bouquet;
 Dart's balloon now has a patch shaped like you; Purl has finished the scarf (it is eleven metres long); Rue's Lost & Found has a new sign ("Found: Sister"); Brocade's teacup has a golden seam; Damask sews a button on a coat;
-Bobbin finds her tape measure; Tomo: "Hmph. (fondly)". Mimi's costume line: **"Mimi & Co."** (no starch).
+Bobbin finds her tape measure; the rival, at the Atelier door: "Last one in buys the cocoa!" Mimi's costume line: **"Mimi & Co."** (no starch).
 
 ## 11. NPC voice guide by region
 
@@ -234,14 +236,14 @@ Every Tea House maid opens with a variation of "Please rest your Kigu... and you
 * **Places** are sewing/textile puns: *Button, Thimble, Gingham, Hem-line, Seam-stead, Bobbin, Kite, Woolen, Loom-haven, Sel-vage, Darn-...* Parts of a garment for towns (hem, seam, cuff, yoke, gusset, selvage); fabrics for
   woods and fields (gingham, tweed, flannel, tulle); tools for landmarks (bobbin, loom, spindle, shuttle); mending words for sad or kind places (darn, patch, mend). Roads are *seam roads*; routes carry a number and a soft name ("Route 1 Meadow Lane").
 * **Proposed names** (not yet on any map): Spindle Shrine (Gingham Woods), Spark Cellar (cave), Selvage (final city), the Last Seam (BIBLE: Victory Road), the Wall of Stitches (BIBLE: Hall of Fame), the Everspool, the Great Loom, the Great Press, Crisp & Co.
-* **People.** Kids: short Japanese-style given names (Tomo, Mimi, Noa, Ren, Yuki). Adults: a sewing word or a cosy English name (Poppy, Bryn, Zip, Gusset, Dart, Purl, Rue, Brocade, Sashiko).
+* **People.** Kids: short Japanese-style given names (Mimi, Noa, Ren, Yuki). The protagonists are Dahlia and Draco. Adults: a sewing word or a cosy English name (Poppy, Bryn, Zip, Gusset, Dart, Purl, Rue, Brocade, Sashiko).
   Society: pressing words (Damask, Crease, Serge, Calender, Pleat, Presser). Trainers on routes: one short first name, no surname (Lia, Bo, Suzu).
 * **Kigu** names: short cute portmanteaus, a *-belle / -elle / -ette* for evolved forms; cries are sound-words.
 * **Items:** food and craft words (Snack Cake, Wish Candy, Thread Ball, Wake Bell). **Trainer classes** are plain job words: Tailor, Picnicker, Hiker, Net Kid, Sailor, Scientist, Presser...
 
 ## 13. Continuity facts (don't contradict)
 
-The Snarl was 30 years ago at the Loomhaven Lantern Festival. Hester Bobbin (Madame Damask) is ~60; Prof. Bobbin ~57; Sashiko ~80. The Everspool is in the Spindle Shrine. The Society was a ribbon-warden club before it was the Society.
+Dahlia and Draco are childhood friends from next-door houses in Button Town; the rival is always the other one. The Snarl was 30 years ago at the Loomhaven Lantern Festival. Hester Bobbin (Madame Damask) is ~60; Prof. Bobbin ~57; Sashiko ~80. The Everspool is in the Spindle Shrine. The Society was a ribbon-warden club before it was the Society.
 Nobody in the game dies. Pressed Kigu are cured by Soft Rinse (Mimi's invention) plus time. The hero's jacket ends with eight Buttons; Buttons are sewn on with the Master's thread. Kigu choose Tailors; the word "captured" is never used.
 Tea Houses everywhere serve cocoa. The hero's Mom knows more than she says (she has never mentioned why she stitches her hems with a double knot — the Loomhaven way).
 

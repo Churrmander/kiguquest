@@ -1,5 +1,5 @@
 /* Crisp & Co. — the Society's department-store front. Four floors: 1 Linens (shop + exit), 2 Uniforms, 3 Hats (Staff Pass + locked door),
- * B1 Pressing Floor (rows of pressed white Kigu, Tomo's father, Pleat Serge, then Madame Damask's first appearance).
+ * B1 Pressing Floor (rows of pressed white Kigu, the rival's dad, Pleat Serge, then Madame Damask's first appearance).
  * Mechanic: keyDoor (Staff Pass) + stairs between floors. Raid flag: crisp_done. */
 (function (root) {
   'use strict';
@@ -64,7 +64,7 @@
     c.set('crisp_serge_done');
     yield* c.sayT('crisp_b1.serge.win', ['Serge: ...Oh. I seem to have creased.\\pThat is a very strange feeling. I do not like it. I... do not mind it.']);
     c.music('city_seamstead');
-    yield* c.sayT('crisp_b1.father.1', ['A man in a crisp uniform looks up. He is pleasant. He is empty.', 'Tomo\'s Father: Good afternoon. Is it afternoon? ...I was folding sleeves.\\pI was thinking of my son. What was his name? He had such a loud voice.']);
+    yield* c.sayT('crisp_b1.father.1', ['A man in a crisp uniform looks up. He is pleasant. He is empty.', '{rival}\'s Dad: Good afternoon. Is it afternoon? ...I was folding sleeves.\\pI was thinking of my kid. What was their name? They had such a loud laugh.']);
     c.showNpc('damask');
     c.music('society_theme');
     yield* c.sayT('crisp_b1.damask.1', ['Damask: Splendid. A child who creases a Pleat. How rare.', 'Damask: I am Madame Damask. I do not fight children.\\pI press them flat with kindness. It leaves no marks.']);
@@ -75,14 +75,14 @@
     c.music('city_seamstead');
     yield* c.sayT('crisp_b1.after.1', ['The pressed Kigu blink. One by one, they sit down, surprised.', 'Serge: ...They can go home. I suppose. I will make some tea.']);
     c.set('crisp_done');
-    yield* c.sayT('crisp_b1.after.2', ['Tomo\'s Father: {rival}. That is his name. I remember it now.\\pTell him I am coming home.']);
+    yield* c.sayT('crisp_b1.after.2', ['{rival}\'s Dad: {rival}. That is it. That is their name. I remember it now.\\pTell {rival} I am coming home. I am sorry I forgot.']);
   }
   const b1 = floor({ id: 'crisp_b1', name: 'Crisp & Co.  Pressing Floor', w: 16, h: 12, up: 'crisp_3', upSpawn: 'bstairs' });
   // the one stairs cell is warped from crisp_3's side; this floor's own stairs go back up
   b1.def.triggers.push({ x: 7, y: 6, w: 2, h: 1, id: 'serge', when: (c) => !c.flag('crisp_serge_done'), script: serge });
   for (let i = 0; i < 4; i++) for (const y of [3, 9]) b1.npc('press_' + i + '_' + y, 3 + i * 3, y, 'cocoona_pressed', 'down', ['It smiles at nothing. It does not blink.'], { move: 'none' });
   b1.npc('serge', 7, 4, 'pleat', 'down', ['Serge: Everything is so calm down here. ...Isn\'t it?']);
-  b1.npc('father', 12, 6, 'tailor_m', 'down', ['Tomo\'s Father: I should go home. Soon. When the folding is done.']);
+  b1.npc('father', 12, 6, 'tailor_m', 'down', ['{rival}\'s Dad: I should go home. Soon. When the folding is done.']);
   b1.npc('damask', 14, 5, 'madame_damask', 'left', null, { hidden: true });
   b1.reg();
 })(typeof globalThis !== 'undefined' ? globalThis : window);
