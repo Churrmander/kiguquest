@@ -90,7 +90,7 @@
       { id: 'house_s', x: 3, y: 12, variant: 'yellow', name: 'house1', to: 'thimble_house1' },
       { id: 'house_m', x: 18, y: 12, variant: 'pink', name: 'house2', to: 'thimble_house2' },
       { id: 'sign', x: 11, y: 9, name: 'sign_v' }, { id: 'sign', x: 22, y: 5 },
-      { id: 'lamp', x: 11, y: 7 }, { id: 'lamp', x: 15, y: 7 }, { id: 'well', x: 6, y: 9 }, { id: 'bench', x: 17, y: 9 },
+      { id: 'lamp', x: 10, y: 8 }, { id: 'lamp', x: 15, y: 8 }, { id: 'well', x: 6, y: 9 }, { id: 'bench', x: 17, y: 9 },
       { id: 'cloth_line', x: 7, y: 13 }, { id: 'tree', x: 2, y: 10 }, { id: 'tree', x: 8, y: 18 }, { id: 'tree', x: 16, y: 18 }, { id: 'tree', x: 23, y: 10 },
       { id: 'flowerbed', x: 20, y: 9 }, { id: 'barrel', x: 8, y: 6 }, { id: 'crate', x: 16, y: 6 }, { id: 'windmill', x: 2, y: 16 },
     ],

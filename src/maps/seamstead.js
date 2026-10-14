@@ -45,7 +45,7 @@
   M.sign(3, 13, 'SEAMSTEAD CITY\\nWest: Route 3, Hemline', 'west sign');
   M.sign(32, 13, 'EAST: ROUTE 4\\nClosed for resurfacing. By order of the Society.', 'east sign (Ch. 4 opens this)');
   M.sign(21, 22, 'CRISP & CO.\\nEverything flat. Everything fair.\\pStaff only. Ask on the top floor.', 'Crisp & Co. sign');
-  M.stamp('lamp', 12, 12).stamp('lamp', 23, 12).stamp('lamp', 12, 17).stamp('lamp', 23, 17).stamp('lamp', 8, 13).stamp('lamp', 30, 13);
+  M.stamp('lamp', 12, 12).stamp('lamp', 23, 12).stamp('lamp', 12, 17).stamp('lamp', 23, 17).stamp('lamp', 8, 12).stamp('lamp', 30, 12);
   M.stamp('bench', 14, 17).stamp('bench', 21, 17).stamp('flowerbed', 16, 12).stamp('flowerbed', 19, 12).stamp('well', 17, 15);
   M.trees([[2, 9], [9, 6], [24, 4], [33, 8], [2, 18], [10, 22], [33, 19], [21, 5]]);
   M.stamp('barrel', 26, 10).stamp('crate', 31, 10).stamp('bush', 3, 22).stamp('bush', 32, 22);

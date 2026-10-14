@@ -71,7 +71,7 @@
 
   // ============================================================================================ lamp (1x2)
   K.stamp('lamp', {
-    w: 1, h: 2, over: 1, solid: ['#', '#'],
+    w: 1, h: 2, over: 1, solid: ['.', '#'], // only the base blocks: the lantern head hangs over the walkable tile above it
     paint: () => {
       const b = K.B(16, 32);
       // iron post + base

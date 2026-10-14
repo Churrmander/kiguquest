@@ -126,5 +126,15 @@ for (const id of ids) {
   }
 }
 
+// props that block must never sit on a road: lamps and the like stand beside it (a lamp across a 2-wide street used to wall the village in two)
+for (const id of ids) {
+  const tm = tms[id];
+  if (!tm) continue;
+  for (const p of tm.placements) {
+    if (p.id !== 'lamp') continue;
+    for (let yy = 0; yy < p.h; yy++) if (p.def.solid[yy][0] === '#' && ['cobble', 'path', 'rock_path', 'bridge_h', 'bridge_v'].includes(tm.idAt(p.x, p.y + yy))) bad(id, 'lamp@' + p.x + ',' + p.y + ' blocks the road at ' + p.x + ',' + (p.y + yy));
+  }
+}
+
 assert.deepEqual(problems, [], '\n' + problems.join('\n'));
 console.log('maps ok:', ids.length, 'maps checked');
