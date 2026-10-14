@@ -139,7 +139,7 @@
       { id: 'guard2', x: 23, y: 3, look: 'grunt_f', dir: 'down', hideIf: 'route2_open',
         script: function* (c) { yield* c.sayT('thimble.guard2', 'Stay in line, please.\\p...Your collar is untidy. May I? ...There. Much better. Flat is fair!'); } },
       // cast for the Rival #2 and first-inspection scenes (hidden until their scripts place them)
-      { id: 'tomo_t', x: 12, y: 6, look: 'tomo', dir: 'down', hidden: true, say: ['{rival}: ...'] },
+      { id: 'tomo_t', x: 12, y: 6, look: 'rival', dir: 'down', hidden: true, say: ['{rival}: ...'] },
       { id: 'presser_s1', x: 12, y: 14, look: 'grunt_m', dir: 'up', hidden: true, say: ['Flat is fair!'] },
       { id: 'presser_s2', x: 13, y: 14, look: 'grunt_f', dir: 'up', hidden: true, say: ['Stay in line, please.'] },
       { id: 'poppy_out', x: 12, y: 6, look: 'poppy', dir: 'down', hidden: true, say: ['Poppy: Every stitch counts!'] },

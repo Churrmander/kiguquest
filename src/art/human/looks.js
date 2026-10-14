@@ -19,9 +19,6 @@
   def('hero_f', { name: 'Hero (girl)', build: 'teen', sex: 'f', skin: 'fair', hair: hair('ponytail', 'blonde'), eyes: 'blue',
     face: { eyes: 'normal', mouth: 'smile' }, outfit: out('overalls', 'white', 'denim', 'white'), bottom: { type: 'shorts', color: 'denim' }, legs: 'white', shoes: 'chocolate',
     acc: ['beret:#b8302e/#e8c870', 'satchel:#a0642e', 'belt:#7c4e30', 'spools'] });
-  def('tomo', { name: 'Tomo', build: 'teen', sex: 'm', skin: 'pale', hair: hair('sidepart', 'ink'), eyes: 'grey',
-    face: { eyes: 'serious', mouth: 'flat', brows: 'stern' }, outfit: out('jacket', 'charcoal', 'starch', 'white'), bottom: { type: 'pants', color: 'slate' }, shoes: 'black',
-    acc: ['glasses:#4a3a58', 'scarf:starch'] });
   def('mimi', { name: 'Mimi', build: 'teen', sex: 'f', skin: 'fair', hair: hair('bob', 'honey'), eyes: 'green',
     face: { eyes: 'happy', mouth: 'grin' }, outfit: out('cardigan', 'pink', 'white', 'cream'), bottom: { type: 'skirt', color: 'plum' }, legs: 'white', shoes: 'rose',
     acc: ['bow:#f0508a'] });

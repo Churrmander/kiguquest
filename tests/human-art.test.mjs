@@ -7,7 +7,7 @@ const load = () => loadNP({ files: [...CORE, ...mine] }).NP;
 const NP = load();
 const H = NP.art.human;
 
-const REQUIRED = ['hero_m', 'hero_f', 'tomo', 'mimi', 'prof_bobbin', 'mom', 'aide_f', 'aide_m', 'villager_f1', 'villager_f2', 'villager_m1', 'villager_m2',
+const REQUIRED = ['hero_m', 'hero_f', 'mimi', 'prof_bobbin', 'mom', 'aide_f', 'aide_m', 'villager_f1', 'villager_f2', 'villager_m1', 'villager_m2',
   'elder_m', 'elder_f', 'child_m', 'child_f', 'shopkeeper', 'tea_maid', 'tailor_f', 'tailor_m', 'net_kid', 'picnicker', 'hiker', 'grunt_m', 'grunt_f', 'poppy',
   'pleat', 'madame_damask', 'bryn', 'sailor', 'camper', 'schoolgirl', 'scientist', 'nurse_aide', 'rocker', 'cook', 'fisher', 'pilot', 'skier', 'artist',
   'gentleman', 'lady', 'twins_a', 'twins_b', 'old_tailor'];

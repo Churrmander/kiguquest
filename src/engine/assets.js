@@ -136,7 +136,10 @@
       return { w: 16, h: 24, frames };
     });
   }
+  /** 'rival' is a pseudo-look: the other protagonist (opposite-gender hero), so the rival always looks like the hero you did not pick */
+  const rl = (look) => (look === 'rival' ? (NP.State && NP.state ? NP.State.rivalLookId() : 'hero_m') : look);
   A.human = function (look) {
+    look = rl(look);
     const h = art().human;
     if (h && h.has && h.overworld) {
       const v = tryit(() => (h.has(look) ? memo('ho|' + look, () => h.overworld(look)) : null), null);
@@ -145,6 +148,7 @@
     return fallbackHuman(look || 'npc');
   };
   function portrait(kind, look) {
+    look = rl(look);
     const h = art().human;
     if (h && h.has && h[kind]) {
       const v = tryit(() => (h.has(look) ? memo('hp|' + kind + '|' + look, () => h[kind](look)) : null), null);

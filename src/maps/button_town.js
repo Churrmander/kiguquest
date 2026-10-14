@@ -121,7 +121,7 @@
           if (!c.flag('has_starter')) yield* c.say('Take your time, {player}. Step up to the table and look at each spool.\\pA Kigu will be waiting on every one.');
           else yield* c.say('Meadow Lane is full of wild Kigu.\\pOffer a Bond Spool when one looks curious.\\pDo visit the Tea House in Thimble. Their cocoa is famous.\\pHave you seen my tape measure? ...Oh. Around my neck. Again.');
         } },
-      { id: 'tomo_lab', x: 9, y: 6, look: 'tomo', dir: 'left', hideIf: 'tomo_left_lab',
+      { id: 'tomo_lab', x: 9, y: 6, look: 'rival', dir: 'left', hideIf: 'tomo_left_lab',
         script: function* (c) { yield* c.say('{rival}: Do not dawdle. The Professor is watching.'); } },
       { id: 'aide1', x: 2, y: 7, look: 'aide_f', dir: 'right', say: ['These are this year\'s apprentice spools.\\pThey have been waiting for you two for weeks!'] },
       { id: 'aide2', x: 9, y: 9, look: 'aide_m', dir: 'up', say: ['The Sketchbook records every Kigu you meet.\\pThe Professor hopes you will fill it.', 'See the photo on her desk? Two girls, laughing.\\pOne of them is folding a napkin in thirds. Nobody asks who they are.'] },

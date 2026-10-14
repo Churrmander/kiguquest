@@ -12,7 +12,7 @@
     yield* c.sayT('seamstead.rival3.1', '{rival}: {player}! Over here! Look at this place.\\pAnd that big white shop? Crisp & Co. My dad works there.\\pHe says they are the future of tailoring. Nothing ever creases.');
     yield* c.sayT('seamstead.rival3.2', '{rival}: Hmph. Mimi says the Society is bad.\\pShe has never seen the Linens floor. I have.\\pIf you want in, you go through me.\\pNot because I am mean! Because I am proud of him.');
     const team = L.team([[L.evoStarter(c.state.rivalStarter), 18], ['sparkin|peepi', 16], ['kumi|mittsy', 16], ['silkie', 17]]);
-    const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'tomo', ai: 2, reward: 18, team });
+    const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'rival', ai: 2, reward: 18, team });
     c.set('rival3_done'); c.music('city_seamstead');
     if (won) yield* c.sayT('seamstead.rival3.win', '{rival}: ...Okay. Okay! You are good.\\pBut Crisp & Co. is not bad. You will see.\\pMy dad works in the basement now. Three weeks.\\pHe says it is "very restful".');
     else yield* c.sayT('seamstead.rival3.lose', '{rival}: Ha! Told you!\\pCrisp & Co. is the best thing that ever happened to this city.\\pGo rest your Kigu. Then say that to my face.');

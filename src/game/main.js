@@ -10,7 +10,7 @@
 
   /** Skip the title: start a fresh game directly (tests, ?quick in the browser). */
   NP.quickStart = function (name, gender) {
-    NP.state = NP.State.fresh(name || 'Ren', gender || 'm');
+    NP.state = NP.State.fresh(name || NP.State.defaultName(gender || 'm'), gender || 'm');
     const ow = new NP.Overworld();
     NP.Game.reset(ow);
     ow.loadMap('lab', 5, 9, 'up');

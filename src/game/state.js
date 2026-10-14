@@ -6,12 +6,23 @@
 
   NP.fmtVars = NP.fmtVars || {};
   NP.fmtVars.player = () => (NP.state && NP.state.name) || 'Hero';
-  NP.fmtVars.rival = () => (NP.state && NP.state.rival) || 'Tomo';
+  NP.fmtVars.rival = () => (NP.state && NP.state.rival) || 'Draco';
+
+  // Lore: the two protagonists are Dahlia (girl) and Draco (boy), childhood friends. You play one (and may rename them); the other is your
+  // friendly rival. Defaults: girl = Dahlia, boy = Draco. If you give yourself the rival's default name, the rival gets a near-twin instead.
+  const DEFAULT_NAME = { f: 'Dahlia', m: 'Draco' };
+  const RIVAL_ALT = { f: 'Dalia', m: 'Drake' };
+  const other = (g) => (g === 'f' ? 'm' : 'f');
+  const defaultName = (g) => DEFAULT_NAME[g === 'f' ? 'f' : 'm'];
+  const rivalNameFor = (playerName, gender) => {
+    const rg = other(gender === 'f' ? 'f' : 'm'), n = DEFAULT_NAME[rg];
+    return String(playerName || '').trim().toLowerCase() === n.toLowerCase() ? RIVAL_ALT[rg] : n;
+  };
 
   const S = {
     fresh(name, gender) {
       return {
-        v: 1, name: name || 'Hero', gender: gender || 'm', rival: 'Tomo',
+        v: 1, name: name || defaultName(gender), gender: gender || 'm', rival: rivalNameFor(name || defaultName(gender), gender || 'm'),
         party: [], box: [], bag: {}, money: 1000, flags: {}, badges: [], steps: 0, frames: 0, repel: 0,
         pos: { map: 'lab', x: 5, y: 9, dir: 'up' },
         healPoint: { map: 'player_house', spawn: 'door' },
@@ -22,6 +33,8 @@
       };
     },
     lookId(st) { return (st || NP.state).gender === 'f' ? 'hero_f' : 'hero_m'; },
+    /** the rival is the other protagonist: opposite-gender hero look */
+    rivalLookId(st) { return (st || NP.state).gender === 'f' ? 'hero_m' : 'hero_f'; },
 
     // ---- storage
     hasSave() { try { return !!root.localStorage.getItem(KEY); } catch (e) { return false; } },
@@ -46,6 +59,7 @@
         const f = S.fresh();
         const st = Object.assign(f, s);
         st.opts = Object.assign(f.opts, s.opts || {});
+        if (!st.rival || st.rival === 'Tomo') st.rival = rivalNameFor(st.name, st.gender); // saves from before the lore change
         return st;
       } catch (e) { return null; }
     },
@@ -79,6 +93,8 @@
       return Math.floor(s / 3600) + ':' + NP.util.pad(Math.floor(s / 60) % 60, 2) + ':' + NP.util.pad(s % 60, 2);
     },
   };
+  S.defaultName = defaultName;
+  S.rivalNameFor = rivalNameFor;
   NP.State = S;
   NP.state = null;
 })(typeof globalThis !== 'undefined' ? globalThis : window);

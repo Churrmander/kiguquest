@@ -72,7 +72,7 @@ for (const id of ids) {
   // people and pickups must stand on walkable ground
   for (const n of def.npcs || []) {
     if (tm.solid(n.x, n.y)) bad(id, 'npc ' + n.id + ' is inside something solid at ' + n.x + ',' + n.y);
-    if (n.look && NP.art.human.has && !NP.art.human.has(n.look)) bad(id, 'npc ' + n.id + ' has unknown look ' + n.look);
+    if (n.look && n.look !== 'rival' && NP.art.human.has && !NP.art.human.has(n.look)) bad(id, 'npc ' + n.id + ' has unknown look ' + n.look);
     const tr = n.trainer;
     if (tr) for (const t of tr.team) if (!NP.data.species[t.sp]) bad(id, 'trainer ' + n.id + ' uses unknown species ' + t.sp);
   }

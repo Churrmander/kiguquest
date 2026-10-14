@@ -79,7 +79,7 @@
           yield* c.face('player', 'up');
           yield* c.say('{rival}: Did you think you would beat me to Thimble? Not a chance.\\pI trained all morning. Watch what my Kigu can do!');
           const rs = c.state.rivalStarter || 'ottopi';
-          const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'tomo', ai: 2, reward: 10, team: team([[rs, 5], ['peepi', 4]]) });
+          const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'rival', ai: 2, reward: 10, team: team([[rs, 5], ['peepi', 4]]) });
           c.set('rival1_done');
           if (won) yield* c.say('{rival}: ...Tch. So you are not just lucky.\\pFine. I will be waiting in Thimble Village. Do not get sleepy on me!');
           else yield* c.say('{rival}: Ha! Better get your Kigu some rest before you try again.');
@@ -90,5 +90,5 @@
     ],
   });
   // the rival waits off-path until the trigger fires
-  NP.maps.route1.npcs.push({ id: 'tomo_r1', x: 13, y: 4, look: 'tomo', dir: 'down', hidden: true, say: ['{rival}: ...'] });
+  NP.maps.route1.npcs.push({ id: 'tomo_r1', x: 13, y: 4, look: 'rival', dir: 'down', hidden: true, say: ['{rival}: ...'] });
 })(typeof globalThis !== 'undefined' ? globalThis : window);
