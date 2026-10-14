@@ -362,6 +362,9 @@
 
     *blackout(cfg) {
       const st = NP.state;
+      // the battle scene leaves the screen faded to black: clear the fade and draw a plain black backdrop, or the message is hidden under it
+      this.blackBg = true;
+      NP.Game.fadeTo(0, 0);
       yield* this.say('{player} is out of usable Kigu!\\p{player} blacked out...');
       st.money = Math.floor(st.money / 2);
       NP.State.healAll();
@@ -372,6 +375,8 @@
       const spawns = NP.maps[id].spawns || {};
       const sp = spawns[tea ? 'door' : (hp && hp.spawn)] || spawns.door || { x: 1, y: 1, dir: 'down' };
       this.msg.close();
+      NP.Game.fadeTo(1, 0);
+      this.blackBg = false;
       this.loadMap(id, sp.x, sp.y, sp.dir, { noEnter: true });
       NP.snd.play(this.musicId, { restart: true });
       NP.Game.fadeTo(0, 14);
@@ -680,6 +685,7 @@
     }
 
     draw(fb, frame) {
+      if (this.blackBg) { fb.clear('#000000'); this.drawUI(fb, frame); return; }
       const [cx, cy] = this.camera();
       if (NP.view3d && NP.view3d.on) NP.view3d.aim(this.map, this.player.x, this.player.y);
       fb.clear('#000000');

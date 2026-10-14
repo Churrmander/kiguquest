@@ -64,9 +64,10 @@ assert.ok(t.mash(() => t.idle(), 4000), 'shop closed');
 assert.ok(t.travel(4, 7), 'store exit');
 assert.equal(t.ow.map.id, 'thimble');
 
-// the salon: walking north towards the door triggers Rival #2 (Tomo, fresh from losing to Poppy)
+// the salon: walking north towards the door triggers Rival #2 (Tomo, fresh from losing to Poppy): a conversation and a gift, no fight
 assert.ok(t.travel(12, 6, 900), 'salon door');
-assert.ok(st.flags.rival2_done, 'rival #2 ambushed us outside the salon');
+assert.ok(st.flags.rival2_done, 'rival #2 met us outside the salon');
+assert.ok(!t.ow.map.def.triggers.some((tr) => tr.id === 'rival2' && /trainerBattle/.test(String(tr.script))), 'rival #2 is not a battle');
 assert.equal(t.ow.map.id, 'salon', 'in salon: ' + t.pos());
 assert.ok(t.travel(4, 4, 600), 'walk to poppy, at ' + t.pos());
 t.tap('up'); t.tick(6);

@@ -4,18 +4,20 @@
   const NP = root.NP, K = NP.mapkit;
   const team = (list) => list.map(([sp, lv]) => ({ sp, lv }));
 
-  // ---- Rival #2: Tomo has just lost to Poppy and is waiting outside the Salon door
+  // ---- Rival #2: Tomo has just lost to Poppy and is waiting outside the Salon door. Conversation only: Rival #1 (Route 1) is the only
+  //      rival fight before the first Salon, so the player is never forced into two rival battles in a row on low HP.
   function* rival2(c) {
     const t = c.npc('tomo_t');
     c.placeNpc(t, 12, 6, 'down'); // he stands in the doorway, so he blocks the way in
     c.showNpc('tomo_t');
     yield* c.face('player', 'up');
     yield* c.emote('player', 'exclaim');
-    yield* c.sayT('thimble.rival2.1', '{rival}: {player}! You made it.\\pI just challenged Poppy. She beat me with cardigans. CARDIGANS!\\pBut I worked out her pattern, and now I am going to use it on you. Come on!');
-    const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'tomo', ai: 2, reward: 14, team: team([[c.state.rivalStarter || 'ottopi', 7], ['peepi', 6], ['nibbi', 6]]) });
+    yield* c.sayT('thimble.rival2.1', '{rival}: {player}! You made it.\\pI just challenged Poppy. She beat me with cardigans. CARDIGANS!');
+    yield* c.sayT('thimble.rival2.2', '{rival}: My Kigu are far too sleepy to fight you now.\\pSo are my pride and my sleeves. But I took notes!');
+    yield* c.sayT('thimble.rival2.3', '{rival}: Her Fluff Kigu hit softer than they look.\\pDo not let them tuck you in. Here, take these.\\pMum packed far too many snack cakes.');
+    yield* c.giveItem('snack_cake', 3);
     c.set('rival2_done');
-    if (won) yield* c.sayT('thimble.rival2.win', '{rival}: ...Hmph. Fine. Poppy beat me, and you beat me. Two for two.\\pI am not done, though. I will train harder!\\p...Speaking of bridges, the guards are weirdly picky about planks.\\pWhatever. Go on. Poppy is waiting.');
-    else yield* c.sayT('thimble.rival2.lose', '{rival}: Ha! Poppy\'s cardigans were no match for me, and neither are you!\\pGo and rest your Kigu at the Tea House, then try again.');
+    yield* c.sayT('thimble.rival2.win', '{rival}: Next time we meet, I will have a plan.\\pProbably. Go on. Poppy is waiting.');
     yield* c.face(t, 'up');
     yield* c.wait(12);
     c.hideNpc('tomo_t'); // steps back inside

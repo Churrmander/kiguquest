@@ -167,7 +167,7 @@ Scene ids are the `story.*` / `script.*` keys in `docs/text.md`. **Rival** = Tom
 **Ch. 0 — Button Town, the lab.** Morning. Laundry, sea breeze, a kid who wants a Kigu. Bobbin hands out the three starters (Konko / Ottopi / Sprubun); Tomo takes the one that beats yours; you get
 5 Bond Spools, snack cakes, the Sketchbook. Mom's cocoa. *Scenes:* `lab_intro`, `starter`, `town_gate`, `mom`.
 **Ch. 1 — Meadow Lane → Thimble Village (Salon 1, Fluff).** Tailors on the lane; **Rival #1** at the top of the lane ("I'll be waiting in Thimble"). Mimi gives a Silk Spool. The bridge to Route 2 is closed: "inspectors in
-stiff white collars said the planks were uneven." Poppy's Salon. **Rival #2** outside the Salon (he lost; you didn't). Poppy gives Disc: Snip, cream thread, the 'D' handkerchief, and "go and see Tsumugi."
+stiff white collars said the planks were uneven." Poppy's Salon. **Rival #2** outside the Salon (he lost; you didn't) - a conversation and a gift of snack cakes, NOT a battle, so there are never two rival fights back to back. Poppy gives Disc: Snip, cream thread, the 'D' handkerchief, and "go and see Tsumugi."
 **Ch. 2 — Route 2 → Gingham Woods → Hemline (Salon 2, Buzz).** *Society shrine incident:* at the **Spindle Shrine**, Pressers led by Pleat Crease are "inspecting" the **Everspool** (a silk spool that never
 runs out; the straightest thread in the world); they have Pressed the shrine's guardian Cocoona. You drive them off; Crease snips a sample and leaves ("The Society is patient"). Mimi's first Soft Rinse works. Hemline: Bryn;
 the hemmers' grievance; Bryn gives a length of Everspool silk. *Scenes:* `route2_inspectors`, `spindle_shrine`, `rinse`, `script.bryn`.
