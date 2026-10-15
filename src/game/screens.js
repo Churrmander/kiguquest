@@ -115,7 +115,7 @@
           if (this.cy < ROWS.length) {
             if (this.name.length < 8) { this.name += ROWS[this.cy][this.cx]; NP.snd.sfx('select'); } else NP.snd.sfx('error');
           } else if (this.cx === 0) { this.name = this.name.slice(0, -1); NP.snd.sfx('cancel'); }
-          else if (this.cx === 1) { this.name = this.gender === 'm' ? 'Ren' : 'Yuki'; NP.snd.sfx('select'); }
+          else if (this.cx === 1) { this.name = NP.State.defaultName(this.gender); NP.snd.sfx('select'); }
           else {
             if (!this.name.trim()) { NP.snd.sfx('error'); } else { NP.snd.sfx('select'); this.result = { name: this.name.trim(), gender: this.gender }; NP.Game.pop(); return; }
           }

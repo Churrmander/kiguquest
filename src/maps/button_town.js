@@ -21,6 +21,7 @@
 
   K.reg({
     id: 'button_town', name: 'Button Town', music: 'home_town', battleBg: 'grass', border: 'treeline',
+    view: 'street',   // 3D camera preset (street | town | flat-ish), see src/engine/persp.js
     legend: { '.': 'grass', T: 'treeline', p: 'path', c: 'cobble', w: 'water', f: 'flowers', F: 'fence' },
     rows: K.rows(g),
     stamps: [
@@ -33,16 +34,16 @@
       { id: 'mailbox', x: 9, y: 8 }, { id: 'flowerbed', x: 6, y: 11 }, { id: 'bench', x: 16, y: 10 }, { id: 'lamp', x: 14, y: 10 },
     ],
     interact: [
-      { x: 11, y: 10, say: 'BUTTON TOWN\\nA town stitched together with new beginnings.' },
+      { x: 11, y: 10, say: 'BUTTON TOWN\\nA town stitched with new beginnings.' },
       { x: 21, y: 8, say: "PROF. BOBBIN'S LAB\\nKigu research and tailoring." },
     ],
     spawns: { south: { x: 12, y: 17, dir: 'up' }, north: { x: 12, y: 2, dir: 'down' } },
     warps: [{ xs: [12, 13], y: 0, to: 'route1', spawn: 'south', sound: 'none' }],
     npcs: [
       { id: 'villager_a', x: 9, y: 12, look: 'villager_f1', dir: 'down', move: 'wander', range: 2,
-        say: ['Oh, good morning!\\pThe ocean breeze keeps the sheets dry in no time here.'] },
+        say: ['Oh, good morning! The sea breeze dries sheets in ten minutes.\\pI have never once needed a clothes peg. Do not tell the peg.'] },
       { id: 'kid_a', x: 16, y: 13, look: 'child_m', dir: 'left', move: 'turn',
-        say: ['I am going to have a Kigu of my own someday!\\pBut I am not allowed on Meadow Lane alone yet.'] },
+        say: ['Is that {player}? Are you getting a Kigu today?\\pI am going to have one someday. Mom says I must be taller first.'] },
       { id: 'elder_a', x: 11, y: 15, look: 'elder_f', dir: 'right',
         say: ['Kigu choose the people they trust.\\pIt is not a thing you can force.'] },
     ],
@@ -85,7 +86,7 @@
     const tomo = c.npc('tomo_lab');
     yield* c.emote(tomo, 'exclaim');
     const rp = STARTERS.find((x) => x.sp === rs);
-    yield* c.say('{rival}: Hmph. Then I choose this one.');
+    yield* c.say('{rival}: I will take the one that beats yours. Dare you to beat it!\\pFair is fair!');
     yield* c.walk(tomo, ['down', 1, 'left', 9 - rp.x, 'up', 1]);
     yield* c.face(tomo, 'up');
     c.hideProp('starter_' + rs);
@@ -94,8 +95,8 @@
     yield* c.giveItem('bond_spool', 5);
     yield* c.giveItem('snack_cake', 3);
     yield* c.giveItem('sketchbook', 1);
-    yield* c.say('Bond Spools let you offer friendship to wild Kigu. She will only accept if she wants to, so be gentle.\\pMeadow Lane leads to Thimble Village, where Master Poppy runs the first Salon.');
-    yield* c.say('{rival}: I will get there first, {player}! Do not get in my way!');
+    yield* c.say('Bond Spools let you offer friendship to wild Kigu.\\pShe will only accept if she wants to, so be gentle.\\pMeadow Lane leads to Thimble. Master Poppy runs the first Salon.');
+    yield* c.say('{rival}: Race you to Thimble! Last one there carries the snack cakes!');
     yield* c.walk(tomo, ['down', 1, 'right', 7 - rp.x, 'down', 3]);
     c.hideNpc('tomo_lab');
     c.set('tomo_left_lab');
@@ -119,12 +120,12 @@
       { id: 'bobbin', x: 5, y: 3, look: 'prof_bobbin', dir: 'down',
         script: function* (c, n) {
           if (!c.flag('has_starter')) yield* c.say('Take your time, {player}. Step up to the table and look at each spool.\\pA Kigu will be waiting on every one.');
-          else yield* c.say('Meadow Lane is full of wild Kigu. Offer them a Bond Spool when they look curious.\\pAnd do visit the Tea House in Thimble Village. Their cocoa is famous.');
+          else yield* c.say('Meadow Lane is full of wild Kigu.\\pOffer a Bond Spool when one looks curious.\\pDo visit the Tea House in Thimble. Their cocoa is famous.\\pHave you seen my tape measure? ...Oh. Around my neck. Again.');
         } },
-      { id: 'tomo_lab', x: 9, y: 6, look: 'tomo', dir: 'left', hideIf: 'tomo_left_lab',
-        script: function* (c) { yield* c.say('{rival}: Do not dawdle. The Professor is watching.'); } },
+      { id: 'tomo_lab', x: 9, y: 6, look: 'rival', dir: 'left', hideIf: 'tomo_left_lab',
+        script: function* (c) { yield* c.say('{rival}: Hurry up, slowpoke! The Professor is watching.'); } },
       { id: 'aide1', x: 2, y: 7, look: 'aide_f', dir: 'right', say: ['These are this year\'s apprentice spools.\\pThey have been waiting for you two for weeks!'] },
-      { id: 'aide2', x: 9, y: 9, look: 'aide_m', dir: 'up', say: ['The Sketchbook records every Kigu you meet.\\pThe Professor hopes you will fill it.'] },
+      { id: 'aide2', x: 9, y: 9, look: 'aide_m', dir: 'up', say: ['The Sketchbook records every Kigu you meet.\\pThe Professor hopes you will fill it.', 'See the photo on her desk? Two girls, laughing.\\pOne of them is folding a napkin in thirds. Nobody asks who they are.'] },
     ],
     triggers: [
       { x: 5, y: 10, w: 2, h: 1, when: (c) => !c.flag('has_starter'),
@@ -137,8 +138,11 @@
       const prof = c.npc('bobbin');
       yield* c.say('Ah, {player}! There you are!');
       yield* c.walk('player', ['up', 3]);
-      yield* c.say('I am Professor Bobbin. I study Kigu, the spirit-girls who wear living costumes.\\pLong ago, the land of Tsumugi was stitched together by Kigu and the people who befriended them. We call those people Tailors.');
-      yield* c.say('Today you become an apprentice Tailor.\\pThree Kigu are waiting on the table. Each sits on a Bond Spool. Choose the one you like best!');
+      yield* c.say('I am Professor Bobbin. I study Kigu.\\pThey are spirit-girls who wear living costumes.\\pLong ago, Tsumugi was stitched together\\pby Kigu and the people who befriended them.\\pWe call those people Tailors.');
+      yield* c.say('Today you become an apprentice Tailor.\\pThree Kigu wait on the table, each on a Bond Spool.\\pChoose the one you like best!');
+      yield* c.say('{rival}: I should pick first! I was up before anyone this morning.\\pI was on the roof watching the sea before the sun was even out.');
+      yield* c.say('Guests choose first, {rival}. Besides, {player} decides faster than you do.');
+      yield* c.say('{rival}: Fine! Then I get the one that beats yours.\\pDare you to pick a good one, {player}!');
       yield* c.face(c.npc('tomo_lab'), 'left');
     },
   });
@@ -150,7 +154,7 @@
     npcs: [{
       id: 'mom', x: 3, y: 4, look: 'mom', dir: 'down',
       script: function* (c) {
-        if (!c.flag('has_starter')) { yield* c.say('{player}! Professor Bobbin is expecting you at her lab, just up the road.'); return; }
+        if (!c.flag('has_starter')) { yield* c.say('{player}! Professor Bobbin is expecting you.\\pHer lab is just up the road. Go on, shoo!'); return; }
         if (!c.flag('mom_gift')) {
           c.set('mom_gift');
           yield* c.say('{player}! I heard you have a Kigu now. I am so proud!\\pHere, I baked these. Share them.');
@@ -166,7 +170,7 @@
     id: 'tomo_house', name: "{rival}'s House", w: 9, h: 8, doorX: 3, exit: { to: 'button_town', door: 'tomo' },
     stamps: [{ id: 'bookshelf', x: 1, y: 0 }, { id: 'table_s', x: 4, y: 4 }, { id: 'bed', x: 6, y: 2 }, { id: 'plant', x: 7, y: 5 }],
     npcs: [{ id: 'tomo_mom', x: 3, y: 3, look: 'elder_f', dir: 'down',
-      say: ['{rival} left for the lab before breakfast.\\pThat boy would sleep in the Professor\'s doorway if he could.'] }],
+      say: ['Oh, {player}! Come in, come in. {rival} left for the lab before breakfast.\\pThey did not even finish their toast. Tell them I said so!', 'Always welcome here, sweetheart. Dinner is at six. Your chair is ready.'] }],
   });
 
   K.room({

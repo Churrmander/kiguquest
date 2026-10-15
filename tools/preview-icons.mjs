@@ -159,7 +159,7 @@ if (I.fxNames && I.fxNames().length) {
 // ---------------------------------------------------------------- logo + title
 if (want('logo') && I.has('logo')) {
   const L = I.logo();
-  checkBudget('logo', L, 48);
+  checkBudget('logo', L, 2400);   // soft anti-aliased, dithered lettering: rich colour on purpose (only item icons / emotes stay <= 16)
   out('logo', titled(`logo ${L.w}x${L.h} (${L.countColors()} colours)`, L.padded(4, 4, 4, 4)));
   const onLight = new Bitmap(L.w + 8, L.h + 8).clear('#f0e8d8');
   onLight.blit(L, 4, 4);

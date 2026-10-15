@@ -21,7 +21,7 @@
   /** Known {variables}. The engine/game supplies the contextual ones when it calls NP.text.t / NP.text.fmt. */
   const VARS = {
     player: 'the player\'s name (NP.fmtVars, set by the game)',
-    rival: 'the rival\'s name, default Tomo (NP.fmtVars)',
+    rival: 'the rival\'s name: the other protagonist, Draco or Dahlia (NP.fmtVars)',
     kigu: 'a Kigu\'s display name, e.g. Konko (nickname or species name)',
     mon: 'a battle label: the plain name for your side, "Wild X" / "Foe X" for the other side (BMon.label())',
     foe: 'the opposing Kigu\'s name/label',

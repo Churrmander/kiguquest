@@ -118,20 +118,23 @@
       return m;
     }
 
-    /**
-     * Draw the world. cam = top-left pixel of the view in map pixels. actors: [{sortY, draw(fb, ox, oy)}] where ox/oy
-     * subtract the camera (actor draws itself at its own pixel pos - o).
-     */
-    draw(fb, camX, camY, tick, actors) {
+    /** Terrain tiles + floor-layer stamps for the pixel rect [camX,camX+vw) x [camY,camY+vh) onto fb. Returns the overlay list
+     *  (animated terrain overlays) for the caller to draw last. Shared by the flat renderer and the pseudo-3D ground pass.
+     *  tileFn(terrainId, tx, ty, outside) -> Bitmap | null is the 3D ground pass's hook to substitute a tile's picture. */
+    drawTerrain(fb, camX, camY, tick, vw, vh, tileFn) {
       const A = NP.assets;
       const x0 = Math.floor(camX / T), y0 = Math.floor(camY / T);
-      const x1 = Math.ceil((camX + 240) / T), y1 = Math.ceil((camY + 160) / T);
+      const x1 = Math.ceil((camX + vw) / T), y1 = Math.ceil((camY + vh) / T);
       const border = this.def.border || 'void';
       const overlays = [];
       for (let ty = y0; ty < y1; ty++) {
         for (let tx = x0; tx < x1; tx++) {
           const id = this.idAt(tx, ty);
           const dx = tx * T - camX, dy = ty * T - camY;
+          if (tileFn) { // the 3D ground pass may swap a tile for its own picture (forest floor under billboard trees, tinted cobble...)
+            const alt = tileFn(id === null ? border : id, tx, ty, id === null);
+            if (alt) { fb.blit(alt, dx, dy); continue; }
+          }
           if (id === null) {
             fb.blit(A.terrain(border, 255, tick >> 4, (tx * 7 + ty * 3) & 3), dx, dy);
             continue;
@@ -143,11 +146,24 @@
           if (def.hasOverlay) overlays.push([id, tx, ty, frame]);
         }
       }
-      const visible = (p) => p.x + p.w > x0 - 1 && p.x < x1 + 1 && p.y + p.h > y0 - 1 && p.y < y1 + 1;
       for (const p of this.floors) {
-        if (!visible(p)) continue;
+        if (p.x + p.w <= x0 - 1 || p.x >= x1 + 1 || p.y + p.h <= y0 - 1 || p.y >= y1 + 1) continue;
         fb.blit(A.stamp(p.id, p.variant, A.frameAt(p.def, tick)), p.x * T - camX, p.y * T - camY);
       }
+      return overlays;
+    }
+
+    /**
+     * Draw the world. cam = top-left pixel of the view in map pixels. actors: [{sortY, draw(fb, ox, oy)}] where ox/oy
+     * subtract the camera (actor draws itself at its own pixel pos - o). With NP.view3d.on the pseudo-3D renderer takes over.
+     */
+    draw(fb, camX, camY, tick, actors) {
+      if (NP.view3d && NP.view3d.on) return NP.view3d.draw(this, fb, camX, camY, tick, actors);
+      const A = NP.assets;
+      const x0 = Math.floor(camX / T), y0 = Math.floor(camY / T);
+      const x1 = Math.ceil((camX + 240) / T), y1 = Math.ceil((camY + 160) / T);
+      const overlays = this.drawTerrain(fb, camX, camY, tick, 240, 160);
+      const visible = (p) => p.x + p.w > x0 - 1 && p.x < x1 + 1 && p.y + p.h > y0 - 1 && p.y < y1 + 1;
       // y-sorted objects: stamp bases and actors
       const list = [];
       for (const p of this.objs) if (visible(p)) list.push({ sortY: (p.y + p.h) * T, order: 0, p });

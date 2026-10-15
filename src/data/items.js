@@ -46,4 +46,6 @@
   I('disc_snip', 'Disc: Snip', 'key', 0, 'Lets your Kigu snip small bushes. Face one and press A.');
   I('disc_paddle', 'Disc: Paddle', 'key', 0, 'Lets your Kigu paddle across calm water. Face the water and press A.');
   I('everspool_silk', 'Everspool Silk', 'key', 0, 'A length of golden-green silk from the Everspool. It never frays and never runs out.');
+  I('staff_pass', 'Staff Pass', 'key', 0, 'A white card stamped CRISP & CO. STAFF. Opens doors marked Staff Only.');
+  I('zip_cable', 'Zip Cable', 'key', 0, "A coil of yellow cable Zip pressed into your hand. 'For a rainy day. Or a rainy Salon.'");
 })(typeof globalThis !== 'undefined' ? globalThis : window);

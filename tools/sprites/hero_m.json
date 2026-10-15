@@ -1,0 +1,5 @@
+{
+  "id": "hero_m", "src": "hero_m_sheet.png", "canvas": [20, 32], "figureH": 31, "colors": 27, "outlineColors": 4, "saturation": 1.45, "contrast": 1.22,
+  "bg": { "tol": 45 }, "walk": "synth",
+  "cells": { "down": [945, 360, 130, 215], "up": [1085, 360, 130, 215], "left": [1235, 360, 140, 215], "right": [1385, 360, 140, 215] }
+}

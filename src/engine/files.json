@@ -1,1 +1,13 @@
-["src/engine/input.js", "src/engine/sound.js", "src/engine/ui.js", "src/engine/text.js", "src/engine/scene.js", "src/engine/game.js", "src/engine/assets.js", "src/engine/tilemap.js"]
+[
+  "src/engine/input.js",
+  "src/engine/sound.js",
+  "src/engine/ui.js",
+  "src/engine/text.js",
+  "src/engine/scene.js",
+  "src/engine/game.js",
+  "src/engine/assets.js",
+  "src/engine/tilemap.js",
+  "src/engine/persp.js",
+  "src/engine/persp_raster.js",
+  "src/engine/persp_scene.js"
+]

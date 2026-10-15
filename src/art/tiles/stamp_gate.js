@@ -39,6 +39,8 @@
     }
   }
 
+  S.stoneWall = stoneWall;          // (also used by the 3D view's gatehouse side walls, w3d_volumes.js)
+
   K.stamp('gate_house', {
     w: 5, h: 3, solid: ['##.##', '##.##', '##.##'], over: 2, variants: ['default', 'pressed'],
     paint: (variant) => {

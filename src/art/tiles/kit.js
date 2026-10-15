@@ -367,6 +367,15 @@
       if (b.w !== s.w * T || b.h !== s.h * T) throw new Error('stamp ' + id + ' drew ' + b.w + 'x' + b.h);
       return b.quantize15();
     };
+    // 3D view (w3d_volumes.js): the same picture painted with paint(v, f, '3d') - buildings leave out what the renderer builds as real
+    // geometry (striped awnings) - and `vol(variant)` = the building's volume options, when the stamp has one.
+    s.draw3d = function (variant, frame) {
+      let v = variant;
+      if (typeof v === 'number') v = s.variants[((v % s.variants.length) + s.variants.length) % s.variants.length];
+      if (v === undefined || v === null || s.variants.indexOf(v) < 0) v = s.variants[0];
+      const f = (((frame | 0) % s.frames) + s.frames) % s.frames;
+      return paint(v, f, '3d').quantize15();
+    };
     return NP.reg(NP.stamps, id, s);
   };
 

@@ -27,7 +27,7 @@
   }
   L.sp = (s, d) => pick('species', NP.data.species, s, d || 'nibbi');
   L.item = (s, d) => pick('item', NP.data.items, s, d || 'snack_cake');
-  L.look = (s, d) => pick('look', NP.art && NP.art.human && NP.art.human.looks, s, d || 'villager_m1');
+  L.look = (s, d) => (String(s).split('|')[0] === 'rival' ? 'rival' : pick('look', NP.art && NP.art.human && NP.art.human.looks, s, d || 'villager_m1'));
   L.hasItem = (id) => !!(NP.data.items && NP.data.items[id]);
   L.hasMove = (id) => !!(NP.data.moves && NP.data.moves[id]);
 

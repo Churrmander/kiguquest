@@ -156,4 +156,69 @@ for (const [mid, m] of Object.entries(NP.maps)) {
 }
 ok(usedStamps.size >= 40, 'maps should use the full stamp set');
 
-console.log(`tiles-art: ${Object.keys(NP.stamps).length} stamps (${drawn} variant/frame draws), ${Object.keys(NP.terrain).length} terrains, ${usedStamps.size} stamp ids used by ${mapIds.length} maps, ${checks} checks OK`);
+// ------------------------------------------------------------------------------------------------ battle backgrounds
+// 9 stages (BIBLE 5): 240x112, opaque, a platform under each anchor, deterministic, soft (no pixel noise), layers + discs for the camera.
+const BG_IDS = ['grass', 'forest', 'indoor', 'cave', 'city', 'gym', 'water', 'night', 'society'];
+const K = NP.art.tiles.kit;
+for (const id of BG_IDS) ok(NP.art.tiles.battleBgIds().includes(id), 'missing battle background ' + id);
+const bgSeen = new Set();
+for (const id of BG_IDS) {
+  const r = NP.art.tiles.battleBg(id);
+  assert.equal(r.id, id);
+  assert.equal(r.bg.w, 240, id + ' bg width'); assert.equal(r.bg.h, 112, id + ' bg height');
+  for (let i = 0; i < r.bg.u32.length; i++) assert.equal(r.bg.u32[i] >>> 24, 255, id + ': bg must be fully opaque');
+  for (const [who, p] of [['enemyBase', r.enemyBase], ['playerBase', r.playerBase]]) {
+    ok(Number.isInteger(p.x) && Number.isInteger(p.y) && r.bg.inBounds(p.x, p.y), id + ': ' + who + ' inside the bitmap');
+  }
+  ok(r.enemyBase.x > 120 && r.enemyBase.y < 70, id + ': foe stands upper right');
+  ok(r.playerBase.x < 120 && r.playerBase.y > 90 && r.playerBase.y < 112, id + ': player stands lower left, above the text box');
+  // the platforms: opaque pixels of the disc bitmap sit under both anchors (so the feet are on the platform)
+  for (const [who, d, p, minW] of [['enemyDisc', r.enemyDisc, r.enemyBase, 104], ['playerDisc', r.playerDisc, r.playerBase, 150]]) {
+    ok(d && d.bmp && Number.isInteger(d.x) && Number.isInteger(d.y), id + ': ' + who + ' present');
+    ok(d.bmp.w >= minW, id + ': ' + who + ' wide enough (' + d.bmp.w + ')');
+    ok((d.bmp.get(p.x - d.x, p.y - d.y) >>> 24) >= 250, id + ': ' + who + ' is opaque under its anchor');
+    ok(d.bmp.get(p.x - d.x, p.y - d.y - 1) >>> 24 > 0 && d.bmp.get(p.x - d.x - 20, p.y - d.y) >>> 24 > 0 && d.bmp.get(p.x - d.x + 20, p.y - d.y) >>> 24 > 0, id + ': ' + who + ' extends around the anchor');
+    ok(d.bmp.countColors() > 16, id + ': ' + who + ' is shaded');
+  }
+  // layers for the camera: opaque sky; ground transparent at the top, opaque at the bottom
+  ok(r.layers && r.layers.sky && r.layers.ground, id + ': layers');
+  assert.equal(r.layers.sky.w, 240); assert.equal(r.layers.sky.h, 112); assert.equal(r.layers.ground.w, 240); assert.equal(r.layers.ground.h, 112);
+  for (let x = 0; x < 240; x += 7) {
+    assert.equal(r.layers.sky.get(x, 0) >>> 24, 255, id + ': sky opaque'); assert.equal(r.layers.sky.get(x, 111) >>> 24, 255, id + ': sky opaque');
+    assert.equal(r.layers.ground.get(x, 111) >>> 24, 255, id + ': ground opaque at the bottom');
+    if (x < 220) assert.equal(r.layers.ground.get(x, 10) >>> 24, 0, id + ': ground transparent above the horizon (only a framing trunk may stand there)');
+  }
+  // "high-key, soft": many tones (no flat fills, no palette crunch) yet bounded (no per-pixel noise)
+  const n = r.bg.countColors();
+  ok(n >= 150 && n <= 1800, id + ': ' + n + ' colours');
+  // the whole image sits on the 15-bit grid
+  for (let i = 0; i < r.bg.u32.length; i += 13) { const c = r.bg.u32[i]; ok(c === NP.Color.q15(c), id + ': 15-bit colour'); }
+  // deterministic (fresh paint twice, bypassing the cache) and each stage differs from the others
+  const d1 = K.battleBgs[id].paint(), d2 = K.battleBgs[id].paint();
+  ok(d1.bg.equals(d2.bg) && d1.layers.sky.equals(d2.layers.sky) && d1.enemyDisc.bmp.equals(d2.enemyDisc.bmp), id + ' not deterministic');
+  const key = Array.from(r.bg.u32.filter((_, i) => i % 211 === 0)).join(',');
+  ok(!bgSeen.has(key), id + ' looks like another background'); bgSeen.add(key);
+  // soft: neighbouring pixels rarely jump (a smooth stage, not a noisy texture)
+  let jumps = 0;
+  for (let y = 0; y < 111; y++) for (let x = 0; x < 239; x++) {
+    const a = r.bg.u32[y * 240 + x], b2 = r.bg.u32[y * 240 + x + 1];
+    const dr = Math.abs((a & 255) - (b2 & 255)) + Math.abs(((a >>> 8) & 255) - ((b2 >>> 8) & 255)) + Math.abs(((a >>> 16) & 255) - ((b2 >>> 16) & 255));
+    if (dr > 150) jumps++;
+  }
+  ok(jumps < 240 * 112 * 0.06, id + ': too many hard pixel jumps (' + jumps + ')');
+}
+// the platforms sit where the battle scene draws the hero (58,104) and the trainer (172,58): the foe platform clears the player's HP box (y >= 66)
+for (const id of BG_IDS) {
+  const r = NP.art.tiles.battleBg(id), e = r.enemyDisc, f = e.bmp;
+  let bottom = 0;
+  for (let y = 0; y < f.h; y++) for (let x = 0; x < f.w; x++) if ((f.get(x, y) >>> 24) > 230) bottom = Math.max(bottom, y + e.y);
+  ok(bottom <= 67, id + ': foe platform runs under the player HP box (ends at y ' + bottom + ')');
+  ok(r.enemyBase.y >= 56 && r.enemyBase.y <= 62 && r.playerBase.y >= 100 && r.playerBase.y <= 108, id + ': anchors near the hero/trainer positions');
+}
+assert.equal(NP.art.tiles.battleBg('no_such_stage').id, 'grass', 'unknown ids fall back to grass');
+if (NP.assets) for (const id of BG_IDS) assert.equal(NP.assets.battleBg(id).id, id, 'assets.battleBg(' + id + ') must reach the real art, not the fallback');
+// maps only name stages that exist; the stages the story needs are wired
+for (const [mid, m] of Object.entries(NP.maps)) ok(m.battleBg === undefined || BG_IDS.includes(m.battleBg), `map ${mid}: unknown battleBg "${m.battleBg}"`);
+for (const [mid, want] of [['gingham_woods', 'forest'], ['spindle_shrine', 'forest'], ['seamstead', 'city'], ['salon', 'gym'], ['hemline_salon', 'gym'], ['seamstead_salon', 'gym'], ['crisp_1', 'society'], ['crisp_2', 'society'], ['crisp_3', 'society'], ['crisp_b1', 'society']]) assert.equal(NP.maps[mid].battleBg, want, mid + ' battleBg');
+
+console.log(`tiles-art: ${BG_IDS.length} battle backgrounds, ${Object.keys(NP.stamps).length} stamps (${drawn} variant/frame draws), ${Object.keys(NP.terrain).length} terrains, ${usedStamps.size} stamp ids used by ${mapIds.length} maps, ${checks} checks OK`);

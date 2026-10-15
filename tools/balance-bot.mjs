@@ -55,15 +55,15 @@ const fights = log.filter((f) => { const k = f.map + '|' + f.name + '|' + JSON.s
 // Where a player plausibly is when she meets each trainer (lead Kigu level; the team behind her is lead-2 and lead-3).
 // Keyed by `map|name`; this is the knob to tune. Early levelling is fast (wild Kigu + route trainers), later it slows.
 const LEAD = {
-  'route1|Bo': 5, 'route1|Suzu': 6, 'route1|Tomo': 7,
-  'thimble|Tomo': 10, 'salon|Ren': 10, 'salon|Noa': 11, 'salon|Poppy': 12, 'thimble|Tuck': 12,
+  'route1|Bo': 5, 'route1|Suzu': 6, 'route1|Dahlia': 7, 'route1|Draco': 7,
+  'salon|Ren': 10, 'salon|Noa': 11, 'salon|Poppy': 12, 'thimble|Tuck': 12,
   'route2|Reed': 12, 'route2|Tally': 12, 'route2|Gus': 13, 'route2|Kei': 13,
   'gingham_woods|Pete': 14, 'gingham_woods|Tess': 14, 'gingham_woods|Yuki': 14,
   'spindle_shrine|Pin': 15, 'spindle_shrine|Welt': 15, 'spindle_shrine|Crease': 15,
   'hemline_salon|Wren': 16, 'hemline_salon|Dov': 16, 'hemline_salon|Bryn': 16,
 };
 const leadAt = (f, i) => (LEAD[f.map + '|' + f.name.replace(/^.* /, '')] ?? LEAD[f.map + '|' + f.name] ?? 6 + i) + OFFSET;
-// Tomo (story: "takes the starter that beats yours") always fields the counter to the player's starter
+// The rival (story: "takes the starter that beats yours") always fields the counter to the player's starter
 const COUNTER = { konko: 'ottopi', ottopi: 'sprubun', sprubun: 'konko' };
 const EVO = { peepi: ['larkette', 14], nibbi: ['nibblenna', 15], konko: ['kitsuri', 16], ottopi: ['ottelia', 17], sprubun: ['lapinlily', 17] };
 const form = (sp, lv) => (EVO[sp] && lv >= EVO[sp][1] ? EVO[sp][0] : sp);

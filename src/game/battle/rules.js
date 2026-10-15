@@ -74,7 +74,21 @@
         },
       },
     },
-    side: {}, weather: {}, field: {},
+    side: {
+      // Foxfire: a blue flame over the user's whole side for 5 turns. It belongs to the side, not to the Kigu who lit it, so it stays when she
+      // switches out. Every damaging Ember move used by that side glows (x1.3) and says so.
+      foxfire: {
+        duration: 5,
+        onStart(c) { c.battle.msg('Foxfire flickered into life around ' + (c.side.index === 0 ? 'your team' : 'the opposing team') + '!'); },
+        onEnd(c) { c.battle.msg((c.side.index === 0 ? 'Your team' : 'The opposing team') + "'s foxfire burned out."); },
+        modDamage(c, d) {
+          if (!c.move || c.move.type !== 'ember' || c.move.category === 'status') return;
+          c.battle.msg('The foxfire glows brightly!');
+          return Math.floor(d * 1.3);
+        },
+      },
+    },
+    weather: {}, field: {},
   };
 
   // -------------------------------------------------------------------------------------------------
@@ -196,6 +210,10 @@
 
   B.statusMove = function (battle, mon, target, move) {
     let did = false;
+    if (move.sideCond) { // e.g. Foxfire: a condition on the USER's side (stays when she switches out); using it again refreshes it
+      const cur = mon.side.conds[move.sideCond], def = B.COND.side[move.sideCond];
+      if (cur) cur.turns = def.duration || cur.turns; else battle.addSideCond(mon.side, move.sideCond, mon);
+    }
     if (move.status) {
       if (target.status) { battle.msg(target.label() + ' is already ' + ({ brn: 'burned', psn: 'poisoned', tox: 'poisoned', par: 'paralyzed', slp: 'asleep', frz: 'frozen' }[target.status] || 'affected') + '.'); return; }
       did = battle.setStatus(target, move.status.id, mon, move);

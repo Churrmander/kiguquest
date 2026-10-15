@@ -72,7 +72,7 @@ for (const id of ids) {
   // people and pickups must stand on walkable ground
   for (const n of def.npcs || []) {
     if (tm.solid(n.x, n.y)) bad(id, 'npc ' + n.id + ' is inside something solid at ' + n.x + ',' + n.y);
-    if (n.look && NP.art.human.has && !NP.art.human.has(n.look)) bad(id, 'npc ' + n.id + ' has unknown look ' + n.look);
+    if (n.look && n.look !== 'rival' && NP.art.human.has && !NP.art.human.has(n.look)) bad(id, 'npc ' + n.id + ' has unknown look ' + n.look);
     const tr = n.trainer;
     if (tr) for (const t of tr.team) if (!NP.data.species[t.sp]) bad(id, 'trainer ' + n.id + ' uses unknown species ' + t.sp);
   }
@@ -85,7 +85,11 @@ for (const id of ids) {
     const q = [];
     for (const s of Object.values(def.spawns || {})) { q.push([s.x, s.y]); seen[s.y * tm.w + s.x] = 1; }
     const bushAt = new Set(tm.placements.filter((p) => p.id === 'bush').map((p) => p.x + ',' + p.y));
+    // flag gates (switch barriers, locked doors) count as open here: this test is about layout; tests/chapter3 checks the closed state
+    const gateCells = new Set();
+    for (const g of Object.values(def.gates || {})) if (g.closed !== 'h') for (const [gx, gy] of g.cells) gateCells.add(gx + ',' + gy);
     const open = (x, y) => {
+      if (gateCells.has(x + ',' + y)) return true;
       if (!tm.solid(x, y)) return true;
       if (!fieldMoves || !tm.inBounds(x, y)) return false;
       const t = tm.tdef(x, y);
@@ -119,6 +123,16 @@ for (const id of ids) {
   for (const n of def.npcs || []) {
     if (n.hidden) continue;
     if (!touch(n.x, n.y)) bad(id, 'npc ' + n.id + ' at ' + n.x + ',' + n.y + ' is walled in');
+  }
+}
+
+// props that block must never sit on a road: lamps and the like stand beside it (a lamp across a 2-wide street used to wall the village in two)
+for (const id of ids) {
+  const tm = tms[id];
+  if (!tm) continue;
+  for (const p of tm.placements) {
+    if (p.id !== 'lamp') continue;
+    for (let yy = 0; yy < p.h; yy++) if (p.def.solid[yy][0] === '#' && ['cobble', 'path', 'rock_path', 'bridge_h', 'bridge_v'].includes(tm.idAt(p.x, p.y + yy))) bad(id, 'lamp@' + p.x + ',' + p.y + ' blocks the road at ' + p.x + ',' + (p.y + yy));
   }
 }
 

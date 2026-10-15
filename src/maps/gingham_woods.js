@@ -5,7 +5,8 @@
   const W = 30, H = 40;
 
   const M = L.map({
-    id: 'gingham_woods', name: 'Gingham Woods', music: 'forest_gingham', battleBg: 'grass', border: 'treeline', w: W, h: H, fill: 'T',
+    id: 'gingham_woods', name: 'Gingham Woods', music: 'forest_gingham', battleBg: 'forest', border: 'treeline', w: W, h: H, fill: 'T',
+    view: 'town',   // 3D camera preset (street | town | flat-ish), see src/engine/persp.js
     legend: { '.': 'grass', T: 'treeline', p: 'path', ',': 'tallgrass', f: 'flowers', d: 'dirt' },
   });
 

@@ -13,5 +13,10 @@
   "src/art/tiles/stamp_indoor.js",
   "src/art/tiles/stamp_shrine.js",
   "src/art/tiles/stamp_gate.js",
-  "src/art/tiles/api.js"
+  "src/art/tiles/battle_kit.js",
+  "src/art/tiles/battle_nature.js",
+  "src/art/tiles/battle_places.js",
+  "src/art/tiles/api.js",
+  "src/art/tiles/w3d_trees.js",
+  "src/art/tiles/w3d_volumes.js"
 ]

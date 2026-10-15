@@ -35,20 +35,20 @@
       yield* c.sayT('script.poppy.1', 'Poppy: Your threads are strong, {player}. Keep sewing your own path!');
       return;
     }
-    yield* c.sayT('script.poppy.2', "Poppy: Welcome to the Thimble Salon! I'm Poppy, a Master Tailor.\\pMy Fluff Kigu look soft, but every cuddle is a clever stitch. Show me what you and your Kigu are made of!");
+    yield* c.sayT('script.poppy.2', "Poppy: Welcome to the Thimble Salon! I am Poppy, Master Tailor.\\pMy Fluff Kigu look soft. Every cuddle is a clever stitch.\\pShow me what you and your Kigu are made of!");
     const won = yield* c.trainerBattle({ cls: 'Master', name: 'Poppy', look: 'poppy', ai: 2, reward: 12, master: true, music: 'battle_master', team: c.map.def.poppyTeam });
     if (!won) { yield* c.sayT('script.poppy.3', 'Poppy: Oh dear! Rest your Kigu and come back. I will keep the kettle on.'); return; }
-    yield* c.sayT('script.poppy.4', 'Poppy: Every seam held. Wonderful!\\pA Master Tailor gives a Button to an apprentice who has earned it. Please take this one.');
+    yield* c.sayT('script.poppy.4', 'Poppy: Every seam held. Wonderful!\\pYou have earned a Button. I sewed it on with my own thread.');
     c.state.badges = c.state.badges || [];
     c.state.badges[0] = true;
     yield* c.jingleWait('j_button');
     yield* c.sayT('script.poppy.5', '{player} received the Fluff Button!');
-    yield* c.sayT('script.poppy.6', 'It lets your Kigu up to Lv20 obey you fully. Also, take this Disc.\\pIt lets your Kigu snip small bushes out of your way. Face a bush and press A.');
+    yield* c.sayT('script.poppy.6', 'It lets your Kigu obey you fully up to Lv20.\\pAlso, take this Disc.\\pIt lets your Kigu Snip small bushes. Face one and press A.');
     yield* c.giveItem('disc_snip', 1);
     c.set('badge1');
     yield* c.sayT('script.poppy.7', 'Poppy: And here, a spool of my cream cotton. It is what I learned on.\\pA good seam begins with good thread.');
     yield* c.giveItem('cream_thread', 1);
-    yield* c.sayT('script.poppy.8', "Poppy: One more thing. My old teacher stitched this handkerchief. See the little 'D'?\\pShe knotted every hem twice. I have not seen her in many years...\\pIf you ever meet someone who sews like this, tell her the kettle is on.");
+    yield* c.sayT('script.poppy.8', "Poppy: One more thing. My old teacher stitched this.\\pSee the little 'D'? She knotted every hem twice.\\pI have not seen her in years...\\pIf you meet someone who sews like that, tell her the kettle is on.");
     yield* c.giveItem('d_handkerchief', 1);
     yield* c.sayT('script.poppy.9', 'Poppy: Now go and see Tsumugi, {player}. Every seam road has a story.\\pAnd remember: every stitch counts!');
   };
@@ -59,10 +59,10 @@
       return;
     }
     yield* c.sayT('script.bryn.2', 'Bryn: Welcome to the Hemline Salon!\\pI am Bryn: Master Tailor, Warden of the woods, honey-maker, hem-checker.\\pAlso late for three things!\\pLittle threads, big hive!');
-    if (c.flag('shrine1_done')) yield* c.sayT('script.bryn.3', 'Bryn: Mimi told me everything.\\pThe Everspool, the Pressers, the Cocoona, the rinse.\\pFour things I needed to hear and one I hoped I would not.\\pSomebody had to say it out loud, so: the Society is a problem. There. I said it.');
+    if (c.flag('shrine1_done')) yield* c.sayT('script.bryn.3', 'Bryn: Mimi told me everything.\\pThe Everspool, the Pressers, the Cocoona, the rinse.\\pFour things I needed to hear, and one I hoped I would not.\\pSomebody had to say it out loud.\\pSo: the Society is a problem. There. I said it.');
     yield* c.sayT('script.bryn.4', 'Bryn: But a Button has to be earned, so! Show me your stitches.\\pMy bees and I are ready!');
     const won = yield* c.trainerBattle({ cls: 'Master', name: 'Bryn', look: 'bryn', ai: 2, reward: 14, master: true, music: 'battle_master', team: c.map.def.brynTeam });
-    if (!won) { yield* c.sayT('script.bryn.5', 'Bryn: Ooh, so close! Rest your Kigu, have some tea, and come back. I will be here.\\pProbably. Unless the bees need me.'); return; }
+    if (!won) { yield* c.sayT('script.bryn.5', 'Bryn: Ooh, so close! Rest your Kigu and have some tea.\\pI will be here. Probably. Unless the bees need me.'); return; }
     yield* c.sayT('script.bryn.6', 'Bryn: Every seam held. Even the sticky ones! Please take this Button.\\pYou earned every thread.');
     st.badges = st.badges || [];
     st.badges[1] = true;
