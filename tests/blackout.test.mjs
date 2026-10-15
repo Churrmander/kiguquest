@@ -19,11 +19,20 @@ function lose(seed, map, visited, heal) {
   st.visited = Object.fromEntries([...visited, map].map((m) => [m, 1])); // after loadMap, so only `visited` (+ here) counts
   const said = [];
   const say = ow.say.bind(ow);
+  let visible = null;
   ow.say = function* (text, o) { said.push(String(text)); yield* say(text, o); };
+  // regression: the message used to sit under the battle's black fade, so the player saw only black until two presses of A
+  const lookAtScreen = () => {
+    if (!said.some((s) => /blacked out/.test(s)) || ow.map.id !== map) return;
+    const px = G.render().u32; let lit = 0;
+    for (let i = 0; i < px.length; i++) if ((px[i] & 0xffffff) > 0x303030) lit++;
+    visible = Math.max(visible || 0, lit);
+  };
   ow.spawn((function* () { yield* ow.wildBattle('sprubun', 40); })(), 'battle');
-  assert.ok(t.mash(() => G.top() === ow && ow.map.id !== map && t.idle(), 30000), 'blacked out; at ' + t.pos());
+  assert.ok(t.mash(() => { lookAtScreen(); return G.top() === ow && ow.map.id !== map && t.idle(); }, 30000), 'blacked out; at ' + t.pos());
   assert.equal(st.money, 500, 'money halved');
   assert.equal(st.party[0].hp, NP.Kigu.maxHp(st.party[0]), 'party healed');
+  assert.ok(visible === null || visible > 200, 'the blackout message is visible on screen (lit pixels: ' + visible + ')');
   return { id: ow.map.id, said: said.join(' '), st, NP };
 }
 

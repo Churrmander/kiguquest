@@ -4,18 +4,20 @@
   const NP = root.NP, K = NP.mapkit;
   const team = (list) => list.map(([sp, lv]) => ({ sp, lv }));
 
-  // ---- Rival #2: Tomo has just lost to Poppy and is waiting outside the Salon door
+  // ---- Rival #2: the rival has just lost to Poppy and is waiting outside the Salon door. Conversation only: Rival #1 (Route 1) is the only
+  //      rival fight before the first Salon, so the player is never forced into two rival battles in a row on low HP.
   function* rival2(c) {
     const t = c.npc('tomo_t');
-    c.placeNpc(t, 12, 6, 'down'); // he stands in the doorway, so he blocks the way in
+    c.placeNpc(t, 12, 6, 'down'); // they stand in the doorway, so they block the way in
     c.showNpc('tomo_t');
     yield* c.face('player', 'up');
     yield* c.emote('player', 'exclaim');
-    yield* c.sayT('thimble.rival2.1', '{rival}: {player}! You made it.\\pI just challenged Poppy. She beat me with cardigans. CARDIGANS!\\pBut I worked out her pattern, and now I am going to use it on you. Come on!');
-    const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'tomo', ai: 2, reward: 14, team: team([[c.state.rivalStarter || 'ottopi', 7], ['peepi', 6], ['nibbi', 6]]) });
+    yield* c.sayT('thimble.rival2.1', '{rival}: {player}! You made it.\\pI just challenged Poppy. She beat me with cardigans. CARDIGANS!');
+    yield* c.sayT('thimble.rival2.2', '{rival}: My Kigu are far too sleepy to fight you now.\\pSo are my pride and my sleeves. But I took notes!');
+    yield* c.sayT('thimble.rival2.3', '{rival}: Her Fluff Kigu hit softer than they look.\\pDo not let them tuck you in. Here, take these.\\pMum packed far too many snack cakes.');
+    yield* c.giveItem('snack_cake', 3);
     c.set('rival2_done');
-    if (won) yield* c.sayT('thimble.rival2.win', '{rival}: ...Hmph. Fine. Poppy beat me, and you beat me. Two for two.\\pI am not done, though. I will train harder!\\p...Speaking of bridges, the guards are weirdly picky about planks.\\pWhatever. Go on. Poppy is waiting.');
-    else yield* c.sayT('thimble.rival2.lose', '{rival}: Ha! Poppy\'s cardigans were no match for me, and neither are you!\\pGo and rest your Kigu at the Tea House, then try again.');
+    yield* c.sayT('thimble.rival2.win', '{rival}: Next time we meet, I will have a plan. A great one.\\pGo on, {player}. Poppy is waiting, and you are going to be brilliant.');
     yield* c.face(t, 'up');
     yield* c.wait(12);
     c.hideNpc('tomo_t'); // steps back inside
@@ -89,7 +91,7 @@
       { id: 'house_s', x: 3, y: 12, variant: 'yellow', name: 'house1', to: 'thimble_house1' },
       { id: 'house_m', x: 18, y: 12, variant: 'pink', name: 'house2', to: 'thimble_house2' },
       { id: 'sign', x: 11, y: 9, name: 'sign_v' }, { id: 'sign', x: 22, y: 5 },
-      { id: 'lamp', x: 11, y: 7 }, { id: 'lamp', x: 15, y: 7 }, { id: 'well', x: 6, y: 9 }, { id: 'bench', x: 17, y: 9 },
+      { id: 'lamp', x: 10, y: 8 }, { id: 'lamp', x: 15, y: 8 }, { id: 'well', x: 6, y: 9 }, { id: 'bench', x: 17, y: 9 },
       { id: 'cloth_line', x: 7, y: 13 }, { id: 'tree', x: 2, y: 10 }, { id: 'tree', x: 8, y: 18 }, { id: 'tree', x: 16, y: 18 }, { id: 'tree', x: 23, y: 10 },
       { id: 'flowerbed', x: 20, y: 9 }, { id: 'barrel', x: 8, y: 6 }, { id: 'crate', x: 16, y: 6 }, { id: 'windmill', x: 2, y: 16 },
     ],
@@ -138,7 +140,7 @@
       { id: 'guard2', x: 23, y: 3, look: 'grunt_f', dir: 'down', hideIf: 'route2_open',
         script: function* (c) { yield* c.sayT('thimble.guard2', 'Stay in line, please.\\p...Your collar is untidy. May I? ...There. Much better. Flat is fair!'); } },
       // cast for the Rival #2 and first-inspection scenes (hidden until their scripts place them)
-      { id: 'tomo_t', x: 12, y: 6, look: 'tomo', dir: 'down', hidden: true, say: ['{rival}: ...'] },
+      { id: 'tomo_t', x: 12, y: 6, look: 'rival', dir: 'down', hidden: true, say: ['{rival}: ...'] },
       { id: 'presser_s1', x: 12, y: 14, look: 'grunt_m', dir: 'up', hidden: true, say: ['Flat is fair!'] },
       { id: 'presser_s2', x: 13, y: 14, look: 'grunt_f', dir: 'up', hidden: true, say: ['Stay in line, please.'] },
       { id: 'poppy_out', x: 12, y: 6, look: 'poppy', dir: 'down', hidden: true, say: ['Poppy: Every stitch counts!'] },

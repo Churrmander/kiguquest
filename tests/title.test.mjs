@@ -17,10 +17,10 @@ t.tick(10);
 assert.equal(G.top().stage, 1);
 // go to the bottom row, press "Default", then OK
 t.tap('up'); t.tap('right'); t.tap('a'); t.tick(4);
-assert.equal(G.top().name, 'Yuki');
+assert.equal(G.top().name, 'Dahlia');
 t.tap('right'); t.tap('a'); t.tick(120);
 assert.ok(G.top() instanceof NP.Overworld, 'game starts: ' + G.top().constructor.name);
-assert.equal(NP.state.name, 'Yuki');
+assert.equal(NP.state.name, 'Dahlia');
 assert.equal(NP.state.gender, 'f');
 assert.equal(t.pos()[0], 'lab');
 // the opening cutscene plays to its end
@@ -29,7 +29,7 @@ assert.deepEqual(t.pos(), ['lab', 5, 6]);
 // save from the start menu, then "Continue" on a new title screen restores it
 t.tap('start'); t.tick(6);
 assert.ok(t.ow.menus.length === 1, 'start menu open');
-// Kigu, Sketchbook, Bag, Yuki, Save ... (no Kigu entry before the starter: Sketchbook first)
+// Kigu, Sketchbook, Bag, Dahlia, Save ... (no Kigu entry before the starter: Sketchbook first)
 const labels = t.ow.menus[0].items.map((i) => i.label);
 assert.ok(labels.includes('Save') && labels.includes('Bag') && labels.includes('Options'));
 NP.State.save(NP.state);
@@ -40,6 +40,6 @@ t.tap('start'); t.tick(8);
 assert.equal(G.top().menus[0].items[0].label, 'Continue');
 t.tap('a'); t.tick(120);
 assert.ok(G.top() instanceof NP.Overworld);
-assert.equal(NP.state.name, 'Yuki');
+assert.equal(NP.state.name, 'Dahlia');
 assert.equal(JSON.stringify(NP.state.pos.map), '"lab"');
 console.log('title ok');

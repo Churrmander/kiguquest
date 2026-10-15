@@ -10,12 +10,12 @@
     yield* c.emote('player', 'exclaim');
     c.music('battle_rival');
     yield* c.sayT('seamstead.rival3.1', '{rival}: {player}! Over here! Look at this place.\\pAnd that big white shop? Crisp & Co. My dad works there.\\pHe says they are the future of tailoring. Nothing ever creases.');
-    yield* c.sayT('seamstead.rival3.2', '{rival}: Hmph. Mimi says the Society is bad.\\pShe has never seen the Linens floor. I have.\\pIf you want in, you go through me.\\pNot because I am mean! Because I am proud of him.');
+    yield* c.sayT('seamstead.rival3.2', '{rival}: Mimi says the Society is bad. She has never seen the Linens floor.\\pI have. It is so clean, and so quiet.\\pIf you want in, you will have to get past me first.\\pNot because I am mean! I am just proud of my dad.');
     const team = L.team([[L.evoStarter(c.state.rivalStarter), 18], ['sparkin|peepi', 16], ['kumi|mittsy', 16], ['silkie', 17]]);
-    const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'tomo', ai: 2, reward: 18, team });
+    const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'rival', ai: 2, reward: 18, team });
     c.set('rival3_done'); c.music('city_seamstead');
-    if (won) yield* c.sayT('seamstead.rival3.win', '{rival}: ...Okay. Okay! You are good.\\pBut Crisp & Co. is not bad. You will see.\\pMy dad works in the basement now. Three weeks.\\pHe says it is "very restful".');
-    else yield* c.sayT('seamstead.rival3.lose', '{rival}: Ha! Told you!\\pCrisp & Co. is the best thing that ever happened to this city.\\pGo rest your Kigu. Then say that to my face.');
+    if (won) yield* c.sayT('seamstead.rival3.win', '{rival}: ...Okay, okay! You beat me fair and square.\\pYou are really good, {player}. Really good.\\pBut Crisp & Co. is not bad. You will see.\\pMy dad has been in the basement three weeks. He says it is "very restful".\\pHe sounds... far away, sometimes.');
+    else yield* c.sayT('seamstead.rival3.lose', '{rival}: Ha! Told you! Crisp & Co. is great, you will see.\\pGo rest your Kigu, {player}. You will get me next time!');
     c.set('crisp_open');
   }
 
@@ -46,7 +46,7 @@
   M.sign(3, 13, 'SEAMSTEAD CITY\\nWest: Route 3, Hemline', 'west sign');
   M.sign(32, 13, 'EAST: ROUTE 4\\nClosed for resurfacing. By order of the Society.', 'east sign (Ch. 4 opens this)');
   M.sign(21, 22, 'CRISP & CO.\\nEverything flat. Everything fair.\\pStaff only. Ask on the top floor.', 'Crisp & Co. sign');
-  M.stamp('lamp', 12, 12).stamp('lamp', 23, 12).stamp('lamp', 12, 17).stamp('lamp', 23, 17).stamp('lamp', 8, 13).stamp('lamp', 30, 13);
+  M.stamp('lamp', 12, 12).stamp('lamp', 23, 12).stamp('lamp', 12, 17).stamp('lamp', 23, 17).stamp('lamp', 8, 12).stamp('lamp', 30, 12);
   M.stamp('bench', 14, 17).stamp('bench', 21, 17).stamp('flowerbed', 16, 12).stamp('flowerbed', 19, 12).stamp('well', 17, 15);
   M.trees([[2, 9], [9, 6], [24, 4], [33, 8], [2, 18], [10, 22], [33, 19], [21, 5]]);
   M.stamp('barrel', 26, 10).stamp('crate', 31, 10).stamp('bush', 3, 22).stamp('bush', 32, 22);

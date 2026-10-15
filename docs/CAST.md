@@ -52,22 +52,16 @@ Keep the same design, colours and proportions in every cell. Text labels are opt
 ## 1. Protagonists
 
 ### DONE: `hero_m` — Hero (boy) · P1
-Done. Teen boy, fair skin, messy light-brown hair, blue eyes. Dark grey flat cap, white shirt, navy overalls, brown boots, satchel, belt with spool pouch.
+Done. **Draco** (default name): the boy protagonist, childhood friend of Dahlia next door in Button Town. Teen boy, fair skin, messy light-brown hair, blue eyes. Dark grey flat cap, white shirt, navy overalls, brown boots, satchel, belt with spool pouch.
 
 ### DONE: `hero_f` — Hero (girl) · P1
-Done. Teen girl, fair skin, blonde ponytail, blue eyes. Red beret with gold button, white tee, denim overall-shorts, brown lace-up boots, satchel, belt with spool pouch and scissors.
+Done. **Dahlia** (default name): the girl protagonist, childhood friend of Draco next door in Button Town. Teen girl, fair skin, blonde ponytail, blue eyes. Red beret with gold button, white tee, denim overall-shorts, brown lace-up boots, satchel, belt with spool pouch and scissors.
 
 ---
 
 ## 2. Rival & friends
 
-### `tomo` — Tomo (rival) · P1
-*Story: serious rival, about the hero's age. Clipped and formal. Tidy because his father taught him discipline is love.*
-- **Look:** teen boy, slim. Pale skin. Side-parted ink-black hair. Grey eyes.
-- **Outfit:** charcoal jacket (#3e4050) with blue starch trim (#4c7ee0) over a white inner shirt. Slate trousers (#5c6478). Black shoes.
-- **Accessories:** dark plum glasses (#4a3a58). Blue starch scarf (#4c7ee0).
-- **Expression / pose:** flat mouth, stern brows. Arms folded or hands in pockets.
-- **Must keep:** glasses; blue scarf; side-parted hair; jacket with white collar.
+The rival has no look id of its own. When the player picks a hero, the rival is drawn with the *other* hero's look automatically (`NP.state` via `S.rivalLookId`: sprites and battle portraits). If you play Dahlia, the rival is Draco's look, and vice versa.
 
 ### `mimi` — Mimi (cheerful friend) · P1
 *Story: cheerful friend, talks in exclamation marks, always has a spare snack. Dreams of designing costumes.*
@@ -77,9 +71,9 @@ Done. Teen girl, fair skin, blonde ponytail, blue eyes. Red beret with gold butt
 - **Expression / pose:** big grin, happy eyes. Hands clasped or one hand raised.
 - **Must keep:** big pink bow; honey bob; pink cardigan; plum skirt.
 
-### `tomo_dad` — Tomo's father · P1 · PROPOSED (no look id yet)
+### `rival_dad` — the rival's dad · P1 · PROPOSED (no look id yet)
 *Story: floor manager at Crisp & Co. Pleasant and empty on the Pressing Floor. Freed at the Starch Works.*
-- **Look (proposed):** adult man, average build. Pale skin. Short side-parted ink hair. Grey eyes (family look with Tomo).
+- **Look (proposed):** adult man, average build. Pale skin. Short side-parted ink hair. Grey eyes, neat parting.
 - **Outfit (proposed):** white shirt with starch-blue collar (#4c7ee0), navy tie (#2e3c74), charcoal trousers (#3e4050), black shoes.
 - **Accessories (proposed):** Crisp & Co. name badge.
 - **Expression / pose:** neat and calm. Shirt sleeves rolled once he is freed.
@@ -371,7 +365,7 @@ In battle the hero is seen from behind and throws a Bond Spool to send out a Kig
 - **Shading:** 2-3 tones per material. Light from the top-left. No anti-aliasing and no blended gradients.
 - **Silhouette:** each character has one signature accessory or hair shape that reads at a glance (beret, cap, pigtails, bun, nightcap, braid, patched coat). Pigtails, ponytails and buns must extend outside the head outline.
 - **Look-alikes:** aide_f and aide_m share a lab coat; separate them by hair and trousers. grunt_m and grunt_f share a uniform; separate them by hair and skirt. Named Pleats share a suit; separate them by hair and accessory.
-- **Starch blue (#4c7ee0):** used for Society collars and Presser caps. Tomo's blue scarf also uses it (per looks.js). Do not use it for anyone else.
+- **Starch blue (#4c7ee0):** used for Society collars and Presser caps. Do not use it for anyone else.
 - **Modest, all-ages:** no fanservice. Skirts and shorts sit at or below the knee or as in looks.js. No bare midriffs. No gore or weapons pointed at people. Mimi's and tea_maid's pinks are the warmest colours in the cast.
 - **Magenta key:** the background is #ff00ff. Do not add magenta or hot neon pink to any costume. Keep pinks at the looks.js values (#f28cb4, #f0508a, #e0587e).
 - **Palette hints (hex from `paper.js`):**
@@ -390,7 +384,7 @@ In battle the hero is seen from behind and throws a Bond Spool to send out a Kig
 
 - **File:** PNG, lossless, no JPEG. Background is opaque flat magenta #ff00ff; we key it out on import.
 - **Cells:** every walk cell is the same size, with even padding between cells. The 4 x 4 walk grid and the portrait sit on the same image.
-- **Filename:** `<id>_sheet.png`, using the id from the entry. Examples: `tomo_sheet.png`, `pleat_crease_sheet.png`, `cocoona_pressed_sheet.png`.
+- **Filename:** `<id>_sheet.png`, using the id from the entry. Examples: `hero_m_sheet.png`, `pleat_crease_sheet.png`, `cocoona_pressed_sheet.png`.
 - **One character per file.** No text except optional small labels. No watermarks or signatures.
 - **Interpolation:** none. Output at the final pixel size, nearest-neighbour if scaled.
 
@@ -408,5 +402,5 @@ Resolved in this brief as shown. Please confirm the ones marked *decision needed
 6. **Pleat sex.** `looks.js` `pleat` is male. STORY's Pleat Crease is a woman. Added three named variants.
 7. **Loomhaven and Selvage.** BIBLE §9 lists Loomhaven as Salon 7 Drake (with a "?") and the final city as Salon 8. STORY ch. 9–10 says Loomhaven is Salon 7 Spook (Rue) and Selvage is Salon 8 Drake (Brocade). Followed STORY.
 8. **Grand Tailor.** `looks.js` `old_tailor` (male, moustache) is not Sashiko (old, small, she). Kept `old_tailor` as a generic. Sashiko added as PROPOSED.
-9. **Story-only people with no look id.** Zip, Tomo's father and the peddler (Mr. Sharp) appear in chapters 1–3 but have no `looks.js` id. Added as PROPOSED. *Decision needed:* approve them for P1 generation.
+9. **Story-only people with no look id.** Zip, the rival's dad and the peddler (Mr. Sharp) appear in chapters 1–3 but have no `looks.js` id. Added as PROPOSED. *Decision needed:* approve them for P1 generation.
 10. **Tapestry's sex is unstated** in STORY. The proposed look is an old woman. Pick one and keep it.

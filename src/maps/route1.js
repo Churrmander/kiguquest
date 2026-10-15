@@ -78,12 +78,12 @@
           yield* c.say('{rival}: Hold it, {player}!');
           yield* c.walk(t, ['down', 3]);
           yield* c.face('player', 'up');
-          yield* c.say('{rival}: Did you think you would beat me to Thimble? Not a chance.\\pI trained all morning. Watch what my Kigu can do!');
+          yield* c.say('{rival}: Did you think you could beat me to Thimble? Not a chance!\\pI trained all morning. Come on, show me what you have got!');
           const rs = c.state.rivalStarter || 'ottopi';
-          const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'tomo', ai: 2, reward: 10, team: team([[rs, 5], ['peepi', 4]]) });
+          const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'rival', ai: 2, reward: 10, team: team([[rs, 5], ['peepi', 4]]) });
           c.set('rival1_done');
-          if (won) yield* c.say('{rival}: ...Tch. So you are not just lucky.\\pFine. I will be waiting in Thimble Village. Do not get sleepy on me!');
-          else yield* c.say('{rival}: Ha! Better get your Kigu some rest before you try again.');
+          if (won) yield* c.say('{rival}: Whoa! Okay, your Kigu are tougher than I thought.\\pNice one, {player}. I will catch up in Thimble Village!');
+          else yield* c.say('{rival}: Ha! Told you my Kigu were tough!\\pYou did great, though. Rest up, and we will go again soon.');
           yield* c.walk(t, ['right', 3]);
           c.hideNpc('tomo_r1');
         },
@@ -91,5 +91,5 @@
     ],
   });
   // the rival waits off-path until the trigger fires
-  NP.maps.route1.npcs.push({ id: 'tomo_r1', x: 13, y: 4, look: 'tomo', dir: 'down', hidden: true, say: ['{rival}: ...'] });
+  NP.maps.route1.npcs.push({ id: 'tomo_r1', x: 13, y: 4, look: 'rival', dir: 'down', hidden: true, say: ['{rival}: ...'] });
 })(typeof globalThis !== 'undefined' ? globalThis : window);
