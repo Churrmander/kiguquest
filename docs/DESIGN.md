@@ -149,7 +149,9 @@ NP.stamps[id] = {
 NP.art.tiles.terrain(id, mask, frame, variant) -> Bitmap 16×16   // cached wrapper around NP.terrain[id].draw
 NP.art.tiles.stamp(id, variant, frame)         -> Bitmap          // cached wrapper
 NP.art.tiles.overlay(id, frame)                -> Bitmap | null
-NP.art.tiles.battleBg(id) -> { bg: Bitmap 240×112, enemyBase:{x,y}, playerBase:{x,y} }   // ground discs are part of bg
+NP.art.tiles.battleBg(id) -> { id, bg: Bitmap 240×112, enemyBase:{x,y}, playerBase:{x,y},         // ground discs are part of bg
+                               layers:{sky,ground}, enemyDisc:{bmp,x,y}, playerDisc:{bmp,x,y} }   // extras for a camera sway/pan
+// ids: grass forest indoor cave city gym water night society (unknown ids fall back to grass); full notes in docs/tiles.md
 ```
 The full list of required terrains/stamps/backgrounds (with priorities P1/P2/P3) is BIBLE §5. Anything you add beyond the list
 must be documented in `docs/tiles.md` (id, size, solid rows, variants) so level designers can use it.
