@@ -172,6 +172,21 @@
     return b;
   };
 
+  /**
+   * Volume description of a cottage for the 3D view (NP.view3d): the same options S.house takes, reduced to geometry.
+   * The facade art is the front face of a prism; behind it the renderer extrudes the side walls (x = wl / wr, up to the eave at
+   * height Hw), the two roof slopes (eave x = roofL / roofR at Hw up to the ridge inset px further in, at height Ztop) and the flat
+   * cap. Heights are in px above the ground; x runs along the facade. o.awnings = [{ x0, x1, y, c1, c2, edge }] (y = row in the art).
+   */
+  S.houseVol = function (o) {
+    const W = o.w * 16, H = o.h * 16, rb = o.roofBottom, rt = o.roofTop === undefined ? 1 : o.roofTop;
+    return {
+      w: o.w, h: o.h, W, H, ramp: o.ramp, wall: Object.assign({}, WALL, o.wall || {}), wl: 3, wr: W - 4, roofL: 1, roofR: W - 2,
+      rt, rb, inset: o.inset === undefined ? 10 : o.inset, Hw: H - rb - 1, Ztop: H - rt, windows: o.windows || [], trimBand: o.trimBand || null,
+      doorCol: o.doorCol, awnings: o.awnings || [], opts: o,
+    };
+  };
+
   /** small brick chimney with a stone cap, x,y = top-left, 7 wide */
   S.chimney = (b, x, y, h) => {
     b.fillRect(x, y, 7, h, P.br2);

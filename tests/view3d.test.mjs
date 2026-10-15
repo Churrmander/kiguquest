@@ -68,4 +68,28 @@ V.on = true; ow.draw(fbA, 0);
 assert.equal(V.toggle(), false);
 ow.draw(fbB, 0);
 assert.ok(ref.every((v, i) => v === fbB.u32[i]), 'turning 3D off restores the flat view exactly');
+
+// switches: the headless default leaves V.on alone ('flat'); 'auto' = 3D outdoors / flat indoors with the map's own camera preset;
+// 'on' = 3D everywhere; the V key (toggle) flips between flat and auto
+assert.equal(V.mode, 'flat', 'headless default mode is flat');
+V.mode = 'auto'; V.on = false;
+ow.loadMap('seamstead', 17, 16, 'up', { noEnter: true });
+assert.equal(V.on, true, 'auto: outdoors is 3D');
+assert.equal(V.presetName, NP.maps.seamstead.view, 'auto: the map picks its camera preset');
+ow.loadMap('player_house', 3, 3, 'down', { noEnter: true });
+assert.equal(V.on, false, 'auto: indoors stays flat');
+ow.loadMap('gingham_woods', 14, 4, 'up', { noEnter: true });
+assert.equal(V.on, true); assert.equal(V.presetName, NP.maps.gingham_woods.view);
+V.mode = 'on';
+ow.loadMap('player_house', 3, 3, 'down', { noEnter: true });
+assert.equal(V.on, true, 'on: 3D everywhere'); assert.equal(V.presetName, 'flat-ish', 'on: rooms use the gentle preset');
+V.mode = 'flat'; V.on = false;
+ow.loadMap('seamstead', 17, 16, 'up', { noEnter: true });
+assert.equal(V.on, false, 'flat: the map load changes nothing');
+V.mode = 'auto'; V.on = true;
+assert.equal(V.toggle(), false); assert.equal(V.mode, 'flat'); assert.equal(V.on, false);
+assert.equal(V.toggle(), true); assert.equal(V.mode, 'auto'); assert.equal(V.on, true);
+V.mode = 'flat'; V.on = false;
+ow.loadMap('seamstead', 17, 16, 'up', { noEnter: true });
+ow.draw(fbA, 0);
 console.log('view3d OK,', n, 'maps');

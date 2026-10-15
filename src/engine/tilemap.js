@@ -119,8 +119,9 @@
     }
 
     /** Terrain tiles + floor-layer stamps for the pixel rect [camX,camX+vw) x [camY,camY+vh) onto fb. Returns the overlay list
-     *  (animated terrain overlays) for the caller to draw last. Shared by the flat renderer and the pseudo-3D ground pass. */
-    drawTerrain(fb, camX, camY, tick, vw, vh) {
+     *  (animated terrain overlays) for the caller to draw last. Shared by the flat renderer and the pseudo-3D ground pass.
+     *  tileFn(terrainId, tx, ty, outside) -> Bitmap | null is the 3D ground pass's hook to substitute a tile's picture. */
+    drawTerrain(fb, camX, camY, tick, vw, vh, tileFn) {
       const A = NP.assets;
       const x0 = Math.floor(camX / T), y0 = Math.floor(camY / T);
       const x1 = Math.ceil((camX + vw) / T), y1 = Math.ceil((camY + vh) / T);
@@ -130,6 +131,10 @@
         for (let tx = x0; tx < x1; tx++) {
           const id = this.idAt(tx, ty);
           const dx = tx * T - camX, dy = ty * T - camY;
+          if (tileFn) { // the 3D ground pass may swap a tile for its own picture (forest floor under billboard trees, tinted cobble...)
+            const alt = tileFn(id === null ? border : id, tx, ty, id === null);
+            if (alt) { fb.blit(alt, dx, dy); continue; }
+          }
           if (id === null) {
             fb.blit(A.terrain(border, 255, tick >> 4, (tx * 7 + ty * 3) & 3), dx, dy);
             continue;

@@ -21,6 +21,7 @@
 
   K.reg({
     id: 'button_town', name: 'Button Town', music: 'home_town', battleBg: 'grass', border: 'treeline',
+    view: 'street',   // 3D camera preset (street | town | flat-ish), see src/engine/persp.js
     legend: { '.': 'grass', T: 'treeline', p: 'path', c: 'cobble', w: 'water', f: 'flowers', F: 'fence' },
     rows: K.rows(g),
     stamps: [

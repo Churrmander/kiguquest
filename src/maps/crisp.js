@@ -9,7 +9,7 @@
   /** one department-store floor. o: { id, name, w, h, up:'crisp_2', down:'crisp_1' } stairs: down at (1,2), up at (w-2,2). */
   function floor(o) {
     const w = o.w || 12, h = o.h || 11;
-    const M = L.room({ id: o.id, name: o.name, w, h, doorX: (w >> 1) - 1, floor: 'floor_tile', wall: 'wall_plaster', music: 'society_theme', recLevel: 18, exit: o.exit, carpet: o.carpet, carpetTerrain: 'carpet_red', legend: o.legend });
+    const M = L.room({ id: o.id, name: o.name, w, h, doorX: (w >> 1) - 1, floor: 'floor_tile', wall: 'wall_plaster', music: 'society_theme', battleBg: 'society', recLevel: 18, exit: o.exit, carpet: o.carpet, carpetTerrain: 'carpet_red', legend: o.legend });
     if (!o.exit) M.rect(M.doorX, h - 1, 2, 1, 'W');
     if (o.down) { L.stairs(M, 1, 2, 'down', o.down, 'up'); }
     if (o.up) { L.stairs(M, w - 2, 2, 'up', o.up, o.upSpawn || 'down'); }

@@ -6,6 +6,7 @@
 
   const M = L.map({
     id: 'route3', name: 'Route 3  Seam Road', music: 'route_meadow', battleBg: 'grass', border: 'treeline', w: W, h: H,
+    view: 'street',   // 3D camera preset (street | town | flat-ish), see src/engine/persp.js
     legend: { '.': 'grass', T: 'treeline', c: 'cobble', ',': 'tallgrass', f: 'flowers', F: 'fence', p: 'path' },
     camera: 1,   // 3D view looks east along the seam road
   });

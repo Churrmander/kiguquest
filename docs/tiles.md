@@ -54,3 +54,62 @@ so a named 1x1 stamp (e.g. a `sign` with `name:`) becomes walkable. Use `to`/`na
 * Terrain `paddle: true` (set on `water` only, not `sea`): with Disc: Paddle in the bag, the player can face it, press A and paddle over it. `water: true` alone still blocks.
 * The `bush` stamp is snippable (Disc: Snip): A on it removes it and its collision; the cut is stored as flag `snip:<map>:<x>,<y>`. Any other stamp is a plain obstacle.
 * Props with `gate: 'paddle' | 'snip'` (see `tests/maps.test.mjs`) must be unreachable on foot but reachable once those moves are allowed.
+
+## Battle backgrounds (`NP.art.tiles.battleBg(id)`)
+
+Nine stages, all painted by `src/art/tiles/battle_*.js` on one shared "late-DS stage" layout (see `docs/ART-TARGET.md` §2): a high-key sky (or
+back wall) with a bright haze band at the horizon (y 38), a smooth softly lit ground plane, and ONE big oval platform per side. Painted in float
+colour with soft alpha blends and finished with an ordered dither into the 15-bit palette (so they are NOT limited to a tiny palette: roughly
+200-1000 colours each, but no hard pixel noise; `tests/tiles-art.test.mjs` guards both ends).
+
+| id | where | look |
+|---|---|---|
+| `grass` | routes, towns | blue sky + cloud bands, patchwork hills, cloth-bolt windmill, lime trees, mown-stripe meadow, sparse flowers |
+| `forest` | Gingham Woods, Spindle Shrine | leafy canopy with light shafts, hazy tree-lines, strung festival lanterns, mossy floor, framing trunk |
+| `indoor` | houses, shops, Tea House (the `room()` default) | cream wallpaper, wood wainscot, arched window with patchwork curtains, honey plank floor |
+| `cave` | caves (no cave map yet) | violet cavern, stalactites, hazy stalagmites, glowing crystals, misty tunnel glow |
+| `city` | Seamstead streets | pastel shopfronts with striped awnings, lime trees, bunting, pale cobbled plaza with a kerb |
+| `gym` | the three Salons | wine-rose hall, gold-trimmed button banners, warm spotlights, patchwork harlequin quilt floor |
+| `water` | (any sea/lake map) | sea gradient with swell lines, island lighthouse, patchwork-sail boat, foam rings round both platforms |
+| `night` | (any night map) | indigo sky, stars, moon, lit cottages, strung lanterns, fireflies |
+| `society` | Crisp & Co. interiors | cold white-blue pressed-pleat wall, blue frieze, ceiling light panels, flat-iron banner, steam, tiled floor |
+
+Contract: `battleBg(id)` -> `{ id, bg, enemyBase, playerBase, layers, enemyDisc, playerDisc }` (unknown ids fall back to `grass`).
+* `bg` is the finished 240x112 composite, opaque, platforms included. `NP.assets.battleBg` passes the whole object through.
+* Anchors are the FEET of the battling Kigu: `enemyBase` = (172, 60), `playerBase` = (58, 106) in every stage (the battle scene draws the
+  trainer's feet at (172, 58) and the hero's at (58, 104), so the same platforms serve them).
+* Platforms: foe oval 104x20 centred (172, 56) (ends at y 66, just above the player's HP box); player oval 150x28 centred (58, 104), cut off
+  by the text box at y 112. Each has a dark steel-blue interior tinted per stage, a lit rim ring, a soft halo and a contact shadow.
+* Optional extras for a camera sway / intro pan: `layers.sky` (opaque, everything behind the ground), `layers.ground` (transparent above the
+  horizon; the `forest` trunk is the one foreground object on it), `enemyDisc` / `playerDisc` = `{ bmp, x, y }` (translucent platform bitmaps,
+  x/y = top-left in bg coordinates). `bg` = sky, then ground, then enemyDisc, then playerDisc.
+* HUD zones to keep calm: foe HP box (6,8)-(114,38), player HP box (124,66)-(236,106), text box y >= 112. `K.bb.free(x, y, margin)` tells decor
+  scatter code where nothing important stands.
+
+To add a stage: write `BB.define(id, { ...BB.stage(tint), sky(b), ground(b) })` in `battle_nature.js` / `battle_places.js` (helpers: `BB.ramp`,
+`vgrad`, `glow`, `shaft`, `streak`, `puff`, `ridge`, `tree`, `lobe`, `poly`, `plane` for perspective floors, `scatter`), then name the id in a map
+def as `battleBg`. Keep the haze band bright, the middle (behind the foe sprite, x 140-204) calm, and put identity in the top-right quadrant and along
+the horizon band (the foe HP box hides most of the top-left).
+
+## 3D overworld view (`NP.view3d`: `src/engine/persp.js`, `persp_raster.js`, `persp_scene.js`)
+
+Outdoor maps are drawn through a tilted perspective camera (see `docs/ART-TARGET.md` §1): sky and haze at the far end, a perspective ground, billboard
+tree clusters, real building volumes, depth-tested sprites. Rooms stay flat. The browser runs it in `auto` mode (3D outdoors, flat indoors); `?flat` in the
+URL forces the old flat renderer everywhere and the `V` key flips between the two. Headless code (tests, tools) stays flat unless it sets
+`NP.view3d.mode = 'auto' | 'on'` or `NP.view3d.on = true`. A map picks its camera with one line, `view: 'street' | 'town' | 'flat-ish'` (street = low camera
+with the horizon and sky in frame; town = higher camera, horizon above the frame; flat-ish = gentle tilt, used if 3D is forced indoors).
+
+What is built from what (all of it is derived from the existing maps; no map data changes, collision is untouched):
+
+| in the map | in 3D |
+|---|---|
+| terrain `treeline` (and the border outside the map), `hedge` | billboard trees (`tiles.tree3d(kind, variant)`: `round` `big` `pine` `bush` `hedge` in `w3d_trees.js`, lime lobes, no outlines) on a dark forest floor; deep forest shows canopy tops (`tiles.floor3d`) |
+| stamps `tree` `tree_big` `pine` `bush` | the same billboards, anchored at the trunk |
+| building stamps (`house_*` `lab` `tea_house` `general_store` `salon` via `vol(variant)`; `gate_house` `shrine` via `EXTRA` in `w3d_volumes.js`) | a prism: the flat facade art on the front face (painted with `paint(variant, frame, '3d')`, so shop awnings are left out), west / east walls with windows, two roof slopes, a flat cap and a back, plus real slanted awnings (`tiles.volume(id, variant)`); lit from the west, shaded on the east |
+| terrain `fence` | posts and rails as geometry (`tiles.fence3d`) |
+| every other stamp, every actor | upright sprites with soft contact shadows |
+
+To give a new building a volume: add `vol: (variant) => S.houseVol(options)` to its `K.stamp` (see `stamp_buildings.js`: the options are shared by the flat and 3D
+paint) or an entry in `EXTRA` in `w3d_volumes.js`. The hero is never hidden: anything nearer than him gets a keyhole round his sprite, trees and buildings that sit
+between the camera and him in the middle of the screen fade out, and big foreground objects dissolve right at the lens (`persp.js` header). Previews:
+`node tools/preview-world3d.mjs set | maps | <map> <x> <y> [dir] [--preset=town] [--q=1]`; tests: `tests/view3d.test.mjs`, `tests/world3d.test.mjs`.

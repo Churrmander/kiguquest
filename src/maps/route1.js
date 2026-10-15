@@ -22,6 +22,7 @@
 
   K.reg({
     id: 'route1', name: 'Route 1  Meadow Lane', music: 'route_meadow', battleBg: 'grass', border: 'treeline',
+    view: 'street',   // 3D camera preset (street | town | flat-ish), see src/engine/persp.js
     legend: { '.': 'grass', T: 'treeline', p: 'path', ',': 'tallgrass', f: 'flowers', w: 'water', d: 'ledge_d' },
     rows: K.rows(g),
     stamps: [
