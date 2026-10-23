@@ -229,6 +229,7 @@
       this.map.syncSnips(NP.state.flags);
       (NP.state.visited = NP.state.visited || {})[id] = 1;
       const def = this.map.def;
+      if (NP.view3d && NP.view3d.enter) NP.view3d.enter(def);   // 3D or flat, and the camera preset, for this map
       this.actors = [];
       for (const n of def.npcs || []) this.actors.push(new Actor({ id: n.id, kind: 'npc', x: n.x, y: n.y, dir: n.dir || 'down', look: n.look, def: n, hidden: !!n.hidden }));
       for (const p of def.props || []) this.actors.push(new Actor({ id: p.id, kind: 'prop', x: p.x, y: p.y, def: p }));
@@ -697,7 +698,7 @@
       }
       const p = this.player;
       p.swim = this.paddling();
-      list.push({ sortY: p.py + 16.5, x: p.px + 8, draw: (f, X, Y) => p.draw(f, X, Y, fr) });
+      list.push({ sortY: p.py + 16.5, x: p.px + 8, hero: true, draw: (f, X, Y) => p.draw(f, X, Y, fr) });
       this.map.draw(fb, cx, cy, fr, list);
       // emotes
       for (const a of this.actors.concat([p])) {

@@ -23,7 +23,7 @@
   }
   NP.scripts.zip = zip;
 
-  const M = L.room({ id: 'seamstead_salon', name: 'Seamstead Salon', w, h, doorX: 5, floor: 'floor_wood', wall: 'wall_plaster', music: 'city_seamstead', battleBg: 'indoor',
+  const M = L.room({ id: 'seamstead_salon', name: 'Seamstead Salon', w, h, doorX: 5, floor: 'floor_wood', wall: 'wall_plaster', music: 'city_seamstead', battleBg: 'gym',
     exit: { to: 'seamstead', door: 'salon' }, carpet: [5, 2, 2, 11], carpetTerrain: 'carpet_red', legend: { B: 'fence' } });
   M.gate('g1', { cells: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((x) => [x, 9]), closed: 'B', open: 'f', flag: 'sal3_g1', note: 'barrier 1 (panel at the entrance)' });
   M.gate('g2', { cells: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((x) => [x, 5]), closed: 'B', open: 'f', flag: 'sal3_g2', note: 'barrier 2 (panel between barriers)' });

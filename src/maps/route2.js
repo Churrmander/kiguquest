@@ -36,6 +36,7 @@
 
   const M = L.map({
     id: 'route2', name: 'Route 2  Plankwater', music: 'route_meadow', battleBg: 'grass', border: 'treeline', w: 24, h: 46,
+    view: 'street',   // 3D camera preset (street | town | flat-ish), see src/engine/persp.js
     legend: { '.': 'grass', T: 'treeline', p: 'path', ',': 'tallgrass', f: 'flowers', w: 'water', B: 'bridge_v' },
     onEnter: function* (c) { L.syncStamps(c); },
   });

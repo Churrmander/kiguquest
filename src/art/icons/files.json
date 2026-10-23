@@ -6,5 +6,9 @@
   "src/art/icons/items-kit.js",
   "src/art/icons/items-heal.js",
   "src/art/icons/items-use.js",
-  "src/art/icons/items-held.js"
+  "src/art/icons/items-held.js",
+  "src/art/icons/items-pins.js",
+  "src/art/icons/items-key.js",
+  "src/art/icons/emotes.js",
+  "src/art/icons/title.js"
 ]

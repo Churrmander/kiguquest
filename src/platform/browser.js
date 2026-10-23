@@ -84,6 +84,8 @@
   // ---- go
   try {
     const q = new URLSearchParams(root.location.search);
+    // the overworld is drawn in 3D outdoors (flat indoors) unless the URL says ?flat; the V key flips it at runtime
+    if (NP.view3d) NP.view3d.mode = q.has('flat') ? 'flat' : 'auto';
     NP.boot();
     if (q.has('quick')) NP.quickStart(q.get('name') || 'Ren', q.get('gender') || 'm');
   } catch (err) { console.error('boot error:', err); }

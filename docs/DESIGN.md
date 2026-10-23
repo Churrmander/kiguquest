@@ -149,7 +149,9 @@ NP.stamps[id] = {
 NP.art.tiles.terrain(id, mask, frame, variant) -> Bitmap 16×16   // cached wrapper around NP.terrain[id].draw
 NP.art.tiles.stamp(id, variant, frame)         -> Bitmap          // cached wrapper
 NP.art.tiles.overlay(id, frame)                -> Bitmap | null
-NP.art.tiles.battleBg(id) -> { bg: Bitmap 240×112, enemyBase:{x,y}, playerBase:{x,y} }   // ground discs are part of bg
+NP.art.tiles.battleBg(id) -> { id, bg: Bitmap 240×112, enemyBase:{x,y}, playerBase:{x,y},         // ground discs are part of bg
+                               layers:{sky,ground}, enemyDisc:{bmp,x,y}, playerDisc:{bmp,x,y} }   // extras for a camera sway/pan
+// ids: grass forest indoor cave city gym water night society (unknown ids fall back to grass); full notes in docs/tiles.md
 ```
 The full list of required terrains/stamps/backgrounds (with priorities P1/P2/P3) is BIBLE §5. Anything you add beyond the list
 must be documented in `docs/tiles.md` (id, size, solid rows, variants) so level designers can use it.
@@ -205,13 +207,6 @@ Extra helper scripts are fine under `tools/` if prefixed with your area (e.g. `t
 When done, reply with: what you built, the final file list (and that your `files.json` is correct), the public API exactly as
 implemented (note any deviation from this doc), known gaps, and the path of your best preview PNGs.
 
-## 7. Pseudo-3D overworld (`src/engine/persp.js`, `NP.view3d`)
-On by default (V toggles the flat view in the browser). A real pinhole camera looks down at the map at roughly a BW town angle;
-the ground is a perspective-mapped texture of the flat terrain. Stamps listed in `NP.view3d.BOX` (houses, lab, Tea House, store,
-Salons) are **solid boxes**: the stamp art is split at its widest row (the eave), the facade becomes the front wall and the roof art
-the front slope of a hip roof; side/back walls, back slope and hip ends are generated from the art's colours. Everything else
-(trees, props, people) is an upright billboard, depth-tested against the buildings. A building between the camera and the player
-is dithered see-through round the player. So for tile artists: draw building stamps as *facade below, roof above, widest row =
-eave*, and anything above the roof trapezoid (flags, antennas) becomes an upright card on the ridge. Per-building tuning (wall
-stretch, depth, roof pitch) lives in `BOX` in persp.js. Headless tests drive the pad with `t.go(mapDir)`, which converts map
-directions to screen keys for the current camera heading.
+## 7. Pseudo-3D overworld (`src/engine/persp*.js`, `NP.view3d`)
+See the header of `src/engine/persp.js` (pipeline, switches, presets) and `docs/ART-TARGET.md` §1 (the target look). Headless tests
+drive the pad with `t.go(mapDir)` from `tests/harness.mjs`, which converts map directions to screen keys for the current camera heading.

@@ -1,4 +1,4 @@
-// Pseudo-3D overworld view: on by default; turning it off restores the flat renderer exactly; buildings are solid boxes; when on, the pivot lands on pivotRow at scale 1,
+// Pseudo-3D overworld view: off by default and leaves the flat renderer untouched; when on, the pivot lands on pivotRow at scale 1,
 // far things shrink, every map in the game renders without throwing, and frames are deterministic.
 import assert from 'node:assert/strict';
 import { boot } from './harness.mjs';
@@ -8,8 +8,7 @@ const { NP } = t;
 const ow = NP.quickStart('Ren', 'f');
 ow.msg.close(); ow.tasks = [];
 const V = NP.view3d;
-assert.ok(V && V.on === true, 'view3d exists and is on by default');
-V.on = false;
+assert.ok(V && V.on === false, 'view3d exists and is off by default');
 
 ow.loadMap('seamstead', 17, 16, 'up', { noEnter: true }); t.tick(10);
 const fbA = new NP.Bitmap(NP.W, NP.H), fbB = new NP.Bitmap(NP.W, NP.H);
@@ -69,22 +68,28 @@ V.on = true; ow.draw(fbA, 0);
 assert.equal(V.toggle(), false);
 ow.draw(fbB, 0);
 assert.ok(ref.every((v, i) => v === fbB.u32[i]), 'turning 3D off restores the flat view exactly');
-// buildings are solid boxes: a ground point just behind a house is hidden by it, and the house's front wall is in the frame
-{
-  V.on = true; V.preset('street');
-  ow.loadMap('button_town', 12, 12, 'down', { noEnter: true }); t.tick(3);
-  for (let i = 0; i < 150; i++) ow.draw(fbA, i);
-  const m = t.ow.map, house = m.objs.find((p) => V.BOX[p.id]);
-  assert.ok(house, 'Button Town has a box building');
-  const saved = V.BOX[house.id];
-  const behind = V.project((house.x + house.w / 2) * 16, house.y * 16 + 6, 0);
-  ow.draw(fbA, 0); const withBox = Uint32Array.from(fbA.u32);
-  delete V.BOX[house.id]; ow.draw(fbB, 0); V.BOX[house.id] = saved;
-  assert.ok(withBox.some((v, i) => v !== fbB.u32[i]), 'box buildings render differently from billboards');
-  assert.ok(behind && behind.x >= 0 && behind.x < NP.W && behind.y >= 0 && behind.y < NP.H, 'test point is on screen');
-  if (behind && behind.x >= 0 && behind.x < NP.W && behind.y >= 0 && behind.y < NP.H) {
-    const i = Math.floor(behind.y) * NP.W + Math.floor(behind.x);
-    assert.notEqual(withBox[i], fbB.u32[i], 'the ground behind the house is covered by the house');
-  }
-}
+
+// switches: the headless default leaves V.on alone ('flat'); 'auto' = 3D outdoors / flat indoors with the map's own camera preset;
+// 'on' = 3D everywhere; the V key (toggle) flips between flat and auto
+assert.equal(V.mode, 'flat', 'headless default mode is flat');
+V.mode = 'auto'; V.on = false;
+ow.loadMap('seamstead', 17, 16, 'up', { noEnter: true });
+assert.equal(V.on, true, 'auto: outdoors is 3D');
+assert.equal(V.presetName, NP.maps.seamstead.view, 'auto: the map picks its camera preset');
+ow.loadMap('player_house', 3, 3, 'down', { noEnter: true });
+assert.equal(V.on, false, 'auto: indoors stays flat');
+ow.loadMap('gingham_woods', 14, 4, 'up', { noEnter: true });
+assert.equal(V.on, true); assert.equal(V.presetName, NP.maps.gingham_woods.view);
+V.mode = 'on';
+ow.loadMap('player_house', 3, 3, 'down', { noEnter: true });
+assert.equal(V.on, true, 'on: 3D everywhere'); assert.equal(V.presetName, 'flat-ish', 'on: rooms use the gentle preset');
+V.mode = 'flat'; V.on = false;
+ow.loadMap('seamstead', 17, 16, 'up', { noEnter: true });
+assert.equal(V.on, false, 'flat: the map load changes nothing');
+V.mode = 'auto'; V.on = true;
+assert.equal(V.toggle(), false); assert.equal(V.mode, 'flat'); assert.equal(V.on, false);
+assert.equal(V.toggle(), true); assert.equal(V.mode, 'auto'); assert.equal(V.on, true);
+V.mode = 'flat'; V.on = false;
+ow.loadMap('seamstead', 17, 16, 'up', { noEnter: true });
+ow.draw(fbA, 0);
 console.log('view3d OK,', n, 'maps');

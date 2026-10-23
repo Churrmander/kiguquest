@@ -81,6 +81,7 @@
 
   K.reg({
     id: 'thimble', name: 'Thimble Village', music: 'town_thimble', battleBg: 'grass', border: 'treeline',
+    view: 'street',   // 3D camera preset (street | town | flat-ish), see src/engine/persp.js
     legend: { '.': 'grass', T: 'treeline', c: 'cobble', p: 'path', f: 'flowers', F: 'fence', ',': 'tallgrass' },
     rows: K.rows(g),
     stamps: [
@@ -197,7 +198,7 @@
 
   // --------------------------------------------------------------------------------------- Salon
   K.room({
-    id: 'salon', name: 'Thimble Salon', w: 10, h: 12, doorX: 4, floor: 'floor_wood', wall: 'wall_plaster', music: 'town_thimble', battleBg: 'indoor',
+    id: 'salon', name: 'Thimble Salon', w: 10, h: 12, doorX: 4, floor: 'floor_wood', wall: 'wall_plaster', music: 'town_thimble', battleBg: 'gym',
     exit: { to: 'thimble', door: 'salon' },
     carpet: [4, 2, 2, 9], carpetTerrain: 'carpet_red',
     stamps: [

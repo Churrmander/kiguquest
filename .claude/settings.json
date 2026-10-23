@@ -3,7 +3,7 @@
     "deny": [
       "Read(./.git/**)",
       "Read(./node_modules/**)",
-      "Read(./.preview/**)",
+      "Read(./.preview/audio/**)",
       "Read(./**/*.log)"
     ]
   }

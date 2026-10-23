@@ -7,6 +7,7 @@
 
   const M = L.map({
     id: 'hemline', name: 'Hemline', music: 'town_thimble', battleBg: 'grass', border: 'treeline', w: W, h: H,
+    view: 'street',   // 3D camera preset (street | town | flat-ish), see src/engine/persp.js
     legend: { '.': 'grass', T: 'treeline', c: 'cobble', f: 'flowers', F: 'fence', p: 'path' },
     // Mimi runs ahead to Hemline once the shrine incident is over
     onEnter: function* (c) { if (c.flag('shrine1_done')) c.showNpc('mimi_h'); },
@@ -75,7 +76,7 @@
   // --------------------------------------------------------------------------------------- Salon
   const team = (list) => L.team(list);
   const salon = L.room({
-    id: 'hemline_salon', name: 'Hemline Salon', w: 10, h: 12, doorX: 4, floor: 'floor_wood', wall: 'wall_plaster', music: 'town_thimble', battleBg: 'indoor',
+    id: 'hemline_salon', name: 'Hemline Salon', w: 10, h: 12, doorX: 4, floor: 'floor_wood', wall: 'wall_plaster', music: 'town_thimble', battleBg: 'gym',
     exit: { to: 'hemline', door: 'salon' }, carpet: [4, 2, 2, 9], carpetTerrain: 'carpet_green',
   });
   salon.stamp('mannequin', 1, 2).stamp('mannequin', 8, 2).stamp('bookshelf', 0, 0).stamp('cloth_shelf', 7, 0)
