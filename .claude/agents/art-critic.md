@@ -12,7 +12,7 @@ The owner's references live in `.preview/reference/` (git-ignored; list the fold
 
 | File | What it is the reference for |
 |---|---|
-| `bw-trainers-ref.png` | Battle / dex sprites of human-sized characters (trainers AND Kigu): proportions (about 5-6 heads tall, small heads, long natural limbs), tiny simple eyes (about 1-2 px wide, little or no white), lively characterful poses, dark silhouette outline with some coloured inner lines, 2-3 tones per material lit from the top-left, crisp readable silhouettes. Style and proportions only, never a design to copy. |
+| `bw-trainers-ref.png` | Battle / dex sprites of human-sized characters (trainers AND Kigu): proportions (measured on the sheet: teens about 3.5-4 heads tall, adults about 4.4-4.7, hats lower it a little; small faces about 8-10 px wide, long natural tapering limbs), tiny simple eyes (1-2 px wide, 2-3 px tall, little or no white), about 15 colours per sprite, lively characterful poses, dark silhouette outline with some coloured inner lines, 2-3 tones per material lit from the top-left, crisp readable silhouettes. Style and proportions only, never a design to copy. |
 | `konko-ref.webp` | Konko's design: hood with tall dark-tipped fox ears and a white rim, white collared shirt, dark brown hair with straight bangs and low twin tails, dark mitts and boots, loose orange onesie, a huge fluffy tail whose tip becomes a flame. Judge design fidelity against this, but proportions and eye size against `bw-trainers-ref.png`. |
 | `world-street.png`, `battle-trainer.png` | Overworld street look and battle look (see `docs/ART-TARGET.md`), if present. |
 
