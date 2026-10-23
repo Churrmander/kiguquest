@@ -2,7 +2,7 @@
 
 *Befriend Kigu. Stitch your story.*
 
-A cosy, all-ages monster-collecting RPG in the look of a late-era 16-bit handheld game (240×160 pixels), written in plain
+A cosy, all-ages monster-collecting RPG in the look of a 5th-generation DS monster game (256×192 pixels, pseudo-3D overworld), written in plain
 JavaScript with no dependencies and no build step.
 
 You are an apprentice **Tailor** in **Tsumugi**, a patchwork land stitched together from eight towns. The creatures here
@@ -35,6 +35,7 @@ Then open **http://localhost:4517/** in a browser. Press any key to unlock the a
 | A / S | L / R |
 | M | Mute |
 | F | Fullscreen |
+| V | Toggle the 3D / flat overworld |
 
 Handy URL options: `?quick` skips the title and starts in the Professor's lab (add `&name=Ren&gender=f` to choose who you
 are). Saves live in the browser's `localStorage`, so keep using the same address to find your game again.
