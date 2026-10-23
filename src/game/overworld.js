@@ -77,17 +77,21 @@
       const set = spr.frames[vd] || spr.frames.down;
       const f = this.moving ? (this.parity ? 1 : 2) : 0;
       const bmp = set[Math.min(f, set.length - 1)];
-      if (this.swim) { // paddling: a ripple ring instead of a shadow, and she sits a little lower in the water
-        const bob = (frame >> 4) & 1;
-        fb.blendRect(X + 1, Y + 13, 14, 3, '#7fc8ff', 0.55);
-        fb.blendRect(X + 3, Y + 12, 10, 1, '#ffffff', 0.35);
-        fb.blendRect(X + 3, Y + 16, 10, 1, '#2a6fb0', 0.45);
-        fb.blit(bmp, X + ((16 - bmp.w) >> 1), Y - 6 - bob - ((bmp.h || 24) - 24));
+      // the sprite cell (32x32) is centred on the tile with the feet on the tile's bottom row: (X - 8, Y - 16)
+      const sx = X + ((16 - bmp.w) >> 1), sy = Y + 16 - bmp.h;
+      if (this.swim) { // paddling: a ripple ring instead of a shadow; she sits lower and the water hides her legs
+        const bob = (frame >> 4) & 1, wl = Y + 13, top = sy + 6 + bob;
+        fb.blendRect(X, Y + 12, 16, 4, '#7fc8ff', 0.55);
+        fb.blendRect(X + 2, Y + 16, 12, 1, '#2a6fb0', 0.45);
+        fb.blit(bmp, sx, top, { sh: Math.max(0, wl - top) });
+        fb.blendRect(X + 2, wl - 1, 12, 1, '#ffffff', 0.35);
         return;
       }
-      // soft shadow
-      fb.blendRect(X + 3, Y + 12, 10, 3, '#000000', 0.22);
-      fb.blit(bmp, X + ((16 - bmp.w) >> 1), Y - (bmp.h - 16) - Math.round(this.hop));
+      // soft oval shadow under the feet
+      fb.blendRect(X + 4, Y + 13, 8, 1, '#000000', 0.2);
+      fb.blendRect(X + 2, Y + 14, 12, 1, '#000000', 0.22);
+      fb.blendRect(X + 4, Y + 15, 8, 1, '#000000', 0.2);
+      fb.blit(bmp, sx, sy - Math.round(this.hop));
     }
   }
 
@@ -704,8 +708,8 @@
       for (const a of this.actors.concat([p])) {
         if (a.emoteT > 0 && a.visible) {
           const q = NP.view3d && NP.view3d.on ? NP.view3d.project(a.px + 8, a.py + 16) : null;
-          if (NP.view3d && NP.view3d.on) { if (q) fb.blit(A().emote(a.emote), Math.round(q.x) - 8, Math.round(q.y - 30 * q.scale) - 8); }
-          else fb.blit(A().emote(a.emote), Math.round(a.px - cx), Math.round(a.py - cy) - 22);
+          if (NP.view3d && NP.view3d.on) { if (q) fb.blit(A().emote(a.emote), Math.round(q.x) - 8, Math.round(q.y - 36 * q.scale) - 8); }
+          else fb.blit(A().emote(a.emote), Math.round(a.px - cx), Math.round(a.py - cy) - 28);
         }
       }
       if (this.popup > 0 && this.map.def.name) {

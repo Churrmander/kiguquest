@@ -1,4 +1,4 @@
-/* src/art/human/api.js — the public NP.art.human API (DESIGN §4B): overworld / front / back / has / ids / looks / make.
+/* src/art/human/api.js — the public NP.art.human API (DESIGN §4B): overworld / front / back / backPose / has / ids / looks / make.
  * Results are cached per look — callers must clone() bitmaps before mutating them.
  */
 (function (root) {
@@ -22,8 +22,10 @@
     api.has = (id) => Object.prototype.hasOwnProperty.call(table, id);
     api.ids = () => Object.keys(table);
     api.overworld = (id) => memo('ow', id, (S) => L.ow.build(S));
-    api.front = (id) => memo('front', id, (S) => L.portrait.render(S, 'front'));
-    api.back = (id) => memo('back', id, (S) => L.portrait.render(S, 'back'));
+    api.front = (id) => memo('front', id, (S) => L.trainer.render(S, 'front'));
+    api.back = (id) => memo('back', id, (S) => L.trainer.render(S, 'back'));
+    /** Back view in a send-out pose: 'ready' (same bitmap as back()) | 'windup' | 'throw' | 'follow'. */
+    api.backPose = (id, pose) => (!pose || pose === 'ready' || !L.trainer.POSES.includes(pose) ? api.back(id) : memo('bp:' + pose, id, (S) => L.trainer.render(S, 'back', pose)));
     /** The normalised (canonical) spec of a look — handy for tools and tests. */
     api.spec = (id) => spec(id);
     return api;
@@ -49,6 +51,7 @@
       overworld: wrap(a.overworld),
       front: wrap(a.front),
       back: wrap(a.back),
+      backPose: (x, pose) => a.backPose(id, pose),
       spec: wrap(a.spec),
     };
   };

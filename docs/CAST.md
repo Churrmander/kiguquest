@@ -21,12 +21,12 @@ Fill the prompt template once per character. Make one sheet per character and ne
 ```
 Single character reference sheet. 32-bit DS-era pixel art: crisp square pixels, NO anti-aliasing, no blur, no soft gradients.
 DS/DSi-era look (not Game Boy): rich saturated colour, soft 3-4 tone shading, soft selective outline in a darkened version of each material's colour (never pure black).
-CAMERA: seen from a raised, slightly top-down angle (about 55-60 degrees): the top of the hair/hat is clearly visible, shoulders and torso a little foreshortened, short legs, large head, bold simple shapes. Limited rich palette, roughly 16-24 colours for the character.
+CAMERA: seen from a raised, slightly top-down angle (about 55-60 degrees): the top of the hair/hat is clearly visible, shoulders and torso a little foreshortened, bold simple shapes. Walk sprites: head about one third of the figure, visible torso and legs. Limited rich palette: 16 colours per walk cell, up to 32 for the trainer sprite.
 2-3 tone cel shading, light from the top-left. Original design only: nothing copied from any existing game, franchise or show.
 Plain flat magenta background (#ff00ff). No ground, no shadow, no scenery, no props outside the character.
 
 CHARACTER: {NAME}, {ROLE IN ONE PHRASE}. Personality: {WORD}, {WORD}.
-BODY: {apparent age}, {build}, about 4 heads tall. Skin: {skin tone}.
+BODY: {apparent age}, {build}; walk sprite about 2.5-3 heads tall, trainer sprite about 4 heads tall. Skin: {skin tone}.
 HAIR: {hair style}, {hair colour}. EYES: {eye colour}. FACE: {default expression}.
 OUTFIT: {top with colours and materials}; {bottom with colours and materials}; {shoes with colour}.
 ACCESSORIES: {item with colour}; {item with colour}.
@@ -35,8 +35,8 @@ SILHOUETTE MUST KEEP: 1) {hook}; 2) {hook}; 3) {hook}.
 LAYOUT: one image made of a regular grid of equal-size square cells with even padding between cells. ONE character only.
 Rows = directions: Down (front), Up (back), Left, Right.
 Columns = walk frames: stand, step A, stand, step B.
-That is 4 x 4 = 16 walk cells, all the same size.
-Plus one large front-facing portrait (bust-up), placed to the right of the grid, same design.
+That is 4 x 4 = 16 walk cells, all 32x32 px: figure 26-30 px tall (children about 24), feet on the bottom row, centred.
+Plus one front-facing full-body trainer sprite, 80x80 px (figure about 70-76 px tall, feet on row 78, centred), placed to the right of the grid, same design.
 NO battle poses. NO 8 directions. NO extra expressions. NO other characters.
 Keep the same design, colours and proportions in every cell. Text labels are optional and small.
 ```
@@ -280,7 +280,7 @@ All P2 except the peddler disguise of Sharps, which is P1. Each Needle is a kind
 
 ## 7. Townsfolk & generic NPCs
 
-Each row is one look id. Build "adult" is about 4 heads tall. "Stout" means broad, not short.
+Each row is one look id. Build "adult" is about 4 heads tall in the 80x80 trainer sprite (about 2.5-3 in the 32x32 walk cells). "Stout" means broad, not short.
 
 ### Villagers and elders (P1)
 
@@ -348,20 +348,20 @@ Each row is one look id. Build "adult" is about 4 heads tall. "Stout" means broa
 
 In battle the hero is seen from behind and throws a Bond Spool to send out a Kigu. For each hero, in addition to the walk sheet, generate ONE extra strip, original design in the same style (do not copy any existing game's pose sheet; the style reference is only for the level of polish):
 
-- Back view only, 5 cells in a row, equal size (about 64x64 each), same character, scale and palette as the walk sheet:
+- Back view only, 5 cells in a row, 80x80 each (same size and anchor as the trainer sprite), same character and palette as the walk sheet:
   1. **Ready** - standing, spool in the throwing hand, relaxed.
   2. **Wind-up** - body leaning back, throwing arm drawn back and up.
   3. **Throw** - body leaning forward, arm fully extended, spool leaving the hand.
   4. **Follow-through** - arm across the body, weight on the front foot.
   5. **Step aside** - upright again, one step to the left (she slides off screen after this).
 - Same camera as the walk sheet (raised, top of hair/hat visible). Magenta background, no text, no spool in the air (the game draws the spool and sparkle).
-- Delivery name: `<id>_battle.png`. Until these exist the game fakes the throw by swaying the back-view portrait.
+- Delivery name: `<id>_battle.png`. Until these exist the generator draws Ready / Wind-up / Throw / Follow-through itself (`NP.art.human.backPose`) and the game sways it.
 
 ## Consistency checklist
 
-- **Proportions:** everyone is about 4 heads tall. Children may be about 3.5, tall adults up to 4.5. No huge heads. Stout characters are wider, not shorter.
-- **Hands:** clear and readable at 16x24. Two or three finger shapes or a simple mitt. Never a blob.
-- **Outline:** one outline colour for every character, #2c1c30. No black outline, no coloured outline, no outline that disappears on dark clothing.
+- **Proportions:** trainer sprites (80x80): everyone is about 4 heads tall; children about 3.5, tall adults up to 4.5. Walk sprites (32x32): head about a third of the figure (teens about 28 px, adults 29-30, children 24-26). Stout characters are wider, not shorter.
+- **Hands:** clear and readable: a 2x2 mitt in the 32x32 walk cells, a small mitt with a thumb in the 80x80 trainer sprite. Never a blob.
+- **Outline:** one dark 1px outer outline for every character, #2c1c30 (not pure black). Inside the figure, parts are separated by the darkest tone of the material (arm against torso, chin against collar).
 - **Shading:** 2-3 tones per material. Light from the top-left. No anti-aliasing and no blended gradients.
 - **Silhouette:** each character has one signature accessory or hair shape that reads at a glance (beret, cap, pigtails, bun, nightcap, braid, patched coat). Pigtails, ponytails and buns must extend outside the head outline.
 - **Look-alikes:** aide_f and aide_m share a lab coat; separate them by hair and trousers. grunt_m and grunt_f share a uniform; separate them by hair and skirt. Named Pleats share a suit; separate them by hair and accessory.
@@ -383,7 +383,7 @@ In battle the hero is seen from behind and throws a Bond Spool to send out a Kig
 ## Delivery format
 
 - **File:** PNG, lossless, no JPEG. Background is opaque flat magenta #ff00ff; we key it out on import.
-- **Cells:** every walk cell is the same size, with even padding between cells. The 4 x 4 walk grid and the portrait sit on the same image.
+- **Cells:** every walk cell is 32x32 with even padding between cells; the trainer sprite is 80x80. The 4 x 4 walk grid and the trainer sprite sit on the same image.
 - **Filename:** `<id>_sheet.png`, using the id from the entry. Examples: `hero_m_sheet.png`, `pleat_crease_sheet.png`, `cocoona_pressed_sheet.png`.
 - **One character per file.** No text except optional small labels. No watermarks or signatures.
 - **Interpolation:** none. Output at the final pixel size, nearest-neighbour if scaled.

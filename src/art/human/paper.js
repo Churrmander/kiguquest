@@ -3,8 +3,8 @@
  * A Paper is a small canvas of *inks* rather than colours: every pixel stores (ramp, tone) plus the id of the part that
  * painted it. Parts are drawn back-to-front with simple primitives / ASCII masks; at the end the paper is resolved to an
  * NP.Bitmap with an automatic 1px outer outline, 15-bit colour and a hard colour budget (closest colours are merged if a
- * sprite would exceed it). The same material names ('skin', 'hair', 'top', ...) are used by the overworld (16×24) and the
- * portrait (64×64) renderers, so one look spec gives one consistent palette at both scales.
+ * sprite would exceed it). The same material names ('skin', 'hair', 'top', ...) are used by the overworld (32×32) and the
+ * trainer (80×80) renderers, so one look spec gives one consistent palette at both scales.
  */
 (function (root) {
   'use strict';
@@ -120,6 +120,7 @@
       this.partNames = ['none'];
       this.cur = 0;
       this.flip = false; // when true, x is mirrored (x -> w-1-x) for every draw call
+      this.clip = null; // optional { x0, y0, x1, y1 } (inclusive, raw coords): px() outside it is ignored
       this.addRamp('line', [L.LINE, L.LINE, L.LINE, L.LINE]);
     }
 
@@ -155,9 +156,11 @@
 
     /** Paint one pixel with material `mat` (name/index) and tone (0..3). mat 'line' or tone<0 -> line colour. */
     px(x, y, mat, tone) {
-      x = this.fx(x | 0);
-      y |= 0;
+      x = this.fx(Math.floor(x));
+      y = Math.floor(y);
       if (x < 0 || y < 0 || x >= this.w || y >= this.h) return this;
+      const cl = this.clip;
+      if (cl && (x < cl.x0 || x > cl.x1 || y < cl.y0 || y > cl.y1)) return this;
       const mi = mat === undefined || mat === null ? 0 : this.m(mat);
       const t = mi === 0 ? 2 : tone === undefined ? 2 : tone;
       const i = y * this.w + x;
@@ -243,6 +246,35 @@
         for (let i = 0; i + 1 < xs.length; i += 2) {
           const xa = Math.ceil(xs[i] - 1e-9), xb = Math.floor(xs[i + 1] + 1e-9);
           for (let x = xa; x <= xb; x++) this.px(x, y, mat, tone);
+        }
+      }
+      return this;
+    }
+
+    /** Horizontal run x0..x1 (inclusive, either order) on row y. tone may be a function (x, y) -> tone. */
+    run(y, x0, x1, mat, tone) {
+      if (x0 > x1) { const t = x0; x0 = x1; x1 = t; }
+      for (let x = Math.round(x0); x <= Math.round(x1); x++) this.px(x, y, mat, typeof tone === 'function' ? tone(x, y) : tone);
+      return this;
+    }
+
+    /**
+     * Tapered limb (capsule) from (ax,ay) to (bx,by) with radius ra at a and rb at b, sampled at pixel centres
+     * (pixel x covers x..x+1, so a limb centred on x = 12.5 with r 1 is 2px wide; on x = 12 with r 1 it is 3px).
+     * o.caps === false: flat ends (no round cap past the end points).
+     */
+    limb(ax, ay, bx, by, ra, rb, mat, tone, o) {
+      const pad = Math.max(ra, rb) + 1;
+      const dx = bx - ax, dy = by - ay, L2 = dx * dx + dy * dy || 1e-9;
+      const caps = !(o && o.caps === false);
+      for (let y = Math.floor(Math.min(ay, by) - pad); y <= Math.ceil(Math.max(ay, by) + pad); y++) {
+        for (let x = Math.floor(Math.min(ax, bx) - pad); x <= Math.ceil(Math.max(ax, bx) + pad); x++) {
+          const px = x + 0.5, py = y + 0.5;
+          let t = ((px - ax) * dx + (py - ay) * dy) / L2;
+          if (!caps && (t < -1e-6 || t > 1 + 1e-6)) continue;
+          t = t < 0 ? 0 : t > 1 ? 1 : t;
+          const qx = ax + dx * t - px, qy = ay + dy * t - py, r = ra + (rb - ra) * t;
+          if (qx * qx + qy * qy <= r * r + 0.01) this.px(x, y, mat, typeof tone === 'function' ? tone(x, y) : tone);
         }
       }
       return this;
@@ -344,7 +376,43 @@
           if (q && q !== part && this.getRaw(X, Y) >= 0 && (!o.against || o.against.includes(q))) { hits.push(i); break; }
         }
       }
-      for (const i of hits) this.ink[i] = ink;
+      for (const i of hits) this.ink[i] = ink === 'deep' ? this.ink[i] & ~3 : ink === 'shadow' ? (this.ink[i] & 3) > 1 ? (this.ink[i] & ~3) | 1 : this.ink[i] : ink;
+      return this;
+    }
+
+    /** Part ids whose name matches a prefix (string) or test(name) (function). */
+    partsNamed(test) {
+      const out = [];
+      for (let i = 1; i < this.partNames.length; i++) {
+        const n = this.partNames[i];
+        if (typeof test === 'function' ? test(n) : n === test || n.startsWith(test + ':')) out.push(i);
+      }
+      return out;
+    }
+
+    /**
+     * Cel shading for the pixels of a set of parts (treated as one region), light from the top-left. Only pixels still at
+     * the base tone (2) change, so hand-placed details survive. o: { r: depth of the shadow band along the right edge,
+     * b: along the bottom edge, l: depth of the light rim along the top-left edge (tone 3), deep: 1 -> the outermost
+     * shadow pixel on the right/bottom becomes tone 0, under: [part ids] that cast a 1..o.underD px shadow on pixels below }.
+     */
+    cel(parts, o) {
+      if (!parts.length) return this;
+      const set = new Set(parts), W = this.w;
+      const inside = (x, y) => x >= 0 && y >= 0 && x < W && y < this.h && this.ink[y * W + x] >= 0 && set.has(this.part[y * W + x]);
+      const under = o.under ? new Set(o.under) : null;
+      const out = [];
+      for (let i = 0; i < this.ink.length; i++) {
+        if (this.ink[i] < 0 || !set.has(this.part[i]) || (this.ink[i] & 3) !== 2 || this.ink[i] >> 2 === 0) continue;
+        const x = i % W, y = (i / W) | 0;
+        let t = 2;
+        for (let k = 1; k <= (o.r || 0) && t === 2; k++) if (!inside(x + k, y)) t = o.deep && k === 1 ? 0 : 1;
+        for (let k = 1; k <= (o.b || 0) && t === 2; k++) if (!inside(x, y + k)) t = 1;
+        if (under && t === 2) for (let k = 1; k <= (o.underD || 1); k++) { const q = y - k; if (q >= 0 && this.ink[q * W + x] >= 0 && under.has(this.part[q * W + x])) { t = 1; break; } }
+        if (t === 2 && o.l) for (let k = 1; k <= o.l && t === 2; k++) if (!inside(x - k, y) || !inside(x, y - k)) t = 3;
+        if (t !== 2) out.push(i, t);
+      }
+      for (let j = 0; j < out.length; j += 2) this.ink[out[j]] = (this.ink[out[j]] & ~3) | out[j + 1];
       return this;
     }
 

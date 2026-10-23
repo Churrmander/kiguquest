@@ -65,9 +65,10 @@ Put checks in `tests/<area>.test.mjs` (plain `node:assert`, exit non-zero on fai
 
 | thing | value |
 |---|---|
-| Screen | 240×160 (`NP.W`, `NP.H`) |
+| Screen | 256×192 (`NP.W`, `NP.H`; message box top `NP.BOX_Y` = 144) |
 | Tile | 16×16 (`NP.TILE`) |
-| Overworld character | 16×24 sprite, feet in the bottom 16×16 tile, head overlaps the tile above |
+| Overworld character | 32×32 cell, figure ≈ 24–30px (≈ 1.5 tiles), feet on the cell's bottom row, centred: drawn at (tile x − 8, tile y − 16) |
+| Trainer battle sprite | 80×80, full body ≈ 60–77px, anchored bottom-centre (40, 78) |
 | Battle Kigu sprite | 64×64, anchored bottom-centre ≈ (32, 62) |
 | Party icon | 32×32, 2 frames |
 | Item icon | 24×24 |
@@ -80,7 +81,7 @@ Put checks in `tests/<area>.test.mjs` (plain `node:assert`, exit non-zero on fai
 
 Target: the look of a DS/DSi-era (5th-generation handheld) RPG — NOT Game Boy / GBA. Rich saturated colour, soft multi-tone shading, coloured selective outlines, characters drawn from a raised camera (the crown of the head/hat is visible, bodies slightly foreshortened). Still crisp, readable pixels at 240×160.
 
-* **Palette discipline.** 15-bit colour (call `bmp.quantize15()` on final output). Humans: ≤ 26 colours (map) / ≤ 32 (portraits), outlines included (enforced in a test); Kigu stay ≤ 16 until their sprites are updated. Tiles: ≤ 16 colours per tile is ideal, never a smooth gradient.
+* **Palette discipline.** 15-bit colour (call `bmp.quantize15()` on final output). Humans: ≤ 16 colours per overworld cell / ≤ 32 per trainer sprite, outline included (enforced in a test); Kigu stay ≤ 16 until their sprites are updated. Tiles: ≤ 16 colours per tile is ideal, never a smooth gradient.
 * **Outlines.** 1px dark outline in a hue-shifted very dark colour of the material (not pure black) around characters, buildings
   and objects; terrain has soft or no outline. Use `Bitmap.outline()`.
 * **Shading.** Flat cel shading, 2–3 tones per material (`Color.ramp(base)` gives a hue-shifted ramp: shadows cooler, highlights
@@ -109,13 +110,17 @@ thousands of hand-placed pixels — the roster will grow, so adding a species sh
 
 ### 4B. Humans — `NP.art.human` (owner: Human artist; dir `src/art/human/`)
 ```js
-NP.art.human.overworld(lookId) -> { w:16, h:24, frames:{ down:[b,b,b], up:[b,b,b], left:[b,b,b], right:[b,b,b] } }
+NP.art.human.overworld(lookId) -> { w:32, h:32, frames:{ down:[b,b,b], up:[b,b,b], left:[b,b,b], right:[b,b,b] } }
+        // 32×32 cells, feet on the bottom row (outline on row 31), figure centred: the engine blits the cell at (tile x − 8, tile y − 16).
         // frame 0 = standing, 1 = left-foot step, 2 = right-foot step. right may be mirrored-left but must be provided.
-NP.art.human.front(lookId)     -> Bitmap 64×64  // trainer battle sprite / portrait, facing viewer
-NP.art.human.back(lookId)      -> Bitmap 64×64  // back view (required for hero_m / hero_f)
-NP.art.human.has(id) / .ids() / .looks / .make(spec) // make(spec) builds the same API object from an ad-hoc spec (quick NPCs)
+NP.art.human.front(lookId)     -> Bitmap 80×80  // trainer battle sprite, facing viewer; bottom-centre anchor (40, 78)
+NP.art.human.back(lookId)      -> Bitmap 80×80  // back view, same size/anchor (every look has one; required for hero_m / hero_f)
+NP.art.human.backPose(lookId, pose) -> Bitmap 80×80 // send-out pose: 'ready' (=== back) | 'windup' | 'throw' | 'follow'
+NP.art.human.has(id) / .ids() / .looks / .spec(id) / .make(spec) // make(spec) builds the same API object from an ad-hoc spec (quick NPCs)
 ```
-Look ids are listed in BIBLE §4. Same art style as the Kigu (chibi, same outline logic) so humans and Kigu match.
+Look ids are listed in BIBLE §4. DS 5th-gen proportions: overworld head ≈ a third of the figure, raised camera (crown visible),
+visible torso and legs; trainer sprites ≈ 4 heads tall, more grown-up, same person and palette. Dark 1px outline, 2–3 tone cel
+shading lit from the top-left. Callers place trainer sprites by the bitmap's own w/h with a bottom-centre anchor.
 
 ### 4C. World tiles — `NP.terrain`, `NP.stamps`, `NP.art.tiles` (owner: Tile artist; dir `src/art/tiles/`)
 A map is a grid of **terrain** tiles (one char = one terrain id per map legend) plus placed **stamps** (multi-tile objects).

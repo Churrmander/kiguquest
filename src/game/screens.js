@@ -129,8 +129,8 @@
       if (this.stage === 0) { this.drawUI(fb); return; }
       ui.text(fb, 'What is your name?', NP.W / 2, 6, 'light', { align: 'center' });
       const look = this.gender === 'm' ? 'hero_m' : 'hero_f';
-      const s = A().human(look).frames.down[0];
-      fb.blit(s, 8, 8);
+      const s = A().human(look).frames.down[0]; // 32x32 cell, feet on the bottom row
+      fb.blit(s, 26, 46 - s.h);
       ui.frame(fb, 68, 22, 120, 20, 'light');
       for (let i = 0; i < 8; i++) {
         const ch = this.name[i];
@@ -213,7 +213,8 @@
       const st = NP.state;
       ui.frame(fb, 8, 8, NP.W - 16, NP.H - 16, 'light');
       ui.text(fb, 'TAILOR CARD', 20, 16, 'light', { color: '#d83838' });
-      fb.blit(A().human(NP.State.lookId()).frames.down[0], 24, 44);
+      const tr = A().humanFront(NP.State.lookId()); // 80x80 trainer sprite, bottom-centre anchor
+      fb.blit(tr, 40 - (tr.w >> 1), 110 - tr.h);
       ui.text(fb, 'Name   ' + st.name, 70, 32, 'light');
       ui.text(fb, 'Money  $' + st.money, 70, 46, 'light');
       ui.text(fb, 'Friends ' + Object.keys(st.dex.caught).length + ' (seen ' + Object.keys(st.dex.seen).length + ')', 70, 60, 'light');
