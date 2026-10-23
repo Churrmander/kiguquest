@@ -6,7 +6,7 @@
   const A = () => NP.assets;
   const B = NP.Battle;
 
-  const FULL = { x: 0, y: 112, w: 240, h: 48 };
+  const FULL = { x: 0, y: NP.BOX_Y, w: NP.W, h: 48 };
   const FX = { ember: 'flame', tide: 'drop', sprout: 'leaf', volt: 'bolt', frost: 'flake', pebble: 'rock', gale: 'gust', dream: 'star', spook: 'shadow', buzz: 'sparkle', fluff: 'hit_normal', brawl: 'punch', nettle: 'poison', terra: 'dust', shade: 'shadow', iron: 'slash', drake: 'glow' };
 
   class BattleScene extends Scene {
@@ -40,8 +40,8 @@
         consume: (id) => NP.State.removeItem(id, 1),
         data: { badges: st.badges.filter(Boolean).length },
       });
-      if (cfg.trainer) this.foeTrainer = { x: 172 };
-      this.hero = { x: 58 };
+      if (cfg.trainer) this.foeTrainer = { x: this.bgInfo.enemyBase.x };
+      this.hero = { x: this.bgInfo.playerBase.x };
       this.spawn(this.run(), 'battle');
     }
 
@@ -338,7 +338,7 @@
       const d = this.disp[1];
       if (!d) return;
       const kind = e.kind;
-      const p0 = { x: 58, y: 70 }, p1 = { x: d.x, y: d.y - 30 };
+      const p0 = { x: this.bgInfo.playerBase.x, y: this.bgInfo.playerBase.y - 40 }, p1 = { x: d.x, y: d.y - 30 };
       NP.snd.sfx('throw');
       for (let i = 0; i <= 26; i++) {
         const t = i / 26;
@@ -404,10 +404,10 @@
       const mon = b.sides[0].active[r.slots[0]];
       let cur = 0;
       for (;;) {
-        this.msg.begin('What will ' + mon.name + ' do?', { keep: true, auto: 1e9, box: { x: 0, y: 112, w: 136, h: 48 }, speed: 999 });
+        this.msg.begin('What will ' + mon.name + ' do?', { keep: true, auto: 1e9, box: { x: 0, y: NP.BOX_Y, w: NP.W - 112, h: 48 }, speed: 999 });
         this.msg.update();
         const items = ['Fight', 'Bag', 'Kigu', 'Run'];
-        const m = new ui.Menu({ items, theme: 'dark', x: 136, y: 112, w: 104, h: 48, cols: 2, colW: 46, cancelable: false, cursor: cur, pad: 8 });
+        const m = new ui.Menu({ items, theme: 'dark', x: NP.W - 112, y: NP.BOX_Y, w: 112, h: 48, cols: 2, colW: 50, cancelable: false, cursor: cur, pad: 8 });
         this.msg.opts.keep = true;
         const res = yield* this.menu(m);
         cur = res.index;
@@ -446,7 +446,7 @@
       const b = this.battle;
       const legal = b.legalMoves(mon);
       const items = mon.moves.map((m, i) => ({ label: NP.data.moves[m.id].name, disabled: !legal[i].usable, m }));
-      const menu = new ui.Menu({ items, theme: 'dark', x: 0, y: 112, w: 160, h: 48, cols: 2, colW: 74, cancelable: true, pad: 8 });
+      const menu = new ui.Menu({ items, theme: 'dark', x: 0, y: NP.BOX_Y, w: NP.W - 80, h: 48, cols: 2, colW: 82, cancelable: true, pad: 8 });
       // a usable-moves guard: struggle is handled by the core when none is usable
       this.moveMenuRef = menu;
       this.menus.push(menu);
@@ -530,7 +530,7 @@
       const d = this.disp[side];
       if (!d || !d.vis) return;
       const player = side === 0;
-      const x = player ? 124 : 6, y = player ? 66 : 8, w = player ? 112 : 108, h = player ? 40 : 30;
+      const x = player ? NP.W - 118 : 6, y = player ? NP.BOX_Y - 46 : 8, w = player ? 112 : 108, h = player ? 40 : 30;
       ui.frame(fb, x, y, w, h, 'dark');
       ui.text(fb, d.name, x + 8, y + 6, 'dark');
       const lv = 'Lv' + d.level;
@@ -553,10 +553,10 @@
       const sx = this.shake ? (NP.Game.frame % 2 ? 2 : -2) : 0;
       if (this.foeTrainer) {
         const f = this.foeTrainer;
-        fb.blit(A().humanFront(this.cfg.trainer.look), Math.round(f.x - 32), 58 - 62);
+        fb.blit(A().humanFront(this.cfg.trainer.look), Math.round(f.x - 32), this.bgInfo.enemyBase.y - 62);
       }
       this.drawKigu(fb, 1);
-      if (this.hero) fb.blit(A().humanThrow(NP.State.lookId(), this.hero.pose || 'ready', this.hero.lean || 0), Math.round(this.hero.x - 32), 104 - 62);
+      if (this.hero) fb.blit(A().humanThrow(NP.State.lookId(), this.hero.pose || 'ready', this.hero.lean || 0), Math.round(this.hero.x - 32), this.bgInfo.playerBase.y - 66);
       if (this.burst) { // sparkle burst: eight rays that grow then fade out
         const f = this.burst, r = 3 + f.t * 16, r0 = f.t * 6;
         for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4 + f.t * 0.8; fb.line(Math.round(f.x + Math.cos(a) * r0), Math.round(f.y + Math.sin(a) * r0), Math.round(f.x + Math.cos(a) * r), Math.round(f.y + Math.sin(a) * r), k & 1 ? '#fff4b0' : '#ffffff'); }
@@ -579,23 +579,24 @@
       this.drawBox(fb, 1);
       this.drawBox(fb, 0);
       // bottom panel background for when no message is shown
-      if (!this.msg.visible && !this.menus.length) { ui.frame(fb, 0, 112, 240, 48, 'dark'); }
+      if (!this.msg.visible && !this.menus.length) { ui.frame(fb, 0, NP.BOX_Y, NP.W, 48, 'dark'); }
       // move detail panel
       const mm = this.moveMenuRef;
       if (mm) {
         const it = mm.items[mm.cur];
-        ui.frame(fb, 160, 112, 80, 48, 'dark');
+        const px = NP.W - 80, py = NP.BOX_Y;
+        ui.frame(fb, px, py, 80, 48, 'dark');
         const mv = NP.data.moves[it.m.id];
-        ui.text(fb, 'PP ' + it.m.pp + '/' + it.m.maxpp, 168, 120, 'dark');
-        fb.blit(A().typePill(mv.type), 168, 134);
-        ui.text(fb, mv.category === 'status' ? 'Status' : mv.category === 'physical' ? 'Phys' : 'Spec', 204, 136, 'dark', { color: '#a0a8c0' });
+        ui.text(fb, 'PP ' + it.m.pp + '/' + it.m.maxpp, px + 8, py + 8, 'dark');
+        fb.blit(A().typePill(mv.type), px + 8, py + 22);
+        ui.text(fb, mv.category === 'status' ? 'Status' : mv.category === 'physical' ? 'Phys' : 'Spec', px + 44, py + 24, 'dark', { color: '#a0a8c0' });
       }
       if (this.levelBox) this.drawLevelBox(fb, this.levelBox);
       this.drawUI(fb, frame);
     }
 
     drawLevelBox(fb, lv) {
-      const x = 136, y = 6, w = 100, h = 82;
+      const x = NP.W - 106, y = 6, w = 100, h = 82;
       ui.frame(fb, x, y, w, h, 'dark');
       const names = { hp: 'HP', atk: 'Attack', def: 'Defense', spa: 'Sp.Atk', spd: 'Sp.Def', spe: 'Speed' };
       let i = 0;

@@ -1,19 +1,20 @@
-/* Browser shell — the ONLY file that touches the DOM. Blits NP.Game's 240x160 framebuffer to the canvas, maps the keyboard to
+/* Browser shell — the ONLY file that touches the DOM. Blits NP.Game's NP.W x NP.H framebuffer to the canvas, maps the keyboard to
  * NP.Input, unlocks the AudioContext on the first gesture and runs the fixed 60 Hz game loop. */
 (function (root) {
   'use strict';
   const NP = root.NP;
   const canvas = document.getElementById('screen');
   if (!canvas || !NP || !NP.Game) { console.error('browser.js: missing canvas or NP.Game'); return; }
+  canvas.width = NP.W; canvas.height = NP.H;
   const ctx = canvas.getContext('2d', { alpha: false });
   ctx.imageSmoothingEnabled = false;
-  const img = ctx.createImageData(240, 160);
+  const img = ctx.createImageData(NP.W, NP.H);
 
   // ---- sizing: integer scale that fits the window
   function fit() {
-    const s = Math.max(1, Math.floor(Math.min(root.innerWidth / 240, (root.innerHeight - 44) / 160)));
-    canvas.style.width = 240 * s + 'px';
-    canvas.style.height = 160 * s + 'px';
+    const s = Math.max(1, Math.floor(Math.min(root.innerWidth / NP.W, (root.innerHeight - 44) / NP.H)));
+    canvas.style.width = NP.W * s + 'px';
+    canvas.style.height = NP.H * s + 'px';
   }
   root.addEventListener('resize', fit);
   fit();

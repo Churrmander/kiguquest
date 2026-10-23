@@ -288,18 +288,30 @@
       return b;
     });
   };
+  /** Battle backdrop sized to the screen above the command box: { bg: Bitmap NP.W x NP.BOX_Y, enemyBase, playerBase }. Older
+   *  240x112 art is resampled (nearest neighbour) and its base points are scaled to match. */
   A.battleBg = function (id) {
     const r = tryit(() => art().tiles.battleBg(id || 'grass'), null);
-    if (r) return r;
+    if (r) return fitBg(r, id);
     return memo('bg|' + id, () => {
-      const bg = new Bitmap(240, 112);
-      bg.fillRect(0, 0, 240, 62, '#9ad4f0');
-      bg.fillRect(0, 62, 240, 50, '#78c058');
-      bg.ellipse(172, 62, 40, 9, '#5aa040', true);
-      bg.ellipse(58, 108, 52, 10, '#5aa040', true);
-      return { bg, enemyBase: { x: 172, y: 62 }, playerBase: { x: 58, y: 108 } };
+      const W = NP.W, H = NP.BOX_Y, bg = new Bitmap(W, H);
+      bg.fillRect(0, 0, W, 80, '#9ad4f0');
+      bg.fillRect(0, 80, W, H - 80, '#78c058');
+      bg.ellipse(184, 80, 44, 10, '#5aa040', true);
+      bg.ellipse(64, 138, 58, 12, '#5aa040', true);
+      return { bg, enemyBase: { x: 184, y: 80 }, playerBase: { x: 64, y: 138 } };
     });
   };
+  function fitBg(r, id) {
+    const W = NP.W, H = NP.BOX_Y, src = r.bg;
+    if (src.w === W && src.h === H) return r;
+    return memo('bgfit|' + id, () => {
+      const bg = new Bitmap(W, H), sx = src.w / W, sy = src.h / H;
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) bg.u32[y * W + x] = src.u32[Math.floor(y * sy) * src.w + Math.floor(x * sx)];
+      const pt = (p) => ({ x: Math.round(p.x / sx), y: Math.round(p.y / sy) });
+      return { id: r.id, bg, enemyBase: pt(r.enemyBase), playerBase: pt(r.playerBase) };
+    });
+  }
   const hasIcon = (k) => tryit(() => !art().icons.has || art().icons.has(k), false);
   A.logo = () => (hasIcon('logo') ? tryit(() => art().icons.logo(), null) : null);
   A.titleScene = () => (hasIcon('titleScene') ? tryit(() => art().icons.titleScene(), null) : null);

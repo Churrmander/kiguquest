@@ -69,14 +69,15 @@ assert.ok(bt.solid(bt.doors.lab.x - 1, bt.doors.lab.y), 'wall next to the door i
 assert.ok(!bt.solid(bt.doors.lab.x, bt.doors.lab.y), 'door tile is walkable');
 
 // ---- rendering never throws and draws something
-const fb = new NP.Bitmap(240, 160);
+const fb = new NP.Bitmap(NP.W, NP.H);
 tm.draw(fb, 100, 400, 0, []);
 assert.ok(fb.countColors() > 4);
 // the framebuffer of a running game
 const ow = NP.quickStart('Ren', 'm');
 for (let i = 0; i < 30; i++) Game.tick();
 const out = Game.render();
-assert.equal(out.w, 240);
+assert.equal(out.w, 256);
+assert.equal(out.h, 192);
 assert.ok(out.countColors() > 4);
 
 // ---- sound wrapper is safe without audio

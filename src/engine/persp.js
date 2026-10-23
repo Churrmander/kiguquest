@@ -10,7 +10,7 @@
  *  Camera direction is NOT a player setting: each map (def.camera = quarter turns, 0 = looking north, 1 = east, 2 = south, 3 = west)
  *  and each area inside a map (def.cameraZones = [{x,y,w,h,camera}]) says where the camera looks, and it eases round by itself as the
  *  player walks in (V.aim). Controls and sprite facings are remapped by quarter turn (V.screenToMap / V.viewDir).
- *  Camera: pivots on the map pixel at screen centre (camX+120, camY+80) — the overworld passes the player — and sits `f` map pixels
+ *  Camera: pivots on the map pixel at screen centre (camX+W/2, camY+H/2) — the overworld passes the player — and sits `f` map pixels
  *  behind it looking north (yaw 0). The pivot lands on screen row `pivotRow`, where the scale is exactly 1 (pixel-perfect there).
  *
  *  Tuning: NP.view3d.cfg = { f, hz, pivotRow, fogStart, fogEnd, fog }.   Presets: NP.view3d.preset('street'|'town'|'flat-ish').
@@ -20,7 +20,7 @@
   'use strict';
   const NP = (root.NP = root.NP || {});
   const { Bitmap } = NP;
-  const T = 16, SW = 240, SH = 160, MARGIN = 14;
+  const T = 16, SW = NP.W, SH = NP.H, CX = SW / 2, CY = SH / 2, MARGIN = 14;
 
   const PRESETS = {
     street: { f: 210, hz: -64, pivotRow: 102, fogStart: 120, fogEnd: 520, fog: '#bcd8f2' },
@@ -82,14 +82,14 @@
   // ------------------------------------------------------------------------------------------------ projection
   function frameState(camX, camY) {
     const c = V.cfg, hh = c.pivotRow - c.hz, yaw = V.yaw || 0, s = Math.sin(yaw), co = Math.cos(yaw);
-    return { f: c.f, hz: c.hz, hh, px: camX + 120, py: camY + 80, Rx: co, Ry: s, Fx: s, Fy: -co };
+    return { f: c.f, hz: c.hz, hh, px: camX + CX, py: camY + CY, Rx: co, Ry: s, Fx: s, Fy: -co };
   }
   function project(st, x, y) {
     const dx = x - st.px, dy = y - st.py;
     const u = dx * st.Rx + dy * st.Ry, v = dx * st.Fx + dy * st.Fy, Z = st.f + v;
     if (Z < st.f * 0.25) return null;
     const scale = st.f / Z;
-    return { x: 120 + u * scale, y: st.hz + st.hh * scale, scale, v };
+    return { x: CX + u * scale, y: st.hz + st.hh * scale, scale, v };
   }
   V.project = (x, y) => (V._last ? project(V._last, x, y) : null);
 
@@ -134,7 +134,7 @@
       const fogT = Math.max(0, Math.min(1, (v - c.fogStart) / (c.fogEnd - c.fogStart)));
       const inv = 1 / scale;
       for (let sx = 0; sx < SW; sx++) {
-        const u = (sx - 120) * inv;
+        const u = (sx - CX) * inv;
         const mx = Math.floor(st.px + u * st.Rx + v * st.Fx) + offX, my = Math.floor(st.py + u * st.Ry + v * st.Fy) + offY;
         let col;
         if (mx < 0 || my < 0 || mx >= gw || my >= gh) col = fogC | 0xff000000;
@@ -156,7 +156,7 @@
       items.push({ v: q.v, order: 0, q, p });
     }
     for (const a of actors || []) {
-      const ax = a.x !== undefined ? a.x : camX + 128, q = project(st, ax, a.sortY);
+      const ax = a.x !== undefined ? a.x : camX + CX, q = project(st, ax, a.sortY);
       if (!q) continue;
       items.push({ v: q.v, order: 1, q, a, ax });
     }

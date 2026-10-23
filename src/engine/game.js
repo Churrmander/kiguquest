@@ -1,4 +1,4 @@
-/* NP.Game — the scene stack, the 240x160 framebuffer, fades and the fixed-step tick.
+/* NP.Game — the scene stack, the NP.W x NP.H (256x192) framebuffer, fades and the fixed-step tick.
  *
  * A scene is any object with optional enter()/exit()/update()/draw(fb)/opaque. Scenes are stacked: only the top scene
  * gets update(); drawing starts at the lowest scene below the top that is opaque (so a menu with opaque=false is drawn
@@ -12,7 +12,7 @@
   const { Bitmap, Input } = NP;
 
   const Game = {
-    fb: new Bitmap(240, 160),
+    fb: new Bitmap(NP.W, NP.H),
     scenes: [],
     frame: 0,
     opts: { textSpeed: 1, battleAnim: true, battleStyle: 'shift', sound: true, lcd: false, run: 'hold' },
@@ -81,8 +81,8 @@
       while (i > 0 && this.scenes[i].opaque === false) i--;
       if (i < 0) fb.clear('#000000');
       for (let j = Math.max(0, i); j < this.scenes.length; j++) if (this.scenes[j].draw) this.scenes[j].draw(fb, this.frame);
-      if (this.fade.a > 0.001) fb.blendRect(0, 0, 240, 160, this.fade.color, this.fade.a);
-      if (this.flash > 0) fb.blendRect(0, 0, 240, 160, '#ffffff', Math.min(1, this.flash / 6));
+      if (this.fade.a > 0.001) fb.blendRect(0, 0, NP.W, NP.H, this.fade.color, this.fade.a);
+      if (this.flash > 0) fb.blendRect(0, 0, NP.W, NP.H, '#ffffff', Math.min(1, this.flash / 6));
       return fb;
     },
 

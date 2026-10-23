@@ -100,7 +100,7 @@
       this.waiting = false;
       this.waitT = 0;
       this.opts = {};
-      this.box = { x: 0, y: 112, w: 240, h: 48 };
+      this.box = { x: 0, y: NP.BOX_Y, w: NP.W, h: 48 };
     }
 
     /** Split into screens: '\p' (or '\f') = new screen; '\n' = line break; otherwise word-wrapped; 2 lines per screen. */

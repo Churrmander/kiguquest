@@ -31,7 +31,7 @@ const DIRV = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
 function drawWorld(tm, actors) {
   const W = tm.w * T, H = tm.h * T;
   const big = new NP.Bitmap(W, H);
-  const chunk = new NP.Bitmap(240, 160);
+  const chunk = new NP.Bitmap(NP.W, NP.H);
   for (let cy = 0; cy < H; cy += 144) for (let cx = 0; cx < W; cx += 224) {
     chunk.clear('#000000');
     tm.draw(chunk, cx, cy, 0, actors);

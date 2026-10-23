@@ -635,7 +635,7 @@
         if (NP.State.flag('has_starter') || st.party.length) items.push({ label: 'Kigu', k: 'party' });
         items.push({ label: 'Sketchbook', k: 'dex' }, { label: 'Bag', k: 'bag' }, { label: st.name, k: 'card' }, { label: 'Save', k: 'save' }, { label: 'Options', k: 'opts' }, { label: 'Close', k: 'close' });
         const m = new ui.Menu({ items, theme: 'light', x: 0, y: 4, visible: 8, cursor: cur });
-        m.x = 240 - m.w - 4;
+        m.x = NP.W - m.w - 4;
         const r = yield* this.menu(m);
         if (r.type === 'cancel' || r.item.k === 'close') break;
         cur = r.index;
@@ -676,11 +676,11 @@
     // ---- drawing
     camera() {
       const p = this.player, m = this.map;
-      let cx = Math.round(p.px + 8 - 120), cy = Math.round(p.py + 8 - 80);
+      let cx = Math.round(p.px + 8 - NP.W / 2), cy = Math.round(p.py + 8 - NP.H / 2);
       if (NP.view3d && NP.view3d.on) return [cx, cy]; // the 3D view pivots on the player and draws a border margin round the map
       const mw = m.w * 16, mh = m.h * 16;
-      cx = mw <= 240 ? -Math.floor((240 - mw) / 2) : Math.max(0, Math.min(mw - 240, cx));
-      cy = mh <= 160 ? -Math.floor((160 - mh) / 2) : Math.max(0, Math.min(mh - 160, cy));
+      cx = mw <= NP.W ? -Math.floor((NP.W - mw) / 2) : Math.max(0, Math.min(mw - NP.W, cx));
+      cy = mh <= NP.H ? -Math.floor((NP.H - mh) / 2) : Math.max(0, Math.min(mh - NP.H, cy));
       return [cx, cy];
     }
 

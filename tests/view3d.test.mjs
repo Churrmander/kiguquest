@@ -11,7 +11,7 @@ const V = NP.view3d;
 assert.ok(V && V.on === false, 'view3d exists and is off by default');
 
 ow.loadMap('seamstead', 17, 16, 'up', { noEnter: true }); t.tick(10);
-const fbA = new NP.Bitmap(240, 160), fbB = new NP.Bitmap(240, 160);
+const fbA = new NP.Bitmap(NP.W, NP.H), fbB = new NP.Bitmap(NP.W, NP.H);
 ow.draw(fbA, 0);
 const flat = Uint32Array.from(fbA.u32);
 ow.draw(fbB, 0);
@@ -25,7 +25,7 @@ assert.ok(fbA.u32.every((v) => (v >>> 24) === 255), 'every 3D pixel is opaque');
 
 // projection: the player pivot sits at screen centre column, on pivotRow, scale 1; points further north shrink and rise
 const p = t.ow.player, q0 = V.project(p.px + 8, p.py + 8), q1 = V.project(p.px + 8, p.py + 8 - 160), q2 = V.project(p.px + 8 + 32, p.py + 8);
-assert.ok(Math.abs(q0.x - 120) < 0.01 && Math.abs(q0.y - V.cfg.pivotRow) < 0.01 && Math.abs(q0.scale - 1) < 0.001, 'pivot projects to (120, pivotRow) at scale 1');
+assert.ok(Math.abs(q0.x - NP.W / 2) < 0.01 && Math.abs(q0.y - V.cfg.pivotRow) < 0.01 && Math.abs(q0.scale - 1) < 0.001, 'pivot projects to (W/2, pivotRow) at scale 1');
 assert.ok(q1.scale < 1 && q1.y < q0.y, 'further north is smaller and higher on screen');
 assert.ok(q2.x > q0.x, 'east is to the right');
 

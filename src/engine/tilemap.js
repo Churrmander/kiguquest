@@ -156,8 +156,8 @@
       if (NP.view3d && NP.view3d.on) return NP.view3d.draw(this, fb, camX, camY, tick, actors);
       const A = NP.assets;
       const x0 = Math.floor(camX / T), y0 = Math.floor(camY / T);
-      const x1 = Math.ceil((camX + 240) / T), y1 = Math.ceil((camY + 160) / T);
-      const overlays = this.drawTerrain(fb, camX, camY, tick, 240, 160);
+      const x1 = Math.ceil((camX + NP.W) / T), y1 = Math.ceil((camY + NP.H) / T);
+      const overlays = this.drawTerrain(fb, camX, camY, tick, NP.W, NP.H);
       const visible = (p) => p.x + p.w > x0 - 1 && p.x < x1 + 1 && p.y + p.h > y0 - 1 && p.y < y1 + 1;
       // y-sorted objects: stamp bases and actors
       const list = [];
