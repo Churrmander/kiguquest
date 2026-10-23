@@ -19,12 +19,18 @@
   const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
 
   // ------------------------------------------------------------------ layout
-  /** o: { H (body height head-top..feet, in px), icon, hb (icon head-bottom row), clipY (icon visible bottom row) } */
+  /**
+   * o: { H (body height head-top..feet, in px), icon, hb (icon head-bottom row), clipY (icon visible bottom row),
+   *      anim: { t: phase 0..1, amp } (idle animation; t = 0 is the rest pose) }
+   * L.u is the pixel unit: 1 in icons (the original pixel-level details), ~1.4..2.4 in the 96/128px battle sprites, so every
+   * "1px" constant of a part scales with the sprite.
+   */
   function layout(P, cw, ch, o) {
     o = o || {};
     const icon = !!o.icon;
     const H = o.H;
     const k = H / 44;
+    const u = icon ? 1 : k / 0.9;
     const cx = cw / 2 - 0.5;
     const hry = R(H * 0.225), hrx = R(H * 0.275 * (P.headW || 1));
     let bot, hcy;
@@ -35,18 +41,24 @@
       bot = ch - 4; // last row of the feet (the outline sits on row ch-2)
       hcy = R(bot + 1 - H) + hry;
     }
-    const L = { cx, k, H, bot, hry, hrx, hcy, frx: hrx - 2, fry: hry - 2, fcy: hcy + 1, icon, cw, ch, clipY: icon ? o.clipY : ch };
+    // idle animation: the head bobs (the torso stretches/squashes with it, feet stay planted), hands follow halfway,
+    // and swinging parts (ears, tails, hair tails, wings, floats) read L.sw(offset) — 0 at the rest pose.
+    const an = o.anim || null, t = an ? an.t : 0;
+    const bob = an ? R(-(an.amp === undefined ? 1 : an.amp) * u * Math.sin(2 * Math.PI * t)) : 0;
+    hcy += bob;
+    const L = { cx, k, u, H, bot, hry, hrx, hcy, frx: hrx - R(2 * u), fry: hry - R(2 * u), fcy: hcy + R(u), icon, cw, ch, clipY: icon ? o.clipY : ch, t, bob };
+    L.sw = (off) => { if (!an) return 0; const f = off || 0; return (Math.sin(2 * Math.PI * t - f) + Math.sin(f)) / (1 + Math.abs(Math.sin(f))); };
     L.hb = hcy + hry;
     L.th = R(H * 0.4 * (P.bodyH || 1));
-    L.tt = L.hb - 2;
-    L.tb = Math.min(L.tt + L.th, bot - 4);
+    L.tt = L.hb - R(2 * u);
+    L.tb = Math.min(L.tt - bob + L.th, bot - R(4 * u)); // the torso bottom does not bob
     L.bw = R(H * 0.19 * (P.bodyW || 1));
-    L.hy = icon ? L.hb + R(3 * k) : L.tt + R((L.tb - L.tt) * 0.6 + 1);
+    L.hy = icon ? L.hb + R(3 * k) : L.tt + R((L.tb - L.tt) * 0.6 + u) - R(bob * 0.5);
     L.anc = {
       head: [cx, hcy - hry], face: [cx, L.fcy], neck: [cx, L.hb - 1], chest: [cx, L.tt + R(L.th * 0.45)],
-      waist: [cx, L.tb - 3], hip: [cx, L.tb], feet: [cx, bot], back: [cx, L.tt + R(L.th * 0.4)],
-      handL: [cx - L.bw - 1, L.hy], handR: [cx + L.bw + 1, L.hy],
-      shL: [cx - L.bw + 2, L.tt + 6], shR: [cx + L.bw - 2, L.tt + 6],
+      waist: [cx, L.tb - R(3 * u)], hip: [cx, L.tb], feet: [cx, bot], back: [cx, L.tt + R(L.th * 0.4)],
+      handL: [cx - L.bw - u, L.hy], handR: [cx + L.bw + u, L.hy],
+      shL: [cx - L.bw + 2 * u, L.tt + 6 * u], shR: [cx + L.bw - 2 * u, L.tt + 6 * u],
       earL: [cx - R(hrx * 0.62), hcy - R(hry * 0.78)], earR: [cx + R(hrx * 0.62), hcy - R(hry * 0.78)],
       sideL: [cx - hrx, hcy], sideR: [cx + hrx, hcy], foot: [cx, bot - 1],
     };
@@ -144,10 +156,11 @@
     if (kind === 'bolt') {
       cv.begin(name, { shade: 2, hi: 0, family: 'tail' });
       const s = (o.side || 1);
-      let bx = L.anc.waist[0], by = L.anc.waist[1] + 2, sc = (o.sc || 0.8) * k;
+      let bx = L.anc.waist[0], by = L.anc.waist[1] + 2 * L.u, sc = (o.sc || 0.8) * k;
       if (icon) { bx = L.cx + L.bw - 2; by = L.clipY + 2; sc *= 0.6; } else if (back) { bx = L.cx + s * 1; by = L.tb; }
       const pts = [[0, 0], [9, -4], [5, -6], [14, -12], [9, -14], [18, -22], [17, -15], [21, -17], [14, -4], [16, -3], [6, 4]];
-      cv.poly(pts.map((p) => [bx + s * p[0] * sc, by + p[1] * sc]), mat);
+      const sw = L.sw(0.5) * 0.08 * s; // the bolt wags: shear about its base
+      cv.poly(pts.map((p) => [bx + s * p[0] * sc - sw * p[1] * sc, by + p[1] * sc]), mat);
       return;
     }
 
@@ -166,7 +179,7 @@
       }
     } else if (back) {
       bx = L.cx + (o.backDx || 0) * k; by = L.tb - 2 * k + (o.backDy || 0) * k;
-      if (n === 1) angs.push(side * a0 * (o.backAngle === undefined ? 0.55 : o.backAngle));
+      if (n === 1) angs.push(side * a0 * (o.backAngle === undefined ? 0.9 : o.backAngle));
       else if (n === 2) { angs.push(-(a0 * 0.6), a0 * 0.6); } else for (let i = 0; i < n; i++) angs.push(-fan / 2 + (fan * i) / (n - 1));
     } else {
       const b = L.anc[o.base || 'waist'];
@@ -175,6 +188,7 @@
       else if (n === 2 && !o.fan) angs.push(-0.6, 0.6);
       else for (let i = 0; i < n; i++) angs.push(-fan / 2 + (fan * i) / (n - 1));
     }
+    if (!icon) for (let i = 0; i < angs.length; i++) angs[i] += L.sw(0.6 + i * 0.35) * (o.sway === undefined ? 7 : o.sway) * DEG * (angs[i] < 0 ? -1 : 1);
     const order = angs.map((a, i) => i).sort((p, q) => Math.abs(angs[q]) - Math.abs(angs[p])); // outermost first = furthest behind
     const rf = TAIL_R[shape](rr);
     let gi = 0;
@@ -189,12 +203,12 @@
       if (kind === 'dragon') {
         for (let j = 1; j <= 3; j++) {
           const [x, y] = KCanvas.bez(pts, 0.25 * j + 0.05);
-          cv.poly([[x - 1, y], [x + 1, y], [x, y - 3 * k]], o.spike || 'sub');
+          cv.poly([[x - L.u, y], [x + L.u, y], [x, y - 3 * k]], o.spike || 'sub');
         }
       }
       if (o.flame) {
         const [x, y] = pts[pts.length - 1];
-        const f = icon ? 0.7 : 1;
+        const f = icon ? 0.7 : 1 + 0.12 * L.sw(1.2); // the flame flickers
         cv.begin('flame' + i, { shade: 0, hi: 0, line: true, lineMat: o.flame });
         cv.poly([[x - 3 * k * f, y], [x + 3 * k * f, y], [x + 2 * k * f, y - 4 * k * f], [x, y - 9 * k * f], [x - 1 * k * f, y - 5 * k * f], [x - 3 * k * f, y - 3 * k * f]], o.flame, 0);
         cv.poly([[x - 1.5 * k * f, y], [x + 1.5 * k * f, y], [x, y - 4 * k * f]], o.flameCore || 'sub', 0);
@@ -216,7 +230,7 @@
     const span = o.span || L.cw / 2 - (L.icon ? 2 : 4);
     const sz = o.sz || clamp((span - shoulder) / (WING_W[kind] * k), 0.3, 1.25);
     for (const s of [-1, 1]) {
-      const sx = L.cx + s * shoulder, sy = L.tt + (o.dy === undefined ? 5 : o.dy) * k;
+      const sx = L.cx + s * shoulder, sy = L.tt + (o.dy === undefined ? 5 : o.dy) * k - R(L.sw(0.3) * 1.5 * L.u);
       const u = k * sz;
       const X = (x) => sx + s * x * u, Y = (y) => sy + y * u;
       const poly = (pts, m, t) => cv.poly(pts.map((p) => [X(p[0]), Y(p[1])]), m, t);
@@ -258,9 +272,9 @@
     const k = L.k, mat = o.mat || 'acc';
     cv.begin('cape', { shade: 2, hi: 0 });
     const y0 = L.hb - 1, y1 = Math.min(L.bot, L.tb + (o.drop === undefined ? 5 : o.drop) * k);
-    const w0 = L.bw + 1, w1 = L.bw + (o.flare === undefined ? 6 : o.flare) * k;
+    const w0 = L.bw + 1, w1 = L.bw + (o.flare === undefined ? 6 : o.flare) * k + R(L.sw(0.8) * L.u);
     cv.poly([[L.cx - w0, y0], [L.cx + w0 + 1, y0], [L.cx + w1 + 1, y1], [L.cx - w1, y1]], mat);
-    if (o.trim) cv.decal('cape', () => cv.rect(L.cx - w1 - 1, y1 - 2, w1 * 2 + 3, 2, o.trim));
+    if (o.trim) cv.decal('cape', () => cv.rect(L.cx - w1 - 1, y1 - R(2 * L.u), w1 * 2 + 3, R(2 * L.u), o.trim));
     if (view === 'back' && o.emblem) cv.decal('cape', () => { cv.circ(L.cx - 0.5, L.tt + 8 * k, 3 * k, o.emblem); cv.circ(L.cx - 0.5, L.tt + 8 * k, 1.2 * k, mat, 0); });
   }
   PARTS.cape = {
@@ -282,60 +296,60 @@
       const k = L.k, mat = o.mat || 'sub';
       cv.begin(o.g || 'skirt', { shade: 2, hi: 0, noLineOn: o.noLineOn });
       const y0 = L.tb - (o.up === undefined ? 7 : o.up) * k, y1 = Math.min(L.bot, L.tb + (o.len === undefined ? 4 : o.len) * k);
-      const w0 = L.bw - 1, w1 = L.bw + (o.flare === undefined ? 4 : o.flare) * k;
+      const u = L.u, w0 = L.bw - 1, w1 = L.bw + (o.flare === undefined ? 4 : o.flare) * k + R(L.sw(0.9) * 0.7 * u);
       cv.poly([[L.cx - w0, y0], [L.cx + w0 + 1, y0], [L.cx + w1 + 1, y1], [L.cx - w1, y1]], mat);
       if (o.scallop) {
         const n = o.scallop;
         for (let i = 0; i < n; i++) { const rr = (w1 * 2 + 1) / n / 2; cv.circ(L.cx - w1 + ((i + 0.5) * (w1 * 2 + 1)) / n, y1 - rr + 1, rr, mat); }
       }
-      if (o.trim) cv.decal(cv.cur, () => cv.rect(L.cx - w1 - 2, y1 - 1, w1 * 2 + 5, 2, o.trim));
-      if (o.pat === 'stripe') cv.decal(cv.cur, () => { for (let x = L.cx - w1; x < L.cx + w1 + 2; x += 4) cv.rect(x, y0, 2, y1 - y0 + 3, o.mat2 || 'main'); });
-      if (o.pat === 'petals') cv.decal(cv.cur, () => { for (let x = L.cx - w1 + 2; x < L.cx + w1; x += 5) cv.ell(x, y1 - 3, 1.4, 2.2, o.mat2 || 'main'); });
+      if (o.trim) cv.decal(cv.cur, () => cv.rect(L.cx - w1 - 2, y1 - R(u), w1 * 2 + 5, R(2 * u), o.trim));
+      if (o.pat === 'stripe') cv.decal(cv.cur, () => { for (let x = L.cx - w1; x < L.cx + w1 + 2; x += R(4 * u)) cv.rect(x, y0, R(2 * u), y1 - y0 + 3, o.mat2 || 'main'); });
+      if (o.pat === 'petals') cv.decal(cv.cur, () => { for (let x = L.cx - w1 + 2 * u; x < L.cx + w1; x += R(5 * u)) cv.ell(x, y1 - 3 * u, 1.4 * u, 2.2 * u, o.mat2 || 'main'); });
       if (view === 'back' && o.bow) { cv.begin((o.g || 'skirt') + 'bow', { shade: 1, hi: 0, cast: 0 }); bowAt(cv, L.cx - 0.5, y0 + 2, k, o.bow, true); }
     },
   };
   /** belly patch / apron / bib / jacket / poncho on the torso. o: { mat, kind, trim, pocket, straps, emblem, bow, len } */
   PARTS.belly = {
     outfit(cv, L, o, view) {
-      const k = L.k, mat = o.mat || 'sub', kind = o.kind || 'oval';
+      const k = L.k, u = L.u, mat = o.mat || 'sub', kind = o.kind || 'oval';
       const back = view === 'back';
       if (back && (kind === 'oval' || kind === 'v')) return;
       cv.begin(o.g || 'belly', { shade: 1, hi: 0, cast: 0 });
       const cy = L.tt + R(L.th * 0.68);
-      if (kind === 'oval') cv.ell(L.cx, cy, R((L.bw - 3) * (o.w || 1)), R(L.th * 0.3 * (o.h || 1)), mat);
+      if (kind === 'oval') cv.ell(L.cx, cy, R((L.bw - 3 * u) * (o.w || 1)), R(L.th * 0.3 * (o.h || 1)), mat);
       else if (kind === 'apron') {
         if (back) { // only the strap across the back and the sash bow show
-          cv.rect(L.cx - L.bw + 1, L.tb - 6 * k, L.bw * 2, 2, mat);
+          cv.rect(L.cx - L.bw + 1, L.tb - 6 * k, L.bw * 2, R(2 * u), mat);
           cv.begin('apronbow', { shade: 1, hi: 0, cast: 0 });
           bowAt(cv, L.cx - 0.5, L.tb - 5 * k, k, mat, true);
           return;
         }
-        cv.poly([[L.cx - L.bw + 3, L.tt + 6], [L.cx + L.bw - 2, L.tt + 6], [L.cx + L.bw, L.tb + 2], [L.cx - L.bw + 1, L.tb + 2]], mat);
-        if (o.pocket) cv.decal(cv.cur, () => cv.rect(L.cx - 3, L.tb - 6, 7, 4, o.pocket));
+        cv.poly([[L.cx - L.bw + 3 * u, L.tt + 6 * u], [L.cx + L.bw - 2 * u, L.tt + 6 * u], [L.cx + L.bw, L.tb + 2 * u], [L.cx - L.bw + 1, L.tb + 2 * u]], mat);
+        if (o.pocket) cv.decal(cv.cur, () => cv.rect(L.cx - 3 * u, L.tb - 6 * u, 7 * u, 4 * u, o.pocket));
       } else if (kind === 'bib') {
         if (back) { // crossed straps
-          cv.line(L.cx - 4, L.tt + 5, L.cx + 4, L.tb - 4, o.straps || mat); cv.line(L.cx + 4, L.tt + 5, L.cx - 4, L.tb - 4, o.straps || mat);
-          cv.line(L.cx - 3, L.tt + 5, L.cx + 5, L.tb - 4, o.straps || mat); cv.line(L.cx + 5, L.tt + 5, L.cx - 3, L.tb - 4, o.straps || mat);
+          for (const s of [-1, 1]) cv.capsule(L.cx - s * 4 * u, L.tt + 5 * u, L.cx + s * 4 * u, L.tb - 4 * u, 0.9 * u, 0.9 * u, o.straps || mat);
           return;
         }
-        cv.rect(L.cx - 4, L.tt + 6, 8, L.th - 5, mat);
-        cv.rect(L.cx - 5, L.tb - 5, 10, 6, mat);
-        if (o.straps) cv.decal(cv.cur, () => { cv.rect(L.cx - 4, L.tt + 4, 2, 4, o.straps); cv.rect(L.cx + 2, L.tt + 4, 2, 4, o.straps); });
+        cv.rect(L.cx - 4 * u + 0.5, L.tt + 6 * u, 8 * u, L.th - 5 * u, mat);
+        cv.rect(L.cx - 5 * u + 0.5, L.tb - 5 * u, 10 * u, 6 * u, mat);
+        if (o.straps) cv.decal(cv.cur, () => { cv.rect(L.cx - 4 * u + 0.5, L.tt + 4 * u, 2 * u, 4 * u, o.straps); cv.rect(L.cx + 2 * u + 0.5, L.tt + 4 * u, 2 * u, 4 * u, o.straps); });
+        if (!L.icon && u > 1.2) cv.decal(cv.cur, () => { for (const s of [-1, 1]) cv.circ(L.cx + s * 2.6 * u, L.tt + 7.5 * u, 0.8 * u, 'line', 0); });
       } else if (kind === 'poncho') {
         const y1 = Math.min(L.bot, L.tb + (o.len === undefined ? 3 : o.len) * k), wb = L.bw + 4 * k;
         cv.poly([[L.cx - L.bw + 1, L.hb], [L.cx + L.bw, L.hb], [L.cx + wb + 1, y1], [L.cx - wb, y1]], mat);
-        if (o.trim) cv.decal(cv.cur, () => cv.rect(L.cx - wb - 1, y1 - 1, wb * 2 + 3, 2, o.trim));
-        if (o.front !== false && !back) cv.cut(() => cv.poly([[L.cx - 0.5, L.hb + 5], [L.cx + 1.5, L.hb + 5], [L.cx + 1, y1 - 1], [L.cx, y1 - 1]]), cv.cur);
+        if (o.trim) cv.decal(cv.cur, () => cv.rect(L.cx - wb - 1, y1 - R(u), wb * 2 + 3, R(2 * u), o.trim));
+        if (o.front !== false && !back) cv.cut(() => cv.poly([[L.cx - 0.5 * u, L.hb + 5 * u], [L.cx + 0.5 + 1 * u, L.hb + 5 * u], [L.cx + 0.5 + 0.5 * u, y1 - 1], [L.cx + 0.5 - 0.5 * u, y1 - 1]]), cv.cur);
         if (back) cv.decal(cv.cur, () => cv.line(L.cx - 0.5, L.hb + 2, L.cx - 0.5, y1 - 2, mat, -1));
       } else if (kind === 'jacket') {
         const y1 = Math.min(L.bot, L.tb + (o.len === undefined ? 1 : o.len) * k), wb = L.bw + 1;
         cv.poly([[L.cx - L.bw + 1, L.hb], [L.cx + L.bw, L.hb], [L.cx + wb + 1, y1], [L.cx - wb, y1]], mat);
-        if (!back) cv.cut(() => cv.poly([[L.cx - 1.5, L.hb + 3], [L.cx + 2.5, L.hb + 3], [L.cx + 3, y1 + 1], [L.cx - 2, y1 + 1]]), cv.cur);
-        if (o.trim) cv.decal(cv.cur, () => { cv.rect(L.cx - wb - 1, y1 - 1, wb * 2 + 3, 2, o.trim); if (!back) { cv.rect(L.cx - 3, L.hb + 3, 2, y1 - L.hb - 3, o.trim); cv.rect(L.cx + 2, L.hb + 3, 2, y1 - L.hb - 3, o.trim); } });
+        if (!back) cv.cut(() => cv.poly([[L.cx + 0.5 - 2 * u, L.hb + 3 * u], [L.cx + 0.5 + 2 * u, L.hb + 3 * u], [L.cx + 0.5 + 2.5 * u, y1 + 1], [L.cx + 0.5 - 2.5 * u, y1 + 1]]), cv.cur);
+        if (o.trim) cv.decal(cv.cur, () => { cv.rect(L.cx - wb - 1, y1 - R(u), wb * 2 + 3, R(2 * u), o.trim); if (!back) { cv.rect(L.cx + 0.5 - 4.5 * u, L.hb + 3 * u, 2 * u, y1 - L.hb - 3 * u, o.trim); cv.rect(L.cx + 0.5 + 2.5 * u, L.hb + 3 * u, 2 * u, y1 - L.hb - 3 * u, o.trim); } });
         if (back && o.emblem) cv.decal(cv.cur, () => { cv.circ(L.cx - 0.5, L.tt + 11 * k, 3.4 * k, o.emblem); cv.circ(L.cx - 0.5, L.tt + 11 * k, 1.4 * k, mat, 0); });
         if (back) cv.decal(cv.cur, () => cv.line(L.cx - 0.5, L.hb + 2, L.cx - 0.5, y1 - 2, mat, -1));
       } else if (kind === 'v') {
-        cv.poly([[L.cx - 5, L.tt + 5], [L.cx + 6, L.tt + 5], [L.cx + 1, L.tb]], mat);
+        cv.poly([[L.cx + 0.5 - 5.5 * u, L.tt + 5 * u], [L.cx + 0.5 + 5.5 * u, L.tt + 5 * u], [L.cx + 0.5, L.tb]], mat);
       }
     },
   };
@@ -343,7 +357,8 @@
   PARTS.stripes = {
     outfit(cv, L, o, view) {
       cv.decal('body', () => {
-        for (let y = L.tt + (o.y0 || 8); y < L.tb; y += o.step || 5) cv.rect(L.cx - L.bw - 2, y, (L.bw + 2) * 2 + 2, o.th || 2, o.mat || 'acc');
+        const u = L.u;
+        for (let y = L.tt + (o.y0 || 8) * u; y < L.tb; y += (o.step || 5) * u) cv.rect(L.cx - L.bw - 2, y, (L.bw + 2) * 2 + 2, R((o.th || 2) * u), o.mat || 'acc');
       });
     },
   };
@@ -363,8 +378,9 @@
       cv.ell(L.cx, L.hb + 0, L.bw - 1 + (o.thick || 0), 2.3 * k, mat);
       if (o.hang !== false) {
         const s = o.side || 1;
-        cv.capsule(L.cx + s * (L.bw - 3), L.hb + 1, L.cx + s * (L.bw - 2), L.hb + (o.hang || 9) * k, 2 * k, 1.8 * k, mat);
-        if (o.stripe) cv.decal('scarf', () => cv.rect(L.cx + s * (L.bw - 5), L.hb + (o.hang || 9) * k - 3, 6, 1, o.stripe));
+        const u = L.u, sw = L.sw(1) * 0.8 * u;
+        cv.capsule(L.cx + s * (L.bw - 3 * u), L.hb + 1, L.cx + s * (L.bw - 2 * u) + sw, L.hb + (o.hang || 9) * k, 2 * k, 1.8 * k, mat);
+        if (o.stripe) cv.decal('scarf', () => cv.rect(L.cx + s * (L.bw - 2 * u) + sw - 3 * u, L.hb + (o.hang || 9) * k - 3 * u, 6 * u, R(u), o.stripe));
       }
     },
   };
@@ -436,7 +452,7 @@
     cv.ell(hx, hy + 1, 9 * k, 6 * k, o.mat || 'acc');
     cv.cut(() => cv.rect(hx - 12 * k, hy + 1 + 4 * k, 26 * k, 8 * k), 'hat');
     cv.rect(hx - 11 * k, hy + 2, 22 * k, 2 * k, o.mat || 'acc');
-    cv.decal('hat', () => cv.rect(hx - 1, hy - 6 * k, 2, 6 * k + 2, o.mat2 || 'sub'));
+    cv.decal('hat', () => cv.rect(hx + 0.5 - L.u, hy - 6 * k, R(2 * L.u), 6 * k + 2, o.mat2 || 'sub'));
     cv.begin('lamp', { shade: 0, hi: 3 });
     cv.circ(hx, hy - 1, 2.2 * k, o.lamp || 'lamp');
   };
@@ -473,14 +489,14 @@
       const x = L.cx + Math.cos(ang) * (L.hrx - 1), y = L.hcy - Math.sin(ang) * (L.hry - 1) + 1;
       const mat = i % 2 ? o.mat2 || 'acc2' : o.mat || 'acc';
       cv.circ(x, y, (o.r || 2.2) * k, mat);
-      cv.plot(x, y, o.core || 'sub', 0);
+      if (L.u > 1.3) cv.circ(x, y, 0.6 * L.u, o.core || 'sub', 0); else cv.plot(x, y, o.core || 'sub', 0);
     }
   };
   HG.thimble = (cv, L, o, hx, hy, k) => {
     cv.begin('hat', { shade: 2, hi: 2, cast: 2 });
     cv.ell(hx, hy + 3 * k, 12 * k, 6 * k, o.mat || 'metal');
     cv.cut(() => cv.rect(hx - 14 * k, hy + 6 * k, 30 * k, 12 * k), 'hat');
-    cv.decal('hat', () => { for (let y = hy - 2 * k; y < hy + 6 * k; y += 3) for (let x = hx - 9 * k + (y % 2); x < hx + 10 * k; x += 3) cv.plot(x, y, o.dot || 'metal', -1); });
+    cv.decal('hat', () => { const st = R(3 * L.u); for (let y = hy - 2 * k, r = 0; y < hy + 6 * k; y += st, r++) for (let x = hx - 9 * k + (r % 2) * (st >> 1); x < hx + 10 * k; x += st) cv.plot(x, y, o.dot || 'metal', -1); });
   };
   HG.beret = (cv, L, o, hx, hy, k) => {
     cv.begin('hat', { shade: 2, hi: 4, cast: 2 });
@@ -502,7 +518,7 @@
   HG.goggles = (cv, L, o, hx, hy, k, view) => {
     cv.begin('goggles', { shade: 1, hi: 3, cast: 0 });
     const y = hy + 4 * k;
-    cv.rect(L.cx - 9 * k, y + 1, 18 * k, 2, o.strap || 'acc');
+    cv.rect(L.cx - 9 * k, y + 1, 18 * k, R(2 * L.u), o.strap || 'acc');
     if (view === 'back') { cv.circ(L.cx - 0.5, y + 2, 1.6 * k, o.rim || 'metal'); return; }
     cv.circ(L.cx - 4 * k, y, 3 * k, o.rim || 'metal');
     cv.circ(L.cx + 5 * k, y, 3 * k, o.rim || 'metal');
@@ -514,7 +530,7 @@
     for (let x = L.cx - L.frx - 1; x <= L.cx + L.frx + 2; x++) {
       const dx = (x - L.cx) / (L.frx + 1.5);
       const yy = y + (1 - Math.sqrt(Math.max(0, 1 - dx * dx))) * 3 * k;
-      cv.rect(x, yy, 1, 2, o.mat || 'acc');
+      cv.rect(x, yy, 1, R(2 * L.u), o.mat || 'acc');
     }
     if (o.knot) {
       if (view === 'back') { cv.begin('hknot', { shade: 1, hi: 0, cast: 0 }); bowAt(cv, L.cx - 0.5, y + 4, k * 0.9, o.mat || 'acc', true); } else cv.circ(L.cx + L.frx, y + 3, 1.6 * k, o.mat || 'acc');
@@ -524,8 +540,9 @@
     cv.begin('antenna', { shade: 1, hi: 0, cast: 0, line: true });
     for (const s of [-1, 1]) {
       const bx = L.cx + s * 4 * k, by = hy + 3;
-      cv.stroke([[bx, by], [bx + s * 2 * k, by - 6 * k], [bx + s * (o.sp || 6) * k, by - (o.h || 10) * k]], 1, 1, o.mat || 'acc');
-      cv.circ(bx + s * (o.sp || 6) * k, by - (o.h || 10) * k, (o.ball || 1.6) * k, o.tip || o.mat || 'acc');
+      const sw = s * L.sw(0.4 + (s > 0 ? 0.3 : 0)) * 1.2 * L.u, r = L.u > 1.3 ? 0.8 : 1;
+      cv.stroke([[bx, by], [bx + s * 2 * k, by - 6 * k], [bx + s * (o.sp || 6) * k + sw, by - (o.h || 10) * k]], r, r, o.mat || 'acc');
+      cv.circ(bx + s * (o.sp || 6) * k + sw, by - (o.h || 10) * k, (o.ball || 1.6) * k, o.tip || o.mat || 'acc');
     }
   };
   HG.domino = (cv, L, o, hx, hy, k, view) => { // eye mask: drawn by the face code (render.js) so the eyes stay on top
@@ -561,9 +578,12 @@
   };
   HG.stars = (cv, L, o, hx, hy, k) => { // twinkles around the head
     cv.begin('twinkle', { shade: 0 });
+    let i = 0;
     for (const p of o.pts) {
-      const x = hx + p[0] * k, y = hy + p[1] * k;
-      cv.plot(x, y, o.mat || 'gold', 0); cv.plot(x - 1, y, o.mat || 'gold', 0); cv.plot(x + 1, y, o.mat || 'gold', 0); cv.plot(x, y - 1, o.mat || 'gold', 0); cv.plot(x, y + 1, o.mat || 'gold', 0);
+      const x = R(hx + p[0] * k), y = R(hy + p[1] * k + L.sw(i++ * 0.9) * L.u), m = o.mat || 'gold';
+      const r = L.u > 1.3 ? 2 : 1; // twinkle: a plus sign (with a bright centre when big)
+      for (let d = -r; d <= r; d++) { cv.plot(x + d, y, m, 0); cv.plot(x, y + d, m, 0); }
+      if (r > 1) cv.plot(x, y, 'shine', 0);
     }
   };
   /** loom-comb crown: a band with a row of long thin teeth (Warpa / Weftie) with a bead on each tooth. */

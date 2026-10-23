@@ -205,14 +205,20 @@
     });
   }
   A.kiguHas = (id) => !!(art().kigu && art().kigu.has && tryit(() => art().kigu.has(id), false));
-  A.kiguFront = function (id, alt) {
-    if (A.kiguHas(id)) { const b = tryit(() => art().kigu.front(id, alt ? { alt: true } : undefined), null); if (b) return b; }
-    return blob(id, false);
+  /** Battle sprites: front 96x96 (anchor bottom-centre (48, 94)), back 128x128 (anchor (64, 126), drawn 4/3 larger).
+   *  frame = idle-animation frame (wraps; 0 = rest pose). The placeholder blob is padded to the same cells and anchors. */
+  A.kiguFront = function (id, alt, frame) {
+    if (A.kiguHas(id)) { const b = tryit(() => art().kigu.front(id, { alt: !!alt, frame: frame | 0 }), null); if (b) return b; }
+    return memo('fkf|' + id, () => blob(id, false).padded(16, 32, 16, 0));
   };
-  A.kiguBack = function (id, alt) {
-    if (A.kiguHas(id)) { const b = tryit(() => art().kigu.back(id, alt ? { alt: true } : undefined), null); if (b) return b; }
-    return blob(id, true);
+  A.kiguBack = function (id, alt, frame) {
+    if (A.kiguHas(id)) { const b = tryit(() => art().kigu.back(id, { alt: !!alt, frame: frame | 0 }), null); if (b) return b; }
+    return memo('fkb|' + id, () => blob(id, true).padded(32, 64, 32, 0));
   };
+  /** Number of idle frames for a species (1 for the placeholder). */
+  A.kiguFrames = (id) => (A.kiguHas(id) && art().kigu.idleFrames ? tryit(() => art().kigu.idleFrames(id), 1) : 1);
+  /** Bottom-centre anchor of a battle sprite bitmap (feet on the second-to-last row). */
+  A.anchorOf = (bmp) => ({ x: bmp.w >> 1, y: bmp.h - 2 });
   A.kiguIcon = function (id, frame) {
     if (A.kiguHas(id)) { const b = tryit(() => art().kigu.icon(id, frame & 1), null); if (b) return b; }
     return memo('fi|' + id + '|' + (frame & 1), () => {
@@ -291,20 +297,22 @@
       return b;
     });
   };
-  /** Battle backdrop sized to the screen above the command box: { bg: Bitmap NP.W x NP.BOX_Y, enemyBase, playerBase }. Older
-   *  240x112 art is resampled (nearest neighbour) and its base points are scaled to match. */
+  /** Battle backdrop, native 256x144 (NP.W x NP.BOX_Y): { bg, enemyBase, playerBase } — bases are the sprite feet anchors
+   *  (the player's lies below the panel top, so its Kigu stands partly behind the command area, 5th-gen style). */
   A.battleBg = function (id) {
     const r = tryit(() => art().tiles.battleBg(id || 'grass'), null);
     if (r) return fitBg(r, id);
     return memo('bg|' + id, () => {
       const W = NP.W, H = NP.BOX_Y, bg = new Bitmap(W, H);
-      bg.fillRect(0, 0, W, 80, '#9ad4f0');
-      bg.fillRect(0, 80, W, H - 80, '#78c058');
-      bg.ellipse(184, 80, 44, 10, '#5aa040', true);
-      bg.ellipse(64, 138, 58, 12, '#5aa040', true);
-      return { bg, enemyBase: { x: 184, y: 80 }, playerBase: { x: 64, y: 138 } };
+      bg.fillRect(0, 0, W, 70, '#9ad4f0');
+      bg.fillRect(0, 70, W, H - 70, '#78c058');
+      bg.ellipse(188, 90, 58, 13, '#5aa040', true);
+      bg.ellipse(66, 140, 86, 19, '#5aa040', true);
+      return { bg, enemyBase: { x: 188, y: 92 }, playerBase: { x: 66, y: 148 } };
     });
   };
+  /** Stages painted at another size (the 240x112 set) are resampled to NP.W x NP.BOX_Y, bases scaled to match. Temporary until
+   *  they are repainted natively. */
   function fitBg(r, id) {
     const W = NP.W, H = NP.BOX_Y, src = r.bg;
     if (src.w === W && src.h === H) return r;

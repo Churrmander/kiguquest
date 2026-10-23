@@ -32,35 +32,32 @@
   const FIXED = 1; // tone was set explicitly -> no auto shading
   const NOLINE = 2; // pixel never turns into an internal line (eye highlights, tiny decals)
 
-  // Shadow kernels by depth: a pixel is in shadow when any offset (toward the bottom-right) leaves its group.
-  const SHADOW_K = {
-    1: [[1, 1]],
-    2: [[1, 1], [2, 1], [2, 2]],
-    3: [[1, 1], [2, 1], [2, 2], [3, 2], [3, 3]],
-    4: [[1, 1], [2, 1], [2, 2], [3, 2], [3, 3], [4, 3]],
-  };
-  // Shadow that falls on the right side only (tall cylinders: legs, sleeves, hanging hair).
-  const SHADOW_R = {
-    1: [[1, 0]],
-    2: [[1, 0], [2, 0]],
-    3: [[1, 0], [2, 0], [3, 0]],
-  };
-  // Shadow on the bottom only (flat-topped things: brims, skirts' hems).
-  const SHADOW_B = {
-    1: [[0, 1]],
-    2: [[0, 1], [0, 2]],
-    3: [[0, 1], [0, 2], [0, 3]],
-  };
-  const HI_K = {
-    1: [[-1, -1]], // rim band hugging the top-left edge
-    2: [[-2, -2], [-1, -2], [-2, -1]], // band 1px inside the top-left edge
-    3: [[0, -1], [-1, 0]], // full rim on top and left (small round things: bells, orbs)
-    4: [[0, -1]], // top rim only (hair shine rows, brims)
-  };
+  // Kernels are built per depth so shading scales with the sprite (KCanvas.ss = pixel scale vs. the original 64px art):
+  //  diag   a pixel is in shadow when an offset toward the bottom-right leaves its group (round forms)
+  //  right  shadow on the right side only (tall cylinders: legs, sleeves, hanging hair)
+  //  bottom shadow on the bottom only (flat-topped things: brims, hems)
+  const KCACHE = new Map();
+  function kern(kind, d) {
+    const key = kind + d;
+    let k = KCACHE.get(key);
+    if (k) return k;
+    k = [];
+    for (let i = 1; i <= d; i++) {
+      if (kind === 'diag') { if (i > 1) k.push([i, i - 1]); k.push([i, i]); }
+      else if (kind === 'right') k.push([i, 0]);
+      else if (kind === 'bottom') k.push([0, i]);
+      else if (kind === 'hiDiag') k.push([-i, -i]);
+      else if (kind === 'hiTop') k.push([0, -i]);
+      else if (kind === 'hiRim') { k.push([0, -i]); k.push([-i, 0]); }
+    }
+    KCACHE.set(key, k);
+    return k;
+  }
   const N4 = [[1, 0], [-1, 0], [0, 1], [0, -1]];
 
   class KCanvas {
-    constructor(w, h) {
+    constructor(w, h, ss) {
+      this.ss = ss || 1; // pixel scale relative to the original 64px sprites: shading depths grow with it
       this.w = w;
       this.h = h;
       this.n = w * h;
@@ -355,6 +352,7 @@
       const tone = new Int8Array(N);
       const auto = new Uint8Array(N);
       const matAt = (i) => G[g[i]].mat[i];
+      const ss = this.ss, big = ss > 1.2, shK = big ? 1.6 : 1, deep = o.deep !== false && big, deepD = Math.max(1, Math.round(ss * 0.6)), castMax = Math.round(3 * ss);
 
       // 1. shading
       for (let i = 0; i < N; i++) {
@@ -371,28 +369,35 @@
         const inside = (xx, yy) => xx >= 0 && yy >= 0 && xx < W && yy < H && mk[yy * W + xx] >= 0;
         let t = 0;
         if (grp.shade > 0) {
-          const tab = grp.shadeDir === 'right' ? SHADOW_R : grp.shadeDir === 'bottom' ? SHADOW_B : SHADOW_K;
-          const Kk = tab[Math.min(grp.shade, grp.shadeDir === 'diag' ? 4 : 3)];
+          const dir = grp.shadeDir === 'right' ? 'right' : grp.shadeDir === 'bottom' ? 'bottom' : 'diag';
+          const Kk = kern(dir, Math.max(1, Math.round(Math.min(grp.shade, dir === 'diag' ? 4 : 3) * ss * shK)));
           for (let k = 0; k < Kk.length; k++) if (!inside(x + Kk[k][0], y + Kk[k][1])) { t = -1; break; }
+          // deep core shadow: a thin band hugging the bottom-right edge of big shaded forms (the 4th tone)
+          if (t < 0 && deep && grp.shade >= 2) {
+            const Kd = kern(dir, deepD);
+            for (let k = 0; k < Kd.length; k++) if (!inside(x + Kd[k][0], y + Kd[k][1])) { t = -2; break; }
+          }
         }
         if (t === 0 && grp.hi) {
-          const Kk = HI_K[grp.hi];
-          if (grp.hi === 2) {
-            if (inside(x - 1, y - 1) && inside(x - 1, y) && inside(x, y - 1)) {
-              for (let k = 0; k < Kk.length; k++) if (!inside(x + Kk[k][0], y + Kk[k][1])) { t = 1; break; }
-            }
+          const hd = Math.max(1, Math.round(ss));
+          if (grp.hi === 2) { // band one step inside the top-left edge
+            let inner = true;
+            const Kg = kern('hiDiag', hd);
+            for (let k = 0; k < Kg.length; k++) if (!inside(x + Kg[k][0], y + Kg[k][1])) { inner = false; break; }
+            if (inner) { const Kb = kern('hiDiag', hd * 2 + 1); for (let k = 0; k < Kb.length; k++) if (!inside(x + Kb[k][0], y + Kb[k][1])) { t = 1; break; } }
           } else {
+            const Kk = kern(grp.hi === 1 ? 'hiDiag' : grp.hi === 3 ? 'hiRim' : 'hiTop', hd);
             for (let k = 0; k < Kk.length; k++) if (!inside(x + Kk[k][0], y + Kk[k][1])) { t = 1; break; }
           }
         }
         if (grp.recv) {
           // cast shadow from groups in front, falling down / down-right
-          outer: for (let d = 1; d <= 3; d++) {
+          outer: for (let d = 1; d <= castMax; d++) {
             for (const ox of [0, -1]) {
               const xx = x + ox, yy = y - d;
               if (xx < 0 || yy < 0) continue;
               const hj = g[yy * W + xx];
-              if (hj > gi && G[hj].cast >= d && G[hj].family !== grp.family) { t = -1; break outer; }
+              if (hj > gi && Math.round(G[hj].cast * ss) >= d && G[hj].family !== grp.family) { t = Math.min(t, -1); break outer; }
             }
           }
         }
@@ -454,11 +459,13 @@
       // 5. outer outline
       if (o.outline !== false) out.outline(pal.line);
 
-      // 6. 15-bit + colour budget
+      // 6. 15-bit + colour budget. With o.lock (the mapping a previous frame produced) the same merges are replayed so
+      //    every idle frame shares frame 0's palette; colours that frame never had snap to the nearest palette entry.
       out.quantize15();
+      if (o.lock) { applyLock(out, o.lock); return out; }
       const prot = [Color.q15(pal.line)];
       for (const pr of o.protect || []) if (pal.has(pr[0])) prot.push(Color.q15(pal.color(pr[0], pr[1] || 0)));
-      limitColors(out, o.maxColors || 16, prot);
+      out.lock = limitColors(out, o.maxColors || 16, prot);
       return out;
     }
   }
@@ -483,17 +490,23 @@
     return Math.hypot(A[0] - B[0], A[1] - B[1], A[2] - B[2]);
   }
 
-  /** Merge the cheapest colour pairs (close AND rare) until bmp has <= max colours. */
+  const LAB = new Map();
+  function labC(c) { let v = LAB.get(c); if (!v) { v = lab(c); LAB.set(c, v); } return v; }
+  function dist(a, b) { const A = labC(a), B = labC(b); return Math.hypot(A[0] - B[0], A[1] - B[1], A[2] - B[2]); }
+
+  /** Merge the cheapest colour pairs (close AND rare) until bmp has <= max colours.
+   *  Returns the lock { map: Map(from -> to), pal: [final colours] } used to give later frames the same palette. */
   function limitColors(bmp, max, protect) {
     const prot = new Set((protect || []).map((c) => c >>> 0));
-    let cols = bmp.colors();
-    while (cols.size > max) {
-      const arr = [...cols.entries()];
+    const counts = bmp.colors();
+    const map = new Map();
+    while (counts.size > max) {
+      const arr = [...counts.entries()];
       let best = null, bestCost = Infinity;
       for (let i = 0; i < arr.length; i++) {
         for (let j = i + 1; j < arr.length; j++) {
           const [ca, na] = arr[i], [cb, nb] = arr[j];
-          let cost = labDist(ca, cb) * Math.sqrt(Math.min(na, nb));
+          let cost = dist(ca, cb) * Math.sqrt(Math.min(na, nb));
           if (prot.has(ca) || prot.has(cb)) cost *= 8;
           if (cost < bestCost) {
             bestCost = cost;
@@ -503,8 +516,28 @@
           }
         }
       }
-      bmp.replaceColor(best[0], best[1]);
-      cols = bmp.colors();
+      const [from, to] = best;
+      counts.set(to, counts.get(to) + counts.get(from));
+      counts.delete(from);
+      map.set(from, to);
+      for (const [k, v] of map) if (v === from) map.set(k, to);
+    }
+    if (map.size) { const u = bmp.u32; for (let i = 0; i < u.length; i++) { const t = map.get(u[i]); if (t !== undefined) u[i] = t; } }
+    return { map, pal: [...counts.keys()] };
+  }
+  function applyLock(bmp, lock) {
+    const u = bmp.u32, keep = new Set(lock.pal), memo = new Map();
+    for (let i = 0; i < u.length; i++) {
+      const c = u[i];
+      if (!(c >>> 24) || keep.has(c)) continue;
+      let t = lock.map.get(c);
+      if (t === undefined) t = memo.get(c);
+      if (t === undefined) {
+        let bd = Infinity;
+        for (const p of lock.pal) { const d = dist(c, p); if (d < bd) { bd = d; t = p; } }
+        memo.set(c, t);
+      }
+      u[i] = t;
     }
     return bmp;
   }
@@ -577,6 +610,7 @@
   kit.makeRamp = makeRamp;
   kit.lineFrom = lineFrom;
   kit.limitColors = limitColors;
+  kit.applyLock = applyLock;
   kit.labDist = labDist;
   kit.FIXED = FIXED;
 })(typeof globalThis !== 'undefined' ? globalThis : window);

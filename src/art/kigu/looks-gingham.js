@@ -6,7 +6,7 @@
 
   const SILK = { main: '#f4f0fa', sub: '#d8ccf0', hair: '#c9b4ea', mitt: '#f4f0fa', foot: '#d8ccf0', eye: '#7a5ab8', inner: '#ffcfe0', acc: '#a8e0b8', acc2: '#ffffff', sack: '#bfe8c4', wing: '#b48ae0', spark: '#fff6b0' };
   D('silkie', {
-    name: 'Silkie', stage: 1, size: 44, rise: 4, pal: SILK,
+    name: 'Silkie', stage: 1, size: 62, rise: 6, pal: SILK,
     hood: { type: 'up', ears: null }, hair: { style: 'short', bangs: 'part' }, eyes: { style: 'sleepy' },
     arms: { mittMat: 'mitt' }, footMat: 'foot',
     parts: [
@@ -15,13 +15,13 @@
     ],
   });
   D('cocoona', {
-    name: 'Cocoona', stage: 2, size: 50, rise: 2, pal: SILK, cocoon: true, bodyMat: 'sack',
+    name: 'Cocoona', stage: 2, size: 71, rise: 3, pal: SILK, cocoon: true, bodyMat: 'sack',
     hood: { type: 'none' }, hair: { style: 'bob', bangs: 'part' }, eyes: { style: 'sleepy' },
     arms: { mittMat: 'main', pose: 'front', mittR: 2.4 },
     parts: [['stripes', { mat: 'sack', y0: 12, step: 5, th: 1 }], ['hat', { kind: 'antennae', mat: 'sub', tip: 'sub', sp: 3, h: 4 }]],
   });
   D('mothelia', {
-    name: 'Mothelia', stage: 3, size: 59, rise: 10, pal: SILK,
+    name: 'Mothelia', stage: 3, size: 84, rise: 14, pal: SILK,
     hood: { type: 'none' }, hair: { style: 'long', bangs: 'part', drop: 2 },
     arms: { mittMat: 'mitt' }, footMat: 'foot',
     parts: [
@@ -35,7 +35,7 @@
 
   const BEE = { main: '#ffd23a', sub: '#fff4c0', hair: '#f6e070', mitt: '#3a2a3e', foot: '#3a2a3e', eye: '#3a2a3e', inner: '#ffd23a', acc: '#3a2a3e', wing: '#dff4ff', honey: '#e89a1a', petal: '#ff8fb0', pink: '#ff9ec0' };
   D('buzzlet', {
-    name: 'Buzzlet', stage: 1, size: 45, rise: 4, pal: BEE,
+    name: 'Buzzlet', stage: 1, size: 64, rise: 6, pal: BEE,
     hood: { type: 'up', ears: null }, hair: { style: 'short', bangs: 'spiky' },
     arms: { mittMat: 'mitt' }, footMat: 'foot',
     parts: [
@@ -47,7 +47,7 @@
     ],
   });
   D('honeybelle', {
-    name: 'Honeybelle', stage: 2, size: 55, rise: 7, pal: BEE,
+    name: 'Honeybelle', stage: 2, size: 78, rise: 10, pal: BEE,
     hood: { type: 'none' }, hair: { style: 'twin', bangs: 'part', len: 13 },
     arms: { mittMat: 'mitt' }, footMat: 'foot',
     parts: [
@@ -62,7 +62,7 @@
 
   const SPI = { main: '#5a3f86', sub: '#8a6cc0', hair: '#c9b4ea', mitt: '#7a5ab0', foot: '#3a2a5a', eye: '#3a2a5a', inner: '#8a6cc0', spot: '#ff4a5a', yarn: '#ff8fb0', silver: '#e8e8f4', black: '#241830', lace: '#d8d0ec', needle: '#cfd6e6' };
   D('webbi', {
-    name: 'Webbi', stage: 1, size: 44, rise: 2, pal: SPI,
+    name: 'Webbi', stage: 1, size: 62, rise: 3, pal: SPI,
     hood: { type: 'up', ears: null }, hair: { style: 'short', bangs: 'part' }, eyes: { style: 'dot' }, mouth: 'flat', face: ['eyespots'],
     arms: { mittMat: 'mitt', extraArms: true }, footMat: 'foot',
     parts: [
@@ -71,7 +71,7 @@
     ],
   });
   D('webelle', {
-    name: 'Webelle', stage: 2, size: 54, rise: 2, pal: Object.assign({}, SPI, { hair: '#2a2236' }),
+    name: 'Webelle', stage: 2, size: 77, rise: 3, pal: Object.assign({}, SPI, { hair: '#2a2236' }),
     hood: { type: 'none' }, hair: { style: 'long', bangs: 'part', drop: 4 }, eyes: { style: 'sleepy' }, mouth: 'flat',
     arms: { mittMat: 'mitt', extraArms: true }, footMat: 'foot',
     parts: [
@@ -84,13 +84,13 @@
 
   const DAI = { main: '#ffe24a', sub: '#ffffff', hair: '#f5d050', mitt: '#fff8c8', foot: '#6cbf4a', eye: '#3a6a3a', inner: '#ffffff', leaf: '#6cbf4a', petal: '#ffffff', core: '#ffc21a' };
   D('daisip', {
-    name: 'Daisip', stage: 1, size: 44, rise: 0, pal: DAI,
+    name: 'Daisip', stage: 1, size: 62, rise: 0, pal: DAI,
     hood: { type: 'up', mat: 'sub', ears: null, pattern: K.petalRing(10, 2.6, 0.6, 'sub') }, hair: { style: 'short', bangs: 'part' },
     arms: { mittMat: 'mitt' }, footMat: 'foot',
     parts: [['skirt', { mat: 'main', len: 1, flare: 1, up: 8 }], ['shapes', { stage: 'outfit', at: 'chest', g: 'leaf', m: true, list: [['e', 6, 4, 2.5, 1.5, 'leaf']] }]],
   });
   D('daisia', {
-    name: 'Daisia', stage: 2, size: 55, rise: 4, pal: DAI,
+    name: 'Daisia', stage: 2, size: 78, rise: 6, pal: DAI,
     hood: { type: 'none' }, hair: { style: 'long', bangs: 'part', drop: 1 },
     arms: { mittMat: 'mitt' }, footMat: 'foot',
     parts: [
@@ -102,7 +102,7 @@
 
   const FROG = { main: '#5cc070', sub: '#f0ffd8', hair: '#3a8a5a', mitt: '#8ae09a', foot: '#8ae09a', eye: '#2a5a3a', inner: '#ffcfa0', coat: '#58b868', yellow: '#ffd23a', pad: '#3fae5a', overall: '#4a78c8', hat: '#f2c24a', boot: '#8a5a30' };
   D('ribbi', {
-    name: 'Ribbi', stage: 1, size: 44, rise: 4, pal: FROG,
+    name: 'Ribbi', stage: 1, size: 62, rise: 6, pal: FROG,
     hood: { type: 'up', ears: null }, hair: { style: 'short', bangs: 'part' }, mouth: 'o',
     arms: { mittMat: 'mitt' }, footMat: 'foot',
     parts: [
@@ -112,7 +112,7 @@
     ],
   });
   D('ribbelle', {
-    name: 'Ribbelle', stage: 2, size: 54, rise: 6, pal: FROG,
+    name: 'Ribbelle', stage: 2, size: 77, rise: 9, pal: FROG,
     hood: { type: 'none' }, hair: { style: 'twin', bangs: 'part', len: 10 }, mouth: 'o',
     arms: { mittMat: 'mitt' }, footMat: 'boot',
     parts: [
@@ -125,13 +125,13 @@
 
   const MOLE = { main: '#8a7468', sub: '#d8c4ae', hair: '#5a4a44', mitt: '#e8a8a0', foot: '#5a4a44', eye: '#2a2020', inner: '#e8a8a0', lens: '#9ad8f0', rim: '#c8a040', acc: '#f2c24a', metal: '#aab4c8', lamp: '#fff3a0', boot: '#6a7488' };
   D('molli', {
-    name: 'Molli', stage: 1, size: 43, rise: 2, pal: MOLE,
+    name: 'Molli', stage: 1, size: 61, rise: 3, pal: MOLE,
     hood: { type: 'up', ears: { kind: 'round', h: 2, w: 2.6, lean: 1, dy: 2 } }, hair: { style: 'short', bangs: 'spiky' }, eyes: { style: 'slit' }, face: ['nose'],
     arms: { mittMat: 'mitt', mittR: 4.2 }, footMat: 'foot',
     parts: [['belly', { mat: 'sub' }], ['hat', { kind: 'goggles', strap: 'hair', rim: 'rim', lens: 'lens', lift: -1 }]],
   });
   D('molluna', {
-    name: 'Molluna', stage: 2, size: 54, rise: 5, pal: MOLE,
+    name: 'Molluna', stage: 2, size: 77, rise: 7, pal: MOLE,
     hood: { type: 'none' }, hair: { style: 'bob', bangs: 'part' }, eyes: { style: 'slit' }, face: ['nose'],
     arms: { mittMat: 'mitt', mittR: 4.2 }, footMat: 'boot',
     parts: [

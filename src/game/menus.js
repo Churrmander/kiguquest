@@ -132,7 +132,7 @@
       bgFill(fb, '#e6e0f4', '#ddd6ee');
       const sp = K().sp(k);
       ui.frame(fb, 4, 4, 100, NP.H - 8, 'light');
-      { const f = A().kiguFront(k.species, k.alt); fb.blit(f, 54 - (f.w >> 1), 8); }
+      { const f = A().kiguFront(k.species, k.alt, (NP.Game.frame / 9) | 0); fb.blit(f, 54 - (f.w >> 1), 8); }
       ui.text(fb, K().displayName(k), 12, 106, 'light');
       ui.text(fb, 'Lv' + k.level, 12, 118, 'light', { color: '#707890' });
       sp.types.forEach((t, i) => fb.blit(A().typePill(t), 12 + i * 36, 132));

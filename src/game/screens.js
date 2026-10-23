@@ -192,7 +192,7 @@
       ui.frame(fb, 108, 4, NP.W - 112, NP.H - 8, 'light');
       const id = ids[this.cur], sp = NP.data.species[id];
       if (dex.seen[id]) {
-        { const f = A().kiguFront(id); fb.blit(f, 182 - (f.w >> 1), 8); }
+        { const f = A().kiguFront(id, false, (NP.Game.frame / 9) | 0); fb.blit(f, 182 - (f.w >> 1), 8); }
         ui.text(fb, sp.name, 114, 106, 'light');
         sp.types.forEach((t, i) => fb.blit(A().typePill(t), 114 + i * 36, 118));
         Font.wrap(sp.dex, NP.W - 128).slice(0, 4).forEach((l, i) => ui.text(fb, l, 114, 134 + i * 10, 'light', { color: '#505870', shadow: null }));
@@ -279,6 +279,7 @@
   }
 
   // ===================================================================================== Evolution
+  const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
   class EvolutionScene extends Scene {
     constructor(k, to) { super('dark'); this.k = k; this.to = to; this.form = k.species; this.sil = 0; this.sparkle = 0; }
     enter() { this.spawn(this.run(), 'evolve'); }
@@ -313,9 +314,16 @@
     }
     draw(fb) {
       fb.clear('#181828');
-      const bg = A().battleBg('indoor');
-      fb.blit(bg.bg, 0, 0, { alpha: 0.35 });
-      const spr = A().kiguFront(this.form, this.k.alt);
+      if (!this.glow) { // soft dithered glow behind her (built once)
+        const g = (this.glow = new NP.Bitmap(NP.W, NP.BOX_Y)), cx = NP.W / 2, cy = NP.BOX_Y / 2 + 10;
+        const c1 = NP.Color.parse('#3a3460'), c2 = NP.Color.parse('#28264a');
+        for (let y = 0; y < NP.BOX_Y; y++) for (let x = 0; x < NP.W; x++) {
+          const r = Math.hypot((x - cx) / 1.4, y - cy), b = BAYER[(y & 3) * 4 + (x & 3)];
+          if (r < 38 + b * 0.8) g.u32[y * NP.W + x] = c1; else if (r < 62 + b * 0.9) g.u32[y * NP.W + x] = c2;
+        }
+      }
+      fb.blit(this.glow, 0, 0);
+      const spr = A().kiguFront(this.form, this.k.alt, this.sil > 0 || this.sparkle > 0 ? 0 : (NP.Game.frame / 9) | 0);
       const x = (NP.W - spr.w) >> 1, y = Math.max(4, NP.BOX_Y - 12 - spr.h);
       if (this.sil > 0 && this.sil < 1) { fb.blit(spr, x, y); fb.blit(spr, x, y, { fill: '#ffffff', alpha: this.sil }); }
       else if (this.sparkle > 0) { fb.blit(spr, x, y, { fill: '#ffffff', alpha: Math.max(0, 1 - this.sparkle / 50) * 0.9 + 0.1 }); }

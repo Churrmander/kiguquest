@@ -10,6 +10,8 @@
   const THEMES = {
     light: { bg: '#f8f4e4', b1: '#1c2438', b2: '#6f86c0', b3: '#fdfcf4', ink: '#383848', shadow: '#c8c8d0', dim: '#9898a8', sel: '#d83838', hi: '#e8ecf8' },
     dark: { bg: '#283050', b1: '#0c1020', b2: '#8ea0d0', b3: '#485880', ink: '#f8f8f8', shadow: '#586078', dim: '#a0a8c0', sel: '#f8d048', hi: '#384468' },
+    // battle: charcoal 5th-gen battle text box (white text, thin light inner rim)
+    battle: { bg: '#2e323c', b1: '#0e1016', b2: '#d8dce8', b3: '#4c5262', ink: '#f8f8f8', shadow: '#545a6a', dim: '#9ca4b8', sel: '#f8d048', hi: '#3e4454' },
     plain: { bg: '#f8f8f8', b1: '#303040', b2: '#303040', b3: '#303040', ink: '#303040', shadow: '#d0d0d8', dim: '#9898a8', sel: '#d83838', hi: '#e8ecf8' },
   };
 
