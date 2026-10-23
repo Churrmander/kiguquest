@@ -178,7 +178,7 @@ NP.art.icons.emote(name)     -> Bitmap 16×16    // 'exclaim','question','heart'
 NP.art.icons.spool(kind, frame) -> Bitmap 16×16  // thrown Bond Spool (kind: 'bond','silk','gold','master'), frames 0..3 spinning
 NP.art.icons.fx(name, frame) -> Bitmap          // particle/effect frames for move animations (BIBLE §7), frame 0..n-1; also .fxFrames(name) -> n
 NP.art.icons.logo()          -> Bitmap          // title logo "KIGU QUEST" (≤ 200×56)
-NP.art.icons.titleScene()    -> Bitmap 240×160  // title-screen backdrop (no text)
+NP.art.icons.titleScene()    -> Bitmap 256×192  // title-screen backdrop (NP.W × NP.H, no text; starters included)
 NP.art.icons.has(kind,id) / lists...
 ```
 
