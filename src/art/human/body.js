@@ -169,7 +169,7 @@
       // trainer
       const W = R.W, X = (x) => (s < 0 ? x : W - x);
       const aw = g.arm / 2;
-      const sx = R.cx - sh - aw + 2, sy = R.shY + 3.5;
+      const sx = R.cx - sh - aw + 1.8, sy = R.shY + aw + 0.8;
       let ex = sx - 1.2, ey = R.waistY - 1;
       let wx = sx - 0.2, wy = R.hipY + 1;
       // battle send-out poses (back view): the character's right arm (screen right) throws

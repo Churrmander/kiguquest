@@ -27,7 +27,7 @@
     P.addRamp('eye', S.eyes);
     P.addRamp('facial', L.ramp(S.facialColor));
     P.addRamp('white', ['#c8c8dc', '#e4e4f0', '#ffffff', '#ffffff']);
-    P.addRamp('mouth', ['#6a2030', '#8a2a3a', '#c0505a', '#e07878']);
+    P.addRamp('mouth', ['#7a2c3a', '#8a2a3a', '#c8505c', '#e07878']);
     P.addRamp('blush', L.ramp(Color.mix(S.skin[2], Color.parse('#f05a78'), 0.45)));
   }
   L.setupInks = setupInks;
@@ -83,12 +83,12 @@
     if (!ow) P.edgeLine(arms, { against: torso, sides: 'lr', ink: 'shadow' });
     P.edgeLine(skull, { against: torso.concat(garments, P.partsNamed((n) => n.startsWith('acc_'))), sides: 'b', ink: 2 });
     // cel shading, light from the top-left
-    P.cel(torso, { r: ow ? 1 : 3, b: 0, under: skull, underD: ow ? 1 : 2 });
-    P.cel(garments, { r: ow ? 1 : 3, b: ow ? 0 : 1 });
-    P.cel(arms, { r: ow ? 1 : 2, b: ow ? 0 : 1 });
-    P.cel(legs, { r: ow ? 1 : 2 });
+    P.cel(torso, { r: ow ? 1 : 3, b: 0, l: ow ? 0 : 1, under: skull, underD: ow ? 1 : 2 });
+    P.cel(garments, { r: ow ? 1 : 3, b: ow ? 0 : 1, l: ow ? 0 : 1 });
+    P.cel(arms, { r: ow ? 1 : 2, b: ow ? 0 : 1, l: ow ? 0 : 1 });
+    P.cel(legs, { r: ow ? 1 : 2, l: ow ? 0 : 1 });
     P.cel(shoes, { r: ow ? 1 : 2, b: 1 });
-    P.cel(skull, { r: 1, b: ow ? 0 : 1 });
+    P.cel(skull, { r: 1, b: 0 });
     L.head.shade(P, R);
     const acc = P.partsNamed((n) => n.startsWith('acc_') || /^(cap|hat|beret|bow|satchel|backpack|belt|scarf|maidcap)/.test(n));
     for (const id of acc) P.cel([id], { r: 1, b: ow ? 0 : 1 });

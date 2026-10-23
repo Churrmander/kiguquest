@@ -38,9 +38,10 @@
     for (let r = 0; r < hh; r++) P.run(hy + r, R.L(R.sx(r)), R.Rt(R.sx(r)), 'skin', 2);
     if (earsShow(R)) {
       P.begin('ear');
-      const ew = R.t === 'ow' ? 1 : 2, er = rnd(hh * 0.5), eh = R.t === 'ow' ? 2 : 4;
-      const x0 = R.L(R.sx(er)) - ew;
-      for (let y = hy + er; y < hy + er + eh; y++) for (let k = 0; k < ew; k++) { P.px(x0 + k, y, 'skin', R.view === 'up' ? 1 : 2); P.px(R.mx(x0 + k), y, 'skin', 1); }
+      const er = rnd(hh * 0.48), x0 = R.L(R.sx(er)) - 1;
+      // overworld: a 1x2 nub; trainer: a small rounded ear (1-2-2-1 px) tucked against the skull
+      const shape = R.t === 'ow' ? [1, 1] : [1, 2, 2, 1];
+      shape.forEach((w, r) => { for (let k = 0; k < w; k++) { P.px(x0 - k, hy + er + r, 'skin', R.view === 'up' ? 1 : k ? 2 : 1); P.px(R.mx(x0 - k), hy + er + r, 'skin', 1); } });
     }
   };
 
@@ -91,9 +92,9 @@
     const ny = ey + 4;
     P.px(rnd(R.cx + 0.5), ny, 'skin', 1);
     const my = Math.min(hy + hh - 2, ey + 6), c0 = rnd(R.cx - 0.5); // c0 = left of the two centre columns
-    const M = (x, y, t) => P.px(x, y, t === 'm' ? 'mouth' : 'skin', t === 'm' ? 2 : 0);
+    const M = (x, y, t) => P.px(x, y, 'mouth', t === 'm' ? 2 : 0); // 'l' = lip line (dark rose), 'm' = open mouth
     switch (f.mouth) {
-      case 'grin': for (let x = c0 - 1; x <= c0 + 2; x++) M(x, my, 'l'); M(c0, my + 1, 'm'); M(c0 + 1, my + 1, 'm'); M(c0 - 1, my + 1, 'l'); M(c0 + 2, my + 1, 'l'); break;
+      case 'grin': for (let x = c0 - 1; x <= c0 + 2; x++) M(x, my, 'l'); M(c0, my + 1, 'm'); M(c0 + 1, my + 1, 'm'); break;
       case 'o': M(c0, my, 'l'); M(c0 + 1, my, 'l'); M(c0, my + 1, 'm'); M(c0 + 1, my + 1, 'm'); break;
       case 'flat': M(c0, my, 'l'); M(c0 + 1, my, 'l'); break;
       case 'smirk': M(c0, my, 'l'); M(c0 + 1, my, 'l'); M(c0 + 2, my - 1, 'l'); break;
@@ -376,7 +377,7 @@
     if (b === 'pony') {
       P.begin('hairback:pony');
       if (view === 'up') {
-        const x = R.cx, y0 = R.hy + R.hh * 0.42;
+        const x = R.cx, y0 = R.hy + R.hh * 0.55;
         P.limb(x, y0, x + U(0.6), R.shY + U(3.5), U(2), U(1.1), 'hair', 2);
         P.begin('hair:tie'); P.run(rnd(y0 + U(0.3)), rnd(x - U(1.5)), rnd(x + U(1.5)) - 1, 'trim', 2);
       } else if (view === 'left') {
@@ -524,7 +525,7 @@
     if (ph !== 'head') return;
     const m = mc(P, a, '#d8363a'), m2 = mc2(P, a, '#f6f4f0'), h = R.hairInfo;
     const yEnd = (h ? h.fdy : R.hy + 3) - (R.t === 'ow' ? 1 : 1);
-    const d = dome(P, R, m, R.U(0.5), yEnd, 0);
+    const d = dome(P, R, m, R.t === 'ow' ? -1 : 0, yEnd, 0, 2.6);
     const U = R.U;
     if (R.view === 'down') {
       // front panel logo + visor

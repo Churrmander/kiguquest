@@ -59,9 +59,8 @@
       let hw;
       if (t === 'ow') hw = r === 0 ? sh - 1 : f < 0.45 ? sh : f < 0.85 ? Math.max(waist, sh - 1) : hip;
       else {
-        if (r === 0) hw = sh - 4;
-        else if (r === 1) hw = sh - 2;
-        else if (r === 2) hw = sh - 1;
+        if (r === 0) hw = sh - 3;
+        else if (r === 1) hw = sh - 1;
         else if (f < 0.4) hw = sh;
         else if (f < 0.72) hw = Math.round(sh + (waist - sh) * ((f - 0.4) / 0.32));
         else hw = Math.round(waist + (hip - waist) * ((f - 0.72) / 0.28));
