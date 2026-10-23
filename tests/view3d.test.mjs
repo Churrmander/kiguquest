@@ -1,4 +1,4 @@
-// Pseudo-3D overworld view: off by default and leaves the flat renderer untouched; when on, the pivot lands on pivotRow at scale 1,
+// Pseudo-3D overworld view: on by default; turning it off restores the flat renderer exactly; buildings are solid boxes; when on, the pivot lands on pivotRow at scale 1,
 // far things shrink, every map in the game renders without throwing, and frames are deterministic.
 import assert from 'node:assert/strict';
 import { boot } from './harness.mjs';
@@ -8,7 +8,8 @@ const { NP } = t;
 const ow = NP.quickStart('Ren', 'f');
 ow.msg.close(); ow.tasks = [];
 const V = NP.view3d;
-assert.ok(V && V.on === false, 'view3d exists and is off by default');
+assert.ok(V && V.on === true, 'view3d exists and is on by default');
+V.on = false;
 
 ow.loadMap('seamstead', 17, 16, 'up', { noEnter: true }); t.tick(10);
 const fbA = new NP.Bitmap(NP.W, NP.H), fbB = new NP.Bitmap(NP.W, NP.H);
@@ -56,7 +57,7 @@ assert.equal(V.screenToMap('up'), 'right'); assert.equal(V.screenToMap('right'),
 assert.equal(V.screenToMap('down'), 'left'); assert.equal(V.screenToMap('left'), 'up');
 assert.equal(V.viewDir('right'), 'up'); assert.equal(V.viewDir('up'), 'left');
 const x0 = t.ow.player.x;
-t.go('up'); t.tick(30);
+NP.Input.set('up', true); t.tick(14); NP.Input.set('up', false); t.tick(30); // raw screen-up, not map-up
 assert.ok(t.ow.player.x > x0, 'pressing screen-up walks east when the camera looks east');
 assert.ok(!('rotate' in V) && !('setYaw' in V) && !('yaw' in V.cfg), 'no player-facing camera rotation setting');
 
@@ -68,4 +69,22 @@ V.on = true; ow.draw(fbA, 0);
 assert.equal(V.toggle(), false);
 ow.draw(fbB, 0);
 assert.ok(ref.every((v, i) => v === fbB.u32[i]), 'turning 3D off restores the flat view exactly');
+// buildings are solid boxes: a ground point just behind a house is hidden by it, and the house's front wall is in the frame
+{
+  V.on = true; V.preset('street');
+  ow.loadMap('button_town', 12, 12, 'down', { noEnter: true }); t.tick(3);
+  for (let i = 0; i < 150; i++) ow.draw(fbA, i);
+  const m = t.ow.map, house = m.objs.find((p) => V.BOX[p.id]);
+  assert.ok(house, 'Button Town has a box building');
+  const saved = V.BOX[house.id];
+  const behind = V.project((house.x + house.w / 2) * 16, house.y * 16 + 6, 0);
+  ow.draw(fbA, 0); const withBox = Uint32Array.from(fbA.u32);
+  delete V.BOX[house.id]; ow.draw(fbB, 0); V.BOX[house.id] = saved;
+  assert.ok(withBox.some((v, i) => v !== fbB.u32[i]), 'box buildings render differently from billboards');
+  assert.ok(behind && behind.x >= 0 && behind.x < NP.W && behind.y >= 0 && behind.y < NP.H, 'test point is on screen');
+  if (behind && behind.x >= 0 && behind.x < NP.W && behind.y >= 0 && behind.y < NP.H) {
+    const i = Math.floor(behind.y) * NP.W + Math.floor(behind.x);
+    assert.notEqual(withBox[i], fbB.u32[i], 'the ground behind the house is covered by the house');
+  }
+}
 console.log('view3d OK,', n, 'maps');

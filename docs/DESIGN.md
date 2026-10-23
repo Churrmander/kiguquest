@@ -204,3 +204,14 @@ Extra helper scripts are fine under `tools/` if prefixed with your area (e.g. `t
 ## 6. Reporting
 When done, reply with: what you built, the final file list (and that your `files.json` is correct), the public API exactly as
 implemented (note any deviation from this doc), known gaps, and the path of your best preview PNGs.
+
+## 7. Pseudo-3D overworld (`src/engine/persp.js`, `NP.view3d`)
+On by default (V toggles the flat view in the browser). A real pinhole camera looks down at the map at roughly a BW town angle;
+the ground is a perspective-mapped texture of the flat terrain. Stamps listed in `NP.view3d.BOX` (houses, lab, Tea House, store,
+Salons) are **solid boxes**: the stamp art is split at its widest row (the eave), the facade becomes the front wall and the roof art
+the front slope of a hip roof; side/back walls, back slope and hip ends are generated from the art's colours. Everything else
+(trees, props, people) is an upright billboard, depth-tested against the buildings. A building between the camera and the player
+is dithered see-through round the player. So for tile artists: draw building stamps as *facade below, roof above, widest row =
+eave*, and anything above the roof trapezoid (flags, antennas) becomes an upright card on the ridge. Per-building tuning (wall
+stretch, depth, roof pitch) lives in `BOX` in persp.js. Headless tests drive the pad with `t.go(mapDir)`, which converts map
+directions to screen keys for the current camera heading.
