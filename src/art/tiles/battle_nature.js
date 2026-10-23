@@ -197,7 +197,14 @@
     sky(b) {
       skyGrad(b, [[0, '#141c58'], [0.28, '#26348c'], [0.58, '#4a58b8'], [0.84, '#b490cc'], [1, '#f0b8c4']]);
       BB.glow(b, 232, 28, 108, 84, '#9ab0f4', 0.22, 1.4);
-      BB.scatter(23, 90, 0, 0, W, 52, null, (x, y, r) => { const a = 0.45 + 0.5 * r, c = r > 0.8 ? [255, 244, 196] : [226, 232, 255]; px(b, x, y, c, a * (1 - y / 66)); if (r > 0.93) { px(b, x - 1, y, c, 0.5); px(b, x + 1, y, c, 0.5); px(b, x, y - 1, c, 0.5); px(b, x, y + 1, c, 0.5); } });
+      // stars: one jittered star per 16x8 cell (sparser low down), so they spread evenly with no hash streaks
+      for (let gy = 0; gy < 7; gy++) for (let gx = 0; gx < W / 16; gx++) {
+        if (hf(gx, gy, 61) < 0.18 + gy * 0.07) continue;
+        const x = gx * 16 + hf(gx, gy, 62) * 15, y = gy * 7.5 + hf(gx, gy, 63) * 7, r = hf(gx, gy, 64);
+        const a = 0.45 + 0.5 * r, c = r > 0.8 ? [255, 244, 196] : [226, 232, 255];
+        px(b, x, y, c, a * (1 - y / 66));
+        if (r > 0.93) { px(b, x - 1, y, c, 0.5); px(b, x + 1, y, c, 0.5); px(b, x, y - 1, c, 0.5); px(b, x, y + 1, c, 0.5); }
+      }
       BB.streak(b, 74, 20, 70, 3.2, 41, '#8c8cec', 0.22);
       BB.streak(b, 200, 46, 56, 3.2, 42, '#c8a0dc', 0.3);
       BB.streak(b, 120, 40, 50, 2.6, 43, '#a49ae0', 0.18);
