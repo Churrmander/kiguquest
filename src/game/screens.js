@@ -31,7 +31,7 @@
         const pk = has ? NP.State.peek() : null;
         this.peek = pk;
         const m = new ui.Menu({ items, theme: 'light', x: 0, y: 0, cancelable: false });
-        m.x = (NP.W - m.w) >> 1; m.y = 124;
+        m.x = (NP.W - m.w) >> 1; m.y = 128;
         const r = yield* this.menu(m);
         const k = r.item.k;
         if (k === 'continue') {
@@ -74,16 +74,16 @@
       else {
         for (let y = 0; y < NP.H; y++) fb.fillRect(0, y, NP.W, 1, y < 120 ? NP.Color.mix('#ffb8d0', '#9ad4f0', y / 120) : '#78c058');
       }
-      if (this.logo) fb.blit(this.logo, (NP.W - this.logo.w) >> 1, 18);
+      if (this.logo) fb.blit(this.logo, (NP.W - this.logo.w) >> 1, 20);
       else {
         Font.draw(fb, 'KIGU QUEST', NP.W / 2, 40, { color: '#ffffff', shadow: '#c04878', outline: '#602040', align: 'center' });
       }
-      if (this.stage === 0 && (f >> 5) % 2 === 0) Font.draw(fb, 'PRESS START', NP.W / 2, 140, { color: '#ffffff', shadow: '#00000080', outline: '#302040', align: 'center' });
+      if (this.stage === 0 && (f >> 5) % 2 === 0) Font.draw(fb, 'PRESS START', NP.W / 2, 150, { color: '#ffffff', shadow: '#00000080', outline: '#302040', align: 'center' });
       if (this.stage === 1 && this.peek) {
         const p = this.peek;
-        ui.frame(fb, 58, 84, 140, 30, 'light');
-        ui.text(fb, p.name + '   Buttons ' + p.badges, 68, 90, 'light');
-        ui.text(fb, 'Sketchbook ' + p.dex + '   ' + NP.util.pad(Math.floor(p.frames / 216000), 1) + 'h ' + NP.util.pad(Math.floor(p.frames / 3600) % 60, 2) + 'm', 68, 101, 'light', { color: '#707890', shadow: null });
+        ui.frame(fb, 58, 88, 140, 30, 'light');
+        ui.text(fb, p.name + '   Buttons ' + p.badges, 68, 94, 'light');
+        ui.text(fb, 'Sketchbook ' + p.dex + '   ' + NP.util.pad(Math.floor(p.frames / 216000), 1) + 'h ' + NP.util.pad(Math.floor(p.frames / 3600) % 60, 2) + 'm', 68, 105, 'light', { color: '#707890', shadow: null });
       }
       Font.draw(fb, 'Befriend Kigu. Stitch your story.', NP.W / 2, NP.H - 12, { color: '#ffffffb0', shadow: '#00000060', align: 'center' });
       this.drawUI(fb, f);

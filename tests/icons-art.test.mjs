@@ -62,28 +62,29 @@ ok(I._kit.reg.logo().equals(logo), 'logo not deterministic');
 ok(NP.assets.logo() === logo, 'NP.assets.logo hands the real logo to the title scene');
 
 const scene = I.titleScene();
-assert.equal(scene.w, 240); assert.equal(scene.h, 160);
+assert.equal(scene.w, 256); assert.equal(scene.h, 192);
+assert.equal(scene.w, NP.W, 'title scene spans the screen width'); assert.equal(scene.h, NP.H, 'title scene spans the screen height');
 ok(!isPlaceholder(scene), 'title scene is the placeholder');
 for (let i = 0; i < scene.u32.length; i++) assert.equal(scene.u32[i] >>> 24, 255, 'title scene must be opaque');
 ok(scene.countColors() > 400 && scene.countColors() < 4000, 'title scene colours ' + scene.countColors());
 ok(I._kit.reg.titleScene().equals(scene), 'title scene not deterministic');
 ok(NP.assets.titleScene() === scene, 'NP.assets.titleScene hands the real backdrop to the title scene');
-// calm zones for the text the game prints on top: PRESS START (120,120), the menu box, the tagline (y 150)
+// calm zones for the text the game prints on top: PRESS START (128,150), the menu box, the tagline (y 180)
 function calm(x0, y0, x1, y1) {
   let s = 0, n = 0, mn = 999, mx = 0;
   for (let y = y0; y < y1; y++) for (let x = x0; x < x1 - 1; x++) { const a = lum(scene.get(x, y)); s += Math.abs(a - lum(scene.get(x + 1, y))); n++; mn = Math.min(mn, a); mx = Math.max(mx, a); }
   return { diff: s / n, range: mx - mn };
 }
-const ps = calm(76, 114, 164, 127);
+const ps = calm(92, 146, 164, 160);
 ok(ps.diff < 9 && ps.range < 80, 'PRESS START zone is calm (diff ' + ps.diff.toFixed(1) + ', range ' + ps.range.toFixed(0) + ')');
-const sky = calm(20, 14, 220, 70);
+const sky = calm(20, 18, 236, 76);
 ok(sky.diff < 8, 'the sky behind the logo is calm (diff ' + sky.diff.toFixed(1) + ')');
 // the white tagline text must stay readable: the strip it sits on is darker than the text colour everywhere
 let brightest = 0;
-for (let x = 28; x < 212; x++) brightest = Math.max(brightest, lum(scene.get(x, 150)));
+for (let x = 28; x < 228; x++) brightest = Math.max(brightest, lum(scene.get(x, 182)));
 ok(brightest < 170, 'tagline strip too bright for white text (' + brightest.toFixed(0) + ')');
 // the logo drawn on the backdrop (as the title scene does) stays distinguishable from it: its fill is clearly darker/more saturated than the sky
-const comp = scene.clone(); comp.blit(logo, 120 - (logo.w >> 1), 14);
+const comp = scene.clone(); comp.blit(logo, 128 - (logo.w >> 1), 20);
 ok(!comp.equals(scene), 'the logo must show over the backdrop');
 
 // ------------------------------------------------------------------------------------------------ emotes
@@ -101,4 +102,4 @@ for (const e of EMOTES) {
 }
 for (let i = 0; i < EMOTES.length; i++) for (let j = i + 1; j < EMOTES.length; j++) ok(!I.emote(EMOTES[i]).equals(I.emote(EMOTES[j])), EMOTES[i] + ' and ' + EMOTES[j] + ' look the same');
 
-console.log(`icons-art: ${ids.length} item icons (+${I.items().length - ids.length} pins/discs/charms), logo ${logo.w}x${logo.h}, title scene 240x160, ${EMOTES.length} emotes, ${checks} checks OK`);
+console.log(`icons-art: ${ids.length} item icons (+${I.items().length - ids.length} pins/discs/charms), logo ${logo.w}x${logo.h}, title scene 256x192, ${EMOTES.length} emotes, ${checks} checks OK`);

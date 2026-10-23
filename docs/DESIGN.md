@@ -160,10 +160,10 @@ NP.stamps[id] = {
 NP.art.tiles.terrain(id, mask, frame, variant) -> Bitmap 16×16   // cached wrapper around NP.terrain[id].draw
 NP.art.tiles.stamp(id, variant, frame)         -> Bitmap          // cached wrapper
 NP.art.tiles.overlay(id, frame)                -> Bitmap | null
-NP.art.tiles.battleBg(id) -> { id, bg: Bitmap 240×112, enemyBase:{x,y}, playerBase:{x,y},         // ground discs are part of bg
+NP.art.tiles.battleBg(id) -> { id, bg: Bitmap 256×144, enemyBase:{x,y}, playerBase:{x,y},         // NP.W × NP.BOX_Y; discs are part of bg
                                layers:{sky,ground}, enemyDisc:{bmp,x,y}, playerDisc:{bmp,x,y} }   // extras for a camera sway/pan
 // ids: grass forest indoor cave city gym water night society (unknown ids fall back to grass); full notes in docs/tiles.md
-// NP.assets.battleBg(id) stretches the stages to 256×144 (NP.W × NP.BOX_Y) and scales the bases, until they are repainted natively
+// feet anchors: enemyBase (188,92), playerBase (66,148) (just below the command box, DS-style); NP.assets.battleBg passes it through
 ```
 The full list of required terrains/stamps/backgrounds (with priorities P1/P2/P3) is BIBLE §5. Anything you add beyond the list
 must be documented in `docs/tiles.md` (id, size, solid rows, variants) so level designers can use it.
@@ -178,7 +178,7 @@ NP.art.icons.emote(name)     -> Bitmap 16×16    // 'exclaim','question','heart'
 NP.art.icons.spool(kind, frame) -> Bitmap 16×16  // thrown Bond Spool (kind: 'bond','silk','gold','master'), frames 0..3 spinning
 NP.art.icons.fx(name, frame) -> Bitmap          // particle/effect frames for move animations (BIBLE §7), frame 0..n-1; also .fxFrames(name) -> n
 NP.art.icons.logo()          -> Bitmap          // title logo "KIGU QUEST" (≤ 200×56)
-NP.art.icons.titleScene()    -> Bitmap 240×160  // title-screen backdrop (no text)
+NP.art.icons.titleScene()    -> Bitmap 256×192  // title-screen backdrop (NP.W × NP.H, no text; starters included)
 NP.art.icons.has(kind,id) / lists...
 ```
 

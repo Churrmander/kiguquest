@@ -58,7 +58,7 @@ so a named 1x1 stamp (e.g. a `sign` with `name:`) becomes walkable. Use `to`/`na
 ## Battle backgrounds (`NP.art.tiles.battleBg(id)`)
 
 Nine stages, all painted by `src/art/tiles/battle_*.js` on one shared "late-DS stage" layout (see `docs/ART-TARGET.md` §2): a high-key sky (or
-back wall) with a bright haze band at the horizon (y 38), a smooth softly lit ground plane, and ONE big oval platform per side. Painted in float
+back wall) with a bright haze band at the horizon (y 60; rooms put the wall foot at y 67), a smooth softly lit ground plane, and ONE big oval platform per side. Painted in float
 colour with soft alpha blends and finished with an ordered dither into the 15-bit palette (so they are NOT limited to a tiny palette: roughly
 200-1000 colours each, but no hard pixel noise; `tests/tiles-art.test.mjs` guards both ends).
 
@@ -75,20 +75,24 @@ colour with soft alpha blends and finished with an ordered dither into the 15-bi
 | `society` | Crisp & Co. interiors | cold white-blue pressed-pleat wall, blue frieze, ceiling light panels, flat-iron banner, steam, tiled floor |
 
 Contract: `battleBg(id)` -> `{ id, bg, enemyBase, playerBase, layers, enemyDisc, playerDisc }` (unknown ids fall back to `grass`).
-* `bg` is the finished 240x112 composite, opaque, platforms included. `NP.assets.battleBg` passes the whole object through.
-* Anchors are the FEET of the battling Kigu: `enemyBase` = (172, 60), `playerBase` = (58, 106) in every stage (the battle scene draws the
-  trainer's feet at (172, 58) and the hero's at (58, 104), so the same platforms serve them).
-* Platforms: foe oval 104x20 centred (172, 56) (ends at y 66, just above the player's HP box); player oval 150x28 centred (58, 104), cut off
-  by the text box at y 112. Each has a dark steel-blue interior tinted per stage, a lit rim ring, a soft halo and a contact shadow.
+* `bg` is the finished 256x144 composite (`NP.W` x `NP.BOX_Y`, painted natively, no resampling), opaque, platforms included.
+  `NP.assets.battleBg` passes the whole object through (its flat fallback is also 256x144 with the same anchors).
+* Anchors are the FEET of the battling Kigu and trainers (`src/game/battlescene.js` stands sprites on them): `enemyBase` = (188, 92),
+  `playerBase` = (66, 148) in every stage. Front Kigu are 96x96 (anchor (48,94)), the player's back view 128x128 (anchor (64,126)),
+  trainers 80x80 (anchor (40,78)); the player's feet lie just below the command box top, as on the DS.
+* Platforms (`BB.STAGE`): foe oval 121x23 centred (188, 88) (ends at y 99, just above the player's HP box at y 100); player oval 185x37
+  centred (66, 142), cut off by the command box at y 144. Each has a dark steel-blue interior tinted per stage, a lit rim ring, a soft halo
+  and a contact shadow.
 * Optional extras for a camera sway / intro pan: `layers.sky` (opaque, everything behind the ground), `layers.ground` (transparent above the
   horizon; the `forest` trunk is the one foreground object on it), `enemyDisc` / `playerDisc` = `{ bmp, x, y }` (translucent platform bitmaps,
   x/y = top-left in bg coordinates). `bg` = sky, then ground, then enemyDisc, then playerDisc.
-* HUD zones to keep calm: foe HP box (6,8)-(114,38), player HP box (124,66)-(236,106), text box y >= 112. `K.bb.free(x, y, margin)` tells decor
+* HUD zones to keep calm: foe HP box (0,10)-(118,38), player HP box (132,100)-(256,140), foe sprite column x 146-230 above y 94,
+  command box y >= 144. `K.bb.free(x, y, margin)` tells decor
   scatter code where nothing important stands.
 
 To add a stage: write `BB.define(id, { ...BB.stage(tint), sky(b), ground(b) })` in `battle_nature.js` / `battle_places.js` (helpers: `BB.ramp`,
 `vgrad`, `glow`, `shaft`, `streak`, `puff`, `ridge`, `tree`, `lobe`, `poly`, `plane` for perspective floors, `scatter`), then name the id in a map
-def as `battleBg`. Keep the haze band bright, the middle (behind the foe sprite, x 140-204) calm, and put identity in the top-right quadrant and along
+def as `battleBg`. Keep the haze band bright, the middle (behind the foe sprite, x 146-230) calm, and put identity in the top-right quadrant and along
 the horizon band (the foe HP box hides most of the top-left).
 
 ## 3D overworld view (`NP.view3d`: `src/engine/persp.js`, `persp_raster.js`, `persp_scene.js`)

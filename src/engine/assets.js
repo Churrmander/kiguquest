@@ -297,32 +297,21 @@
       return b;
     });
   };
-  /** Battle backdrop, native 256x144 (NP.W x NP.BOX_Y): { bg, enemyBase, playerBase } — bases are the sprite feet anchors
-   *  (the player's lies below the panel top, so its Kigu stands partly behind the command area, 5th-gen style). */
+  /** Battle backdrop, native 256x144 (NP.W x NP.BOX_Y): { bg, enemyBase, playerBase, ... } passed through from NP.art.tiles.battleBg —
+   *  bases are the sprite feet anchors (the player's lies below the panel top, so its Kigu stands partly behind the command area,
+   *  5th-gen style). The flat fallback (art missing) uses the same size and anchors. */
   A.battleBg = function (id) {
     const r = tryit(() => art().tiles.battleBg(id || 'grass'), null);
-    if (r) return fitBg(r, id);
+    if (r) return r;
     return memo('bg|' + id, () => {
       const W = NP.W, H = NP.BOX_Y, bg = new Bitmap(W, H);
-      bg.fillRect(0, 0, W, 70, '#9ad4f0');
-      bg.fillRect(0, 70, W, H - 70, '#78c058');
-      bg.ellipse(188, 90, 58, 13, '#5aa040', true);
-      bg.ellipse(66, 140, 86, 19, '#5aa040', true);
-      return { bg, enemyBase: { x: 188, y: 92 }, playerBase: { x: 66, y: 148 } };
+      bg.fillRect(0, 0, W, 60, '#9ad4f0');
+      bg.fillRect(0, 60, W, H - 60, '#78c058');
+      bg.ellipse(188, 88, 60, 11, '#5aa040', true);
+      bg.ellipse(66, 142, 92, 18, '#5aa040', true);
+      return { id: id || 'grass', bg, enemyBase: { x: 188, y: 92 }, playerBase: { x: 66, y: 148 } };
     });
   };
-  /** Stages painted at another size (the 240x112 set) are resampled to NP.W x NP.BOX_Y, bases scaled to match. Temporary until
-   *  they are repainted natively. */
-  function fitBg(r, id) {
-    const W = NP.W, H = NP.BOX_Y, src = r.bg;
-    if (src.w === W && src.h === H) return r;
-    return memo('bgfit|' + id, () => {
-      const bg = new Bitmap(W, H), sx = src.w / W, sy = src.h / H;
-      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) bg.u32[y * W + x] = src.u32[Math.floor(y * sy) * src.w + Math.floor(x * sx)];
-      const pt = (p) => ({ x: Math.round(p.x / sx), y: Math.round(p.y / sy) });
-      return { id: r.id, bg, enemyBase: pt(r.enemyBase), playerBase: pt(r.playerBase) };
-    });
-  }
   const hasIcon = (k) => tryit(() => !art().icons.has || art().icons.has(k), false);
   A.logo = () => (hasIcon('logo') ? tryit(() => art().icons.logo(), null) : null);
   A.titleScene = () => (hasIcon('titleScene') ? tryit(() => art().icons.titleScene(), null) : null);

@@ -157,7 +157,8 @@ for (const [mid, m] of Object.entries(NP.maps)) {
 ok(usedStamps.size >= 40, 'maps should use the full stamp set');
 
 // ------------------------------------------------------------------------------------------------ battle backgrounds
-// 9 stages (BIBLE 5): 240x112, opaque, a platform under each anchor, deterministic, soft (no pixel noise), layers + discs for the camera.
+// 9 stages (BIBLE 5): 256x144 (NP.W x NP.BOX_Y, painted natively), opaque, a platform under each anchor, deterministic, soft (no pixel noise), layers + discs for the camera.
+const M = Math;
 const BG_IDS = ['grass', 'forest', 'indoor', 'cave', 'city', 'gym', 'water', 'night', 'society'];
 const K = NP.art.tiles.kit;
 for (const id of BG_IDS) ok(NP.art.tiles.battleBgIds().includes(id), 'missing battle background ' + id);
@@ -165,15 +166,18 @@ const bgSeen = new Set();
 for (const id of BG_IDS) {
   const r = NP.art.tiles.battleBg(id);
   assert.equal(r.id, id);
-  assert.equal(r.bg.w, 240, id + ' bg width'); assert.equal(r.bg.h, 112, id + ' bg height');
-  for (let i = 0; i < r.bg.u32.length; i++) assert.equal(r.bg.u32[i] >>> 24, 255, id + ': bg must be fully opaque');
-  for (const [who, p] of [['enemyBase', r.enemyBase], ['playerBase', r.playerBase]]) {
-    ok(Number.isInteger(p.x) && Number.isInteger(p.y) && r.bg.inBounds(p.x, p.y), id + ': ' + who + ' inside the bitmap');
-  }
-  ok(r.enemyBase.x > 120 && r.enemyBase.y < 70, id + ': foe stands upper right');
-  ok(r.playerBase.x < 120 && r.playerBase.y > 90 && r.playerBase.y < 112, id + ': player stands lower left, above the text box');
+  assert.equal(r.bg.w, 256, id + ' bg width'); assert.equal(r.bg.h, 144, id + ' bg height');
+  assert.equal(r.bg.w, NP.W, id + ': bg spans the screen width'); assert.equal(r.bg.h, NP.BOX_Y, id + ': bg reaches the command box');
+  let seeThrough = 0;
+  for (let i = 0; i < r.bg.u32.length; i++) if (r.bg.u32[i] >>> 24 !== 255) seeThrough++;
+  assert.equal(seeThrough, 0, id + ': bg must be fully opaque (' + seeThrough + ' see-through pixels)');
+  for (const [who, p] of [['enemyBase', r.enemyBase], ['playerBase', r.playerBase]]) ok(Number.isInteger(p.x) && Number.isInteger(p.y), id + ': ' + who + ' integer');
+  ok(r.bg.inBounds(r.enemyBase.x, r.enemyBase.y), id + ': enemyBase inside the bitmap');
+  ok(r.bg.inBounds(r.playerBase.x, 0) && r.playerBase.y >= r.bg.h - 4 && r.playerBase.y < r.bg.h + 10, id + ': playerBase just below the command box top (DS cut-off)');
+  ok(r.enemyBase.x > 128 && r.enemyBase.y < 100, id + ': foe stands upper right');
+  ok(r.playerBase.x < 128 && r.playerBase.y > 120, id + ': player stands lower left, partly behind the command box');
   // the platforms: opaque pixels of the disc bitmap sit under both anchors (so the feet are on the platform)
-  for (const [who, d, p, minW] of [['enemyDisc', r.enemyDisc, r.enemyBase, 104], ['playerDisc', r.playerDisc, r.playerBase, 150]]) {
+  for (const [who, d, p, minW] of [['enemyDisc', r.enemyDisc, r.enemyBase, 112], ['playerDisc', r.playerDisc, r.playerBase, 170]]) {
     ok(d && d.bmp && Number.isInteger(d.x) && Number.isInteger(d.y), id + ': ' + who + ' present');
     ok(d.bmp.w >= minW, id + ': ' + who + ' wide enough (' + d.bmp.w + ')');
     ok((d.bmp.get(p.x - d.x, p.y - d.y) >>> 24) >= 250, id + ': ' + who + ' is opaque under its anchor');
@@ -182,11 +186,11 @@ for (const id of BG_IDS) {
   }
   // layers for the camera: opaque sky; ground transparent at the top, opaque at the bottom
   ok(r.layers && r.layers.sky && r.layers.ground, id + ': layers');
-  assert.equal(r.layers.sky.w, 240); assert.equal(r.layers.sky.h, 112); assert.equal(r.layers.ground.w, 240); assert.equal(r.layers.ground.h, 112);
-  for (let x = 0; x < 240; x += 7) {
-    assert.equal(r.layers.sky.get(x, 0) >>> 24, 255, id + ': sky opaque'); assert.equal(r.layers.sky.get(x, 111) >>> 24, 255, id + ': sky opaque');
-    assert.equal(r.layers.ground.get(x, 111) >>> 24, 255, id + ': ground opaque at the bottom');
-    if (x < 220) assert.equal(r.layers.ground.get(x, 10) >>> 24, 0, id + ': ground transparent above the horizon (only a framing trunk may stand there)');
+  assert.equal(r.layers.sky.w, 256); assert.equal(r.layers.sky.h, 144); assert.equal(r.layers.ground.w, 256); assert.equal(r.layers.ground.h, 144);
+  for (let x = 0; x < 256; x += 7) {
+    assert.equal(r.layers.sky.get(x, 0) >>> 24, 255, id + ': sky opaque'); assert.equal(r.layers.sky.get(x, 143) >>> 24, 255, id + ': sky opaque');
+    assert.equal(r.layers.ground.get(x, 143) >>> 24, 255, id + ': ground opaque at the bottom');
+    if (x < 228) assert.equal(r.layers.ground.get(x, 10) >>> 24, 0, id + ': ground transparent above the horizon (only a framing trunk may stand there)');
   }
   // "high-key, soft": many tones (no flat fills, no palette crunch) yet bounded (no per-pixel noise)
   const n = r.bg.countColors();
@@ -200,20 +204,27 @@ for (const id of BG_IDS) {
   ok(!bgSeen.has(key), id + ' looks like another background'); bgSeen.add(key);
   // soft: neighbouring pixels rarely jump (a smooth stage, not a noisy texture)
   let jumps = 0;
-  for (let y = 0; y < 111; y++) for (let x = 0; x < 239; x++) {
-    const a = r.bg.u32[y * 240 + x], b2 = r.bg.u32[y * 240 + x + 1];
+  for (let y = 0; y < 143; y++) for (let x = 0; x < 255; x++) {
+    const a = r.bg.u32[y * 256 + x], b2 = r.bg.u32[y * 256 + x + 1];
     const dr = Math.abs((a & 255) - (b2 & 255)) + Math.abs(((a >>> 8) & 255) - ((b2 >>> 8) & 255)) + Math.abs(((a >>> 16) & 255) - ((b2 >>> 16) & 255));
     if (dr > 150) jumps++;
   }
-  ok(jumps < 240 * 112 * 0.06, id + ': too many hard pixel jumps (' + jumps + ')');
+  ok(jumps < 256 * 144 * 0.06, id + ': too many hard pixel jumps (' + jumps + ')');
 }
-// the platforms sit where the battle scene draws the hero (58,104) and the trainer (172,58): the foe platform clears the player's HP box (y >= 66)
+// the platforms sit under the battle scene's feet anchors (foe (188,92), player (66,148)): the foe platform clears the player's HP box (y >= 100);
+// both ovals stay wide and flat (round-looking from a low camera, not stretched tall)
 for (const id of BG_IDS) {
   const r = NP.art.tiles.battleBg(id), e = r.enemyDisc, f = e.bmp;
   let bottom = 0;
   for (let y = 0; y < f.h; y++) for (let x = 0; x < f.w; x++) if ((f.get(x, y) >>> 24) > 230) bottom = Math.max(bottom, y + e.y);
-  ok(bottom <= 67, id + ': foe platform runs under the player HP box (ends at y ' + bottom + ')');
-  ok(r.enemyBase.y >= 56 && r.enemyBase.y <= 62 && r.playerBase.y >= 100 && r.playerBase.y <= 108, id + ': anchors near the hero/trainer positions');
+  ok(bottom <= 100, id + ': foe platform runs under the player HP box (ends at y ' + bottom + ')');
+  ok(M.abs(r.enemyBase.x - 188) <= 4 && M.abs(r.enemyBase.y - 92) <= 3 && M.abs(r.playerBase.x - 66) <= 4 && M.abs(r.playerBase.y - 148) <= 3, id + ': anchors at the battle scene feet positions');
+  for (const [who, d] of [['enemyDisc', e], ['playerDisc', r.playerDisc]]) {
+    let x0 = 1e9, x1 = -1, y0 = 1e9, y1 = -1;
+    for (let y = 0; y < d.bmp.h; y++) for (let x = 0; x < d.bmp.w; x++) if ((d.bmp.get(x, y) >>> 24) > 230) { x0 = M.min(x0, x); x1 = M.max(x1, x); y0 = M.min(y0, y); y1 = M.max(y1, y); }
+    const ratio = (x1 - x0 + 1) / (y1 - y0 + 1);
+    ok(ratio >= 4.4 && ratio <= 6.2, id + ': ' + who + ' oval proportions ' + ratio.toFixed(2));
+  }
 }
 assert.equal(NP.art.tiles.battleBg('no_such_stage').id, 'grass', 'unknown ids fall back to grass');
 if (NP.assets) for (const id of BG_IDS) assert.equal(NP.assets.battleBg(id).id, id, 'assets.battleBg(' + id + ') must reach the real art, not the fallback');

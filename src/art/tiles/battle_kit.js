@@ -1,4 +1,4 @@
-/* src/art/tiles/battle_kit.js — painter toolkit for the 240x112 battle backgrounds (NP.art.tiles.kit.bb).
+/* src/art/tiles/battle_kit.js — painter toolkit for the 256x144 battle backgrounds (NP.W x NP.BOX_Y; NP.art.tiles.kit.bb).
  *
  * The backgrounds follow the "late-DS stage" look: a high-key sky gradient with soft cloud bands, a bright haze band at the
  * horizon, a smooth softly lit ground plane, and ONE big oval platform per side (far/upper-right for the foe, near/lower-left for
@@ -13,7 +13,8 @@
   const { Bitmap, Color } = NP;
   const K = NP.art.tiles.kit;
   const BB = (K.bb = {});
-  const W = 240, H = 112;
+  const M = Math;                                // local alias: global lookups are slow in the test sandbox's per-pixel loops
+  const W = 256, H = 144;                        // the battle area above the command box: NP.W x NP.BOX_Y
   BB.W = W; BB.H = H;
 
   const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
@@ -45,12 +46,12 @@
       const a = S[k], b = S[k + 1];
       lut[i] = mix(a[1], b[1], clamp((t - a[0]) / (b[0] - a[0] || 1), 0, 1));
     }
-    return (t) => lut[Math.round(clamp(t, 0, 1) * N)];
+    return (t) => lut[M.round(clamp(t, 0, 1) * N)];
   };
 
   // ------------------------------------------------------------------------------------------------ noise
   function noise(x, seed) {
-    const i = Math.floor(x), f = x - i, u = f * f * (3 - 2 * f);
+    const i = M.floor(x), f = x - i, u = f * f * (3 - 2 * f);
     return K.hf(i, seed | 0, 11) * (1 - u) + K.hf(i + 1, seed | 0, 11) * u;
   }
   /** smooth 1-D noise in [0,1) */
@@ -63,7 +64,7 @@
 
   /** smooth 2-D value noise in [0,1) */
   BB.noise2 = function (x, y, seed) {
-    const ix = Math.floor(x), iy = Math.floor(y), fx = x - ix, fy = y - iy, ux = fx * fx * (3 - 2 * fx), uy = fy * fy * (3 - 2 * fy);
+    const ix = M.floor(x), iy = M.floor(y), fx = x - ix, fy = y - iy, ux = fx * fx * (3 - 2 * fx), uy = fy * fy * (3 - 2 * fy);
     const a = K.hf(ix, iy, seed), b = K.hf(ix + 1, iy, seed), c = K.hf(ix, iy + 1, seed), d = K.hf(ix + 1, iy + 1, seed);
     return lerp(lerp(a, b, ux), lerp(c, d, ux), uy);
   };
@@ -95,7 +96,7 @@
 
   /** per-pixel fill: fn(x,y) -> [r,g,b] | [r,g,b,a] | null (blended) */
   BB.paint = function (b, x0, y0, x1, y1, fn) {
-    for (let y = Math.max(0, y0); y < Math.min(b.h, y1); y++) for (let x = Math.max(0, x0); x < Math.min(b.w, x1); x++) {
+    for (let y = M.max(0, y0); y < M.min(b.h, y1); y++) for (let x = M.max(0, x0); x < M.min(b.w, x1); x++) {
       const c = fn(x, y);
       if (c) px(b, x, y, c, c.length > 3 ? c[3] : 1);
     }
@@ -105,12 +106,12 @@
   BB.glow = function (b, cx, cy, rx, ry, c, a, pw) {
     pw = pw === undefined ? 1.5 : pw;
     c = rgb(c);
-    const x0 = Math.max(0, Math.floor(cx - rx)), x1 = Math.min(b.w - 1, Math.ceil(cx + rx));
-    const y0 = Math.max(0, Math.floor(cy - ry)), y1 = Math.min(b.h - 1, Math.ceil(cy + ry));
+    const x0 = M.max(0, M.floor(cx - rx)), x1 = M.min(b.w - 1, M.ceil(cx + rx));
+    const y0 = M.max(0, M.floor(cy - ry)), y1 = M.min(b.h - 1, M.ceil(cy + ry));
     for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
       const dx = (x + 0.5 - cx) / rx, dy = (y + 0.5 - cy) / ry, q = dx * dx + dy * dy;
       if (q >= 1) continue;
-      px(b, x, y, c, a * Math.pow(1 - q, pw));
+      px(b, x, y, c, a * M.pow(1 - q, pw));
     }
   };
 
@@ -118,16 +119,16 @@
   BB.shaft = function (b, x0, y0, x1, y1, w0, w1, c, a, o) {
     o = o || {};
     c = rgb(c);
-    const len = Math.hypot(x1 - x0, y1 - y0), ux = (x1 - x0) / len, uy = (y1 - y0) / len;
-    const xa = Math.max(0, Math.floor(Math.min(x0, x1) - Math.max(w0, w1))), xb = Math.min(b.w - 1, Math.ceil(Math.max(x0, x1) + Math.max(w0, w1)));
-    const ya = Math.max(0, Math.floor(Math.min(y0, y1) - 2)), yb = Math.min(b.h - 1, Math.ceil(Math.max(y0, y1) + 2));
+    const len = M.hypot(x1 - x0, y1 - y0), ux = (x1 - x0) / len, uy = (y1 - y0) / len;
+    const xa = M.max(0, M.floor(M.min(x0, x1) - M.max(w0, w1))), xb = M.min(b.w - 1, M.ceil(M.max(x0, x1) + M.max(w0, w1)));
+    const ya = M.max(0, M.floor(M.min(y0, y1) - 2)), yb = M.min(b.h - 1, M.ceil(M.max(y0, y1) + 2));
     for (let y = ya; y <= yb; y++) for (let x = xa; x <= xb; x++) {
       const px0 = x + 0.5 - x0, py0 = y + 0.5 - y0;
       const t = (px0 * ux + py0 * uy) / len;
       if (t < 0 || t > 1) continue;
-      const dist = Math.abs(px0 * -uy + py0 * ux), hw = lerp(w0, w1, t);
+      const dist = M.abs(px0 * -uy + py0 * ux), hw = lerp(w0, w1, t);
       if (dist >= hw) continue;
-      const across = Math.pow(1 - dist / hw, o.edge || 1.2);
+      const across = M.pow(1 - dist / hw, o.edge || 1.2);
       const along = (o.fadeIn === undefined ? 0.1 : o.fadeIn) > 0 ? sstep(0, o.fadeIn === undefined ? 0.1 : o.fadeIn, t) : 1;
       const out = sstep(1, o.fadeOut === undefined ? 0.45 : o.fadeOut, t);
       px(b, x, y, c, a * across * along * out);
@@ -148,14 +149,14 @@
   BB.puff = function (b, cx, cy, w, h, seed, o) {
     o = o || {};
     const light = rgb(o.light || '#ffffff'), shade = rgb(o.shade || '#aebfe8'), A = o.a === undefined ? 0.95 : o.a;
-    const n = Math.max(4, Math.round(w / (h * 0.62)));
+    const n = M.max(4, M.round(w / (h * 0.62)));
     const lobes = [];
     for (let k = 0; k < n; k++) {
-      const t = (k + 0.5) / n, hh = Math.pow(Math.sin(Math.PI * t), 0.8);
+      const t = (k + 0.5) / n, hh = M.pow(M.sin(M.PI * t), 0.8);
       const r = h * (0.26 + 0.5 * hh) * (0.78 + 0.44 * K.hf(k, seed, 5));
       lobes.push([cx + (t - 0.5) * w * 0.8 + (K.hf(k, seed, 6) - 0.5) * 3, cy + h * 0.5 - r * 0.88, r * 1.1, r]);
     }
-    const x0 = Math.floor(cx - w / 2 - 3), x1 = Math.ceil(cx + w / 2 + 3), y0 = Math.floor(cy - h * 0.8), y1 = Math.ceil(cy + h * 0.6);
+    const x0 = M.floor(cx - w / 2 - 3), x1 = M.ceil(cx + w / 2 + 3), y0 = M.floor(cy - h * 0.8), y1 = M.ceil(cy + h * 0.6);
     const flat = cy + h * 0.5;                                  // the flat underside
     for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
       let best = 0, bi = -1;
@@ -177,14 +178,14 @@
     const fn = typeof c === 'function' ? c : null, col = fn ? null : rgb(c), n = pts.length;
     let y0 = 1e9, y1 = -1e9;
     for (const p of pts) { if (p[1] < y0) y0 = p[1]; if (p[1] > y1) y1 = p[1]; }
-    for (let y = Math.floor(y0); y <= Math.ceil(y1); y++) {
+    for (let y = M.floor(y0); y <= M.ceil(y1); y++) {
       const yy = y + 0.5, xs = [];
       for (let i = 0; i < n; i++) {
         const A = pts[i], B = pts[(i + 1) % n];
         if ((A[1] <= yy && B[1] > yy) || (B[1] <= yy && A[1] > yy)) xs.push(A[0] + ((yy - A[1]) / (B[1] - A[1])) * (B[0] - A[0]));
       }
       xs.sort((p, q) => p - q);
-      for (let k = 0; k + 1 < xs.length; k += 2) for (let x = Math.ceil(xs[k] - 0.5); x <= Math.floor(xs[k + 1] - 0.5); x++) px(b, x, y, fn ? fn(x, y) : col, a === undefined ? 1 : a);
+      for (let k = 0; k + 1 < xs.length; k += 2) for (let x = M.ceil(xs[k] - 0.5); x <= M.floor(xs[k + 1] - 0.5); x++) px(b, x, y, fn ? fn(x, y) : col, a === undefined ? 1 : a);
     }
   };
 
@@ -193,9 +194,9 @@
     const tops = new Array(b.w);
     const ym = o.yMax === undefined ? b.h - 1 : o.yMax;
     for (let x = 0; x < b.w; x++) {
-      const top = o.base - o.h(x), ti = Math.floor(top), fr = top - ti;
+      const top = o.base - o.h(x), ti = M.floor(top), fr = top - ti;
       tops[x] = top;
-      for (let y = Math.max(0, ti); y <= ym; y++) px(b, x, y, o.color(x, y, y - top), y === ti ? 1 - fr : 1);
+      for (let y = M.max(0, ti); y <= ym; y++) px(b, x, y, o.color(x, y, y - top), y === ti ? 1 - fr : 1);
     }
     return tops;
   };
@@ -207,10 +208,10 @@
 
   /** one sphere-shaded foliage lobe (lit from the top-left): hi/mid/lo are rgb arrays */
   BB.lobe = function (b, lx, ly, rx, ry, hi, mid, lo, a) {
-    for (let y = Math.floor(ly - ry - 1); y <= Math.ceil(ly + ry + 1); y++) for (let x = Math.floor(lx - rx - 1); x <= Math.ceil(lx + rx + 1); x++) {
+    for (let y = M.floor(ly - ry - 1); y <= M.ceil(ly + ry + 1); y++) for (let x = M.floor(lx - rx - 1); x <= M.ceil(lx + rx + 1); x++) {
       const nx = (x + 0.5 - lx) / (rx + 0.4), ny = (y + 0.5 - ly) / (ry + 0.4), q = nx * nx + ny * ny;
       if (q > 1) continue;
-      const nz = Math.sqrt(1 - q);
+      const nz = M.sqrt(1 - q);
       const Lt = clamp(0.32 + 0.48 * nz - 0.3 * nx - 0.4 * ny, 0, 1);
       px(b, x, y, Lt > 0.62 ? mix(mid, hi, sstep(0.62, 0.95, Lt)) : mix(lo, mid, sstep(0.18, 0.62, Lt)), a === undefined ? 1 : a);
     }
@@ -220,8 +221,8 @@
   BB.tree = function (b, x, baseY, h, o) {
     const hz = o.haze, f = (c) => (hz ? mix(rgb(c), rgb(hz[0]), hz[1]) : rgb(c));
     const hi = f(o.hi || '#d8f070'), mid = f(o.mid || '#8cc84c'), lo = f(o.lo || '#3c8a48'), trunk = f(o.trunk || '#7a5a48');
-    const tw = Math.max(1, Math.round(h / 8)), th = Math.max(2, Math.round(h * 0.4));
-    for (let yy = 0; yy < th; yy++) for (let xx = 0; xx < tw; xx++) px(b, Math.round(x - tw / 2) + xx, baseY - yy, xx === 0 ? mix(trunk, WARM, 0.2) : trunk, 1);
+    const tw = M.max(1, M.round(h / 8)), th = M.max(2, M.round(h * 0.4));
+    for (let yy = 0; yy < th; yy++) for (let xx = 0; xx < tw; xx++) px(b, M.round(x - tw / 2) + xx, baseY - yy, xx === 0 ? mix(trunk, WARM, 0.2) : trunk, 1);
     const cy = baseY - th - h * 0.33;
     const lobes = [
       [x - h * 0.2, cy + h * 0.14, h * 0.27, h * 0.24], [x + h * 0.22, cy + h * 0.15, h * 0.26, h * 0.23], [x + h * 0.02, cy + h * 0.2, h * 0.3, h * 0.22],
@@ -238,17 +239,17 @@
    */
   BB.plane = function (b, o) {
     const yh = o.yh, vx = o.vx === undefined ? W / 2 : o.vx, kx = o.kx, kz = o.kz;
-    for (let y = o.y0 === undefined ? Math.ceil(yh + 1) : o.y0; y < (o.y1 === undefined ? b.h : o.y1); y++) {
+    for (let y = o.y0 === undefined ? M.ceil(yh + 1) : o.y0; y < (o.y1 === undefined ? b.h : o.y1); y++) {
       const dy = y + 0.5 - yh, v = kz / dy, dv = kz / (dy * dy), du = kx / dy;
-      const iv = Math.floor(v), fv = v - iv;
+      const iv = M.floor(v), fv = v - iv;
       for (let x = o.x0 || 0; x < (o.x1 === undefined ? b.w : o.x1); x++) {
-        const u = ((x + 0.5 - vx) / dy) * kx, iu = Math.floor(u);
+        const u = ((x + 0.5 - vx) / dy) * kx, iu = M.floor(u);
         o.cell(b, x, y, iu, iv, u - iu, fv, du, dv);
       }
     }
   };
   /** AA joint strength (0..1) of a cell border of half-width `hw` px: distance (px) from the nearest edge */
-  BB.joint = (f, d, hw) => clamp(hw + 0.5 - Math.min(f, 1 - f) / d, 0, 1);
+  BB.joint = (f, d, hw) => clamp(hw + 0.5 - M.min(f, 1 - f) / d, 0, 1);
 
   // ------------------------------------------------------------------------------------------------ platforms
   /**
@@ -258,7 +259,7 @@
    * -> { bmp, x, y } (x,y = top-left in bg coordinates).
    */
   BB.platform = function (cx, cy, rx, ry, o) {
-    const mx = Math.ceil(rx * 0.2) + 6, my = Math.ceil(ry * 0.8) + 6;
+    const mx = M.ceil(rx * 0.2) + 6, my = M.ceil(ry * 0.8) + 6;
     const bw = 2 * (rx + mx) + 1, bh = 2 * (ry + my) + 1, ox = rx + mx, oy = ry + my;
     const b = new Bitmap(bw, bh);
     const rim = [rgb(o.rim[0]), rgb(o.rim[1])], edge = rgb(o.edge[0]), ctr = rgb(o.edge[1]);
@@ -270,7 +271,7 @@
     const cover = (dx, dy, a, bb) => {
       const q = (dx * dx) / (a * a) + (dy * dy) / (bb * bb);
       if (q < 1e-9) return 1;
-      const sq = Math.sqrt(q), g = Math.sqrt((dx / (a * a)) ** 2 + (dy / (bb * bb)) ** 2) / sq;
+      const sq = M.sqrt(q), g = M.sqrt((dx / (a * a)) ** 2 + (dy / (bb * bb)) ** 2) / sq;
       return clamp(0.5 - (sq - 1) / g, 0, 1);
     };
     for (let y = 0; y < bh; y++) for (let x = 0; x < bw; x++) {
@@ -278,27 +279,27 @@
       const c1 = cover(dx, dy, A, B);
       if (c1 <= 0) continue;
       // outward normal -> top-left light on the rim
-      const nx = dx / (A * A), ny = dy / (B * B), nl = Math.hypot(nx, ny) || 1;
+      const nx = dx / (A * A), ny = dy / (B * B), nl = M.hypot(nx, ny) || 1;
       const lit = clamp(0.5 - 0.5 * ((nx / nl) * 0.62 + (ny / nl) * 0.78), 0, 1);
       px(b, x, y, mix(rim[1], rim[0], sstep(0.05, 0.95, lit)), c1);
       const c2 = cover(dx, dy, Ai, Bi);
       if (c2 <= 0) continue;
-      const qd = Math.sqrt((dx * dx) / (Ai * Ai) + (dy * dy) / (Bi * Bi));
-      let c = mix(ctr, edge, Math.pow(clamp(qd, 0, 1), 2.1));
-      c = mix(c, rim[0], 0.2 * lit * Math.pow(clamp(qd, 0, 1), 2.4));   // top-left sheen near the edge
+      const qd = M.sqrt((dx * dx) / (Ai * Ai) + (dy * dy) / (Bi * Bi));
+      let c = mix(ctr, edge, M.pow(clamp(qd, 0, 1), 2.1));
+      c = mix(c, rim[0], 0.2 * lit * M.pow(clamp(qd, 0, 1), 2.4));   // top-left sheen near the edge
       c = mix(c, COOL, 0.16 * clamp(dy / Bi, 0, 1) * (1 - qd));            // slightly deeper toward the front
       px(b, x, y, c, c2);
     }
     if (o.foam) {
       // foam / ripple ring just outside the rim (water stages)
       for (let y = 0; y < bh; y++) for (let x = 0; x < bw; x++) {
-        const dx = x - ox, dy = y - oy, sq = Math.sqrt((dx * dx) / (A * A) + (dy * dy) / (B * B));
-        const a1 = o.foam * Math.max(0, 1 - Math.abs(sq - 1.09) / 0.085), a2 = o.foam * 0.45 * Math.max(0, 1 - Math.abs(sq - 1.24) / 0.07);
-        if (a1 > 0 || a2 > 0) px(b, x, y, [250, 254, 255], Math.max(a1, a2));
+        const dx = x - ox, dy = y - oy, sq = M.sqrt((dx * dx) / (A * A) + (dy * dy) / (B * B));
+        const a1 = o.foam * M.max(0, 1 - M.abs(sq - 1.09) / 0.085), a2 = o.foam * 0.45 * M.max(0, 1 - M.abs(sq - 1.24) / 0.07);
+        if (a1 > 0 || a2 > 0) px(b, x, y, [250, 254, 255], M.max(a1, a2));
       }
     }
     if (o.feet) BB.glow(b, o.feet.x - (cx - ox), o.feet.y - (cy - oy), o.feet.rx, o.feet.ry, o.feetCol || '#0e1c36', o.feetA === undefined ? 0.38 : o.feetA, 1.2);
-    return { bmp: b, x: Math.round(cx) - ox, y: Math.round(cy) - oy };
+    return { bmp: b, x: M.round(cx) - ox, y: M.round(cy) - oy };
   };
 
   // ------------------------------------------------------------------------------------------------ finishing
@@ -311,7 +312,7 @@
       const i = (y * b.w + x) << 2;
       if (!d[i + 3]) continue;
       const t = (BAYER[((y + oy) & 3) * 4 + ((x + ox) & 3)] + 0.5) * 0.5;
-      for (let k = 0; k < 3; k++) { const v5 = Math.min(31, (d[i + k] + t) >> 3); d[i + k] = (v5 << 3) | (v5 >> 2); }
+      for (let k = 0; k < 3; k++) { const v5 = M.min(31, (d[i + k] + t) >> 3); d[i + k] = (v5 << 3) | (v5 >> 2); }
     }
     return b;
   };
@@ -320,11 +321,12 @@
   BB.free = function (x, y, m) {
     m = m || 0;
     const inE = (cx, cy, rx, ry) => ((x - cx) / (rx + m)) ** 2 + ((y - cy) / (ry + m)) ** 2 <= 1;
-    if (inE(172, 56, 52, 10) || inE(58, 104, 75, 14)) return false;
-    if (x > 6 - m && x < 114 + m && y > 8 - m && y < 38 + m) return false;     // foe HP box
-    if (x > 124 - m && y > 66 - m && y < 106 + m) return false;                 // player HP box
-    if (x > 138 - m && x < 206 + m && y < 62 + m) return false;                 // foe sprite column
-    if (x > 24 - m && x < 92 + m && y > 44 - m) return false;                   // player sprite column
+    const E = BB.STAGE.enemy, P = BB.STAGE.player;
+    if (inE(E.cx, E.cy, E.rx, E.ry) || inE(P.cx, P.cy, P.rx, P.ry)) return false;
+    if (x < 118 + m && y > 10 - m && y < 38 + m) return false;                  // foe HP box
+    if (x > 132 - m && y > 100 - m) return false;                               // player HP box
+    if (x > 146 - m && x < 230 + m && y < 94 + m) return false;                 // foe sprite column (96x96 Kigu, 80x80 trainer)
+    if (x > 14 - m && x < 118 + m && y > 40 - m) return false;                  // player sprite column (128x128 back view, hero)
     return true;
   };
   /** deterministic sparse scatter: draw(x, y, r) for up to n hashed positions inside (x0,y0)-(x1,y1) where ok(x,y) holds */
@@ -341,14 +343,20 @@
 
   /**
    * Shared stage geometry (every background uses it so platforms and sprites read the same everywhere):
-   *   horizon y = 38; foe feet (172,60) on a 104x20 oval centred (172,56) — it ends at y 66, just above the player's HP box (the tallest
-   *   Kigu sprites lose one row of hood tip at the screen top);
-   *   player feet (58,106) on a 150x28 oval centred (58,104), cut off by the text box at y 112 (hero feet sit at (58,104)).
+   *   horizon y = 60 (sky/backdrop 0-60, ground 60-144);
+   *   foe feet (188,92) on a 121x23 oval centred (188,88): it ends at y 99, just above the player's HP box (y 100); a 96x96 front Kigu
+   *   (anchor (48,94)) or an 80x80 trainer (anchor (40,78)) stands on it;
+   *   player feet (66,148) on a 185x37 oval centred (66,142), cut off by the command box at y 144 like on the DS (the 128x128 back view,
+   *   anchor (64,126), and the hero stand partly behind the box).
    */
-  BB.HY = 38;
+  BB.HY = 60;
+  BB.STAGE = {
+    enemy: { x: 188, y: 92, cx: 188, cy: 88, rx: 60, ry: 11 },
+    player: { x: 66, y: 148, cx: 66, cy: 142, rx: 92, ry: 18 },
+  };
   BB.stage = (tint) => ({
-    enemy: { x: 172, y: 60, cx: 172, cy: 56, rx: 52, ry: 10, tint },
-    player: { x: 58, y: 106, cx: 58, cy: 104, rx: 75, ry: 14, tint: Object.assign({}, tint, { rimT: [3.4, 2.5] }) },
+    enemy: Object.assign({}, BB.STAGE.enemy, { tint: Object.assign({ rimT: [2.8, 2.0] }, tint) }),
+    player: Object.assign({}, BB.STAGE.player, { tint: Object.assign({}, tint, { rimT: [3.9, 2.9] }) }),
   });
 
   /**
@@ -375,7 +383,7 @@
           const j = ((y - 1) * W + x) << 2, k = a / 255;
           d[i] = d[j] + (d[i] - d[j]) * k; d[i + 1] = d[j + 1] + (d[i + 1] - d[j + 1]) * k; d[i + 2] = d[j + 2] + (d[i + 2] - d[j + 2]) * k; d[i + 3] = 255;
         }
-        const mk = (S) => BB.platform(S.cx === undefined ? S.x : S.cx, S.cy, S.rx, S.ry, Object.assign({ feet: { x: S.x, y: S.y - 1, rx: Math.max(13, S.rx * 0.2), ry: Math.max(3.5, S.ry * 0.28) } }, S.tint));
+        const mk = (S) => BB.platform(S.cx === undefined ? S.x : S.cx, S.cy, S.rx, S.ry, Object.assign({ feet: { x: S.x, y: S.y - 1, rx: M.max(15, S.rx * 0.23), ry: M.max(3.5, S.ry * 0.3) } }, S.tint));
         const ed = mk(E), pd = mk(P);
         const bg = stack(sky, [[ground, 0, 0], [ed.bmp, ed.x, ed.y], [pd.bmp, pd.x, pd.y]]);
         BB.finish(bg, 0, 0);
