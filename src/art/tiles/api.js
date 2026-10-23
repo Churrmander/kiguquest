@@ -59,9 +59,9 @@
   };
 
   /**
-   * Battle background: { id, bg: Bitmap 240x112, enemyBase:{x,y}, playerBase:{x,y}, layers?:{sky,ground}, enemyDisc?:{bmp,x,y},
+   * Battle background: { id, bg: Bitmap 256x144 (NP.W x NP.BOX_Y), enemyBase:{x,y}, playerBase:{x,y}, layers?:{sky,ground}, enemyDisc?:{bmp,x,y},
    * playerDisc?:{bmp,x,y} } (cached; do not mutate). `bg` is the finished composite (platforms included); the optional extras are the
-   * same picture as separate 240x112 layers / platform bitmaps (x,y = top-left in bg coordinates) for camera sway and intro pans.
+   * same picture as separate 256x144 layers / platform bitmaps (x,y = top-left in bg coordinates) for camera sway and intro pans.
    * Unknown ids fall back to 'grass'. Painters may return a bare Bitmap (old style) or { bg, layers, enemyDisc, playerDisc }.
    */
   tiles.battleBg = function (id) {
