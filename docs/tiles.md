@@ -54,3 +54,13 @@ so a named 1x1 stamp (e.g. a `sign` with `name:`) becomes walkable. Use `to`/`na
 * Terrain `paddle: true` (set on `water` only, not `sea`): with Disc: Paddle in the bag, the player can face it, press A and paddle over it. `water: true` alone still blocks.
 * The `bush` stamp is snippable (Disc: Snip): A on it removes it and its collision; the cut is stored as flag `snip:<map>:<x>,<y>`. Any other stamp is a plain obstacle.
 * Props with `gate: 'paddle' | 'snip'` (see `tests/maps.test.mjs`) must be unreachable on foot but reachable once those moves are allowed.
+
+## Battle backgrounds (`src/art/tiles/battle_bgs.js`)
+
+Native 256x144 backdrops (the 192-tall screen's bottom 48px is the command/message panel), 5th-generation layout: a layered scenic
+view with depth (dithered sky bands, clouds, far hills or buildings, a treeline/skyline at the horizon, a ground plane whose
+perspective bands widen toward the camera) and two elliptical platforms baked in: the foe's upper-right (centre (188, 90), 58x13), the
+player's lower-left (centre (66, 140), 86x19, its front edge hidden by the panel). Bases (sprite feet anchors): `enemyBase` (188, 92),
+`playerBase` (66, 148). Ids: `grass`, `forest`, `indoor` (salon floor, rugs as platforms), `cave`, `water` (lily-pad rafts), `city`,
+`gym`, `night`. Unknown ids fall back to `grass`. Add one with `reg(id, () => bitmap)` from the layer helpers (`bands`, `ridge`,
+`treeline`, `ground`, `platform`, `clouds`). Preview: `node tools/preview-tiles.mjs bg <outDir>`.

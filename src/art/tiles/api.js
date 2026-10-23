@@ -58,7 +58,7 @@
     return b;
   };
 
-  /** Battle background: { bg: Bitmap 240x112, enemyBase:{x,y}, playerBase:{x,y} } (cached; do not mutate bg). */
+  /** Battle background: { bg: Bitmap 256x144, enemyBase:{x,y}, playerBase:{x,y} } (cached; do not mutate bg). */
   tiles.battleBg = function (id) {
     let r = bgCache.get(id);
     if (r) return r;

@@ -156,4 +156,14 @@ for (const [mid, m] of Object.entries(NP.maps)) {
 }
 ok(usedStamps.size >= 40, 'maps should use the full stamp set');
 
+// battle backgrounds: native 256x144 (no resampling), every BIBLE id, bases on the platforms (player's below the panel top)
+for (const id of 'grass forest indoor cave water city gym night'.split(' ')) {
+  const r = NP.art.tiles.battleBg(id);
+  ok(r.id === id, 'battle bg missing: ' + id);
+  ok(r.bg.w === NP.W && r.bg.h === NP.BOX_Y && r.bg.w === 256 && r.bg.h === 144, id + ' battle bg is ' + r.bg.w + 'x' + r.bg.h);
+  ok(r.enemyBase.x > 128 && r.enemyBase.y < 110 && r.playerBase.x < 128 && r.playerBase.y >= 140, id + ' bases');
+  ok(r.bg.u32.every((c) => c >>> 24 === 255), id + ' battle bg has holes');
+}
+ok(NP.assets.battleBg('nonexistent').bg.w === 256, 'unknown battle bg falls back');
+
 console.log(`tiles-art: ${Object.keys(NP.stamps).length} stamps (${drawn} variant/frame draws), ${Object.keys(NP.terrain).length} terrains, ${usedStamps.size} stamp ids used by ${mapIds.length} maps, ${checks} checks OK`);

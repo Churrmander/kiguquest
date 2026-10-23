@@ -158,7 +158,7 @@ Indoor: `table_s`(2×1), `table_l`(3×2), `chair` (1×1; variants down/up/left/r
 `mannequin` (1×2), `sewing_machine`(1×1), `fridge`(1×2), `stove`(1×1), `sink`(1×1), `display_case`(2×1), `pillar`(1×2), `stairs_wall` (P2), `ladder`,
 `gym_statue` (P2).
 
-**Battle backgrounds (P1: grass, forest, indoor, cave; P2: water, city, gym, night).** 240×112, ground discs included;
+**Battle backgrounds (P1: grass, forest, indoor, cave; P2: water, city, gym, night).** 256×144, elliptical platforms included;
 `enemyBase`/`playerBase` anchors per §2 of DESIGN.
 
 ## 6. Item icon ids (24×24; P1 = marked *)

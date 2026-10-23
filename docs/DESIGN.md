@@ -65,14 +65,14 @@ Put checks in `tests/<area>.test.mjs` (plain `node:assert`, exit non-zero on fai
 
 | thing | value |
 |---|---|
-| Screen | 240×160 (`NP.W`, `NP.H`) |
+| Screen | 256×192 (`NP.W`, `NP.H`); command/message box top `NP.BOX_Y` = 144 |
 | Tile | 16×16 (`NP.TILE`) |
 | Overworld character | 16×24 sprite, feet in the bottom 16×16 tile, head overlaps the tile above |
-| Battle Kigu sprite | 64×64, anchored bottom-centre ≈ (32, 62) |
+| Battle Kigu sprite | front 96×96, anchor bottom-centre (48, 94); back 128×128 (drawn natively 4/3 larger), anchor (64, 126); idle loop of `idleFrames(id)` frames (6) |
 | Party icon | 32×32, 2 frames |
 | Item icon | 24×24 |
-| Battle background | 240×112 (the text/menu box covers the bottom 48px) |
-| Screen layout in battle | foe Kigu anchor ≈ (172, 58); player Kigu anchor ≈ (58, 104) |
+| Battle background | 256×144, native (the command/message panel covers the bottom 48px of the 192 screen) |
+| Screen layout in battle | foe Kigu anchor (188, 92) on the upper-right platform; player Kigu anchor (66, 148) on the lower-left platform — below the panel top, so her feet stand behind the command area as on the DS. Foe data box top-left, player data box lower-right above the panel; trainers are placed from their bitmap's own w/h with a bottom-centre anchor (w/2, h-2) |
 
 ---
 
@@ -80,7 +80,7 @@ Put checks in `tests/<area>.test.mjs` (plain `node:assert`, exit non-zero on fai
 
 Target: the look of a DS/DSi-era (5th-generation handheld) RPG — NOT Game Boy / GBA. Rich saturated colour, soft multi-tone shading, coloured selective outlines, characters drawn from a raised camera (the crown of the head/hat is visible, bodies slightly foreshortened). Still crisp, readable pixels at 240×160.
 
-* **Palette discipline.** 15-bit colour (call `bmp.quantize15()` on final output). Humans: ≤ 26 colours (map) / ≤ 32 (portraits), outlines included (enforced in a test); Kigu stay ≤ 16 until their sprites are updated. Tiles: ≤ 16 colours per tile is ideal, never a smooth gradient.
+* **Palette discipline.** 15-bit colour (call `bmp.quantize15()` on final output). Humans: ≤ 26 colours (map) / ≤ 32 (portraits), outlines included (enforced in a test); Kigu battle sprites ≤ 20 (all idle frames share frame 0's palette), icons ≤ 12. Tiles: ≤ 16 colours per tile is ideal, never a smooth gradient.
 * **Outlines.** 1px dark outline in a hue-shifted very dark colour of the material (not pure black) around characters, buildings
   and objects; terrain has soft or no outline. Use `Bitmap.outline()`.
 * **Shading.** Flat cel shading, 2–3 tones per material (`Color.ramp(base)` gives a hue-shifted ramp: shadows cooler, highlights
@@ -95,15 +95,21 @@ Target: the look of a DS/DSi-era (5th-generation handheld) RPG — NOT Game Boy 
 
 ### 4A. Kigu battle sprites — `NP.art.kigu` (owner: Kigu artist; dir `src/art/kigu/`, manifest `src/art/kigu/files.json`)
 ```js
-NP.art.kigu.front(id, opts)  -> Bitmap 64×64   // facing the viewer, foe side. Transparent background.
-NP.art.kigu.back(id, opts)   -> Bitmap 64×64   // seen from behind, player side. Same scale/anchor as front.
+NP.art.kigu.front(id, opts)  -> Bitmap 96×96    // facing the viewer, foe side. Anchor bottom-centre (48, 94). Transparent.
+NP.art.kigu.back(id, opts)   -> Bitmap 128×128  // seen from behind, player side, drawn natively 4/3 larger (closer to the
+                                                //   camera, 5th-gen style; never scale at draw time). Anchor (64, 126).
+NP.art.kigu.idleFrames(id)   -> n (6)           // idle loop length; frame 0 = the rest pose; frames wrap
 NP.art.kigu.icon(id, frame)  -> Bitmap 32×32   // party/box icon, frame 0|1 (1px bounce). Simplified, ≤ 12 colours.
-NP.art.kigu.has(id) / .ids() / .looks   // looks[id] = the look spec that drives the generator
-// opts: { alt: true }  -> alternate rare colourway ("limited edition" costume). Results are cached: callers clone() before mutating.
+NP.art.kigu.has(id) / .ids() / .looks / .CELL   // looks[id] = the look spec that drives the generator
+// opts: { alt: true, frame: n, pose: 'sleep' (front only) }. alt -> alternate rare colourway ("limited edition" costume).
+// Results are cached and rendered lazily per (id, view, alt, frame): callers clone() before mutating.
 ```
 Kigu are **girls in living costumes**: chibi proportions (head ≈ 45–50% of height), big expressive eyes with highlights, tiny
 mouth, blush, costume hood/ears/tail/accessories carrying the species' theme. Evolution = the costume gets more elaborate and
-the girl a touch taller/older (still chibi). Size by stage: stage 1 ≈ 40–48px tall, stage 2 ≈ 48–56, stage 3 ≈ 54–62.
+the girl a touch taller/older (still chibi). Size by stage (front, 96 cell): stage 1 ≈ 56–68px tall, stage 2 ≈ 68–80, stage 3 ≈
+78–92 (legendaries size like stage 3). 3–4 tone cel shading lit from the top-left, dark hue-shifted outlines, ≤ 20 colours.
+Idle animation (BW-style): head bob with torso squash/stretch, ear / tail / hair / hem / wing sway, flame flicker — every frame
+is re-rendered from the spec with phase offsets (no resampling), and replays frame 0's colour merges so the palette is stable.
 Must be generated **procedurally in code** from compact look specs (parametric parts + palettes + auto outline/shade), *not*
 thousands of hand-placed pixels — the roster will grow, so adding a species should be a ~10-line spec.
 
@@ -149,7 +155,7 @@ NP.stamps[id] = {
 NP.art.tiles.terrain(id, mask, frame, variant) -> Bitmap 16×16   // cached wrapper around NP.terrain[id].draw
 NP.art.tiles.stamp(id, variant, frame)         -> Bitmap          // cached wrapper
 NP.art.tiles.overlay(id, frame)                -> Bitmap | null
-NP.art.tiles.battleBg(id) -> { bg: Bitmap 240×112, enemyBase:{x,y}, playerBase:{x,y} }   // ground discs are part of bg
+NP.art.tiles.battleBg(id) -> { bg: Bitmap 256×144, enemyBase:{x,y}, playerBase:{x,y} }   // platforms are part of bg; bases = feet anchors
 ```
 The full list of required terrains/stamps/backgrounds (with priorities P1/P2/P3) is BIBLE §5. Anything you add beyond the list
 must be documented in `docs/tiles.md` (id, size, solid rows, variants) so level designers can use it.
