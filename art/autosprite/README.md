@@ -40,6 +40,7 @@ All images are 1024x1024 on white, drawn on an 8px grid (128x128 sprites scaled 
 * NPC nits: Zip's overworld coat is purple/gold (battle is black/gold); the cook's overworld shows hair under his hat (battle is bald); elders' canes barely show; net kid's net is faint in overworld. Bryn is drawn as a woman per docs/STORY.md, while looks.js says male.
 * Overworld sprites are single standing frames per facing; walk-cycle frames are not made yet. The rival uses the other hero's sprites.
 * Drakonia, Voltessa and Webbi poses were rerolled to keep their effects in frame; `pose.png` is the fixed version.
+* **Battle-start throw (owner, 2026-10-24):** the thrown thread spool must land where the player's Kigu appears. While Draco or Dahlia slides out of frame, the spool should arc down onto the player platform (`bgInfo.playerBase`), and the Kigu comes out of it there. Today the spool flies up and off the top-right edge (`heroThrowBW` in `src/game/battlescene.js`, copied from `throw/v2/anim.py`).
 
 ## Animation (added 2026-10-24)
 
