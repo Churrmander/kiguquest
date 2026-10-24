@@ -26,5 +26,7 @@ for j in range(H):
         if tuple(a[y, x]) != new and not (a[y, x, 3] == 0 and new[3] == 0): changed += 1
         a[y, x] = new
 a[29, 81] = 0                                  # owner: delete the stray outline bump on the finger tip
+a[30, 76] = 0                                  # owner: delete the stray pixel above the thumb
+a[37, 82] = (7, 6, 6, 255)                     # owner: close the notch in the outline under the fingers
 Image.fromarray(a.astype(np.uint8)).save(f'{d}/dahlia-torso-t3.png')
 print('ok, pixels changed vs original:', changed)
