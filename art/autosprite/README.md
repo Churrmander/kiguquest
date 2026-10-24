@@ -6,8 +6,12 @@ Approved concept sprites made with AutoSprite (October 2026). They are **not wir
 
 | Folder | Contents |
 |---|---|
-| `kigu/` | Every Kigu in `docs/BIBLE.md`. `<id>-base.png` is the standing sprite, `<id>-pose.png` the dynamic battle pose, `<id>-back.png` the view from behind for player-owned Kigu (26 so far). |
+| `kigu/` | Every Kigu in `docs/BIBLE.md`. `<id>-base.png` is the standing sprite, `<id>-pose.png` the dynamic battle pose, `<id>-back.png` the view from behind for player-owned Kigu (all starters, Meadow Lane, Thimble and Gingham Woods: 29). |
 | `heroes/` | Draco and Dahlia: `-base` standing, `-ready` front battle stance, `-throw` the battle-start spool throw from behind. The throw poses are pinned for animation. |
+| `npc/battle/` | Battle sprites for all 31 trainers (route trainers, Pressers, Pleat, Madame Damask, the 8 Masters, the trainer classes). Pro mode, pixelized on a 6px grid with 31 colours. |
+| `npc/overworld/` | Overworld sprites, `<id>-down/up/left.png` (right = mirror of left) for Draco, Dahlia, every trainer and every non-trainer NPC: 50 characters, 128px art on an 8px grid. |
+| `npc/overworld32/` | The same three facings shrunk to the game's 32x32 cell (down, up, left side by side). |
+| `npc/manifest.tsv`, `npc/process.py` | AutoSprite ids per NPC, and the script that pixelizes battle art and size-matches/snaps the overworld facings. |
 | `sheets/` | The contact sheets that were reviewed. |
 | `manifest.tsv` | Kigu/hero id to AutoSprite character id, needed to make more poses or animations of the same character. |
 | `snap.py` | The clean-up script (see below). |
@@ -27,9 +31,10 @@ All images are 1024x1024 on white, drawn on an 8px grid (128x128 sprites scaled 
 
 ## Open queue
 
-* Back views still missing: Ribbelle, Molli, Molluna. The credits ran out; these cost 3 credits each.
 * Ottelia's back view was hand-fixed: her striped tail was repainted teal and her backwards foot cut to a heel. The heel is blunt, so a reroll is optional.
 * Mittsy's back view was hand-fixed: the paw pads were painted out.
 * Possible rerolls: Molli (reads as a bear), Sheetie (pose barely changed), Warpa (pupil-less eyes; maybe intended).
 * Back views for the Phase 2 families and the legendaries are not made yet.
+* NPC nits: Zip's overworld coat is purple/gold (battle is black/gold); the cook's overworld shows hair under his hat (battle is bald); elders' canes barely show; net kid's net is faint in overworld. Bryn is drawn as a woman per docs/STORY.md, while looks.js says male.
+* Overworld sprites are single standing frames per facing; walk-cycle frames are not made yet. The rival uses the other hero's sprites.
 * Drakonia, Voltessa and Webbi poses were rerolled to keep their effects in frame; `pose.png` is the fixed version.
