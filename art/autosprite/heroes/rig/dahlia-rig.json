@@ -66,25 +66,67 @@
  ],
  "frames": [
   {
+   "torso": "torso2",
    "right_shoulder_deg": 0,
    "left_shoulder_deg": 0,
    "spool": "in hand"
   },
   {
-   "right_shoulder_deg": -30,
-   "left_shoulder_deg": 10,
+   "torso": "torso1",
+   "right_shoulder_deg": -40,
+   "left_shoulder_deg": 60,
    "spool": "in hand"
   },
   {
+   "torso": "torso2",
    "right_shoulder_deg": 175,
-   "left_shoulder_deg": 20,
+   "left_shoulder_deg": 25,
    "spool": "in hand"
   },
   {
+   "torso": "torso3",
    "right_shoulder_deg": 125,
-   "left_shoulder_deg": -15,
+   "left_shoulder_deg": -40,
    "spool": "flying"
   }
  ],
- "note": "Pivots are in base coordinates; the raised-arm frames need ~30 art pixels of headroom above the head."
+ "note": "Each torso frame is head+body+legs with both arms removed; attach rupper/rfore at the frame right_shoulder and larm at left_shoulder (arm pieces were cut from the upright pose, pivots in pieces[...] are upright-pose coords). Raised-arm frames need ~30 art pixels of headroom.",
+ "torso_frames": {
+  "torso1": {
+   "pose": "windup",
+   "feet_bottom_y": 152,
+   "right_shoulder": [
+    90,
+    55
+   ],
+   "left_shoulder": [
+    72,
+    57
+   ]
+  },
+  "torso2": {
+   "pose": "upright",
+   "feet_bottom_y": 160,
+   "right_shoulder": [
+    98,
+    49
+   ],
+   "left_shoulder": [
+    72,
+    49
+   ]
+  },
+  "torso3": {
+   "pose": "follow",
+   "feet_bottom_y": 158,
+   "right_shoulder": [
+    82,
+    55
+   ],
+   "left_shoulder": [
+    70,
+    58
+   ]
+  }
+ }
 }
