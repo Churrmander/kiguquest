@@ -1,55 +1,32 @@
-# Replace the open throwing hand in frame 3 (follow-through) with a hand-drawn BW-style open hand
-# pointing up-right along the arm: thumb on the upper-left, fingers together, simple two-tone shading.
+# Frame 3 hands, back to the generated art: Draco keeps his original hand; Dahlia's original hand is mirrored
+# across the line of her arm so the thumb sits on the correct side.
 import math, sys
 from PIL import Image
 import numpy as np
 d = sys.argv[1]
-PAD = 4
-HANDS = {   # per hero: open hand pointing up-right, separate thumb on the upper-left, finger splits, narrow wrist
-  'draco': (['......OOOO.',
-             '.OO..OLLLLO',
-             'OLLO.OLLMLO',
-             'OLLLOLLLLMO',
-             '.OLLLLLLLO.',
-             '..OLLLLLMO.',
-             '..OLLLLMO..',
-             '.OLLLMMO...',
-             'OLLMMOO....',
-             '.OOO.......'], (1, 8)),
-  'dahlia': (['.OO..OOO.',
-              'OLLO.OLLO',
-              'OLLO.OLMO',
-              'OLLLOLLLO',
-              '.OLLLLLO.',
-              'OLLLLLMO.',
-              'OLLLMMO..',
-              '.OOOO....'], (1, 6)),
-}
-H = {  # palm centre, arm direction (deg), skin light/mid, outline
-  'draco':  dict(c=(95.5, 9.5), ang=-32, L=(237, 201, 158), M=(187, 140, 101), O=(5, 4, 4)),
-  'dahlia': dict(c=(81.5, 35.0), ang=-34, L=(251, 202, 158), M=(229, 168, 91), O=(7, 6, 6)),
-}
-for h, g in H.items():
-    a = np.array(Image.open(f'{d}/{h}-torso-t3-gen.png').convert('RGBA'))
-    a = np.pad(a, ((PAD, 0), (0, PAD), (0, 0)))
-    cx, cy = g['c']; cy += PAD; th = math.radians(g['ang']); ux, uy = math.cos(th), math.sin(th)
-    for y in range(a.shape[0]):                       # clear the old hand past the wrist
-        for x in range(a.shape[1]):
-            if (x - cx) * ux + (y - cy) * uy > -2.2 and math.hypot(x - cx, y - cy) < 9: a[y, x] = 0
-    wx, wy = round(cx - 2.6 * ux), round(cy - 2.6 * uy)   # end of the remaining forearm
-    HAND, WRIST = HANDS[h]
-    ox, oy = wx - WRIST[0], wy - WRIST[1]
-    for r, row in enumerate(HAND):
-        for c, ch in enumerate(row):
-            if ch == '.': continue
-            y, x = oy + r, ox + c
-            if ch == 'O' and a[y, x, 3] and tuple(a[y, x, :3]) != g['O']: continue   # don't outline over the arm
-            a[y, x] = (*{'O': g['O'], 'L': g['L'], 'M': g['M']}[ch], 255)
-    # close the silhouette around the hand: any transparent pixel touching hand skin becomes outline
-    hb = np.zeros(a.shape[:2], bool); hb[max(0, oy - 1):oy + len(HAND) + 2, max(0, ox - 1):ox + len(HAND[0]) + 2] = True
-    skin = hb & (a[..., 3] > 0) & ~np.all(a[..., :3] == g['O'], -1)
-    pad = np.pad(skin, 1); near = pad[:-2, 1:-1] | pad[2:, 1:-1] | pad[1:-1, :-2] | pad[1:-1, 2:]
-    a[near & (a[..., 3] == 0)] = (*g['O'], 255)
-    ys, xs = np.where(a[..., 3] > 0); a = a[ys.min():, :xs.max() + 2]
-    Image.fromarray(a).save(f'{d}/{h}-torso-t3.png')
+Image.open(f'{d}/draco-torso-t3-gen.png').save(f'{d}/draco-torso-t3.png')
+a = np.array(Image.open(f'{d}/dahlia-torso-t3-gen.png').convert('RGBA'))
+PAD = 4; a = np.pad(a, ((PAD, PAD), (0, PAD), (0, 0)))
+cx, cy = 81.5, 35.0 + PAD; th = math.radians(-34); ux, uy = math.cos(th), math.sin(th)
+def in_hand(x, y): return (x + .5 - cx) * ux + (y + .5 - cy) * uy > -2.2 and math.hypot(x + .5 - cx, y + .5 - cy) < 9
+src = a.copy(); out = a.copy()
+for y in range(a.shape[0]):
+    for x in range(a.shape[1]):
+        if in_hand(x, y): out[y, x] = 0
+for y in range(a.shape[0]):
+    for x in range(a.shape[1]):
+        dx, dy = x + .5 - cx, y + .5 - cy; al = dx * ux + dy * uy
+        rx, ry = cx + 2 * al * ux - dx, cy + 2 * al * uy - dy          # reflection across the arm axis
+        sx, sy = int(math.floor(rx)), int(math.floor(ry))
+        if 0 <= sx < a.shape[1] and 0 <= sy < a.shape[0] and in_hand(sx, sy) and src[sy, sx, 3]:
+            if out[y, x, 3] == 0 or in_hand(x, y): out[y, x] = src[sy, sx]
+# close the silhouette: transparent pixels touching the flipped hand become outline
+zone = np.zeros(out.shape[:2], bool)
+for y in range(out.shape[0]):
+    for x in range(out.shape[1]): zone[y, x] = math.hypot(x + .5 - cx, y + .5 - cy) < 10.5
+skin = zone & (out[..., 3] > 0) & (out[..., :3].sum(-1) > 60)
+pad = np.pad(skin, 1); near = pad[:-2, 1:-1] | pad[2:, 1:-1] | pad[1:-1, :-2] | pad[1:-1, 2:]
+out[near & (out[..., 3] == 0)] = (7, 6, 6, 255)
+ys, xs = np.where(out[..., 3] > 0); out = out[ys.min():ys.max() + 1, :xs.max() + 1]
+Image.fromarray(out).save(f'{d}/dahlia-torso-t3.png')
 print('ok')
