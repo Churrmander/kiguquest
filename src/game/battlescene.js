@@ -106,7 +106,7 @@
       this.disp = [null, null];
       this.fx = null;
       this.bgInfo = null;
-      this.hero = null;       // hero back sprite state {x, k (throw frame), mix, dx, dy}
+      this.hero = null;       // hero back sprite state {x, k (throw frame), mix, dx, dy, slide}
       this.thread = null;     // send-out spool thread {col, pts}
       this.heroSpool = null;  // send-out spool position
       this.foeTrainer = null; // trainer front sprite state {x}
@@ -323,12 +323,19 @@
     }
 
     /** The send-out with the hero's approved throw frames (art/autosprite/heroes/throw/v2, timed like its anim.py preview): a
-     *  settle, a dithered blend into the wind-up, a smear into the follow-through, then the spool is tossed high with its thread
-     *  trailing and, while she slides off to the left (BW style), it falls and lands on the player's platform, right where her
-     *  Kigu will appear. Returns the landing point; the caller brings the Kigu out of the spool there. */
+     *  settle, a dithered blend into the wind-up, a smear into the follow-through. She already slides left as she winds up (BW
+     *  style), so at the release her hand is just behind the Kigu's spot: the spool is tossed high, forward, with its thread
+     *  trailing, and comes down on the player's platform right where her Kigu will appear while she slides out of frame.
+     *  Returns the landing point; the caller brings the Kigu out of the spool there. */
     *heroThrowBW(fr) {
-      const h = this.hero, look = NP.State.lookId(), step = (k, dx, dy, n) => { h.k = k; h.mix = null; h.dx = dx; h.dy = dy; return this.wait(n); };
-      const blend = (a, b, d1, d2, n) => { h.mix = { a, b }; h.dx = (d1[0] + d2[0]) / 2; h.dy = (d1[1] + d2[1]) / 2; return this.wait(n); };
+      const h = this.hero, look = NP.State.lookId(), f = fr.follow;
+      const land = { x: this.bgInfo.playerBase.x, y: NP.BOX_Y - 7 };
+      // how far she has slid by the release: her open hand 16px behind the landing spot (never to the right of where she stood)
+      const R = Math.min(0, land.x - 16 - (h.x - f.cap + 3 + f.hand.x)), T = 31;
+      let tick = 0;
+      const hold = function* (n) { for (let i = 0; i < n; i++) { tick++; const k = Math.min(1, tick / T); h.slide = R * k * k; yield; } };
+      const step = (k, dx, dy, n) => { h.k = k; h.mix = null; h.dx = dx; h.dy = dy; return hold(n); };
+      const blend = (a, b, d1, d2, n) => { h.mix = { a, b }; h.dx = (d1[0] + d2[0]) / 2; h.dy = (d1[1] + d2[1]) / 2; return hold(n); };
       yield* step('idle', 0, 1, 6);                          // small settle before the wind-up
       yield* blend('idle', 'wind', [0, 1], [-2, 1], 4);
       yield* step('wind', -2, 1, 5);
@@ -336,17 +343,16 @@
       NP.snd.sfx('throw');
       yield* blend('wind', 'follow', [0, 0], [3, 0], 3);     // one smear frame into the release
       yield* step('follow', 3, 0, 4);
-      // a high toss from the open hand that comes down on the Kigu's spot (her feet line, just above the command panel)
-      const f = fr.follow, hand = () => ({ x: h.x - f.cap + h.dx + f.hand.x, y: NP.BOX_Y - f.bmp.h + h.dy + f.hand.y });
-      const p0 = hand(), land = { x: this.bgInfo.playerBase.x, y: NP.BOX_Y - 7 }, top = 18, N = 40;
-      const path = [];
+      // a high toss from the open hand, forward onto the Kigu's spot (her feet line, just above the command panel)
+      const hand = () => ({ x: h.x + h.slide - f.cap + h.dx + f.hand.x, y: NP.BOX_Y - f.bmp.h + h.dy + f.hand.y });
+      const p0 = hand(), top = 18, N = 40, path = [];
       this.thread = { col: SPOOL[look] ? SPOOL[look].T : '#c03030', pts: [p0] };
       for (let i = 1; i <= N; i++) {
         const t = i / N, x = p0.x + (land.x - p0.x) * t, y = p0.y + (land.y - p0.y) * t - 4 * (Math.min(p0.y, land.y) - top) * t * (1 - t);
         path.push({ x, y });
-        if (i > 10) h.dx = 3 - (84 * Math.min(1, (i - 10) / 18)); // she slides off to the left while it is in the air
-        // the thread stays in her hand until she starts to slide, then trails behind the spool
-        this.thread.pts = i <= 10 ? [hand()].concat(path) : path.slice(-12);
+        if (i > 4) h.slide = R - (170 + R) * Math.min(1, (i - 4) / 20); // she slides on, out of frame, while it is in the air
+        // the thread leaves her hand with the spool, then trails behind it
+        this.thread.pts = i <= 6 ? [hand()].concat(path) : path.slice(-12);
         this.heroSpool = { x, y };
         yield;
       }
@@ -364,7 +370,7 @@
         fb.blit(t, Math.round(h.x - (t.w >> 1)), this.bgInfo.playerBase.y - (t.h - 2));
         return;
       }
-      const at = (k) => ({ b: fr[k].bmp, x: Math.round(h.x - fr[k].cap + (h.dx || 0)), y: Math.round(NP.BOX_Y - fr[k].bmp.h + (h.dy || 0)) });
+      const at = (k) => ({ b: fr[k].bmp, x: Math.round(h.x + (h.slide || 0) - fr[k].cap + (h.dx || 0)), y: Math.round(NP.BOX_Y - fr[k].bmp.h + (h.dy || 0)) });
       if (h.mix) { // two poses mixed on a checkerboard: the pixel-art smear between key frames
         const a = at(h.mix.a), b = at(h.mix.b);
         const x0 = Math.max(0, Math.min(a.x, b.x)), x1 = Math.min(fb.w, Math.max(a.x + a.b.w, b.x + b.b.w));
