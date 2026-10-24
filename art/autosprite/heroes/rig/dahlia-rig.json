@@ -1,0 +1,90 @@
+{
+ "scale_note": "art pixels; draw at 6x for the 1024 battle frame",
+ "pieces": {
+  "head": {
+   "x": 61,
+   "y": 9,
+   "w": 42,
+   "h": 37
+  },
+  "rupper": {
+   "x": 96,
+   "y": 46,
+   "w": 8,
+   "h": 24
+  },
+  "rfore": {
+   "x": 96,
+   "y": 70,
+   "w": 13,
+   "h": 29
+  },
+  "larm": {
+   "x": 65,
+   "y": 48,
+   "w": 6,
+   "h": 28
+  },
+  "body": {
+   "x": 62,
+   "y": 46,
+   "w": 54,
+   "h": 115
+  },
+  "spool": {
+   "x": 0,
+   "y": 0,
+   "w": 14,
+   "h": 14
+  }
+ },
+ "pivots": {
+  "neck": [
+   85,
+   46
+  ],
+  "right_shoulder": [
+   98,
+   49
+  ],
+  "right_elbow": [
+   101,
+   70
+  ],
+  "left_shoulder": [
+   72,
+   49
+  ]
+ },
+ "draw_order": [
+  "larm",
+  "body",
+  "head",
+  "rupper",
+  "rfore",
+  "spool"
+ ],
+ "frames": [
+  {
+   "right_shoulder_deg": 0,
+   "left_shoulder_deg": 0,
+   "spool": "in hand"
+  },
+  {
+   "right_shoulder_deg": -30,
+   "left_shoulder_deg": 10,
+   "spool": "in hand"
+  },
+  {
+   "right_shoulder_deg": 175,
+   "left_shoulder_deg": 20,
+   "spool": "in hand"
+  },
+  {
+   "right_shoulder_deg": 125,
+   "left_shoulder_deg": -15,
+   "spool": "flying"
+  }
+ ],
+ "note": "Pivots are in base coordinates; the raised-arm frames need ~30 art pixels of headroom above the head."
+}
