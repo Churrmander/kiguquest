@@ -43,13 +43,13 @@ for k in ('t1', 't3'):
     s = float(os.environ.get(k.upper() + 'SCALE', ref_w / head_w(raw[k])[0])); im = Image.fromarray(raw[k].astype(np.uint8))
     im = im.resize((round(im.width * s), round(im.height * s)), Image.LANCZOS)
     can = Image.new('RGB', (max(1024, im.width), max(1024, im.height)), 'white'); can.paste(im, (0, 0)); raw[k] = np.array(can).astype(float)
-_, sy0, _, sy1 = bbox(raw['t2']); stand = sy1 - sy0
+_, _, _, sy1 = bbox(raw['t2']); sy0 = head_w(raw['t2'])[1]; stand = sy1 - sy0   # cap top to feet (a raised hand doesn't count)
 cut = {}
-_, t2y0, _, t2y1 = bbox(raw['t2']); feet_cut = t2y1 - (t2y0 + int(stand * 0.58))
+feet_cut = sy1 - (sy0 + int(stand * 0.58))
 for k, a in raw.items():
-    x0, y0, x1, y1 = bbox(a)
+    x0, y0, x1, y1 = bbox(a); y0c = head_w(a)[1]      # window measured from the cap top
     # upright frames: fixed window from the cap; the bent-over t3: cut the same leg length off the feet as t2
-    line = (y0 + int(stand * float(os.environ.get('T3FRAC', 0.58)))) if (k == 't3' and os.environ.get('T3WINDOW') == 'cap') else (y0 + int(stand * 0.58) if k != 't3' else y1 - feet_cut)
+    line = (y0c + int(stand * float(os.environ.get('T3FRAC', 0.58)))) if (k == 't3' and os.environ.get('T3WINDOW') == 'cap') else (y0c + int(stand * 0.58) if k != 't3' else y1 - feet_cut)
     cut[k] = a[y0:line, x0:x1]
 blocks = {}
 for k, a in cut.items():
