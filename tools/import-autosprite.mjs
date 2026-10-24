@@ -44,9 +44,10 @@ function readPNG(file) {
   return { w, h, px, bpp };
 }
 
-/** Sample the centre of every grid cell, drop the white background (flood fill from the border), crop to the bounding box.
+/** Sample the centre of every grid cell, drop the white background (flood fill from the border, plus from `gaps`: seed points in
+ *  source pixels inside enclosed background, such as the space between the legs), crop to the bounding box.
  *  -> { w, h, cx (frame centre x inside the crop), pal: ['rrggbb', ...], idx: Uint8Array (0 = transparent, else pal index + 1) } */
-function convert(file, grid = GRID) {
+function convert(file, grid = GRID, gaps = []) {
   const im = readPNG(file);
   if (im.w !== im.h || im.w < 1000) throw new Error(file + ': expected a square ~1024px sheet');
   const N = Math.floor(im.w / grid), rgb = new Array(N * N);
@@ -57,6 +58,7 @@ function convert(file, grid = GRID) {
   const bg = new Uint8Array(N * N), stack = [];
   const white = (i) => rgb[i].every((v) => v >= WHITE);
   for (let i = 0; i < N; i++) stack.push(i, (N - 1) * N + i, i * N, i * N + N - 1);
+  for (const [x, y] of gaps) stack.push(Math.floor(y / grid) * N + Math.floor(x / grid));
   while (stack.length) {
     const i = stack.pop();
     if (bg[i] || !white(i)) continue;
@@ -162,6 +164,9 @@ for (const id of Object.keys(native)) {
 // 1 game px, transparent, cut at mid-thigh like the BW player sprite). Per frame: cap = x of the cap/beret centre (the frames are
 // lined up on it, as in throw/v2/anim.py); follow also gets hand = the open hand, where the spool leaves.
 const HEROES = { hero_m: 'draco', hero_f: 'dahlia' }, HERO_FRAMES = { idle: 'f1-idle', wind: 'f2-windup', follow: 'f3-follow' };
+// Draco's idle sleeve was keyed out to transparent in the v2 file; the preview GIF shows it white, so its enclosed holes get their
+// stored colour back. Every other enclosed hole in these frames is a real gap (under an arm, between the legs) and stays clear.
+const HERO_KEEP_HOLES = { 'draco-f1-idle': true };
 function readRGBA(file) {
   const im = readPNG(file), pal = [], key = new Map(), idx = new Uint8Array(im.w * im.h), px = [];
   for (let i = 0; i < im.w * im.h; i++) {
@@ -172,8 +177,8 @@ function readRGBA(file) {
     if (!key.has(hex)) { pal.push(hex); key.set(hex, pal.length); }
     idx[i] = key.get(hex);
   }
-  // white shirt pixels came out transparent in some frames (white was keyed out): transparent pixels that the border can't reach
-  // are holes, so they get their stored colour back, as in the approved preview GIFs
+  if (!HERO_KEEP_HOLES[path.basename(file, '.png')]) return { w: im.w, h: im.h, cx: im.w / 2, pal, idx, px };
+  // transparent pixels the border can't reach are the keyed-out sleeve: give them their stored colour back
   const out = new Uint8Array(im.w * im.h), stack = [];
   for (let x = 0; x < im.w; x++) stack.push(x, (im.h - 1) * im.w + x);
   for (let y = 0; y < im.h; y++) stack.push(y * im.w, y * im.w + im.w - 1);
@@ -230,12 +235,14 @@ for (const [look, hero] of Object.entries(HEROES)) {
 // battle stance (heroes/<hero>-ready.png), scaled to TRAINER_H. hand = the screen-right hand (the right-most pixel of the arm band,
 // 40-75% down the figure), where the spool leaves.
 const TRAINER_H = 84, trainers = {};
+// enclosed background the border flood can't reach (white clothing is enclosed too, so gaps are listed by hand): source px seeds
+const TRAINER_GAPS = { hero_f: [[507, 549]] }; // between Dahlia's legs
 const trainerFiles = fs.readdirSync(path.join(ROOT, 'art/autosprite/npc/battle')).filter((f) => f.endsWith('.png'))
   .map((f) => [f.slice(0, -4), path.join(ROOT, 'art/autosprite/npc/battle', f)])
   .concat(Object.entries(HEROES).map(([look, hero]) => [look, path.join(ROOT, 'art/autosprite/heroes', hero + '-ready.png')]));
 for (const [look, f] of trainerFiles) {
   if (!fs.existsSync(f)) continue;
-  const n = convert(f, 6), s = downscale(n, TRAINER_H / n.h);
+  const n = convert(f, 6, TRAINER_GAPS[look]), s = downscale(n, TRAINER_H / n.h);
   let hx = -1, hy = 0;
   for (let y = Math.round(s.h * 0.4); y < s.h * 0.75; y++) for (let x = 0; x < s.w; x++) if (s.idx[y * s.w + x] && x > hx) { hx = x; hy = y; }
   trainers[look] = Object.assign(encode(s), { hand: { x: hx, y: hy } });
