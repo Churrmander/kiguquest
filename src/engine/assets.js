@@ -167,11 +167,17 @@
   A.humanBack = (look) => portrait('back', look);
   /** Back-view battle pose for the send-out animation. pose: 'ready' | 'windup' | 'throw' | 'follow'; lean = whole-body sway in px (the
    *  head swings further than the feet). The arm pose comes from NP.art.human.backPose (drawn by the generator, same size as back());
-   *  the lean and the throw's lift are applied here, scaled by the bitmap's own height. Anchor stays bottom-centre (w/2, h-2). */
+   *  the lean and the throw's lift are applied here, scaled by the bitmap's own height. Anchor stays bottom-centre (w/2, h-2).
+   *  The heroes use their approved AutoSprite throw pose (NP.art.autosprite.hero) for every phase instead. */
   A.humanThrow = (look, pose, lean) => memo('ht|' + look + '|' + pose + '|' + lean, () => {
-    const h = art().human, lk = rl(look);
+    const h = art().human, lk = rl(look), as = art().autosprite;
+    // the approved AutoSprite throw pose replaces every phase for the heroes; wind-up and follow-through come from the lean
+    const hero = as && as.hasHero && as.hasHero(lk) ? tryit(() => as.hero(lk), null) : null;
+    if (hero) return leaned(hero.bmp, pose, lean);
     const posed = pose && pose !== 'ready' && h && h.backPose && h.has && h.has(lk) ? tryit(() => h.backPose(lk, pose), null) : null;
-    const base = posed || A.humanBack(look);
+    return leaned(posed || A.humanBack(look), pose, lean);
+  });
+  function leaned(base, pose, lean) {
     if (!lean && pose !== 'throw') return base;
     const out = new Bitmap(base.w, base.h), lift = pose === 'throw' ? Math.max(1, Math.round(base.h / 64)) : 0;
     for (let y = 0; y < base.h; y++) {
@@ -183,8 +189,19 @@
         if (X >= 0 && X < out.w && Y >= 0) out.u32[Y * out.w + X] = c;
       }
     }
+    // the lift opens a gap at the waist: fill it with the first unlifted row
+    const seam = Math.ceil(base.h * 0.6);
+    for (let k = 0; k < lift && seam < base.h; k++) {
+      const Y = seam - lift + k, dx = Math.round((lean || 0) * Math.pow(Math.max(0, 1 - seam / base.h), 1.4));
+      for (let x = 0; x < base.w; x++) {
+        const c = base.u32[seam * base.w + x], X = x + dx;
+        if (c >>> 24 && X >= 0 && X < out.w && !(out.u32[Y * out.w + X] >>> 24)) out.u32[Y * out.w + X] = c;
+      }
+    }
     return out;
-  });
+  }
+  /** Where the thrown spool leaves the hero's hand in a humanThrow bitmap (x from its left edge, y from its top), or null. */
+  A.heroHand = (look) => { const as = art().autosprite, lk = rl(look); return as && as.hasHero && as.hasHero(lk) ? as.hero(lk).hand : null; };
 
   // ------------------------------------------------------------------ kigu
   function blob(id, back) {

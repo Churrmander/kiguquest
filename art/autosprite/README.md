@@ -1,6 +1,6 @@
 # AutoSprite art studies
 
-Approved concept sprites made with AutoSprite (October 2026). The Kigu views are **wired into battles**: `node tools/import-autosprite.mjs` turns them into `src/art/autosprite/data.js` (battle-size, palette-indexed), `NP.art.autosprite` serves them with the `NP.art.kigu` cells and anchors, and `NP.assets` prefers them, falling back to the generated art for any missing view. Re-run the tool after adding or fixing a PNG. Heroes are not wired in yet.
+Approved concept sprites made with AutoSprite (October 2026). The Kigu views are **wired into battles**: `node tools/import-autosprite.mjs` turns them into `src/art/autosprite/data.js` (battle-size, palette-indexed), `NP.art.autosprite` serves them with the `NP.art.kigu` cells and anchors, and `NP.assets` prefers them, falling back to the generated art for any missing view. Re-run the tool after adding or fixing a PNG. The heroes' `-throw` poses (spool and thread cut off at the fingertips) are the player trainer at battle start; the game throws its own spool from her hand.
 
 In battle the foe shows `-base` (idle bob made in-engine) and switches to `-pose` while she attacks; the player's Kigu shows `-back`. Kigu in the game with no back view yet use the generated back sprite: Sparkin, Voltessa, Kumi, Kumara, Kumazen. Move, item and status animations are made in-engine in `src/game/battlefx.js`; `node tools/preview-battle.mjs OUTDIR` records a scripted battle to PNG frames.
 

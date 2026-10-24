@@ -280,7 +280,8 @@
       for (let i = 0; i < 10; i++) { h.lean = -Math.min(3, (i >> 1) + 1); yield; }
       h.pose = 'throw'; h.lean = 4;
       NP.snd.sfx('throw');
-      const by = this.bgInfo.playerBase.y, p0 = { x: h.x + 20, y: by - 74 }, p1 = { x: this.bgInfo.playerBase.x + 30, y: by - 46 };
+      const by = this.bgInfo.playerBase.y, hand = A().heroHand(NP.State.lookId()), hb = A().humanThrow(NP.State.lookId(), 'throw', 4);
+      const p0 = hand ? { x: h.x - (hb.w >> 1) + hand.x + 3, y: by - (hb.h - 2) + hand.y - 1 } : { x: h.x + 20, y: by - 74 }, p1 = { x: this.bgInfo.playerBase.x + 30, y: by - 46 };
       for (let i = 0; i <= 18; i++) {
         const t = i / 18;
         if (i === 5) { h.pose = 'follow'; h.lean = 2; }

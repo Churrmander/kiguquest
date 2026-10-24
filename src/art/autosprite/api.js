@@ -5,6 +5,8 @@
  *   front(id, { alt, frame })  -> Bitmap 96x96,   anchor bottom-centre (48, 94)
  *   pose(id, { alt })          -> Bitmap 96x96,   the dynamic battle pose (foe side, used while she strikes)
  *   back(id, { alt, frame })   -> Bitmap 128x128, anchor (64, 126)
+ *   hero(look)                 -> { bmp, hand } the hero's spool-throw pose from behind (hero_m Draco, hero_f Dahlia), anchor
+ *                                 bottom-centre (w/2, h-2); hand = her fingertips, where the thrown spool starts
  *   IDLE                       -> 6 idle frames: the upper body bobs 1px (the seam row is doubled, feet stay planted)
  *
  * The sprites are static, so motion is made here and in the battle scene. alt = the rare colourway: costume colours hue-rotated
@@ -40,24 +42,26 @@
     return Color.adjust(hex, { h: 150 });
   }
 
+  /** One data.js sprite entry -> Bitmap (alt = rare colourway). */
+  function decode(s, alt) {
+    const pal = [];
+    for (let i = 0; i < s.pal.length; i += 6) { const hex = s.pal.slice(i, i + 6); pal.push(alt ? altColour('#' + hex) : '#' + hex); }
+    const b = new Bitmap(s.w, s.h), runs = unb64(s.rle);
+    let p = 0;
+    for (let i = 0; i < runs.length; i += 2) {
+      const c = runs[i], n = runs[i + 1];
+      if (c) for (let k = 0; k < n; k++) b.set((p + k) % s.w, ((p + k) / s.w) | 0, pal[c - 1]);
+      p += n;
+    }
+    return b;
+  }
+
   /** The decoded sprite at battle size (cropped), as a Bitmap plus its body-axis x. */
   function raw(id, view, alt) {
     const key = 'r|' + id + '|' + view + '|' + !!alt;
     if (cache.has(key)) return cache.get(key);
     const s = DATA()[id] && DATA()[id][view];
-    let v = null;
-    if (s) {
-      const pal = [];
-      for (let i = 0; i < s.pal.length; i += 6) { const hex = s.pal.slice(i, i + 6); pal.push(alt ? altColour('#' + hex) : '#' + hex); }
-      const b = new Bitmap(s.w, s.h), runs = unb64(s.rle);
-      let p = 0;
-      for (let i = 0; i < runs.length; i += 2) {
-        const c = runs[i], n = runs[i + 1];
-        if (c) for (let k = 0; k < n; k++) b.set((p + k) % s.w, ((p + k) / s.w) | 0, pal[c - 1]);
-        p += n;
-      }
-      v = { bmp: b, cx: s.cx };
-    }
+    const v = s ? { bmp: decode(s, alt), cx: s.cx } : null;
     cache.set(key, v);
     return v;
   }
@@ -85,7 +89,26 @@
     return out;
   }
 
+  /** Hero spool-throw pose from behind, padded so the body axis is the centre column, feet on row h-2 and 4px of headroom (for
+   *  the throw's lift). -> { bmp, hand: {x, y} fingertips in the bitmap } or null. */
+  function hero(look) {
+    const key = 'h|' + look;
+    if (cache.has(key)) return cache.get(key);
+    const s = (NP.art.autospriteHeroes || {})[look];
+    let v = null;
+    if (s) {
+      const crop = decode(s), half = Math.ceil(Math.max(s.cx, s.w - s.cx)), dx = half - Math.round(s.cx);
+      const b = new Bitmap(half * 2, s.h + 6);
+      b.blit(crop, dx, 4);
+      v = { bmp: b, hand: { x: s.hand.x + dx, y: s.hand.y + 4 } };
+    }
+    cache.set(key, v);
+    return v;
+  }
+
   NP.art.autosprite = {
+    hero,
+    hasHero: (look) => !!(NP.art.autospriteHeroes && NP.art.autospriteHeroes[look]),
     IDLE,
     ids: () => Object.keys(DATA()),
     has: (id, view) => !!(DATA()[id] && DATA()[id][view || 'front']),

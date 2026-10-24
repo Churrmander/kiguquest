@@ -1,7 +1,7 @@
 // Records a scripted wild battle (real BattleScene, real battle core) to PNG frames for checking move animations.
 // The player's turns are scripted (no menus); the foe's AI picks from the moves given below.
 //
-//   node tools/preview-battle.mjs OUTDIR [--every N] [--me ID] [--foe ID] [--alt]   // writes OUTDIR/f00000.png ... (every Nth tick, default 2) + keys.png
+//   node tools/preview-battle.mjs OUTDIR [--every N] [--me ID] [--foe ID] [--alt] [--hero m|f] [--seed N]   // writes OUTDIR/f00000.png ... (every Nth tick, default 2) + keys.png
 //   ffmpeg -framerate 30 -i OUTDIR/f%05d.png -vf scale=768:576:flags=neighbor -pix_fmt yuv420p battle.mp4
 import fs from 'node:fs';
 import path from 'node:path';
@@ -16,7 +16,7 @@ fs.mkdirSync(out, { recursive: true });
 
 const { NP } = loadNP({ quiet: true });
 NP.rng.seed(Number(arg('--seed', 4)));
-NP.state = NP.State.fresh('Dahlia', 'f');
+NP.state = arg('--hero', 'f') === 'm' ? NP.State.fresh('Draco', 'm') : NP.State.fresh('Dahlia', 'f');
 NP.State.addItem('snack_cake', 3);
 const me = NP.Kigu.create(arg('--me', 'kitsuri'), 30, { moves: ['paw_swipe', 'foxfire_blast', 'fluff_up', 'numb_dust'] });
 const foe = NP.Kigu.create(arg('--foe', 'konko'), 30, { alt, moves: ['pounce', 'cinder', 'tail_wag', 'lullaby'] });
