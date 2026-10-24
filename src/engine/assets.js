@@ -207,16 +207,23 @@
   A.kiguHas = (id) => !!(art().kigu && art().kigu.has && tryit(() => art().kigu.has(id), false));
   /** Battle sprites: front 96x96 (anchor bottom-centre (48, 94)), back 128x128 (anchor (64, 126), drawn 4/3 larger).
    *  frame = idle-animation frame (wraps; 0 = rest pose). The placeholder blob is padded to the same cells and anchors. */
+  // The approved AutoSprite art (NP.art.autosprite) wins per view; NP.art.kigu draws whatever it lacks (missing back views).
+  const as = () => art().autosprite;
+  const asHas = (id, view) => !!(as() && tryit(() => as().has(id, view), false));
   A.kiguFront = function (id, alt, frame) {
+    if (asHas(id, 'front')) { const b = tryit(() => as().front(id, { alt: !!alt, frame: frame | 0 }), null); if (b) return b; }
     if (A.kiguHas(id)) { const b = tryit(() => art().kigu.front(id, { alt: !!alt, frame: frame | 0 }), null); if (b) return b; }
     return memo('fkf|' + id, () => blob(id, false).padded(16, 32, 16, 0));
   };
   A.kiguBack = function (id, alt, frame) {
+    if (asHas(id, 'back')) { const b = tryit(() => as().back(id, { alt: !!alt, frame: frame | 0 }), null); if (b) return b; }
     if (A.kiguHas(id)) { const b = tryit(() => art().kigu.back(id, { alt: !!alt, frame: frame | 0 }), null); if (b) return b; }
     return memo('fkb|' + id, () => blob(id, true).padded(32, 64, 32, 0));
   };
+  /** Foe-side battle pose (same cell as the front) shown while she attacks; null when there is none. */
+  A.kiguPose = (id, alt) => (asHas(id, 'pose') ? tryit(() => as().pose(id, { alt: !!alt }), null) : null);
   /** Number of idle frames for a species (1 for the placeholder). */
-  A.kiguFrames = (id) => (A.kiguHas(id) && art().kigu.idleFrames ? tryit(() => art().kigu.idleFrames(id), 1) : 1);
+  A.kiguFrames = (id) => (asHas(id, 'front') ? as().IDLE : A.kiguHas(id) && art().kigu.idleFrames ? tryit(() => art().kigu.idleFrames(id), 1) : 1);
   /** Bottom-centre anchor of a battle sprite bitmap (feet on the second-to-last row). */
   A.anchorOf = (bmp) => ({ x: bmp.w >> 1, y: bmp.h - 2 });
   A.kiguIcon = function (id, frame) {

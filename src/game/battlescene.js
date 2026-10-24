@@ -7,7 +7,6 @@
   const B = NP.Battle;
 
   const FULL = { x: 0, y: NP.BOX_Y, w: NP.W, h: 48 };
-  const FX = { ember: 'flame', tide: 'drop', sprout: 'leaf', volt: 'bolt', frost: 'flake', pebble: 'rock', gale: 'gust', dream: 'star', spook: 'shadow', buzz: 'sparkle', fluff: 'hit_normal', brawl: 'punch', nettle: 'poison', terra: 'dust', shade: 'shadow', iron: 'slash', drake: 'glow' };
   const C = NP.Color;
   const CMD_W = 148; // command buttons on the right of the bottom panel; the prompt sits to their left
   const CMD_COL = { Fight: '#e04848', Bag: '#e8a820', Kigu: '#40a848', Run: '#4878d8' };
@@ -103,6 +102,9 @@
       this.levelBox = null;
       this.shake = 0;
       this.xpBars = {};
+      this.parts = [];        // particles (battlefx.js)
+      this.quake = null;      // stage shake {n, amp}
+      this.scrFlash = null;   // stage flash {col, a}
     }
 
     enter() {
@@ -134,6 +136,7 @@
     update() {
       super.update();
       this.clock++;
+      this.stepFx();
       for (const d of this.disp) if (d && d.vis && d.boxT < 1) d.boxT = Math.min(1, d.boxT + 0.1); // data boxes slide in
     }
 
@@ -142,7 +145,7 @@
       const a = this.anchor(mon.side.index);
       this.disp[mon.side.index] = {
         mon, k, hp: mon.hp, maxhp: mon.maxhp, name: mon.name, level: mon.level, status: mon.status, species: k.species, alt: k.alt,
-        x: a.x, y: a.y, offx: 0, offy: 0, alpha: 0, flash: 0, vis: true, exp: NP.Kigu.expProgress(k), blink: 0, boxT: 0, sink: false,
+        x: a.x, y: a.y, offx: 0, offy: 0, sx: 1, sy: 1, pose: false, tint: null, white: 0, alpha: 0, flash: 0, vis: true, exp: NP.Kigu.expProgress(k), blink: 0, boxT: 0, sink: false,
       };
       NP.State.seen(k.species);
     }
@@ -217,21 +220,12 @@
           if (d && d.mon === e.who) { const y0 = d.offy; d.sink = true; for (let i = 1; i <= 18; i++) { d.offy = y0 + i * 5; d.alpha = Math.min(1, 1.6 - i / 12); yield; } d.vis = false; }
           break;
         }
-        case 'boost': {
-          const d = this.dsp(e.who);
-          NP.snd.sfx(e.amt > 0 ? 'stat_up' : 'stat_down');
-          yield* this.playFx(e.amt > 0 ? 'stat_up' : 'stat_down', d);
-          break;
-        }
-        case 'status': {
-          const d = this.dsp(e.who);
-          if (d && d.mon === e.who) d.status = e.status;
-          if (e.status) { NP.snd.sfx('status'); yield* this.wait(8); }
-          break;
-        }
+        case 'boost': yield* this.evBoost(e); break;
+        case 'status': yield* this.evStatus(e); break;
+        case 'use': case 'item': yield* this.evUse(e); break;
         case 'exp': yield* this.evExp(e); break;
         case 'spool': yield* this.evSpool(e); break;
-        case 'miss': yield* this.wait(6); break;
+        case 'miss': yield* this.evMiss(e); break;
         default: break;
       }
     }
@@ -297,77 +291,6 @@
       for (let i = 0; i < 12; i++) { this.burst = { x: p1.x, y: p1.y - 4, t: i / 12 }; if (i === 0) NP.snd.sfx('save'); yield; }
       this.burst = null;
       h.pose = 'ready'; h.lean = 0;
-    }
-
-    *evMove(e) {
-      const d = this.dsp(e.who);
-      const mv = NP.data.moves[e.move];
-      if (!d || !mv) return;
-      const dir = e.who.side.index === 0 ? 1 : -1;
-      if (NP.Game.opts.battleAnim === false) { yield* this.wait(4); return; }
-      if (mv.category === 'physical') {
-        for (let i = 0; i < 6; i++) { d.offx = dir * i * 3; yield; }
-        d.offx = dir * 18;
-        yield* this.wait(1);
-        this.pendingLunge = d;
-      } else if (mv.category === 'special' || mv.category === 'status') {
-        for (let i = 0; i < 6; i++) { d.offy = -i; yield; }
-        this.pendingLunge = d;
-        const tgtSide = mv.target === 'self' ? e.who.side.index : 1 - e.who.side.index;
-        const t = this.disp[tgtSide];
-        if (mv.category === 'special') yield* this.playFx(FX[mv.type] || 'star', t);
-        else if (mv.boosts || mv.heal) { /* boost event plays its own fx */ } else yield* this.playFx('sparkle', t);
-      }
-    }
-
-    *unlunge() {
-      const d = this.pendingLunge;
-      if (!d) return;
-      this.pendingLunge = null;
-      const ox = d.offx, oy = d.offy;
-      for (let i = 1; i <= 6; i++) { d.offx = ox * (1 - i / 6); d.offy = oy * (1 - i / 6); yield; }
-      d.offx = 0; d.offy = 0;
-    }
-
-    *evHit(e) {
-      const d = this.dsp(e.who);
-      if (!d || d.mon !== e.who) return;
-      NP.snd.sfx(e.eff > 1 ? 'hit_super' : e.eff < 1 && e.eff > 0 ? 'hit_weak' : 'hit');
-      const mv = NP.data.moves[e.move];
-      if (mv && mv.category === 'physical') yield* this.playFx(e.eff > 1 ? 'hit_super' : e.eff < 1 ? 'hit_weak' : 'hit_normal', d);
-      if (NP.Game.opts.battleAnim !== false) {
-        for (let i = 0; i < 12; i++) { d.blink = i % 4 < 2 ? 1 : 0; d.offx = (i % 2 ? 2 : -2) * (e.eff > 1 ? 1.5 : 1); yield; }
-        d.blink = 0; d.offx = 0;
-      }
-      yield* this.unlunge();
-    }
-
-    *playFx(name, d) {
-      if (!d || NP.Game.opts.battleAnim === false) return;
-      const n = A().fxFrames(name);
-      const f0 = A().fx(name, 0);
-      if (!f0) { yield* this.wait(6); return; }
-      for (let f = 0; f < n * 3; f++) {
-        const c = this.mid(d);
-        this.fx = { bmp: A().fx(name, Math.floor(f / 3) % n), x: c.x, y: c.y };
-        yield;
-      }
-      this.fx = null;
-    }
-
-    *evHp(e) {
-      const d = this.dsp(e.who);
-      if (!d || d.mon !== e.who) return;
-      if (e.cause === 'heal' || e.cause === 'item' || e.cause === 'drain') NP.snd.sfx('heal_tick');
-      const steps = Math.max(6, Math.min(40, Math.abs(e.to - e.from) / e.max * 60));
-      d.maxhp = e.max;
-      for (let i = 1; i <= steps; i++) {
-        d.hp = e.from + (e.to - e.from) * (i / steps);
-        yield;
-      }
-      d.hp = e.to;
-      if (e.who.side.index === 0 && e.to > 0 && e.to / e.max < 0.2) NP.snd.sfx('low_hp');
-      yield* this.wait(4);
     }
 
     *evExp(e) {
@@ -616,10 +539,9 @@
       const d = this.disp[side];
       if (!d || !d.vis || d.alpha <= 0 || d.blink) return;
       const f = this.idleFrame(d, side);
-      const spr = side === 0 ? A().kiguBack(d.species, d.alt, f) : A().kiguFront(d.species, d.alt, f);
+      const [spr, o] = this.kiguSprite(d, side, f);
       const an = A().anchorOf(spr);
       const x = Math.round(d.x + d.offx - an.x), y = Math.round(d.y + d.offy - an.y);
-      const o = { alpha: d.alpha };
       if (d.sink) o.sh = Math.max(0, Math.min(spr.h, d.y + 2 - y)); // fainting: she sinks below the platform's edge
       if (o.sh === 0) return;
       fb.blit(spr, x, y, o);
@@ -685,6 +607,9 @@
           fb.fillRect(Math.round(c.x + Math.cos(a) * r), Math.round(c.y - 8 + Math.sin(a) * r), 2, 2, '#fff0a0');
         }
       }
+      this.drawParts(fb);
+      this.drawScreenFlash(fb);
+      this.applyQuake(fb);
       this.drawBox(fb, 1);
       this.drawBox(fb, 0);
       // bottom panel (the player's Kigu stands partly behind it, as on the DS)
