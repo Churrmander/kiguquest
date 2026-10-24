@@ -25,5 +25,6 @@ for j in range(H):
         new = (0, 0, 0, 0) if k == len(pal) else (*cand[k], 255)
         if tuple(a[y, x]) != new and not (a[y, x, 3] == 0 and new[3] == 0): changed += 1
         a[y, x] = new
+a[29, 81] = 0                                  # owner: delete the stray outline bump on the finger tip
 Image.fromarray(a.astype(np.uint8)).save(f'{d}/dahlia-torso-t3.png')
 print('ok, pixels changed vs original:', changed)
