@@ -8,6 +8,8 @@
  *   hero(look)                 -> { idle, wind, follow }: the battle-start throw (hero_m Draco, hero_f Dahlia), each { bmp, cap,
  *                                 hand }: cap = x of the cap centre (frames line up on it), bottom row = the mid-thigh cut that
  *                                 sits on the command panel; follow.hand = the open hand, where the spool leaves
+ *   trainer(look)              -> { bmp, hand } a foe trainer's battle sprite (npc/battle; hero_m/hero_f = the heroes' ready
+ *                                 stance, for the rival), anchor bottom-centre (w/2, h-2); hand = where the thrown spool leaves
  *   IDLE                       -> 6 idle frames: the upper body bobs 1px (the seam row is doubled, feet stay planted)
  *
  * The sprites are static, so motion is made here and in the battle scene. alt = the rare colourway: costume colours hue-rotated
@@ -104,8 +106,26 @@
     return v;
   }
 
+  /** A foe trainer's battle sprite, padded so the body axis is the centre column and the feet sit on row h-2 (the humanFront
+   *  anchor). -> { bmp, hand: {x, y} where the spool leaves } or null. */
+  function trainer(look) {
+    const key = 't|' + look;
+    if (cache.has(key)) return cache.get(key);
+    const s = (NP.art.autospriteTrainers || {})[look];
+    let v = null;
+    if (s) {
+      const half = Math.ceil(Math.max(s.cx, s.w - s.cx)), dx = half - Math.round(s.cx), b = new Bitmap(half * 2, s.h + 2);
+      b.blit(decode(s), dx, 0);
+      v = { bmp: b, hand: { x: s.hand.x + dx, y: s.hand.y } };
+    }
+    cache.set(key, v);
+    return v;
+  }
+
   NP.art.autosprite = {
     hero,
+    trainer,
+    hasTrainer: (look) => !!(NP.art.autospriteTrainers && NP.art.autospriteTrainers[look]),
     hasHero: (look) => !!(NP.art.autospriteHeroes && NP.art.autospriteHeroes[look]),
     IDLE,
     ids: () => Object.keys(DATA()),

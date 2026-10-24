@@ -41,6 +41,7 @@ All images are 1024x1024 on white, drawn on an 8px grid (128x128 sprites scaled 
 * Overworld sprites are single standing frames per facing; walk-cycle frames are not made yet. The rival uses the other hero's sprites.
 * Drakonia, Voltessa and Webbi poses were rerolled to keep their effects in frame; `pose.png` is the fixed version.
 * Done 2026-10-24: the battle-start spool is tossed high and lands on the player platform while the hero slides off; the Kigu grows out of it there (`heroThrowBW` in `src/game/battlescene.js`). The preview GIFs in `heroes/throw/v2` still show the older fly-off.
+* Done 2026-10-24: the `npc/battle` trainer sprites are the foe trainers in battle (`NP.assets.trainerFront`; the rival uses the other hero's `-ready` stance). They have no throw frames: the trainer dips, the spool leaves her hand and lands on the foe platform where her Kigu appears while she slides off right.
 
 ## Animation (added 2026-10-24)
 

@@ -56,8 +56,8 @@
     }
   }
 
-  // ---- the hero's 7x7 thread spool for the send-out (as in art/autosprite/heroes/throw/v2/anim.py), thread colours per look
-  const SPOOL = { hero_m: { T: '#344880', D: '#1e2854', H: '#6e82b4' }, hero_f: { T: '#c03030', D: '#781c1c', H: '#f08278' } };
+  // ---- the 7x7 thread spool for the send-outs (as in art/autosprite/heroes/throw/v2/anim.py), thread colours per look
+  const SPOOL = { hero_m: { T: '#344880', D: '#1e2854', H: '#6e82b4' }, hero_f: { T: '#c03030', D: '#781c1c', H: '#f08278' }, foe: { T: '#d0a838', D: '#8a6a18', H: '#f8e090' } };
   const spoolCache = {};
   function spoolBmp(look) {
     if (spoolCache[look]) return spoolCache[look];
@@ -108,8 +108,8 @@
       this.bgInfo = null;
       this.hero = null;       // hero back sprite state {x, k (throw frame), mix, dx, dy, slide}
       this.thread = null;     // send-out spool thread {col, pts}
-      this.heroSpool = null;  // send-out spool position
-      this.foeTrainer = null; // trainer front sprite state {x}
+      this.heroSpool = null;  // send-out spool {x, y, kind: 'foe' or the hero look}
+      this.foeTrainer = null; // trainer front sprite state {x, dy}
       this.thrown = null;     // spool in flight
       this.burst = null;      // send-out sparkle {x, y, t 0..1}
       this.menuInfo = null;
@@ -261,12 +261,17 @@
             this.disp[1].vis = false;
             yield* this.msgWait(tr.cls + ' ' + tr.name + ' would like to battle!', { auto: 40 });
             yield* this.msgWait(tr.cls + ' ' + tr.name + ' sent out ' + mon.name + '!', { auto: 22 });
+            const tf = this.foeTrainer && NP.Game.opts.battleAnim !== false && A().trainerFront(tr.look);
+            const land = tf && tf.hand ? yield* this.foeThrow(tf) : null;
             if (this.foeTrainer) { const f = this.foeTrainer; for (let i = 0; i < 16; i++) { f.x += 6; yield; } this.foeTrainer = null; }
             const d = this.disp[1];
             d.vis = true; d.alpha = 0;
-            NP.snd.cry(mon.kigu.species);
-            for (let i = 1; i <= 14; i++) { d.alpha = i / 14; d.offy = -8 * (1 - i / 14); yield; }
-            d.offy = 0;
+            if (land) yield* this.popOut(d, land);
+            else {
+              NP.snd.cry(mon.kigu.species);
+              for (let i = 1; i <= 14; i++) { d.alpha = i / 14; d.offy = -8 * (1 - i / 14); yield; }
+              d.offy = 0;
+            }
           }
         } else {
           yield* this.msgWait('Go! ' + mon.name + '!', { auto: 14 });
@@ -276,17 +281,8 @@
           if (this.hero) { const h = this.hero; for (let i = 0; i < 18; i++) { h.x -= 7; yield; } this.hero = null; }
           this.setDisp(mon);
           const d = this.disp[0];
-          if (land) { // the spool pops open where it landed and she grows out of it as a white silhouette, then takes her colours
-            this.heroSpool = null;
-            this.ring(land.x, land.y, '#ffffff', { dr: 2.4, life: 12 });
-            this.burstAt(land.x, land.y, 14, { cols: ['#ffffff', '#fff4b0'], speed: 2.4, life: 16, up: 1 });
-            NP.snd.sfx('save');
-            d.alpha = 1;
-            for (let i = 1; i <= 10; i++) { const k = 0.25 + 0.75 * (i / 10); d.sx = k; d.sy = k; d.white = 2; yield; }
-            d.sx = 1; d.sy = 1;
-            NP.snd.cry(mon.kigu.species);
-            yield* this.wait(4);
-          } else {
+          if (land) yield* this.popOut(d, land);
+          else {
             NP.snd.cry(mon.kigu.species);
             for (let i = 1; i <= 14; i++) { d.alpha = i / 14; d.offy = -10 * (1 - i / 14); yield; }
             d.offy = 0;
@@ -360,6 +356,43 @@
       this.thread = null;
       NP.snd.sfx('bump');
       for (const dy of [-3, -4, -3, -1, 0, -1, 0]) { this.heroSpool = { x: land.x, y: land.y + dy }; yield; } // a little bounce
+      return land;
+    }
+
+    /** The landed spool pops open and her Kigu grows out of it as a white silhouette, then takes her colours. */
+    *popOut(d, land) {
+      this.heroSpool = null;
+      this.ring(land.x, land.y, '#ffffff', { dr: 2.4, life: 12 });
+      this.burstAt(land.x, land.y, 14, { cols: ['#ffffff', '#fff4b0'], speed: 2.4, life: 16, up: 1 });
+      NP.snd.sfx('save');
+      d.alpha = 1;
+      for (let i = 1; i <= 10; i++) { const k = 0.25 + 0.75 * (i / 10); d.sx = k; d.sy = k; d.white = 2; yield; }
+      d.sx = 1; d.sy = 1;
+      NP.snd.cry(d.species);
+      yield* this.wait(4);
+    }
+
+    /** A foe trainer's send-out (no throw frames): a small dip as she tosses, then her spool leaves her hand, arcs high and falls
+     *  on the foe platform where her Kigu will appear, while she slides off to the right. Returns the landing point. */
+    *foeThrow(tf) {
+      const f = this.foeTrainer, by = this.bgInfo.enemyBase.y, land = { x: this.bgInfo.enemyBase.x, y: by - 4 };
+      const hand = () => ({ x: f.x - (tf.bmp.w >> 1) + tf.hand.x, y: by - (tf.bmp.h - 2) + tf.hand.y + (f.dy || 0) });
+      for (const dy of [1, 2, 2, 1, 0]) { f.dy = dy; yield* this.wait(2); }
+      NP.snd.sfx('throw');
+      const p0 = hand(), top = 8, N = 34, x0 = f.x, path = [];
+      this.thread = { col: SPOOL.foe.T, pts: [p0] };
+      for (let i = 1; i <= N; i++) {
+        const t = i / N, x = p0.x + (land.x - p0.x) * t, y = p0.y + (land.y - p0.y) * t - 4 * (Math.min(p0.y, land.y) - top) * t * (1 - t);
+        path.push({ x, y });
+        if (i > 4) f.x = x0 + 110 * Math.min(1, (i - 4) / 18); // she slides off to the right while it is in the air
+        this.thread.pts = i <= 6 ? [hand()].concat(path) : path.slice(-12);
+        this.heroSpool = { x, y, kind: 'foe' };
+        yield;
+      }
+      this.foeTrainer = null;
+      this.thread = null;
+      NP.snd.sfx('bump');
+      for (const dy of [-3, -4, -3, -1, 0, -1, 0]) { this.heroSpool = { x: land.x, y: land.y + dy, kind: 'foe' }; yield; } // a little bounce
       return land;
     }
 
@@ -670,13 +703,13 @@
       fb.clear('#101828');
       fb.blit(bg.bg, 0, 0);
       if (this.foeTrainer) {
-        const f = this.foeTrainer, t = A().humanFront(this.cfg.trainer.look);
-        fb.blit(t, Math.round(f.x - (t.w >> 1)), bg.enemyBase.y - (t.h - 2));
+        const f = this.foeTrainer, t = A().trainerFront(this.cfg.trainer.look).bmp;
+        fb.blit(t, Math.round(f.x - (t.w >> 1)), bg.enemyBase.y - (t.h - 2) + (f.dy || 0));
       }
       this.drawKigu(fb, 1);
       if (this.hero) this.drawHero(fb);
       if (this.thread) { const p = this.thread.pts; for (let i = 1; i < p.length; i++) fb.line(Math.round(p[i - 1].x), Math.round(p[i - 1].y), Math.round(p[i].x), Math.round(p[i].y), this.thread.col); }
-      if (this.heroSpool) fb.blit(spoolBmp(NP.State.lookId()), Math.round(this.heroSpool.x - 3), Math.round(this.heroSpool.y - 3));
+      if (this.heroSpool) fb.blit(spoolBmp(this.heroSpool.kind || NP.State.lookId()), Math.round(this.heroSpool.x - 3), Math.round(this.heroSpool.y - 3));
       if (this.burst) { // sparkle burst: eight rays that grow then fade out
         const f = this.burst, r = 3 + f.t * 20, r0 = f.t * 8;
         for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4 + f.t * 0.8; fb.line(Math.round(f.x + Math.cos(a) * r0), Math.round(f.y + Math.sin(a) * r0), Math.round(f.x + Math.cos(a) * r), Math.round(f.y + Math.sin(a) * r), k & 1 ? '#fff4b0' : '#ffffff'); }

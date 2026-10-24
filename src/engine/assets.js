@@ -164,6 +164,15 @@
     });
   }
   A.humanFront = (look) => portrait('front', look);
+  /** A foe trainer's battle sprite: the approved AutoSprite art (NP.art.autosprite.trainer) when the look has it, else humanFront.
+   *  look may list fallbacks ('zip|rocker'); 'rival' is the other hero. -> { bmp, hand } (hand null for the generated art). */
+  A.trainerFront = (look) => memo('tf|' + look + '|' + rl(look), () => {
+    const as = art().autosprite, ids = String(look).split('|').map(rl);
+    const hit = as && as.hasTrainer ? ids.find((id) => as.hasTrainer(id)) : null;
+    if (hit) { const t = tryit(() => as.trainer(hit), null); if (t) return t; }
+    const h = art().human, plain = ids.find((id) => h && h.has && h.has(id)) || ids[0];
+    return { bmp: A.humanFront(plain), hand: null };
+  });
   A.humanBack = (look) => portrait('back', look);
   /** Back-view battle pose for the send-out animation. pose: 'ready' | 'windup' | 'throw' | 'follow'; lean = whole-body sway in px (the
    *  head swings further than the feet). The arm pose comes from NP.art.human.backPose (drawn by the generator, same size as back());

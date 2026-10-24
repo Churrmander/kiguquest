@@ -1,7 +1,7 @@
 // Records a scripted wild battle (real BattleScene, real battle core) to PNG frames for checking move animations.
 // The player's turns are scripted (no menus); the foe's AI picks from the moves given below.
 //
-//   node tools/preview-battle.mjs OUTDIR [--every N] [--me ID] [--foe ID] [--alt] [--hero m|f] [--seed N]   // writes OUTDIR/f00000.png ... (every Nth tick, default 2) + keys.png
+//   node tools/preview-battle.mjs OUTDIR [--every N] [--me ID] [--foe ID] [--alt] [--hero m|f] [--seed N] [--trainer LOOK] [--ticks N]   // writes OUTDIR/f00000.png ... (every Nth tick, default 2) + keys.png
 //   ffmpeg -framerate 30 -i OUTDIR/f%05d.png -vf scale=768:576:flags=neighbor -pix_fmt yuv420p battle.mp4
 import fs from 'node:fs';
 import path from 'node:path';
@@ -25,7 +25,8 @@ me.hp = Math.max(1, Math.floor(me.hp * 0.55)); // so the snack visibly heals
 NP.state.party = [me];
 
 const plan = [{ type: 'move', move: 0 }, { type: 'move', move: 1 }, { type: 'move', move: 2 }, { type: 'move', move: 3 }, { type: 'item', item: 'snack_cake', party: 0 }, { type: 'move', move: 1 }];
-const scene = new NP.BattleScene({ wild: true, foe: [foe], bg: 'grass' });
+const tlook = arg('--trainer', null); // a trainer battle against this look (e.g. zip|rocker, rival) instead of a wild one
+const scene = new NP.BattleScene(tlook ? { foe: [foe], bg: 'grass', trainer: { cls: 'Tailor', name: 'Test', look: tlook, ai: 1 } } : { wild: true, foe: [foe], bg: 'grass' });
 scene.actionMenu = function* () {
   const a = plan.shift();
   if (!a) { this.battle.fled = true; return [{ type: 'run' }]; }
@@ -40,7 +41,7 @@ const log = []; // per saved frame: the event playing and how busy the effects a
 
 const keys = [];
 let n = 0;
-for (let t = 0; t < 9000 && !scene.finished; t++) {
+for (let t = 0, T = Number(arg('--ticks', 9000)); t < T && !scene.finished; t++) {
   NP.Game.tick();
   const fb = NP.Game.render();
   if (t % every === 0) {
