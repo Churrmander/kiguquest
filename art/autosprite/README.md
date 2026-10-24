@@ -40,3 +40,13 @@ All images are 1024x1024 on white, drawn on an 8px grid (128x128 sprites scaled 
 * NPC nits: Zip's overworld coat is purple/gold (battle is black/gold); the cook's overworld shows hair under his hat (battle is bald); elders' canes barely show; net kid's net is faint in overworld. Bryn is drawn as a woman per docs/STORY.md, while looks.js says male.
 * Overworld sprites are single standing frames per facing; walk-cycle frames are not made yet. The rival uses the other hero's sprites.
 * Drakonia, Voltessa and Webbi poses were rerolled to keep their effects in frame; `pose.png` is the fixed version.
+
+## Animation (added 2026-10-24)
+
+| Path | Contents |
+|---|---|
+| `npc/walk32/<id>.png` | 96x96 walk sheets for the game's 32x32 cells: rows down, up, left (right = mirror); columns stand, left-foot step, right-foot step (the order `src/art/human/ow.js` uses). Heroes use AutoSprite step poses; NPCs use free procedural steps (body drops 1px, stepping foot lifts) made by `npc/walk32.py`. |
+| `heroes/<hero>-walk128.png` | The heroes' walk frames at 128px for review (`npc/herowalk.py` builds both sizes). |
+| `heroes/rig/` | Paper-doll throw rig per hero: `body`, `head`, `larm`, `rupper`, `rfore`, `spool` pieces (art-pixel scale, draw at 6x), `<hero>-rig.json` with piece offsets, pivots (neck, shoulders, elbow) and suggested keyframe angles, and `<hero>-throw-frames.png` as a rough 4-frame preview. Cut by `rig.py` from an arms-down back pose. |
+
+Notes: the rig is cut from an arms-down pose whose stance is narrower than the approved throw art; the preview rotates the whole arm rigidly, so expect small gaps at the shoulder that the engine or a hand pass should cover. Dahlia's up-facing steps are procedural because her ponytail sits to one side. Sprinting, bikes and fishing are shelved.
