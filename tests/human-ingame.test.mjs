@@ -31,21 +31,19 @@ assert.ok(sw.y > bb.y, 'paddling sits lower');
 const opaque = (b) => { let n = 0; for (let i = 0; i < b.u32.length; i++) if (b.u32[i] >>> 24 === 255) n++; return n; };
 assert.ok(opaque(drawAt(true)) < opaque(fb), 'the water hides the legs');
 
-// battle send-out poses: the heroes use their approved AutoSprite throw pose (NP.art.autosprite.hero); the lean makes the phases
+// battle send-out poses
 {
-  const A = NP.assets, base = NP.art.autosprite.hero('hero_f').bmp;
-  assert.equal(A.humanBack('hero_f').w, 80); assert.equal(A.humanBack('hero_f').h, 80);
-  assert.ok(A.humanThrow('hero_f', 'ready', 0) === base, 'ready is the plain throw sprite');
-  const w = A.humanThrow('hero_f', 'windup', -3), th = A.humanThrow('hero_f', 'throw', 4), fo = A.humanThrow('hero_f', 'follow', 2);
+  const A = NP.assets, base = A.humanBack('hero_f');
+  assert.equal(base.w, 80); assert.equal(base.h, 80);
+  assert.ok(A.humanThrow('hero_f', 'ready', 0) === base, 'ready is the plain back sprite');
+  const w = A.humanThrow('hero_f', 'windup', -3), th = A.humanThrow('hero_f', 'throw', 4), fo = A.humanThrow('hero_f', 'follow', 0);
   for (const b of [w, th, fo]) {
-    assert.ok(b.w === base.w && b.h === base.h, 'poses keep the sprite size');
+    assert.ok(b.w === base.w && b.h === base.h, 'poses keep the back sprite size');
     assert.ok(Math.abs(b.bbox().y + b.bbox().h - (base.bbox().y + base.bbox().h)) <= 0, 'feet stay on the anchor row');
     assert.ok(!b.equals(base));
   }
   assert.ok(!w.equals(th) && !th.equals(fo), 'wind-up, throw and follow-through are distinct poses');
-  const hand = A.heroHand('hero_f');
-  assert.ok(hand && base.isOpaque(hand.x, hand.y), 'the spool leaves from her hand');
-  assert.ok(A.humanThrow('rival', 'throw', 0).w > 0, 'rival pseudo-look resolves');
+  assert.ok(A.humanThrow('rival', 'throw', 0).w === 80, 'rival pseudo-look resolves');
   assert.equal(A.humanFront('mimi').w, 80);
 }
 console.log('human-ingame OK');

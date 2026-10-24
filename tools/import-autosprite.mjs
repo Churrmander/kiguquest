@@ -45,15 +45,14 @@ function readPNG(file) {
 }
 
 /** Sample the centre of every grid cell, drop the white background (flood fill from the border), crop to the bounding box.
- *  Columns at or right of `cut` (1024px coordinates) count as background.
  *  -> { w, h, cx (frame centre x inside the crop), pal: ['rrggbb', ...], idx: Uint8Array (0 = transparent, else pal index + 1) } */
-function convert(file, grid = GRID, cut = Infinity) {
+function convert(file, grid = GRID) {
   const im = readPNG(file);
   if (im.w !== 1024 || im.h !== 1024) throw new Error(file + ': expected 1024x1024');
   const N = Math.floor(1024 / grid), rgb = new Array(N * N);
   for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
     const o = ((y * grid + (grid >> 1)) * im.w + x * grid + (grid >> 1)) * im.bpp;
-    rgb[y * N + x] = x * grid >= cut ? [255, 255, 255] : [im.px[o], im.px[o + 1], im.px[o + 2]];
+    rgb[y * N + x] = [im.px[o], im.px[o + 1], im.px[o + 2]];
   }
   const bg = new Uint8Array(N * N), stack = [];
   const white = (i) => rgb[i].every((v) => v >= WHITE);
@@ -159,18 +158,73 @@ for (const id of Object.keys(native)) {
   out[id] = {};
   for (const view of Object.keys(scaled[id])) out[id][view] = encode(scaled[id][view]);
 }
-// Heroes: the approved spool-throw pose seen from behind (6px grid), with the spool and its thread cut off at the fingertips
-// (the game throws its own spool from her hand), scaled to HERO_H. hand = fingertips in the crop, where the thrown spool starts.
-const HERO_H = 92, HEROES = { hero_m: ['draco', 684], hero_f: ['dahlia', 668] };
+// Heroes: the approved battle-start throw, art/autosprite/heroes/throw/v2/<hero>-f1-idle, -f2-windup, -f3-follow (1 image px =
+// 1 game px, transparent, cut at mid-thigh like the BW player sprite). Per frame: cap = x of the cap/beret centre (the frames are
+// lined up on it, as in throw/v2/anim.py); follow also gets hand = the open hand, where the spool leaves.
+const HEROES = { hero_m: 'draco', hero_f: 'dahlia' }, HERO_FRAMES = { idle: 'f1-idle', wind: 'f2-windup', follow: 'f3-follow' };
+function readRGBA(file) {
+  const im = readPNG(file), pal = [], key = new Map(), idx = new Uint8Array(im.w * im.h), px = [];
+  for (let i = 0; i < im.w * im.h; i++) {
+    const o = i * im.bpp, rgb = [im.px[o], im.px[o + 1], im.px[o + 2]];
+    px.push(rgb);
+    if (im.bpp === 4 && im.px[o + 3] < 128) continue;
+    const hex = rgb.map((v) => v.toString(16).padStart(2, '0')).join('');
+    if (!key.has(hex)) { pal.push(hex); key.set(hex, pal.length); }
+    idx[i] = key.get(hex);
+  }
+  // white shirt pixels came out transparent in some frames (white was keyed out): transparent pixels that the border can't reach
+  // are holes, so they get their stored colour back, as in the approved preview GIFs
+  const out = new Uint8Array(im.w * im.h), stack = [];
+  for (let x = 0; x < im.w; x++) stack.push(x, (im.h - 1) * im.w + x);
+  for (let y = 0; y < im.h; y++) stack.push(y * im.w, y * im.w + im.w - 1);
+  while (stack.length) {
+    const i = stack.pop();
+    if (out[i] || idx[i]) continue;
+    out[i] = 1;
+    const x = i % im.w, y = (i / im.w) | 0;
+    if (x > 0) stack.push(i - 1); if (x < im.w - 1) stack.push(i + 1); if (y > 0) stack.push(i - im.w); if (y < im.h - 1) stack.push(i + im.w);
+  }
+  for (let i = 0; i < idx.length; i++) if (!idx[i] && !out[i]) {
+    const hex = px[i].map((v) => v.toString(16).padStart(2, '0')).join('');
+    if (!key.has(hex)) { pal.push(hex); key.set(hex, pal.length); }
+    idx[i] = key.get(hex);
+  }
+  return { w: im.w, h: im.h, cx: im.w / 2, pal, idx, px };
+}
+const isCap = (hero, [r, g, b]) => hero === 'dahlia' ? r > 150 && g < 95 && b < 95 : Math.abs(r - g) < 20 && Math.abs(g - b) < 24 && r > 40 && r < 130;
+function capX(s, hero) { // the cap's pixels in the top 35%: Dahlia's red beret, Draco's grey cap
+  let sx = 0, n = 0;
+  for (let y = 0; y < s.h * 0.35; y++) for (let x = 0; x < s.w; x++) if (s.idx[y * s.w + x] && isCap(hero, s.px[y * s.w + x])) { sx += x; n++; }
+  return n ? sx / n : s.w / 2;
+}
+function capTop(s, hero) { // first row with 3+ cap pixels
+  for (let y = 0; y < s.h; y++) { let n = 0; for (let x = 0; x < s.w; x++) if (s.idx[y * s.w + x] && isCap(hero, s.px[y * s.w + x])) n++; if (n >= 3) return y; }
+  return 0;
+}
+/** Keep the top `h` rows. */
+const cropTop = (s, h) => (h >= s.h ? s : Object.assign({}, s, { h, idx: s.idx.slice(0, s.w * h), px: s.px.slice(0, s.w * h) }));
+const HERO_CUT = { dahlia: { wind: 0.76 } }; // Dahlia's wide wind-up stance is short enough that her feet would show
 const heroes = {};
-for (const [look, [name, cut]] of Object.entries(HEROES)) {
-  const f = path.join(ROOT, 'art/autosprite/heroes', name + '-throw.png');
-  if (!fs.existsSync(f)) continue;
-  const n = convert(f, 6, cut), s = downscale(n, HERO_H / n.h);
-  let hx = 0, hy = 0, c = 0;
-  for (let y = 0; y < s.h; y++) for (let x = s.w - 3; x < s.w; x++) if (s.idx[y * s.w + x]) { hx += x; hy += y; c++; }
-  heroes[look] = Object.assign(encode(s), { hand: { x: Math.round(hx / c), y: Math.round(hy / c) } });
-  scaled['@' + look] = { front: s };
+for (const [look, hero] of Object.entries(HEROES)) {
+  const dir = path.join(ROOT, 'art/autosprite/heroes/throw/v2');
+  if (!fs.existsSync(path.join(dir, `${hero}-f1-idle.png`))) continue;
+  heroes[look] = {};
+  // one cut for every pose, as in anim.py: from the cap top down the idle frame's length (the BW mid-thigh cut)
+  const raw = {};
+  for (const [k, f] of Object.entries(HERO_FRAMES)) raw[k] = readRGBA(path.join(dir, `${hero}-${f}.png`));
+  const L = raw.idle.h - capTop(raw.idle, hero);
+  for (const k of Object.keys(HERO_FRAMES)) {
+    const s = cropTop(raw[k], capTop(raw[k], hero) + Math.round(L * ((HERO_CUT[hero] || {})[k] || 1))), e = encode(s);
+    delete e.cx;
+    e.cap = Math.round(capX(s, hero) * 2) / 2;
+    if (k === 'follow') { // right-most opaque pixel in the top 40%
+      let hx = -1, hy = 0;
+      for (let y = 0; y < s.h * 0.4; y++) for (let x = 0; x < s.w; x++) if (s.idx[y * s.w + x] && x > hx) { hx = x; hy = y; }
+      e.hand = { x: hx, y: hy };
+    }
+    heroes[look][k] = e;
+    scaled['@' + look + '-' + k] = { front: s };
+  }
 }
 const lines = Object.keys(out).map((id) => '    ' + id + ': ' + JSON.stringify(out[id]) + ',');
 fs.mkdirSync(path.dirname(OUT), { recursive: true });
@@ -185,7 +239,8 @@ fs.writeFileSync(OUT, `/* GENERATED by tools/import-autosprite.mjs from art/auto
   NP.art.autospriteData = {
 ${lines.join('\n')}
   };
-  /* Hero spool-throw pose from behind (art/autosprite/heroes/<draco|dahlia>-throw.png) per look id; hand = fingertips in the crop. */
+  /* Hero battle-start throw frames per look id (art/autosprite/heroes/throw/v2): idle, wind, follow; cap = cap-centre x (the frames
+   * line up on it), follow.hand = where the spool leaves. Feet are cut off at the bottom row, which sits on the command panel. */
   NP.art.autospriteHeroes = ${JSON.stringify(heroes)};
 })(typeof globalThis !== 'undefined' ? globalThis : window);
 `);
@@ -201,7 +256,8 @@ if (pi > 0) {
     return b;
   };
   const ids = Object.keys(scaled).filter((id) => id[0] !== '@'), per = 12, none = new NP.Bitmap(8, 8);
-  writePNG(path.join(dir, 'autosprite-heroes.png'), sheet(NP, Object.keys(heroes).map((h) => ({ bmp: bmp(scaled['@' + h].front), label: h })), { cols: 2, checker: true }), 3);
+  const hs = Object.keys(scaled).filter((id) => id[0] === '@');
+  writePNG(path.join(dir, 'autosprite-heroes.png'), sheet(NP, hs.map((h) => ({ bmp: bmp(scaled[h].front), label: h.slice(1) })), { cols: 3, checker: true }), 3);
   for (let p = 0; p * per < ids.length; p++) {
     const e = [];
     for (const id of ids.slice(p * per, (p + 1) * per)) {

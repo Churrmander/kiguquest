@@ -5,8 +5,9 @@
  *   front(id, { alt, frame })  -> Bitmap 96x96,   anchor bottom-centre (48, 94)
  *   pose(id, { alt })          -> Bitmap 96x96,   the dynamic battle pose (foe side, used while she strikes)
  *   back(id, { alt, frame })   -> Bitmap 128x128, anchor (64, 126)
- *   hero(look)                 -> { bmp, hand } the hero's spool-throw pose from behind (hero_m Draco, hero_f Dahlia), anchor
- *                                 bottom-centre (w/2, h-2); hand = her fingertips, where the thrown spool starts
+ *   hero(look)                 -> { idle, wind, follow }: the battle-start throw (hero_m Draco, hero_f Dahlia), each { bmp, cap,
+ *                                 hand }: cap = x of the cap centre (frames line up on it), bottom row = the mid-thigh cut that
+ *                                 sits on the command panel; follow.hand = the open hand, where the spool leaves
  *   IDLE                       -> 6 idle frames: the upper body bobs 1px (the seam row is doubled, feet stay planted)
  *
  * The sprites are static, so motion is made here and in the battle scene. alt = the rare colourway: costume colours hue-rotated
@@ -89,18 +90,15 @@
     return out;
   }
 
-  /** Hero spool-throw pose from behind, padded so the body axis is the centre column, feet on row h-2 and 4px of headroom (for
-   *  the throw's lift). -> { bmp, hand: {x, y} fingertips in the bitmap } or null. */
+  /** The hero's battle-start throw frames -> { idle, wind, follow } of { bmp, cap, hand? }, or null. */
   function hero(look) {
     const key = 'h|' + look;
     if (cache.has(key)) return cache.get(key);
     const s = (NP.art.autospriteHeroes || {})[look];
     let v = null;
     if (s) {
-      const crop = decode(s), half = Math.ceil(Math.max(s.cx, s.w - s.cx)), dx = half - Math.round(s.cx);
-      const b = new Bitmap(half * 2, s.h + 6);
-      b.blit(crop, dx, 4);
-      v = { bmp: b, hand: { x: s.hand.x + dx, y: s.hand.y + 4 } };
+      v = {};
+      for (const k in s) v[k] = { bmp: decode(s[k]), cap: s[k].cap, hand: s[k].hand || null };
     }
     cache.set(key, v);
     return v;

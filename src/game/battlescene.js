@@ -56,6 +56,19 @@
     }
   }
 
+  // ---- the hero's 7x7 thread spool for the send-out (as in art/autosprite/heroes/throw/v2/anim.py), thread colours per look
+  const SPOOL = { hero_m: { T: '#344880', D: '#1e2854', H: '#6e82b4' }, hero_f: { T: '#c03030', D: '#781c1c', H: '#f08278' } };
+  const spoolCache = {};
+  function spoolBmp(look) {
+    if (spoolCache[look]) return spoolCache[look];
+    const t = SPOOL[look] || SPOOL.hero_f, rows = ['OOOOOOO', 'OWWWWWO', '.OTHTO.', '.OTTDO.', '.OTTDO.', 'OWWWWWO', 'OOOOOOO'];
+    const b = new NP.Bitmap(7, 7);
+    rows.forEach((r, y) => [...r].forEach((ch, x) => {
+      if (ch !== '.') b.set(x, y, { O: '#060505', W: x < 4 ? '#b0804a' : '#6e4828', T: t.T, H: t.H, D: t.D }[ch]);
+    }));
+    return (spoolCache[look] = b);
+  }
+
   // ---- data boxes (charcoal slabs with a slanted inner end, as in 5th-gen battles)
   const BOX = { body: '#3a3e4c', top: '#5e6476', edge: '#14161e', rim: '#8a90a4' };
   function slab(fb, x, y, w, h, slantLeft) {
@@ -93,7 +106,9 @@
       this.disp = [null, null];
       this.fx = null;
       this.bgInfo = null;
-      this.hero = null;       // hero back sprite state {x}
+      this.hero = null;       // hero back sprite state {x, k (throw frame), mix, dx, dy}
+      this.thread = null;     // send-out spool thread {col, pts}
+      this.heroSpool = null;  // send-out spool position
       this.foeTrainer = null; // trainer front sprite state {x}
       this.thrown = null;     // spool in flight
       this.burst = null;      // send-out sparkle {x, y, t 0..1}
@@ -255,10 +270,13 @@
           }
         } else {
           yield* this.msgWait('Go! ' + mon.name + '!', { auto: 14 });
-          if (this.hero && NP.Game.opts.battleAnim !== false) yield* this.heroThrow();
+          const bw = this.hero && NP.Game.opts.battleAnim !== false && A().heroThrow(NP.State.lookId());
+          if (bw) yield* this.heroThrowBW(bw);
+          else if (this.hero && NP.Game.opts.battleAnim !== false) yield* this.heroThrow();
           if (this.hero) { const h = this.hero; for (let i = 0; i < 18; i++) { h.x -= 7; yield; } this.hero = null; }
           this.setDisp(mon);
           const d = this.disp[0];
+          if (bw) { const c = this.mid(d); this.ring(c.x, c.y, '#ffffff', { dr: 2.2, life: 12 }); this.burstAt(c.x, c.y, 12, { cols: ['#ffffff', '#fff4b0'], speed: 2.2, life: 16 }); NP.snd.sfx('save'); }
           NP.snd.cry(mon.kigu.species);
           for (let i = 1; i <= 14; i++) { d.alpha = i / 14; d.offy = -10 * (1 - i / 14); yield; }
           d.offy = 0;
@@ -280,8 +298,7 @@
       for (let i = 0; i < 10; i++) { h.lean = -Math.min(3, (i >> 1) + 1); yield; }
       h.pose = 'throw'; h.lean = 4;
       NP.snd.sfx('throw');
-      const by = this.bgInfo.playerBase.y, hand = A().heroHand(NP.State.lookId()), hb = A().humanThrow(NP.State.lookId(), 'throw', 4);
-      const p0 = hand ? { x: h.x - (hb.w >> 1) + hand.x + 3, y: by - (hb.h - 2) + hand.y - 1 } : { x: h.x + 20, y: by - 74 }, p1 = { x: this.bgInfo.playerBase.x + 30, y: by - 46 };
+      const by = this.bgInfo.playerBase.y, p0 = { x: h.x + 20, y: by - 74 }, p1 = { x: this.bgInfo.playerBase.x + 30, y: by - 46 };
       for (let i = 0; i <= 18; i++) {
         const t = i / 18;
         if (i === 5) { h.pose = 'follow'; h.lean = 2; }
@@ -292,6 +309,55 @@
       for (let i = 0; i < 12; i++) { this.burst = { x: p1.x, y: p1.y - 4, t: i / 12 }; if (i === 0) NP.snd.sfx('save'); yield; }
       this.burst = null;
       h.pose = 'ready'; h.lean = 0;
+    }
+
+    /** The send-out with the hero's approved throw frames (art/autosprite/heroes/throw/v2, timed like its anim.py preview): a
+     *  settle, a dithered blend into the wind-up, a smear into the follow-through, the spool flies up and off to the right with
+     *  its thread trailing, then she slides off to the left (BW style). The caller brings the Kigu out with a flash. */
+    *heroThrowBW(fr) {
+      const h = this.hero, step = (k, dx, dy, n) => { h.k = k; h.mix = null; h.dx = dx; h.dy = dy; return this.wait(n); };
+      const blend = (a, b, d1, d2, n) => { h.mix = { a, b }; h.dx = (d1[0] + d2[0]) / 2; h.dy = (d1[1] + d2[1]) / 2; return this.wait(n); };
+      yield* step('idle', 0, 1, 6);                          // small settle before the wind-up
+      yield* blend('idle', 'wind', [0, 1], [-2, 1], 4);
+      yield* step('wind', -2, 1, 5);
+      yield* step('wind', 0, 0, 9);
+      NP.snd.sfx('throw');
+      yield* blend('wind', 'follow', [0, 0], [3, 0], 3);     // one smear frame into the release
+      yield* step('follow', 3, 0, 4);
+      const f = fr.follow, lx = h.x - f.cap + 3 + f.hand.x, ly = NP.BOX_Y - f.bmp.h + f.hand.y, W = NP.W + 10;
+      this.thread = { col: SPOOL[NP.State.lookId()] ? SPOOL[NP.State.lookId()].T : '#c03030', pts: [{ x: lx, y: ly }] };
+      for (let i = 1; i <= 24; i++) {                       // the spool arcs up and to the right, off the stage
+        const t = i / 24, x = lx + (W - lx) * t, y = ly - 40 * Math.sin(t * Math.PI * 0.6) - 10 * t;
+        this.thread.pts.push({ x, y });
+        this.heroSpool = { x, y };
+        yield;
+      }
+      this.heroSpool = null; this.thread = null;
+      yield* this.wait(12);
+      for (let i = 1; i <= 18; i++) { h.dx = 3 - (84 * i) / 18; yield; } // she slides off to the left
+      this.hero = null;
+    }
+
+    drawHero(fb) {
+      const h = this.hero, look = NP.State.lookId(), fr = A().heroThrow(look);
+      if (!fr) {
+        const t = A().humanThrow(look, h.pose || 'ready', h.lean || 0);
+        fb.blit(t, Math.round(h.x - (t.w >> 1)), this.bgInfo.playerBase.y - (t.h - 2));
+        return;
+      }
+      const at = (k) => ({ b: fr[k].bmp, x: Math.round(h.x - fr[k].cap + (h.dx || 0)), y: Math.round(NP.BOX_Y - fr[k].bmp.h + (h.dy || 0)) });
+      if (this.thread) { const p = this.thread.pts; for (let i = 1; i < p.length; i++) fb.line(Math.round(p[i - 1].x), Math.round(p[i - 1].y), Math.round(p[i].x), Math.round(p[i].y), this.thread.col); }
+      if (h.mix) { // two poses mixed on a checkerboard: the pixel-art smear between key frames
+        const a = at(h.mix.a), b = at(h.mix.b);
+        const x0 = Math.max(0, Math.min(a.x, b.x)), x1 = Math.min(fb.w, Math.max(a.x + a.b.w, b.x + b.b.w));
+        const y0 = Math.max(0, Math.min(a.y, b.y)), y1 = Math.min(NP.BOX_Y, Math.max(a.y + a.b.h, b.y + b.b.h));
+        const px = (o, x, y) => { const u = x - o.x, v = y - o.y; return u < 0 || v < 0 || u >= o.b.w || v >= o.b.h ? 0 : o.b.u32[v * o.b.w + u]; };
+        for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+          const ca = px(a, x, y), cb = px(b, x, y), c = (x + y) & 1 ? (cb >>> 24 ? cb : ca) : ca >>> 24 ? ca : cb;
+          if (c >>> 24) fb.u32[y * fb.w + x] = c;
+        }
+      } else { const p = at(h.k || 'idle'); fb.blit(p.b, p.x, p.y); }
+      if (this.heroSpool) fb.blit(spoolBmp(look), Math.round(this.heroSpool.x - 3), Math.round(this.heroSpool.y - 3));
     }
 
     *evExp(e) {
@@ -585,10 +651,7 @@
         fb.blit(t, Math.round(f.x - (t.w >> 1)), bg.enemyBase.y - (t.h - 2));
       }
       this.drawKigu(fb, 1);
-      if (this.hero) {
-        const t = A().humanThrow(NP.State.lookId(), this.hero.pose || 'ready', this.hero.lean || 0);
-        fb.blit(t, Math.round(this.hero.x - (t.w >> 1)), bg.playerBase.y - (t.h - 2));
-      }
+      if (this.hero) this.drawHero(fb);
       if (this.burst) { // sparkle burst: eight rays that grow then fade out
         const f = this.burst, r = 3 + f.t * 20, r0 = f.t * 8;
         for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4 + f.t * 0.8; fb.line(Math.round(f.x + Math.cos(a) * r0), Math.round(f.y + Math.sin(a) * r0), Math.round(f.x + Math.cos(a) * r), Math.round(f.y + Math.sin(a) * r), k & 1 ? '#fff4b0' : '#ffffff'); }

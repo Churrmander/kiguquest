@@ -168,12 +168,9 @@
   /** Back-view battle pose for the send-out animation. pose: 'ready' | 'windup' | 'throw' | 'follow'; lean = whole-body sway in px (the
    *  head swings further than the feet). The arm pose comes from NP.art.human.backPose (drawn by the generator, same size as back());
    *  the lean and the throw's lift are applied here, scaled by the bitmap's own height. Anchor stays bottom-centre (w/2, h-2).
-   *  The heroes use their approved AutoSprite throw pose (NP.art.autosprite.hero) for every phase instead. */
+   *  The battle scene prefers A.heroThrow (the approved AutoSprite frames) when the look has them. */
   A.humanThrow = (look, pose, lean) => memo('ht|' + look + '|' + pose + '|' + lean, () => {
-    const h = art().human, lk = rl(look), as = art().autosprite;
-    // the approved AutoSprite throw pose replaces every phase for the heroes; wind-up and follow-through come from the lean
-    const hero = as && as.hasHero && as.hasHero(lk) ? tryit(() => as.hero(lk), null) : null;
-    if (hero) return leaned(hero.bmp, pose, lean);
+    const h = art().human, lk = rl(look);
     const posed = pose && pose !== 'ready' && h && h.backPose && h.has && h.has(lk) ? tryit(() => h.backPose(lk, pose), null) : null;
     return leaned(posed || A.humanBack(look), pose, lean);
   });
@@ -200,8 +197,8 @@
     }
     return out;
   }
-  /** Where the thrown spool leaves the hero's hand in a humanThrow bitmap (x from its left edge, y from its top), or null. */
-  A.heroHand = (look) => { const as = art().autosprite, lk = rl(look); return as && as.hasHero && as.hasHero(lk) ? as.hero(lk).hand : null; };
+  /** The hero's approved battle-start throw (NP.art.autosprite.hero): { idle, wind, follow } of { bmp, cap, hand }, or null. */
+  A.heroThrow = (look) => { const as = art().autosprite, lk = rl(look); return as && as.hasHero && as.hasHero(lk) ? tryit(() => as.hero(lk), null) : null; };
 
   // ------------------------------------------------------------------ kigu
   function blob(id, back) {
