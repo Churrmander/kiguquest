@@ -1,11 +1,12 @@
-# Battle-start throw, BW style (supersedes heroes/rig torso frames)
+# Battle-start throw, BW style
 
-Three torso frames per hero, cropped at mid-thigh like the Pokemon Black/White player back sprite (the text box hides the rest):
+Three torso frames per hero, cropped at about mid-thigh like the Pokemon Black/White player back sprite, as the owner described them:
 
-1. `t1` upright, shoulders turned almost side-on toward the opponent, arms down (Dahlia: spool at the hip).
-2. `t2` back to the camera, throwing hand raised by/above the cap holding the spool.
-3. `t3` follow-through: leaning forward, throwing arm swept forward to about belt height, other arm tucked back.
+1. `t1` wind-up: right arm pulled back low with the spool, torso twisted so the chest shows.
+2. `t2` mid wind-up: back to the camera, right arm up and bent, spool held by the head.
+3. `t3` release: bent forward, right arm extended forward, left arm slightly back.
 
-1 image pixel = 1 art pixel; draw at the battle scale. Frames share each hero's palette (16-18 colours), a 1px outline-black edge and the same window height, so they can be swapped in place (bottom-aligned).
-Art-critic gate (`.claude/agents/art-critic.md`): Draco 8/10 PASS (round 6), Dahlia 8/10 PASS (round 7).
-Built by `bwthrow.py` (crop/pixelize), `fit3.py` (matches t3 scale to cap size; Draco uses T3SCALE=1.125) and `postfix.py` (hand pixel fixes).
+1 image pixel = 1 art pixel. Each hero's frames share a palette and a 1px outline black; bottom-align them when swapping.
+Art-critic gate: Draco 8/10 PASS, Dahlia 8/10 PASS.
+Rebuild: `T1SCALE=0.962 T3SCALE=1.136 python bwthrow.py . draco`, `T1SCALE=0.86 T3SCALE=1.0 T3WINDOW=cap T3FRAC=0.47 python bwthrow.py . dahlia`,
+then `python spool.py .` (paints the thread spool over the ball the pose generator drew in t2).

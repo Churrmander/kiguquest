@@ -1,6 +1,6 @@
 # BW-style throw torso frames: crop at mid-thigh, pixelize on a 6px grid with one shared palette, align, preview.
 # usage: python bwthrow.py <dir> <hero>    needs <hero>-t1.png, -t2.png, -t3.png (t3 is mirrored so the lean faces the opponent)
-import sys
+import sys, os
 from PIL import Image
 import numpy as np
 d, h = sys.argv[1], sys.argv[2]
@@ -8,7 +8,13 @@ G = 6
 def load(n, mirror=False):
     im = Image.open(f'{d}/{h}-{n}.png').convert('RGB')
     if mirror: im = im.transpose(Image.FLIP_LEFT_RIGHT)
-    return np.array(im).astype(float)
+    a = np.array(im).astype(float)
+    from scipy import ndimage as ndi
+    lab, n = ndi.label(a.min(-1) < 240, structure=np.ones((3, 3)))
+    if n > 1:
+        sizes = ndi.sum(np.ones_like(lab), lab, range(1, n + 1)); keep = 1 + int(np.argmax(sizes))
+        a[(lab > 0) & (lab != keep)] = 255
+    return a
 MIRROR = set(sys.argv[3:])                      # frame names to mirror so the throw faces the opponent
 raw = {k: load(k, k in MIRROR) for k in ('t1', 't2', 't3')}
 def bbox(a):
@@ -34,14 +40,16 @@ ref_w = head_w(raw['t2'])[0]; ref_h = standing_h(raw['t2'])
 for k in ('t1', 't3'):
     # t1 is upright but side-on (cap looks wider): match standing height. t3 is the same back view as t2: match cap width.
     import os
-    s = ref_h / standing_h(raw[k]) if k == 't1' else float(os.environ.get('T3SCALE', ref_w / head_w(raw[k])[0])); im = Image.fromarray(raw[k].astype(np.uint8))
+    s = float(os.environ.get(k.upper() + 'SCALE', ref_w / head_w(raw[k])[0])); im = Image.fromarray(raw[k].astype(np.uint8))
     im = im.resize((round(im.width * s), round(im.height * s)), Image.LANCZOS)
     can = Image.new('RGB', (max(1024, im.width), max(1024, im.height)), 'white'); can.paste(im, (0, 0)); raw[k] = np.array(can).astype(float)
 _, sy0, _, sy1 = bbox(raw['t2']); stand = sy1 - sy0
 cut = {}
+_, t2y0, _, t2y1 = bbox(raw['t2']); feet_cut = t2y1 - (t2y0 + int(stand * 0.58))
 for k, a in raw.items():
     x0, y0, x1, y1 = bbox(a)
-    line = y0 + int(stand * 0.58)                   # mid-thigh window; the same height for every frame
+    # upright frames: fixed window from the cap; the bent-over t3: cut the same leg length off the feet as t2
+    line = (y0 + int(stand * float(os.environ.get('T3FRAC', 0.58)))) if (k == 't3' and os.environ.get('T3WINDOW') == 'cap') else (y0 + int(stand * 0.58) if k != 't3' else y1 - feet_cut)
     cut[k] = a[y0:line, x0:x1]
 blocks = {}
 for k, a in cut.items():
@@ -62,6 +70,13 @@ for k, b in blocks.items():
         y, x = q.popleft()
         if 0 <= y < Hh and 0 <= x < Ww and white[y, x] and not bg[y, x]:
             bg[y, x] = True; q.extend([(y + 1, x), (y - 1, x), (y, x + 1), (y, x - 1)])
+    # enclosed pure-white pockets (e.g. between a raised arm and the head) are background too
+    from scipy import ndimage as ndi
+    pure = (b.min(-1) >= 250) & ~bg
+    lab, n = ndi.label(pure)
+    for i in range(1, n + 1):
+        m = lab == i
+        if m.sum() >= 12: bg |= m
     solid = ~bg
     for _ in range(2):   # strip the pale fringe left where edge blocks mixed with the white background
         pad = np.pad(solid, 1); inner = pad[:-2, 1:-1] & pad[2:, 1:-1] & pad[1:-1, :-2] & pad[1:-1, 2:]
