@@ -74,7 +74,7 @@
     ls: [[1, 'pounce'], [1, 'snack_time'], [7, 'quick_dash'], [11, 'cheek_crunch'], [15, 'flurry_swipe'], [22, 'pillow_slam'], [28, 'sprint']],
     dex: 'A baker hamster with a basket of warm buns. The buns are delicious, and so is the smell.' });
   sp('peepi', 'Peepi', ['fluff', 'gale'], [40, 45, 40, 35, 35, 56], { catch: 255, exp: 50, ab: ['keen_eye'], cry: 'Pip!', evo: [{ to: 'larkette', level: 14 }],
-    ls: [[1, 'pip_peck'], [1, 'tail_wag'], [5, 'gust_puff'], [9, 'quick_dash'], [14, 'wing_flutter']],
+    ls: [[1, 'pip_peck'], [1, 'tail_wag'], [8, 'gust_puff'], [9, 'quick_dash'], [14, 'wing_flutter']],
     dex: 'A sparrow-chick onesie with wing sleeves. She practices flapping every sunrise.' });
   sp('larkette', 'Larkette', ['fluff', 'gale'], [62, 65, 55, 58, 55, 85], { catch: 120, exp: 122, ab: ['keen_eye'], cry: 'Lark!', stage: 2, family: 'peepi',
     evo: [{ to: 'larkessa', level: 32 }],

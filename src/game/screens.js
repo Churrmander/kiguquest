@@ -205,6 +205,7 @@
   }
 
   // ===================================================================================== Tailor card
+  const SALON_TYPES = ['fluff', 'buzz', 'volt', 'terra', 'gale', 'frost', 'drake', 'shade']; // Salons 1-8 (BIBLE region outline; 7-8 tentative)
   class CardScene extends Scene {
     constructor() { super('light'); }
     enter() { this.spawn((function* (s) { yield; while (!Input.pressed.b && !Input.pressed.a) yield; NP.snd.sfx('cancel'); NP.Game.pop(); })(this)); }
@@ -213,8 +214,10 @@
       const st = NP.state;
       ui.frame(fb, 8, 8, NP.W - 16, NP.H - 16, 'light');
       ui.text(fb, 'TAILOR CARD', 20, 16, 'light', { color: '#d83838' });
-      const tr = A().humanFront(NP.State.lookId()); // 80x80 trainer sprite, bottom-centre anchor
-      fb.blit(tr, 40 - (tr.w >> 1), 110 - tr.h);
+      // the approved AutoSprite hero (same art as the battle send-out); the older generated portrait only as a fallback
+      const as = NP.art.autosprite && NP.art.autosprite.trainer && NP.art.autosprite.trainer(NP.State.lookId());
+      const tr = as && as.bmp ? as.bmp : A().humanFront(NP.State.lookId()); // bottom-centre anchor
+      fb.blit(tr, 40 - (tr.w >> 1), 112 - tr.h);
       ui.text(fb, 'Name   ' + st.name, 70, 32, 'light');
       ui.text(fb, 'Money  $' + st.money, 70, 46, 'light');
       ui.text(fb, 'Friends ' + Object.keys(st.dex.caught).length + ' (seen ' + Object.keys(st.dex.seen).length + ')', 70, 60, 'light');
@@ -222,9 +225,12 @@
       ui.text(fb, 'Buttons', 20, 120, 'light', { color: '#707890' });
       for (let i = 0; i < 8; i++) {
         const x = 24 + i * 28, y = 136;
-        const b = A().badge(st.badges[i] ? i + 1 : 0, false);
-        if (b) fb.blit(b, x, y);
-        else { fb.ellipse(x + 8, y + 8, 8, 8, st.badges[i] ? '#f0c030' : '#c8d0e0', true); fb.ellipse(x + 8, y + 8, 8, 8, '#606880', false); }
+        // the Button icons are not drawn yet (icons kit has no badge art, so it would return a magenta placeholder):
+        // a plain sewing button stands in, in its Salon's type colour once earned
+        const t = st.badges[i] && NP.data.types[SALON_TYPES[i]], face = t ? t.color : '#c8d0e0';
+        fb.ellipse(x + 8, y + 8, 8, 8, face, true); fb.ellipse(x + 8, y + 8, 8, 8, '#606880', false);
+        fb.ellipse(x + 8, y + 8, 5, 5, NP.Color.shade(face, -0.25), false);
+        for (const [hx, hy] of [[6, 6], [9, 6], [6, 9], [9, 9]]) fb.fillRect(x + hx, y + hy, 2, 2, st.badges[i] ? '#ffffff' : '#8890a8');
       }
     }
   }

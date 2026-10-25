@@ -35,7 +35,7 @@
   M('foxfire', 'Fox Fire', 'ember', T, null, 85, 15, { status: st('brn'), sideCond: 'foxfire' }, 'Burns the foe and powers up your Ember moves for 5 turns.');
   M('foxfire_blast', 'Foxfire Blast', 'ember', S, 90, 100, 15, { status: st('brn', 10) }, 'A sweeping wave of fox-fire.');
   // --- Tide
-  M('bubble_pop', 'Bubble Pop', 'tide', S, 40, 100, 30, null, 'Pops bubbles on the foe.');
+  M('bubble_pop', 'Bubble Pop', 'tide', S, 35, 100, 30, null, 'Pops bubbles on the foe.');
   M('bubble_beam', 'Bubble Beam', 'tide', S, 65, 100, 20, { boosts: { spe: -1 }, boostChance: 10 }, 'May lower Speed.');
   M('aqua_dash', 'Aqua Dash', 'tide', P, 40, 100, 20, { priority: 1 }, 'A watery rush that strikes first.');
   M('shell_guard', 'Shell Guard', 'tide', T, null, null, 40, { target: 'self', boosts: { def: 1 } }, 'Hides behind the shell.');

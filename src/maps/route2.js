@@ -37,7 +37,7 @@
   const M = L.map({
     id: 'route2', name: 'Route 2  Plankwater', music: 'route_meadow', battleBg: 'grass', border: 'treeline', w: 24, h: 46,
     view: 'street',   // 3D camera preset (street | town | flat-ish), see src/engine/persp.js
-    legend: { '.': 'grass', T: 'treeline', p: 'path', ',': 'tallgrass', f: 'flowers', w: 'water', B: 'bridge_v' },
+    legend: { '.': 'grass', T: 'treeline', p: 'path', ',': 'tallgrass', f: 'flowers', w: 'water', B: 'bridge_v', d: 'ledge_d' },
     onEnter: function* (c) { L.syncStamps(c); },
   });
   const W = 24, H = 46;
@@ -46,7 +46,7 @@
   M.rect(0, 0, 2, H, 'T').rect(W - 2, 0, 2, H, 'T');
   M.rect(2, 0, 8, 2, 'T').rect(12, 0, 10, 2, 'T').rect(2, 44, 8, 2, 'T').rect(12, 44, 10, 2, 'T');
   // tall grass (south half, then north half), flowers
-  M.rect(12, 36, 7, 5, ',').rect(2, 38, 5, 5, ',').rect(13, 29, 6, 4, ',').rect(2, 31, 3, 3, ',');
+  M.rect(14, 36, 5, 5, ',').rect(2, 38, 5, 5, ',').rect(13, 29, 6, 4, ',').rect(2, 31, 3, 3, ',');
   M.rect(2, 13, 4, 5, ',').rect(16, 13, 4, 3, ',').rect(3, 3, 6, 5, ',').rect(17, 2, 4, 4, ',');
   M.rect(13, 41, 3, 1, 'f').rect(8, 37, 2, 1, 'f').rect(16, 9, 3, 1, 'f').rect(5, 10, 3, 1, 'f');
   // the road: south bank, bridge, north bank
@@ -54,6 +54,12 @@
   M.path([[10, 17], [10, 12], [14, 12], [14, 6], [10, 6], [10, 0]], 2, 'p');
   M.rect(2, 18, 20, 9, 'w');
   M.rect(10, 18, 2, 9, 'B');
+  M.rect(10, 38, 1, 4, '.');   // the road narrows to the gatehouse's one-tile arch, so the gate sits centred on it
+  // one-way ledges (hop down, never climb) funnel the walk north through each trainer's line of sight (owner's rule: no skipping)
+  M.rect(2, 36, 8, 1, 'd').rect(12, 36, 10, 1, 'd');    // Reed: only the road at x10-11
+  M.rect(2, 33, 4, 1, 'd').rect(8, 33, 14, 1, 'd');     // Mina: only the road at x6-7
+  M.rect(2, 15, 8, 1, 'd').rect(12, 15, 10, 1, 'd');    // Kei: only the road at x10-11
+  M.rect(2, 10, 12, 1, 'd').rect(16, 10, 6, 1, 'd');    // Brock: only the road at x14-15
 
   // ---- scenery
   M.sign(9, 43, 'ROUTE 2  Plankwater\\nNorth: Gingham Woods\\nSouth: Thimble Village', 'south signpost');
@@ -74,9 +80,9 @@
     intro: 'This trail is my campsite! Well, the bit beside it is.\\pLet us see whose Kigu sleeps better!', win: 'My Kigu really did need a nap...', after: 'The bridge is just up ahead. Walk it slowly. It creaks.' });
   M.trainer('mina', 4, 32, 'schoolgirl', 'right', { cls: 'Schoolgirl', name: 'Mina', sight: 3, reward: 6, ai: 0, team: [['nibbi', 8], ['peepi', 9]],
     intro: 'I walked all the way from Hemline for a field trip.\\pSo I am going to battle everyone on the way home!', win: 'Teacher says to learn from every loss. This is a lot of learning.', after: 'Hemline is past the woods. They hem everything there, even the curtains.' });
-  M.trainer('gus', 13, 17, 'fisher', 'left', { cls: 'Fisher', name: 'Gus', sight: 3, reward: 8, ai: 1, team: [['ribbi', 10], ['ottopi', 10]],
+  M.trainer('gus', 13, 17, 'fisher', 'left', { cls: 'Fisher', name: 'Gus', sight: 3, reward: 8, ai: 1, team: [['ribbi', 8], ['ribbi', 9]],   // was Ribbi 10 + Ottopi 10: a wall for a Konko start
     intro: 'The fish are not biting today. You will have to do.', win: 'There goes my supper...', after: 'The river is calm today. The Pressers upstream keep checking its width.' });
-  M.trainer('kei', 7, 16, 'net_kid', 'right', { cls: 'Net Kid', name: 'Kei', sight: 3, reward: 6, ai: 1, team: [['webbi', 9], ['silkie', 10]],
+  M.trainer('kei', 7, 16, 'net_kid', 'right', { cls: 'Net Kid', name: 'Kei', sight: 4, reward: 6, ai: 1, team: [['webbi', 9], ['silkie', 10]],
     intro: 'Shh! Do not scare the webs! ...Oh. Battle? Okay!', win: 'My webs got tangled up in yours.', after: 'There are webs in the woods. They are stronger than they look.' });
   M.trainer('brock', 17, 9, 'hiker', 'left', { cls: 'Hiker', name: 'Brock', sight: 4, reward: 8, ai: 1, team: [['molli', 10], ['kumi', 10], ['molli', 11]],
     intro: 'Good boots, good socks, good Kigu. That is the whole secret!', win: 'My boots are fine. It is my pride that has a blister.', after: 'The woods past this road are quiet. Quiet is a kind of trail marker.' });

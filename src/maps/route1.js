@@ -14,9 +14,13 @@
   K.rect(g, 14, 30, 7, 5, ','); K.rect(g, 3, 22, 3, 6, ','); K.rect(g, 8, 23, 6, 5, ','); K.rect(g, 16, 12, 6, 6, ',');
   K.rect(g, 4, 8, 6, 6, ','); K.rect(g, 17, 22, 5, 3, ','); K.rect(g, 8, 33, 3, 3, ',');
   // flowers, pond, ledge
-  K.rect(g, 8, 36, 3, 1, 'f'); K.rect(g, 15, 26, 4, 1, 'f'); K.rect(g, 8, 13, 3, 2, 'f');
+  K.rect(g, 8, 36, 3, 1, 'f'); K.rect(g, 15, 25, 4, 1, 'f'); K.rect(g, 8, 13, 3, 2, 'f');
   K.rect(g, 18, 3, 5, 4, 'w');
   K.rect(g, 15, 28, 6, 1, 'd');
+  // one-way ledges (hop down, never climb) funnel the walk north through each trainer's line of sight (owner's rule: no skipping)
+  K.rect(g, 3, 26, 3, 1, 'd'); K.rect(g, 8, 26, 14, 1, 'd');   // Lia's row: only the lane at x6-7 goes north
+  K.rect(g, 3, 18, 11, 1, 'd'); K.rect(g, 16, 18, 7, 1, 'd');  // Bo's row: only the lane at x14-15
+  K.rect(g, 3, 6, 9, 1, 'd'); K.rect(g, 14, 6, 4, 1, 'd');     // Suzu's row: only the lane at x12-13
 
   const team = (list) => list.map(([sp, lv]) => ({ sp, lv }));
 
@@ -43,8 +47,8 @@
     ],
     encounters: {
       grass: [
-        { sp: 'peepi', min: 3, max: 5, w: 30 }, { sp: 'nibbi', min: 3, max: 5, w: 30 },
-        { sp: 'mittsy', min: 4, max: 6, w: 25 }, { sp: 'silkie', min: 4, max: 5, w: 10 },
+        { sp: 'peepi', min: 2, max: 4, w: 30 }, { sp: 'nibbi', min: 2, max: 4, w: 30 },   // a Lv5 starter should win these comfortably
+        { sp: 'mittsy', min: 3, max: 5, w: 25 }, { sp: 'silkie', min: 3, max: 4, w: 10 },
       ],
     },
     props: [
@@ -57,14 +61,14 @@
         say: ['Tall grass is where wild Kigu nap in the sun.\\pWeaken one first. A sleepy Kigu is much easier to befriend.'] },
       { id: 'kid', x: 9, y: 19, look: 'child_f', dir: 'down', move: 'turn',
         say: ['My Peepi learned Quick Dash!\\pShe always gets to the snack first.'] },
-      { id: 'lia', x: 6, y: 25, look: 'tailor_f', dir: 'down',
-        trainer: { cls: 'Tailor', name: 'Lia', sight: 4, reward: 6, ai: 0, team: team([['peepi', 3], ['nibbi', 3]]),
+      { id: 'lia', x: 8, y: 25, look: 'tailor_f', dir: 'left',
+        trainer: { cls: 'Tailor', name: 'Lia', sight: 2, reward: 6, ai: 0, team: team([['peepi', 3], ['nibbi', 3]]),
           intro: 'You have a Kigu too? Let us compare stitches!', win: 'Oh! Your seams are tighter than mine.', after: 'My Peepi has forgiven you. I am still working on it.' } },
-      { id: 'bo', x: 12, y: 25, look: 'net_kid', dir: 'left',
-        trainer: { cls: 'Net Kid', name: 'Bo', sight: 3, reward: 5, ai: 0, team: team([['mittsy', 4]]),
+      { id: 'bo', x: 13, y: 17, look: 'net_kid', dir: 'right',
+        trainer: { cls: 'Net Kid', name: 'Bo', sight: 2, reward: 5, ai: 0, team: team([['mittsy', 4]]),
           intro: 'I befriended my Mittsy in this very grass!', win: 'She fell asleep on me...', after: 'Mittsy naps a lot, but she naps fiercely.' } },
-      { id: 'suzu', x: 15, y: 15, look: 'picnicker', dir: 'left',
-        trainer: { cls: 'Picnicker', name: 'Suzu', sight: 4, reward: 6, ai: 1, team: team([['sprubun', 4], ['peepi', 4]]),
+      { id: 'suzu', x: 11, y: 5, look: 'picnicker', dir: 'right',
+        trainer: { cls: 'Picnicker', name: 'Suzu', sight: 2, reward: 6, ai: 1, team: team([['sprubun', 4], ['peepi', 4]]),
           intro: 'My picnic is over, so now it is battle time! Ready?', win: 'My sandwiches are going to get cold...', after: 'Thimble has a Salon with a Master Tailor. Pack a snack first.' } },
     ],
     triggers: [

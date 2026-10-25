@@ -47,7 +47,7 @@
     intro: 'Shh! You will wake the trees. ...Oh, you want to battle? Quietly, then.', win: 'That was a very polite way to lose.', after: 'Keep to the dirt. The grass hides all sorts of sleepers.' });
   M.trainer('tess', 25, 22, 'picnicker', 'left', { cls: 'Picnicker', name: 'Tess', sight: 5, reward: 8, ai: 1, team: [['daisip', 11], ['silkie', 11]],
     intro: 'A picnic in the woods is the best picnic. Even better with a battle!', win: 'My sandwiches have gone all soft...', after: 'Past the north clearing is the Spindle Shrine. Everyone whispers up there.' });
-  M.trainer('yuki', 17, 6, 'schoolgirl', 'down', { cls: 'Schoolgirl', name: 'Yuki', sight: 3, reward: 8, ai: 1, team: [['peepi', 11], ['sprubun', 11]],
+  M.trainer('yuki', 17, 6, 'schoolgirl', 'down', { cls: 'Schoolgirl', name: 'Yuki', sight: 4, reward: 8, ai: 1, team: [['peepi', 11], ['sprubun', 11]],
     intro: 'We are not supposed to battle in the woods. ...Just a quiet one.', win: 'Teacher is going to ask why I am out of breath.', after: 'The Pressers came through here yesterday, measuring the paths. Rude!' });
   M.trainer('riku', 5, 16, 'net_kid', 'down', { cls: 'Net Kid', name: 'Riku', sight: 3, reward: 7, ai: 1, team: [['webbi', 12], ['buzzlet', 11]],
     intro: 'You found my glade! Finders have to battle. That is the rule.', win: 'Okay, okay. You can use the glade too.', after: 'The webs here catch the morning dew. They look like tiny lace.' });

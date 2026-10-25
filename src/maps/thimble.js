@@ -54,14 +54,15 @@
     yield* c.walk(b, ['down', 8]);
     c.hideNpc('presser_s2');
     c.music('town_thimble');
-    // Poppy peeks out of the Salon
-    c.placeNpc(pop, 12, 6, 'down');
+    // Poppy steps out of the Salon and stands beside the player, the two facing each other (she used to walk into the player's tile)
+    c.placeNpc(pop, px + 1, py, 'left');
+    NP.snd.sfx('door');
     c.showNpc('poppy_out');
-    yield* c.walk(pop, ['down', 1]);
+    yield* c.face('player', 'right');
     yield* c.sayT('thimble.inspect.poppy.1', 'Poppy: Oh my. The Society for Tidy Living.\\pThey began as ribbon wardens, you know.\\pTying lost children to their parents with matching ribbons.\\p...I wonder when matching became the point.');
     yield* c.sayT('thimble.inspect.poppy.2', 'Poppy: Thank you, {player}.\\pKeep that handkerchief safe. And keep your seams loose enough to breathe!');
-    yield* c.walk(pop, ['up', 1]);
     c.hideNpc('poppy_out');
+    NP.snd.sfx('door');
     c.set('presser1_done');
   }
 
@@ -94,7 +95,7 @@
   K.rect(g, 10, 10, 2, 2, 'c'); K.rect(g, 14, 10, 2, 2, 'c');
   K.rect(g, 3, 17, 4, 2, 'f'); K.rect(g, 19, 18, 4, 2, 'f'); K.rect(g, 8, 13, 3, 1, 'f');
   K.rect(g, 15, 13, 1, 4, 'F');
-  K.rect(g, 9, 15, 3, 4, ',');                       // a small meadow of tall grass beside the road
+  K.rect(g, 9, 15, 3, 4, 'f');                       // a flower patch beside the road (towns have no tall grass: no wild Kigu in town)
 
   K.reg({
     id: 'thimble', name: 'Thimble Village', music: 'town_thimble', battleBg: 'grass', border: 'treeline',
@@ -128,12 +129,7 @@
       if (c.flag('badge1') && !c.flag('presser1_done')) yield* inspection(c);
     },
     spawns: { south: { x: 12, y: 19, dir: 'up' }, north: { x: 22, y: 1, dir: 'down' } },
-    encounters: {
-      grass: [
-        { sp: 'peepi', min: 4, max: 6, w: 30 }, { sp: 'nibbi', min: 4, max: 6, w: 30 },
-        { sp: 'mittsy', min: 5, max: 7, w: 25 }, { sp: 'silkie', min: 5, max: 6, w: 15 },
-      ],
-    },
+    // towns are safe: no wild encounters (owner's rule)
     warps: [
       { xs: [12, 13], y: 21, to: 'route1', spawn: 'north', sound: 'none' },
       { xs: [22, 23], y: 0, to: 'route2', spawn: 'south', sound: 'none' },

@@ -75,7 +75,9 @@
       const spr = A().human(this.look);
       const vd = NP.view3d ? NP.view3d.viewDir(this.dir) : this.dir;
       const set = spr.frames[vd] || spr.frames.down;
-      const f = this.moving ? (this.parity ? 1 : 2) : 0;
+      // 5th-gen walk: the stride frame for the first half of each step, standing for the second half, so the legs visibly open
+      // and close (side views used to hold one stride the whole way, which read as sliding)
+      const f = this.moving && Math.abs(this.ox) + Math.abs(this.oy) > 8 ? (this.parity ? 1 : 2) : 0;
       const bmp = set[Math.min(f, set.length - 1)];
       // the sprite cell (32x32) is centred on the tile with the feet on the tile's bottom row: (X - 8, Y - 16)
       const sx = X + ((16 - bmp.w) >> 1), sy = Y + 16 - bmp.h;
