@@ -47,7 +47,7 @@ function readPNG(file) {
 /** Sample the centre of every grid cell, drop the white background (flood fill from the border, plus from `gaps`: seed points in
  *  source pixels inside enclosed background, such as the space between the legs), crop to the bounding box.
  *  -> { w, h, cx (frame centre x inside the crop), pal: ['rrggbb', ...], idx: Uint8Array (0 = transparent, else pal index + 1) } */
-function convert(file, grid = GRID, gaps = []) {
+function convert(file, grid = GRID, gaps = [], clear = []) {
   const im = readPNG(file);
   if (im.w !== im.h || im.w < 1000) throw new Error(file + ': expected a square ~1024px sheet');
   const N = Math.floor(im.w / grid), rgb = new Array(N * N);
@@ -65,6 +65,11 @@ function convert(file, grid = GRID, gaps = []) {
     bg[i] = 1;
     const x = i % N, y = (i / N) | 0;
     if (x > 0) stack.push(i - 1); if (x < N - 1) stack.push(i + 1); if (y > 0) stack.push(i - N); if (y < N - 1) stack.push(i + N);
+  }
+  // clear boxes [x0, y0, x1, y1] in source px: light anti-aliased cells (every channel >= 120) inside are background too, for slivers
+  // too thin and grey for the white flood
+  for (const [bx0, by0, bx1, by1] of clear) for (let y = Math.floor(by0 / grid); y <= Math.floor(by1 / grid); y++) {
+    for (let x = Math.floor(bx0 / grid); x <= Math.floor(bx1 / grid); x++) if (rgb[y * N + x].every((v) => v >= 120)) bg[y * N + x] = 1;
   }
   let x0 = N, y0 = N, x1 = -1, y1 = -1;
   for (let i = 0; i < N * N; i++) if (!bg[i]) { const x = i % N, y = (i / N) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
@@ -236,13 +241,40 @@ for (const [look, hero] of Object.entries(HEROES)) {
 // 40-75% down the figure), where the spool leaves.
 const TRAINER_H = 84, trainers = {};
 // enclosed background the border flood can't reach (white clothing is enclosed too, so gaps are listed by hand): source px seeds
-const TRAINER_GAPS = { hero_f: [[507, 549], [579, 351]], hero_m: [[363, 213]] }; // Dahlia: between the legs, inside the hip arm; Draco: inside the raised arm
+const TRAINER_GAPS = {
+  hero_f: [[507, 549], [579, 351]], // Dahlia: between the legs, inside the hip arm
+  hero_m: [[363, 213]], // Draco: inside the raised arm
+  cook: [[603, 435]], // inside the hip arm
+  gentleman: [[453, 171]], // between the raised hand and the face
+  grunt_f: [[417, 195]], // between the ponytail and the neck
+  lady: [[399, 231]], // between the raised hand and the hat brim
+  madame_damask: [[471, 321]], // between the arm and the dress
+  picnicker: [[555, 333], [573, 531], [663, 609]], // by the backpack strap; between the arm and the skirt; inside the basket handle
+  pilot: [[561, 399]], // inside the hip arm
+  pleat: [[471, 201], [591, 345]], // between the raised hand and the neck; between the arm and the jacket
+  rocker: [[405, 417]], // between the arm and the guitar
+  rue: [[555, 369]], // between the arm and the coat
+  sailor: [[621, 345]], // inside the hip arm
+  tailor_f: [[453, 393]], // inside the hip arm
+  tailor_m: [[585, 387]], // inside the hip arm
+};
 const trainerFiles = fs.readdirSync(path.join(ROOT, 'art/autosprite/npc/battle')).filter((f) => f.endsWith('.png'))
   .map((f) => [f.slice(0, -4), path.join(ROOT, 'art/autosprite/npc/battle', f)])
   .concat(Object.entries(HEROES).map(([look, hero]) => [look, path.join(ROOT, 'art/autosprite/heroes', hero + '-ready.png')]));
+const TRAINER_CLEAR = { gentleman: [[498, 612, 534, 880]] }; // the thin grey sliver between the legs
+// drawn facing screen-right; mirrored so they face the player like the other foe trainers
+const TRAINER_FLIP = new Set(['schoolgirl']);
+/** Mirror a converted sprite left to right. */
+function flipX(s) {
+  const idx = new Uint8Array(s.w * s.h);
+  for (let y = 0; y < s.h; y++) for (let x = 0; x < s.w; x++) idx[y * s.w + x] = s.idx[y * s.w + s.w - 1 - x];
+  return Object.assign({}, s, { idx, cx: s.w - s.cx });
+}
 for (const [look, f] of trainerFiles) {
   if (!fs.existsSync(f)) continue;
-  const n = convert(f, 6, TRAINER_GAPS[look]), s = downscale(n, TRAINER_H / n.h);
+  let n = convert(f, 6, TRAINER_GAPS[look], TRAINER_CLEAR[look]);
+  if (TRAINER_FLIP.has(look)) n = flipX(n);
+  const s = downscale(n, TRAINER_H / n.h);
   let hx = -1, hy = 0;
   for (let y = Math.round(s.h * 0.4); y < s.h * 0.75; y++) for (let x = 0; x < s.w; x++) if (s.idx[y * s.w + x] && x > hx) { hx = x; hy = y; }
   trainers[look] = Object.assign(encode(s), { hand: { x: hx, y: hy } });
