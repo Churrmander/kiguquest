@@ -56,9 +56,9 @@
     yield* c.face(you, 'left'); yield* c.face(me, 'right');
     yield* c.sayT('button_town.memory.1', 'Little {rival}: It flies! The tail is all wonky, but it FLIES!');
     yield* c.emote(me, 'note');
-    yield* c.sayT('button_town.morning.5', 'Little {rival}: When we get our Kigu, we visit every Salon. Both of us.\\pPromise? Pinky promise?');
+    yield* c.sayT('button_town.morning.5', 'Little {rival}: When we get our Kigu, we\'ll visit every Salon, the two of us.\\pPromise? Pinky promise?');
     yield* c.emote(me, 'heart');
-    yield* c.sayT('button_town.morning.6', 'Two small pinkies hooked together.\\p"Every Salon, together."');
+    yield* c.sayT('button_town.morning.6', 'Two small pinkies hooked together, and that made it official.\\p"Every Salon, together."');
     yield* c.wait(30);
     yield* c.ow.fadeOut(30, '#fff4e0');
     c.ow.loadMap('button_town', 7, 4, 'up', { noEnter: true });
@@ -203,9 +203,9 @@
             yield* c.sayT('lab.errand.3', 'My parcel! Thank you, {player}. Let\'s see...\\pOh, these are my new Town Maps! And they sent two, the dears.');
             yield* c.sayT('lab.errand.4', 'Keep this one. Every Tailor should know where the road goes.');
             yield* c.giveItem('town_map', 1);
-            yield* c.sayT('lab.errand.share.1', 'And one more thing. This is an Exp Share.\\pKigu who wait on the bench still learn from every battle.\\pThey get half the Exp. Points, so nobody is left behind.');
+            yield* c.sayT('lab.errand.share.1', 'Oh, one more thing! This is an Exp Share.\\pWith it, Kigu who wait on the bench still learn from every battle.\\pThey get half the Exp. Points, so nobody gets left behind.');
             yield* c.giveItem('exp_share', 1);
-            yield* c.sayT('lab.errand.share.2', 'It is on from the start. If you want one Kigu to do all the learning,\\pswitch it off in your Key Items.');
+            yield* c.sayT('lab.errand.share.2', 'It\'s switched on already. If you\'d rather one Kigu did all the learning,\\pyou can switch it off in your Key Items.');
             yield* c.heal('And let me patch up your partner after her first adventure.\\pYour Kigu are feeling much better!');
             c.set('errand_done');
             yield* c.sayT('lab.errand.5', 'Meadow Lane is just north of town, and Thimble Village is past Basting Green.\\p{rival} has a head start, but I doubt that will last. Off you go!');
