@@ -163,7 +163,7 @@
       const x0 = Math.floor(camX / T), y0 = Math.floor(camY / T);
       const x1 = Math.ceil((camX + NP.W) / T), y1 = Math.ceil((camY + NP.H) / T);
       const overlays = this.drawTerrain(fb, camX, camY, tick, NP.W, NP.H);
-      const visible = (p) => p.x + p.w > x0 - 1 && p.x < x1 + 1 && p.y + p.h > y0 - 1 && p.y < y1 + 1;
+      const visible = (p) => p.x + p.w > x0 - 1 && p.x < x1 + 1 && p.y + p.h > y0 - 1 && p.y - Math.ceil((p.def.rise || 0) / T) < y1 + 1;
       // y-sorted objects: stamp bases and actors
       const list = [];
       for (const p of this.objs) if (visible(p)) list.push({ sortY: (p.y + p.h) * T, order: 0, p });
@@ -172,7 +172,7 @@
       for (const e of list) {
         if (e.a) { e.a.draw(fb, camX, camY); continue; }
         const p = e.p, bmp = A.stamp(p.id, p.variant, A.frameAt(p.def, tick));
-        const dx = p.x * T - camX, dy = p.y * T - camY;
+        const dx = p.x * T - camX, dy = p.y * T - camY - (p.def.rise || 0);   // rise: tall art stands up past the footprint
         if (p.over > 0 && p.over < p.h) fb.blit(bmp, dx, dy + p.over * T, { sx: 0, sy: p.over * T, sw: bmp.w, sh: bmp.h - p.over * T });
         else if (!p.over) fb.blit(bmp, dx, dy);
         else fb.blit(bmp, dx, dy); // fully "over": drawn with the base too, then again on top

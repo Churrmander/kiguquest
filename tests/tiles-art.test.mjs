@@ -47,7 +47,8 @@ for (const [id, s] of Object.entries(NP.stamps)) {
   for (const v of s.variants) for (let f = 0; f < s.frames; f++) {
     const a = s.draw(v, f), b = s.draw(v, f);
     assert.equal(a.w, s.w * T, id + ' width');
-    assert.equal(a.h, s.h * T, id + ' height');
+    assert.equal(a.h, s.h * T + s.rise, id + ' height');
+    ok(Number.isInteger(s.rise) && s.rise >= 0 && (s.rise === 0 || s.over === 0), id + ': rise must be a whole px count, and not mixed with over');
     ok(a.equals(b), id + ':' + v + ':' + f + ' not deterministic');
     ok(a.countColors() <= colourBudget(s.w * s.h), id + ':' + v + ' uses ' + a.countColors() + ' colours');
     let opaque = 0;

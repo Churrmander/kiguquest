@@ -1,4 +1,4 @@
-/* Seamstead Salon — Zip's Volt Salon (Salon #3). Mechanic: two barrier rows and two switch panels (L.panel). Pull a lever, walk on.
+/* Seamstead Salon — Zip's Volt Salon (Salon #3). Mechanic: two barrier rows and two switch panels (L.panel). Each panel's only standing tile is in a trainer's sight, so the levers cannot be pulled unseen.
  * Zip is on the main stage at the back; the Salon is open once the Crisp & Co. raid is done (see seamstead.js). */
 (function (root) {
   'use strict';
@@ -54,10 +54,10 @@
   M.gate('g2', { cells: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((x) => [x, 5]), closed: 'B', open: 'f', flag: 'sal3_g2', note: 'barrier 2 (panel between barriers)' });
   M.stamp('pc_terminal', 1, 11).interact(1, 12, L.panel(['g1'], 'A panel with a thick yellow lever. A tag: "FIRST BARRIER".'), 'panel 1 (opens g1)');
   M.stamp('pc_terminal', 10, 6).interact(10, 7, L.panel(['g2'], 'A panel with a thick yellow lever. A tag: "SECOND BARRIER".'), 'panel 2 (opens g2)');
-  M.stamp('sewing_machine', 1, 7).stamp('mannequin', 8, 7).stamp('window', 4, 1).stamp('window', 7, 1).stamp('bookshelf', 0, 0).stamp('cloth_shelf', 9, 0).stamp('plant', 10, 12);
-  M.trainer('sal3_t1', 8, 11, 'rocker', 'left', { cls: 'Busker', name: 'Kit', sight: 3, reward: 10, ai: 1, team: [['sparkin|mittsy', 18], ['sparkin|mittsy', 18]],
+  M.stamp('sewing_machine', 1, 7).stamp('mannequin', 8, 7).stamp('window', 4, 1).stamp('window', 7, 1).stamp('bookshelf', 0, 0).stamp('cloth_shelf', 9, 0).stamp('plant', 10, 12).stamp('plant', 10, 8);
+  M.trainer('sal3_t1', 2, 10, 'rocker', 'down', { cls: 'Busker', name: 'Kit', sight: 2, reward: 10, ai: 1, team: [['sparkin|mittsy', 18], ['sparkin|mittsy', 18]],
     intro: 'Zip said: no cheating the levers. I am the lever police!', win: 'The lever police have been outvoted.', after: 'Barrier two is past the first. Lever on the right.' });
-  M.trainer('sal3_t2', 3, 7, 'artist', 'right', { cls: 'Tailor', name: 'Lux', sight: 3, reward: 11, ai: 1, team: [['kumi|nibbi', 19], ['sparkin|mittsy', 19]],
+  M.trainer('sal3_t2', 9, 6, 'artist', 'down', { cls: 'Tailor', name: 'Lux', sight: 1, reward: 11, ai: 1, team: [['kumi|nibbi', 19], ['sparkin|mittsy', 19]],
     intro: 'I draw lightning bolts on everything. Including you!', win: 'Lightning does strike twice. It struck me twice.', after: 'Zip is just past the second barrier. Do try not to flinch.' });
   M.npc('zip', 5, 3, 'zip|rocker', 'down', null, { script: 'zip', note: 'Master Tailor #3 (Volt)' });
   M.reg().zipTeam = L.team([['sparkin|mittsy', 19], ['kumara|silkie', 20], ['voltessa|mittsy', 22]]);

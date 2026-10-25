@@ -205,7 +205,6 @@
   }
 
   // ===================================================================================== Tailor card
-  const SALON_TYPES = ['fluff', 'buzz', 'volt', 'terra', 'gale', 'frost', 'drake', 'shade']; // Salons 1-8 (BIBLE region outline; 7-8 tentative)
   class CardScene extends Scene {
     constructor() { super('light'); }
     enter() { this.spawn((function* (s) { yield; while (!Input.pressed.b && !Input.pressed.a) yield; NP.snd.sfx('cancel'); NP.Game.pop(); })(this)); }
@@ -222,15 +221,16 @@
       ui.text(fb, 'Money  $' + st.money, 70, 46, 'light');
       ui.text(fb, 'Friends ' + Object.keys(st.dex.caught).length + ' (seen ' + Object.keys(st.dex.seen).length + ')', 70, 60, 'light');
       ui.text(fb, 'Time   ' + NP.State.timeString(), 70, 74, 'light');
-      ui.text(fb, 'Buttons', 20, 120, 'light', { color: '#707890' });
+      // Button case: two rows of four 32 px Buttons (NP.art.icons badges.js); an empty stitched slot until the Salon is won
+      ui.text(fb, 'Buttons', 78, 88, 'light', { color: '#707890' });
+      // recessed felt tray: dark lip top-left, light lip bottom-right
+      fb.fillRect(74, 99, 166, 78, '#5a1e3a'); fb.fillRect(75, 100, 164, 76, '#8a3058');
+      fb.fillRect(75, 100, 164, 2, '#6a2244'); fb.fillRect(75, 100, 2, 76, '#6a2244');
+      fb.fillRect(75, 175, 164, 1, '#b85a80'); fb.fillRect(238, 100, 1, 76, '#b85a80');
       for (let i = 0; i < 8; i++) {
-        const x = 24 + i * 28, y = 136;
-        // the Button icons are not drawn yet (icons kit has no badge art, so it would return a magenta placeholder):
-        // a plain sewing button stands in, in its Salon's type colour once earned
-        const t = st.badges[i] && NP.data.types[SALON_TYPES[i]], face = t ? t.color : '#c8d0e0';
-        fb.ellipse(x + 8, y + 8, 8, 8, face, true); fb.ellipse(x + 8, y + 8, 8, 8, '#606880', false);
-        fb.ellipse(x + 8, y + 8, 5, 5, NP.Color.shade(face, -0.25), false);
-        for (const [hx, hy] of [[6, 6], [9, 6], [6, 9], [9, 9]]) fb.fillRect(x + hx, y + hy, 2, 2, st.badges[i] ? '#ffffff' : '#8890a8');
+        const x = 80 + (i & 3) * 40, y = 102 + (i >> 2) * 38;
+        const icon = A().badge(st.badges[i] ? i + 1 : 0, true);
+        if (icon) fb.blit(icon, x, y);
       }
     }
   }
