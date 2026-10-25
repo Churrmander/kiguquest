@@ -16,6 +16,7 @@
 "src/art/tiles/stamp_shrine.js",
 "src/art/tiles/stamp_desert.js",
 "src/art/tiles/stamp_gate.js",
+"src/art/tiles/stamp_city.js",
 "src/art/tiles/battle_kit.js",
 "src/art/tiles/battle_nature.js",
 "src/art/tiles/battle_places.js",
