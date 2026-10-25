@@ -265,6 +265,7 @@
       else if (want && !NP.snd.song) NP.snd.play(want);
       this.popup = def.indoor ? 0 : 110;
       this.stepsSinceMap = 0;
+      this.weather = NP.Weather.now = NP.Weather ? NP.Weather.roll(def) : null;   // rolled each time you enter (src/game/weather.js)
       if (def.onEnter && !o.noEnter) this.runScript(def.onEnter);
     }
 
@@ -415,7 +416,7 @@
       const foe = NP.Kigu.create(sp, lv);
       const st = NP.state;
       yield* this.transitionToBattle('battle_wild');
-      const res = yield* this.runBattle({ wild: true, foe: [foe], bg: this.map.def.battleBg || 'grass', music: 'battle_wild' });
+      const res = yield* this.runBattle({ wild: true, foe: [foe], bg: this.map.def.battleBg || 'grass', music: 'battle_wild', mood: this.weather });
       return res;
     }
 
@@ -424,7 +425,7 @@
       yield* this.transitionToBattle(def.music || (def.cls === 'Rival' ? 'battle_rival' : 'battle_tailor'));
       let res;
       try {
-        res = yield* this.runBattle({ wild: false, foe: party, trainer: { name: NP.fmt(def.name), cls: def.cls, look: def.look || 'tailor_f', ai: def.ai === undefined ? 1 : def.ai, reward: def.reward || 5, master: !!def.master, lose: def.lose }, bg: this.map.def.battleBg || 'grass', music: def.music, canLose: !!def.canLose });
+        res = yield* this.runBattle({ wild: false, foe: party, trainer: { name: NP.fmt(def.name), cls: def.cls, look: def.look || 'tailor_f', ai: def.ai === undefined ? 1 : def.ai, reward: def.reward || 5, master: !!def.master, lose: def.lose }, bg: this.map.def.battleBg || 'grass', music: def.music, canLose: !!def.canLose, mood: this.weather });
       } catch (e) { throw e; }
       if (res.winner === 0) {
         const money = (def.reward || 5) * Math.max.apply(null, def.team.map((t) => t.lv));
@@ -750,6 +751,7 @@
       p.swim = this.paddling();
       if (!this.map.def.hidePlayer) list.push({ sortY: p.py + 16.5, x: p.px + 8, hero: true, draw: (f, X, Y) => p.draw(f, X, Y, fr) });
       this.map.draw(fb, cx, cy, fr, list);
+      if (this.weather) NP.Weather.draw(fb, this.weather, fr);
       // emotes
       for (const a of this.actors.concat([p])) {
         if (a.emoteT > 0 && a.visible) {

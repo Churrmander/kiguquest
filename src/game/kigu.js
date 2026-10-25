@@ -189,6 +189,8 @@
 
     /**
      * What would this Kigu evolve into right now? ctx: { item (charm used), trigger:'level'|'item', timeOfDay }
+     * Level-up conditions on an evolution: level, bond, time, move, weather (the map's mood, NP.Weather.now),
+     * withKigu (that species is elsewhere in the party), held (she is holding that item; it is used up).
      * Returns {to, evo} or null.
      */
     evolutionFor(k, ctx) {
@@ -206,6 +208,9 @@
         if (evo.bond && k.bond < evo.bond) continue;
         if (evo.time && ctx.time && ctx.time !== evo.time) continue;
         if (evo.move && !Kigu.knows(k, evo.move)) continue;
+        if (evo.weather && (ctx.weather !== undefined ? ctx.weather : NP.Weather && NP.Weather.now) !== evo.weather) continue;
+        if (evo.withKigu && !((ctx.party || (NP.state && NP.state.party) || []).some((o) => o !== k && o.species === evo.withKigu))) continue;
+        if (evo.held && k.item !== evo.held) continue;
         return { to: evo.to, evo };
       }
       return null;
@@ -216,6 +221,8 @@
       const from = Kigu.sp(k);
       const before = Kigu.stats(k);
       if (k.nickname && k.nickname === from.name) k.nickname = null;
+      const ev = (from.evolutions || []).find((e) => e.to === toId);
+      if (ev && ev.held && k.item === ev.held) k.item = null;   // a held-item evolution uses the item up
       k.species = toId;
       const after = Kigu.stats(k);
       if (k.hp > 0) k.hp = Math.min(after.hp, k.hp + (after.hp - before.hp));

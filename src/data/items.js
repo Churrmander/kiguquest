@@ -49,5 +49,13 @@
   I('disc_paddle', 'Disc: Paddle', 'key', 0, 'Lets your Kigu paddle across calm water. Face the water and press A.');
   I('everspool_silk', 'Everspool Silk', 'key', 0, 'A length of golden-green silk from the Everspool. It never frays and never runs out.');
   I('staff_pass', 'Staff Pass', 'key', 0, 'A white card stamped CRISP & CO. STAFF. Opens doors marked Staff Only.');
+  // ---- Chapter 4 (Route 4, the Dust Bowl, Bobbin Quarry)
+  I('dune_cocoa', 'Dune Cocoa', 'items', 300, 'Cocoa with cinnamon, from the tent camp. Restores 50 HP and wakes a sleepy Kigu.', { hp: 50, cure: ['slp'] }, BF);
+  I('starlit_thread', 'Starlit Thread', 'items', 0, 'Held: a thread that glitters like a geode. A certain crystal Kigu loves it.');
+  I('dust_scarf', 'Dust Scarf', 'key', 0, "Mimi sewed it from tent-cloth. It keeps the grit out of your eyes in a dust storm.");
+  I('slab_order', 'Slab Order', 'key', 0, "A Society order form for forty flat slabs. 'Deliver north to the Works. Pressing stone. Grade A.'");
+  I('spare_tape', "Bobbin's Tape Measure", 'key', 0, "Gusset's kept it for years. 'Tell her it is hers. Tell her I said so.'");
+  I('quarry_maps', 'Quarry Maps', 'key', 0, 'Every cart tunnel in Bobbin Quarry, drawn by hand. The drawing is bad, but the map is good.');
+  I('disc_shove', 'Disc: Shove', 'key', 0, 'Lets your Kigu shove big rocks out of the way. Face one and press A.');
   I('zip_cable', 'Zip Cable', 'key', 0, "A coil of yellow cable Zip pressed into your hand. 'For a rainy day. Or a rainy Salon.'");
 })(typeof globalThis !== 'undefined' ? globalThis : window);

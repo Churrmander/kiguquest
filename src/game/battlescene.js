@@ -134,6 +134,7 @@
         consume: (id) => NP.State.removeItem(id, 1),
         data: { badges: st.badges.filter(Boolean).length },
         expShare: !!(st.bag && st.bag.exp_share) && !st.flags.exp_share_off,   // Prof. Bobbin's Exp Share (key item, on unless switched off)
+        mood: cfg.mood || null,   // the map's weather, carried into the battle (src/game/weather.js)
       });
       if (cfg.trainer) this.foeTrainer = { x: this.bgInfo.enemyBase.x };
       this.hero = { x: this.bgInfo.playerBase.x };

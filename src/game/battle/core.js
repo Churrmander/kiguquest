@@ -587,6 +587,8 @@
           slot++;
         }
       }
+      // the map's weather (overworld mood) is already blowing when the battle starts, and lasts the whole battle
+      if (this.cfg.mood && B.COND.weather[this.cfg.mood]) this.setWeather(this.cfg.mood, null, -1);
       // entry effects for everyone, fastest first
       for (const m of this.activeBySpeed()) this.enterEffects(m, { initial: true });
     }

@@ -6,6 +6,7 @@
   "src/art/tiles/terrain_forest.js",
   "src/art/tiles/terrain_indoor.js",
   "src/art/tiles/terrain_bridge.js",
+  "src/art/tiles/terrain_desert.js",
   "src/art/tiles/stamp_lib.js",
   "src/art/tiles/stamp_buildings.js",
   "src/art/tiles/stamp_nature.js",
