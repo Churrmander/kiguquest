@@ -83,6 +83,7 @@ assert.ok(t.travel(6, 3, 200), 'up to Bobbin');
 t.tap('left'); t.tick(4); t.tap('a');
 settle(8000);
 assert.ok(st.flags.errand_done && st.bag.town_map, 'got the Town Map');
+assert.ok(st.bag.exp_share, 'Bobbin hands over the Exp Share with the Town Map');
 assert.equal(st.party[0].hp, NP.Kigu.maxHp(st.party[0]), 'Bobbin patched up the partner');
 assert.ok(t.travel(5, 11, 200));
 settle();

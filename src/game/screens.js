@@ -286,37 +286,88 @@
 
   // ===================================================================================== Evolution
   const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
+  /** Evolution, 5th-gen pacing (round 4: it used to be over in two seconds). About ten seconds from "is evolving!" to the
+   *  reveal: she glows white, old and new shapes trade places faster and faster while sparkles rise, a white flash, then the new
+   *  form with a burst. B during the change stops it (she will try again at her next level). */
   class EvolutionScene extends Scene {
-    constructor(k, to) { super('dark'); this.k = k; this.to = to; this.form = k.species; this.sil = 0; this.sparkle = 0; }
+    constructor(k, to) {
+      super('dark');
+      this.k = k; this.to = to; this.form = k.species;
+      this.white = 0; this.flash = 0; this.glowP = 0; this.parts = []; this.burst = 0; this.t = 0;
+    }
     enter() { this.spawn(this.run(), 'evolve'); }
+    *say(text, auto) {
+      this.msg.begin(text, { auto, box: { x: 0, y: NP.BOX_Y, w: NP.W, h: 48 } });
+      while (this.msg.active) { this.msg.update(); yield; }
+    }
+    rise(n) {
+      for (let i = 0; i < n; i++) this.parts.push({ x: NP.W / 2 + (Math.random() - 0.5) * 120, y: NP.BOX_Y + 4, vy: -0.6 - Math.random() * 1.2, life: 60 + Math.random() * 50 });
+    }
     *run() {
       const k = this.k, from = K().sp(k), name = K().displayName(k);
-      NP.Game.fadeTo(0, 10);
-      this.msg.begin('What? ' + name + ' is changing!', { auto: 40, box: { x: 0, y: NP.BOX_Y, w: NP.W, h: 48 } });
-      while (this.msg.active) { this.msg.update(); yield; }
-      NP.snd.sfx('evolve');
-      for (let i = 0; i < 120; i++) {
-        this.sil = Math.min(1, i / 30);
-        if (i > 30) this.form = Math.floor(i / Math.max(4, 14 - i / 10)) % 2 ? this.to : k.species;
-        if (i >= 110) this.form = this.to;
-        this.sparkle = i > 60 ? (i - 60) : 0;
+      NP.Game.fadeTo(0, 16);
+      yield* this.wait(20);
+      NP.snd.cry(k.species);
+      yield* this.say('What? ' + name + ' is evolving!');
+      NP.snd.play('evolution', { restart: true });
+      // 1) she fills with light (1.5 s)
+      for (let i = 0; i < 90; i++) { this.white = i / 90; this.glowP = i / 90; if (i % 10 === 0) this.rise(1); yield; }
+      this.white = 1;
+      // 2) old and new shapes swap, slow at first, then faster and faster (about 7 s); B stops it
+      let stopped = false, swap = 0, flip = false;
+      const N = 430;
+      for (let i = 0; i < N; i++) {
+        const period = Math.max(3, Math.round(34 - 31 * Math.pow(i / N, 0.8)));
+        if (++swap >= period) { swap = 0; flip = !flip; this.form = flip ? this.to : k.species; }
+        if (i % Math.max(2, 9 - ((i / 60) | 0)) === 0) this.rise(1);
+        if (i > 20 && Input.pressed.b) { stopped = true; break; }
         yield;
       }
-      this.sil = 0; this.form = this.to;
+      if (stopped) {
+        NP.snd.stop(200);
+        this.form = k.species;
+        for (let i = 0; i < 30; i++) { this.white = 1 - i / 30; yield; }
+        this.white = 0;
+        k.evoStop = k.level;
+        yield* this.say('Huh? ' + name + ' stopped evolving!');
+        NP.snd.cry(k.species);
+        yield* this.wait(20);
+        NP.Game.fadeTo(1, 16, '#000000');
+        yield* this.wait(18);
+        NP.Game.pop();
+        return;
+      }
+      // 3) a white flash, and she steps out in her new form
+      NP.snd.sfx('evolve');
+      for (let i = 0; i < 24; i++) { this.flash = i / 24; yield; }
+      this.form = this.to; this.flash = 1;
+      yield* this.wait(20);
+      this.white = 0; this.glowP = 0;
+      for (let i = 0; i < 40; i++) { this.flash = 1 - i / 40; this.burst = i; yield; }
+      this.flash = 0;
+      for (let i = 40; i < 70; i++) { this.burst = i; yield; }
+      this.burst = 0;
       const res = K().evolve(k, this.to);
       NP.State.caught(this.to);
       const toName = NP.data.species[this.to].name;
+      NP.snd.stop(0);
+      NP.snd.cry(this.to);
+      yield* this.wait(50);
       NP.snd.jingle('j_evolve');
-      this.msg.begin('Congratulations! ' + (k.nickname || from.name) + ' evolved into ' + toName + '!', { auto: 60, box: { x: 0, y: NP.BOX_Y, w: NP.W, h: 48 } });
-      while (this.msg.active) { this.msg.update(); yield; }
+      yield* this.say('Congratulations! ' + (k.nickname || from.name) + ' evolved into ' + toName + '!');
       for (const id of res.evoMoves) {
         if (K().knows(k, id)) continue;
-        if (K().learnMove(k, id)) {
-          this.msg.begin(K().displayName(k) + ' learned ' + NP.data.moves[id].name + '!', { auto: 40, box: { x: 0, y: NP.BOX_Y, w: NP.W, h: 48 } });
-          while (this.msg.active) { this.msg.update(); yield; }
-        }
+        if (K().learnMove(k, id)) yield* this.say(K().displayName(k) + ' learned ' + NP.data.moves[id].name + '!');
       }
+      NP.Game.fadeTo(1, 16, '#000000');
+      yield* this.wait(18);
       NP.Game.pop();
+    }
+    update() {
+      super.update();
+      this.t++;
+      for (const p of this.parts) { p.y += p.vy; p.life--; }
+      this.parts = this.parts.filter((p) => p.life > 0 && p.y > -4);
     }
     draw(fb) {
       fb.clear('#181828');
@@ -329,17 +380,27 @@
         }
       }
       fb.blit(this.glow, 0, 0);
-      const spr = A().kiguFront(this.form, this.k.alt, this.sil > 0 || this.sparkle > 0 ? 0 : (NP.Game.frame / 9) | 0);
+      const spr = A().kiguFront(this.form, this.k.alt, this.white > 0 ? 0 : (NP.Game.frame / 9) | 0);
       const x = (NP.W - spr.w) >> 1, y = Math.max(4, NP.BOX_Y - 12 - spr.h);
-      if (this.sil > 0 && this.sil < 1) { fb.blit(spr, x, y); fb.blit(spr, x, y, { fill: '#ffffff', alpha: this.sil }); }
-      else if (this.sparkle > 0) { fb.blit(spr, x, y, { fill: '#ffffff', alpha: Math.max(0, 1 - this.sparkle / 50) * 0.9 + 0.1 }); }
-      else fb.blit(spr, x, y);
-      if (this.sparkle > 0) {
-        for (let i = 0; i < 12; i++) {
-          const a = i * 0.52 + this.sparkle * 0.08, r = this.sparkle * 1.2 % 70;
-          fb.fillRect(Math.round(NP.W / 2 + Math.cos(a) * r), Math.round(y + spr.h / 2 + Math.sin(a) * r * 0.8), 2, 2, '#fff8c0');
+      const cx = NP.W / 2, cy = y + spr.h / 2;
+      // a pulsing ring of light while she changes
+      if (this.glowP > 0) {
+        const r = 30 + Math.sin(this.t / 8) * 4;
+        for (let i = 0; i < 24; i++) {
+          const a = i / 24 * Math.PI * 2 + this.t * 0.02;
+          fb.fillRect(Math.round(cx + Math.cos(a) * r * 1.3), Math.round(cy + Math.sin(a) * r), 2, 2, this.glowP > 0.5 ? '#c8c0ff' : '#8078c8');
         }
       }
+      fb.blit(spr, x, y);
+      if (this.white > 0) fb.blit(spr, x, y, { fill: '#ffffff', alpha: this.white });
+      for (const p of this.parts) fb.fillRect(Math.round(p.x), Math.round(p.y), 2, 2, p.life % 12 < 6 ? '#fff8c0' : '#c8e8ff');
+      if (this.burst > 0) {
+        for (let i = 0; i < 16; i++) {
+          const a = i * 0.39 + this.burst * 0.03, r = this.burst * 1.6;
+          fb.fillRect(Math.round(cx + Math.cos(a) * r * 1.2), Math.round(cy + Math.sin(a) * r * 0.9), 2, 2, '#fff8c0');
+        }
+      }
+      if (this.flash > 0) fb.blendRect(0, 0, NP.W, NP.H, '#ffffff', this.flash);
       this.drawUI(fb);
     }
   }

@@ -202,6 +202,23 @@
     }
   };
 
+  /** A remembered scene (def.memory): warm sepia with a soft vignette, so it reads as the past. The message box is drawn after. */
+  function memoryTone(fb, vigH) {
+    const d = fb.data, W = fb.w, H = fb.h, cx = W / 2, cy = vigH / 2, rr = Math.hypot(cx, cy);
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const i = (y * W + x) * 4;
+      const l = d[i] * 0.3 + d[i + 1] * 0.59 + d[i + 2] * 0.11;
+      // the text box keeps half its own colour (cream, not butter-yellow) and no vignette; the scene keeps a quarter, so leaves
+      // stay a little green against the wood
+      const box = y >= vigH, keep = box ? 0.5 : 0.15;
+      // warm light from the middle of the scene, falling off to dark corners
+      const v = box ? 1 : 1.14 - 0.86 * Math.pow(Math.min(1, Math.hypot(x - cx, y - cy) / rr), 1.3);
+      const r = Math.min(255, l * 0.95 + 44), g = Math.min(255, l * 0.82 + 26), bl = Math.min(255, l * 0.6 + 10);
+      d[i] = Math.min(255, (r * (1 - keep) + d[i] * keep) * v); d[i + 1] = Math.min(255, (g * (1 - keep) + d[i + 1] * keep) * v);
+      d[i + 2] = Math.min(255, (bl * (1 - keep) + d[i + 2] * keep) * v);
+    }
+  }
+
   // --------------------------------------------------------------------------------------- the scene
   class Overworld extends Scene {
     constructor() {
@@ -418,6 +435,26 @@
       return false;
     }
 
+    /** Level-up evolutions owed from the last battle. Runs only when nothing else is going on (no script, no message), so a
+     *  trainer's parting words and any cutscene after the fight finish first. A Kigu stopped with B waits for her next level. */
+    *evolutions() {
+      const due = NP.state.party.filter((k) => k.hp > 0 && k.evoStop !== k.level && NP.Kigu.evolutionFor(k, { trigger: 'level' }));
+      if (!due.length) return;
+      yield* this.wait(10);
+      NP.snd.stop(300);
+      yield* this.fadeOut(16);
+      for (const k of due) {
+        const ev = NP.Kigu.evolutionFor(k, { trigger: 'level' });
+        if (!ev) continue;
+        const s = new NP.EvolutionScene(k, ev.to);
+        NP.Game.push(s);
+        yield* this.waitFor(() => s.finished);
+      }
+      NP.Game.fadeTo(1, 0);
+      NP.snd.play(this.musicId, { restart: true, fadeMs: 400 });
+      yield* this.fadeIn(16);
+    }
+
     // ---- collision / queries
     actorAt(x, y, except) {
       for (const a of this.actors) if (a !== except && a.solid && a.visible && a.x === x && a.y === y) return a;
@@ -451,6 +488,7 @@
       const finished = p.update();
       if (finished) this.onPlayerStep();
       if (this.busy || this.menus.length) return;
+      if (NP.state.evoPending) { NP.state.evoPending = false; this.spawn(this.evolutions(), 'evolve'); return; }
       this.npcAI();
       if (p.moving) return;
       if (Input.pressed.start) { this.runMenu(); return; }
@@ -710,7 +748,7 @@
       }
       const p = this.player;
       p.swim = this.paddling();
-      list.push({ sortY: p.py + 16.5, x: p.px + 8, hero: true, draw: (f, X, Y) => p.draw(f, X, Y, fr) });
+      if (!this.map.def.hidePlayer) list.push({ sortY: p.py + 16.5, x: p.px + 8, hero: true, draw: (f, X, Y) => p.draw(f, X, Y, fr) });
       this.map.draw(fb, cx, cy, fr, list);
       // emotes
       for (const a of this.actors.concat([p])) {
@@ -729,6 +767,7 @@
         ui.text(fb, name, 12, y + 5, 'light');
       }
       this.drawUI(fb, frame);
+      if (this.map.def.memory) memoryTone(fb, this.msg.active ? NP.BOX_Y : fb.h);   // emotes and the text box go sepia too
     }
   }
 

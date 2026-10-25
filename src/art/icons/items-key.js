@@ -219,4 +219,24 @@
     H.twinkle(b, 4, 21, '#ffffff'); H.twinkle(b, 21, 18, '#fff3a0');
     return H.done(b, '#4a3a08', 'zip_cable');
   });
+
+  // ================================================================== exp share: two spools sharing one golden thread
+  H.add('exp_share', 'key', true, (b) => {
+    const Wd = R('#d89a5a'), Ra = R('#e2424e'), Bu = R('#3f7ae2'), Go = R('gold');
+    // a spool = wooden flanges top and bottom, wound thread between
+    const spool = (x, y, w, h, th) => {
+      H.rect(b, x + 1, y + 2, w - 2, h - 4, th, { mode: 'cyl' });
+      for (let k = y + 3; k < y + h - 2; k += 2) b.hline(x + 1, k, w - 2, P(th.d1));
+      H.rrect(b, x, y, w, 3, 1, Wd, { mode: 'cel', sh: 1, hi: 1 });
+      H.rrect(b, x, y + h - 3, w, 3, 1, Wd, { mode: 'cel', sh: 1, hi: 1 });
+    };
+    spool(2, 7, 9, 14, Ra);
+    spool(14, 9, 8, 12, Bu);
+    // the shared thread: one golden loop running from the red spool over to the blue one
+    H.pline(b, [[9, 10], [11, 5], [13, 4], [15, 5], [17, 9]], Go.m);
+    H.pline(b, [[9, 9], [11, 4], [13, 3], [15, 4]], Go.l2);
+    H.pline(b, [[10, 10], [12, 6], [13, 5], [15, 6], [17, 10]], Go.d1);   // darker underside so the thread holds up at 1x
+    H.twinkle(b, 20, 3, '#ffffff');
+    return H.done(b, '#4a2a18', 'exp_share');
+  });
 })(typeof globalThis !== 'undefined' ? globalThis : window);

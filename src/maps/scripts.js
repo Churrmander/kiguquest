@@ -13,6 +13,12 @@
       yield* c.healAnim();
       yield* c.sayT('script.tea.3', 'Your Kigu are all rested up! Please come again!');
     } else yield* c.sayT('script.tea.4', 'Come by any time. The kettle is always warm.');
+    // saves from before round 4 already ran Bobbin's errand: her Exp Share is waiting at the counter instead
+    if (c.flag('errand_done') && !c.state.bag.exp_share && NP.data.items.exp_share) {
+      yield* c.sayT('script.tea.share.1', 'Oh! And a parcel came for you, dear. From Professor Bobbin.\\pShe says she forgot to give you this before you left.');
+      yield* c.giveItem('exp_share', 1);
+      yield* c.sayT('script.tea.share.2', 'Kigu who sit out a battle still get half its Exp. Points.\\pYou can switch it off in your Key Items if you ever want to.');
+    }
   };
 
   S.pc = function* (c) {

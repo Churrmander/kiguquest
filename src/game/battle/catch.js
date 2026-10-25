@@ -24,6 +24,18 @@
       battle.add({ t: 'exp', who: m, amount, levels });
       if (levels.length) m.refresh();
     }
+    // Exp Share (5th-gen-and-later style): every other Kigu still standing gets half of what a lone battler would have earned
+    if (!battle.cfg.expShare) return;
+    const rest = pl.mons.filter((m) => !m.fainted && parts.indexOf(m) < 0);
+    if (!rest.length) return;
+    const list = [];
+    for (const m of rest) {
+      const amount = Math.max(1, Math.floor(B.expGain(foe.level, sp.expYield, m.level, !battle.wild, 1) / 2));
+      const levels = NP.Kigu.gainExp(m.kigu, amount);
+      if (levels.length) m.refresh();
+      list.push({ who: m, amount, levels });
+    }
+    battle.add({ t: 'expShare', list });
   };
 
   B.useItemInBattle = function (battle, mon, ch) {

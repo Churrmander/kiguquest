@@ -19,6 +19,11 @@
   def('hero_f', { name: 'Hero (girl)', build: 'teen', sex: 'f', skin: 'fair', hair: hair('ponytail', 'blonde'), eyes: 'blue',
     face: { eyes: 'normal', mouth: 'smile' }, outfit: out('overalls', 'white', 'denim', 'white'), bottom: { type: 'shorts', color: 'denim' }, legs: 'white', shoes: 'chocolate',
     acc: ['beret:#b8302e/#e8c870', 'satchel:#a0642e', 'belt:#7c4e30', 'spools'] });
+  // the two heroes as small kids, for the tree house memory (round 4): same hair and colours, no Tailor kit yet
+  def('hero_m_kid', { name: 'Hero (boy, little)', build: 'child', sex: 'm', skin: 'fair', hair: hair('messy', '#b87a40'), eyes: 'blue',
+    face: { eyes: 'wide', mouth: 'grin', brows: 'normal' }, outfit: out('tee', 'white', 'denim'), bottom: { type: 'shorts', color: '#34487c' }, shoes: 'chocolate', acc: ['flatcap:#4a4452/#c8a050'] });
+  def('hero_f_kid', { name: 'Hero (girl, little)', build: 'child', sex: 'f', skin: 'fair', hair: hair('ponytail', 'blonde'), eyes: 'blue',
+    face: { eyes: 'wide', mouth: 'grin' }, outfit: out('dress', 'white', 'denim'), legs: 'white', shoes: 'chocolate', acc: ['bow:#b8302e'] });
   def('mimi', { name: 'Mimi', build: 'teen', sex: 'f', skin: 'fair', hair: hair('bob', 'honey'), eyes: 'green',
     face: { eyes: 'happy', mouth: 'grin' }, outfit: out('cardigan', 'pink', 'white', 'cream'), bottom: { type: 'skirt', color: 'plum' }, legs: 'white', shoes: 'rose',
     acc: ['bow:#f0508a'] });

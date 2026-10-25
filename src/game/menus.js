@@ -236,6 +236,12 @@
       if (battle && !it.d.inBattle) { this.note = 'It cannot be used in battle.'; NP.snd.sfx('error'); return false; }
       if (!battle && !it.d.inField) { this.note = 'It cannot be used here.'; NP.snd.sfx('error'); return false; }
       if (u.escape) { NP.State.removeItem(it.id, 0); this.result = { escape: true }; return true; }
+      if (u.toggle) {   // an on/off key item (Exp Share): the flag holds "off", so a new item starts switched on
+        const off = !NP.state.flags[u.toggle];
+        NP.state.flags[u.toggle] = off;
+        this.note = it.d.name + ' was switched ' + (off ? 'off.' : 'on.'); NP.snd.sfx(off ? 'cancel' : 'select');
+        return false;
+      }
       if (u.repel) {
         NP.state.repel = u.repel; NP.State.removeItem(it.id, 1);
         this.note = 'Wild Kigu will stay away for a while.'; NP.snd.sfx('select');

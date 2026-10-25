@@ -23,7 +23,7 @@
   //      Untangling it brings back the tree house promise, then the race to the lab. Nothing is locked: the lab just "is not open yet".
   function* morning(c) {
     if (c.flag('morning_done')) { yield* c.sayT('button_town.sheets.after', 'The sheets flap in the sea breeze.\\pThey are nearly dry already.'); return; }
-    const t = c.npc('tomo_bt');
+    let t = c.npc('tomo_bt');
     yield* c.face(t, 'down');
     yield* c.sayT('button_town.morning.1', '{rival}: {player}! Thank goodness. My kite went straight into your washing line.\\pIt is all tangled up in the pegs. I only touched the sheets a little.');
     yield* c.ow.fadeOut(10);
@@ -33,19 +33,38 @@
     yield* c.ow.fadeIn(10);
     yield* c.sayT('button_town.morning.2', '{player} and {rival} pegged up the sheets and teased the kite string free.');
     yield* c.sayT('button_town.morning.3', '{rival}: Look. It is our old kite. The one with the wonky tail.\\pWe made it in the tree house, remember?');
-    yield* c.ow.fadeOut(16, '#fff4e0');
-    yield* c.wait(20);
-    yield* c.sayT('button_town.morning.4', 'Years ago, in a tree house at the edge of the wood...');
-    yield* c.sayT('button_town.morning.5', '{rival}: When we get our Kigu, we visit every Salon. Both of us.\\pPromise? Pinky promise?');
-    yield* c.sayT('button_town.morning.6', 'Two small pinkies hooked together.\\p"Every Salon, together."');
-    yield* c.wait(16);
-    yield* c.ow.fadeIn(16);
+    yield* treehouseMemory(c);
+    t = c.npc('tomo_bt');   // the town was reloaded behind the memory, so this is a fresh actor
     yield* c.sayT('button_town.morning.7', '{rival}: Still counts, you know. Every single Salon.\\pNow come on! Professor Bobbin said nine sharp. ...It IS nine.');
     yield* c.sayT('button_town.morning.8', '{rival}: Race you to the lab!');
     yield* c.walk(t, ['right', 2, 'down', 6, 'right', 8, 'up', 1]);
     c.hideNpc('tomo_bt');
     NP.snd.sfx('door');
     c.set('morning_done');
+  }
+
+  // ---- the tree house memory (round 4: this used to be text on a plain cream screen). A warm fade into the old tree house,
+  //      drawn in sepia (def.memory), with the two of you as little kids; then the same fade back to the washing line.
+  function* treehouseMemory(c) {
+    yield* c.ow.fadeOut(24, '#fff4e0');
+    c.ow.loadMap('treehouse_memory', 1, 6, 'up', { noEnter: true });   // the player is hidden here (def.hidePlayer)
+    yield* c.wait(20);
+    yield* c.ow.fadeIn(30);
+    yield* c.sayT('button_town.morning.4', 'Years ago, in a tree house at the edge of the wood...');
+    const me = c.npc('kid_player'), you = c.npc('kid_rival');
+    yield* c.walk(you, ['left', 2, 'down', 1]);
+    yield* c.face(you, 'left'); yield* c.face(me, 'right');
+    yield* c.sayT('button_town.memory.1', 'Little {rival}: It flies! The tail is all wonky, but it FLIES!');
+    yield* c.emote(me, 'note');
+    yield* c.sayT('button_town.morning.5', 'Little {rival}: When we get our Kigu, we visit every Salon. Both of us.\\pPromise? Pinky promise?');
+    yield* c.emote(me, 'heart');
+    yield* c.sayT('button_town.morning.6', 'Two small pinkies hooked together.\\p"Every Salon, together."');
+    yield* c.wait(30);
+    yield* c.ow.fadeOut(30, '#fff4e0');
+    c.ow.loadMap('button_town', 7, 4, 'up', { noEnter: true });
+    c.placeNpc(c.npc('tomo_bt'), 7, 3, 'down');
+    yield* c.wait(16);
+    yield* c.ow.fadeIn(24);
   }
 
   // ---- Prof. Bobbin's parcel (padding beat 2): fetched from the pier after the starters. A sleepy wild Peepi is napping on it,
@@ -184,6 +203,9 @@
             yield* c.sayT('lab.errand.3', 'My parcel! Thank you, {player}. Let us see...\\pMy new Town Maps! And they sent two, the dears.');
             yield* c.sayT('lab.errand.4', 'Keep this one. Every Tailor should know where the road goes.');
             yield* c.giveItem('town_map', 1);
+            yield* c.sayT('lab.errand.share.1', 'And one more thing. This is an Exp Share.\\pKigu who wait on the bench still learn from every battle.\\pThey get half the Exp. Points, so nobody is left behind.');
+            yield* c.giveItem('exp_share', 1);
+            yield* c.sayT('lab.errand.share.2', 'It is on from the start. If you want one Kigu to do all the learning,\\pswitch it off in your Key Items.');
             yield* c.heal('And let me patch up your partner after her first adventure.\\pYour Kigu are feeling much better!');
             c.set('errand_done');
             yield* c.sayT('lab.errand.5', 'Meadow Lane is north of town. Thimble Village is past Basting Green.\\p{rival} has a head start, but I doubt that will last. Off you go!');
@@ -221,6 +243,32 @@
       yield* c.say('{rival}: Fine! Then I will pick after you.\\pChoose a good one, {player}!');
       yield* c.face(c.npc('tomo_lab'), 'left');
     },
+  });
+
+  // the tree house, as a memory: only ever seen inside the morning scene (no way in or out on foot). A plank deck up in the
+  // leaves with a wooden back wall, the ladder hole in the floor, the kite on the table.
+  K.reg({
+    id: 'treehouse_memory', name: 'The Tree House', music: 'home_town', battleBg: 'indoor', border: 'treeline', indoor: true,
+    memory: true, hidePlayer: true,
+    legend: { T: 'treeline', W: 'wall_wood', b: 'bridge_h', o: 'void' },
+    rows: [
+      'TTTTTTTTTT',
+      'TWWWWWWWWT',
+      'TWWWWWWWWT',
+      'TbbbbbbbbT',
+      'TbbbbbbbbT',
+      'TbbbbbbbbT',
+      'TbbbbbbboT',
+      'TTTTTTTTTT',
+    ],
+    stamps: [{ id: 'window', x: 2, y: 1 }, { id: 'window', x: 4, y: 1 }, { id: 'window', x: 6, y: 1 }, { id: 'table_s', x: 7, y: 3 },
+      { id: 'tree', x: 0, y: 4 }, { id: 'tree', x: 9, y: 5 }, { id: 'tree_big', x: 0, y: 0 }, { id: 'tree_big', x: 8, y: 0 },
+      { id: 'plant', x: 1, y: 3 }, { id: 'ladder', x: 8, y: 4 }],
+    npcs: [
+      { id: 'kid_player', x: 4, y: 5, look: 'player_kid', dir: 'up' },
+      { id: 'kid_rival', x: 7, y: 4, look: 'rival_kid', dir: 'left' },
+    ],
+    props: [], triggers: [], interact: [], warps: [], spawns: { door: { x: 1, y: 6, dir: 'up' } },
   });
 
   // --------------------------------------------------------------------------------- the houses
