@@ -126,6 +126,9 @@
     placeNpc(w, x, y, dir) { const a = this.who(w); a.x = x; a.y = y; a.ox = a.oy = 0; if (dir) a.dir = dir; }
     showNpc(id) { const a = this.who(id); if (a) a.hidden = false; }
     hideNpc(id) { const a = this.who(id); if (a) a.hidden = true; }
+    /** an NPC walks behind the player, one tile back, until unfollow (Tuck in the Spark Cellar). Lasts until the map changes. */
+    follow(w) { const a = this.who(w); if (!a) return; a.solid = false; a.hidden = false; this.ow.follower = a; }
+    unfollow() { const a = this.ow.follower; if (a) a.solid = true; this.ow.follower = null; }
     hideProp(id) { this.hideNpc(id); const a = this.who(id); if (a && a.def && a.def.hideIf) NP.state.flags[a.def.hideIf] = true; }
     music(id) { NP.snd.play(id); }
     *jingleWait(id) {
@@ -252,6 +255,7 @@
       o = o || {};
       this.map = this.tileMap(id);
       this.map.syncSnips(NP.state.flags);
+      this.map.syncShoves(NP.state.flags);
       (NP.state.visited = NP.state.visited || {})[id] = 1;
       const def = this.map.def;
       if (NP.view3d && NP.view3d.enter) NP.view3d.enter(def);   // 3D or flat, and the camera preset, for this map
@@ -267,6 +271,9 @@
       else if (want && !NP.snd.song) NP.snd.play(want);
       this.popup = def.indoor ? 0 : 110;
       this.stepsSinceMap = 0;
+      this.shoveHint = false;
+      this.weather = NP.Weather.now = NP.Weather ? NP.Weather.roll(def) : null;
+      NP.Weather.dark = !!def.dark;   // caves count as night for evolutions   // rolled each time you enter (src/game/weather.js)
       if (def.onEnter && !o.noEnter) this.runScript(def.onEnter);
     }
 
@@ -417,7 +424,7 @@
       const foe = NP.Kigu.create(sp, lv);
       const st = NP.state;
       yield* this.transitionToBattle('battle_wild');
-      const res = yield* this.runBattle({ wild: true, foe: [foe], bg: this.map.def.battleBg || 'grass', music: 'battle_wild' });
+      const res = yield* this.runBattle({ wild: true, foe: [foe], bg: this.map.def.battleBg || 'grass', music: 'battle_wild', mood: this.weather });
       return res;
     }
 
@@ -426,7 +433,7 @@
       yield* this.transitionToBattle(def.music || (def.cls === 'Rival' ? 'battle_rival' : 'battle_tailor'));
       let res;
       try {
-        res = yield* this.runBattle({ wild: false, foe: party, trainer: { name: NP.fmt(def.name), cls: def.cls, look: def.look || 'tailor_f', ai: def.ai === undefined ? 1 : def.ai, reward: def.reward || 5, master: !!def.master, lose: def.lose }, bg: this.map.def.battleBg || 'grass', music: def.music, canLose: !!def.canLose });
+        res = yield* this.runBattle({ wild: false, foe: party, trainer: { name: NP.fmt(def.name), cls: def.cls, look: def.look || 'tailor_f', ai: def.ai === undefined ? 1 : def.ai, reward: def.reward || 5, master: !!def.master, lose: def.lose }, bg: this.map.def.battleBg || 'grass', music: def.music, canLose: !!def.canLose, mood: this.weather });
       } catch (e) { throw e; }
       if (res.winner === 0) {
         let money = (def.reward || 5) * Math.max.apply(null, def.team.map((t) => t.lv));
@@ -502,7 +509,7 @@
       const sd = Input.dir();
       if (sd !== this.heldScreen) { this.heldScreen = sd; this.heldMap = v3 ? v3.screenToMap(sd) : sd; }
       const d = this.heldMap;
-      if (!d) { this.turnT = 0; return; }
+      if (!d) { this.turnT = 0; this.shoveT = 0; return; }
       if (d !== p.dir && this.turnT === 0) { p.dir = d; this.turnT = 6; return; }
       if (this.turnT > 0) { this.turnT--; if (this.turnT > 0) return; }
       this.tryMove(d);
@@ -517,8 +524,29 @@
       const run = NP.Game.opts.run === 'hold' ? Input.held.b : true;
       const led = this.map.ledge(nx, ny);
       if (led) {
-        if (led === d && !this.map.solid(nx + dx, ny + dy) && !this.actorAt(nx + dx, ny + dy)) { NP.snd.sfx('ledge'); p.hopStep(d, 2); return; }
+        if (led === d && !this.map.solid(nx + dx, ny + dy) && !this.actorAt(nx + dx, ny + dy)) { NP.snd.sfx('ledge'); p.hopStep(d, 2); this.followStep(nx, ny, 1); return; }
         this.bump();
+        return;
+      }
+      // field move Shove: walking into a loose rock pushes it one tile, if the far side is clear (needs Disc: Shove)
+      const rock = this.map.shoveAt(nx, ny);
+      if (rock && NP.state.bag.disc_shove) {
+        const fx = nx + dx, fy = ny + dy, m = this.map;
+        const clear = m.inBounds(fx, fy) && !m.solid(fx, fy) && !m.ledge(fx, fy) && !m.warpAt(fx, fy) && !this.actorAt(fx, fy) && !m.tdef(fx, fy).gust;
+        if (clear && (this.shoveT = (this.shoveT || 0) + 1) > 8) {   // lean on it for a moment first, as in the old games
+          this.shoveT = 0;
+          NP.snd.sfx('ledge');
+          m.moveStamp(rock, fx, fy);
+          NP.state.flags['shove:' + m.id + ':' + rock.homeX + ',' + rock.homeY] = fx + ',' + fy;
+          if (m.def.onShove) this.runScript(function* (c) { yield* m.def.onShove(c, rock); });
+          return;
+        }
+        if (!clear) this.bump();
+        return;
+      }
+      if (rock) {   // no Disc yet: a friendly hint, once per visit
+        this.bump();
+        if (!this.shoveHint) { this.shoveHint = true; this.runScript(function* (c) { yield* c.sayT('field.shove.no', 'It\'s a big loose rock. It wobbles a little when you lean on it.\pA strong Kigu could probably Shove it out of the way.'); }); }
         return;
       }
       if (!this.canEnter(p, nx, ny, d)) {
@@ -526,7 +554,18 @@
         this.bump();
         return;
       }
+      const px = p.x, py = p.y;
       p.step(d, run && !this.paddling() ? 2 : 1, false);
+      this.followStep(px, py, p.spd);
+    }
+
+    /** the follower steps onto the tile the player just left (or pops there if it fell behind) */
+    followStep(tx, ty, spd) {
+      const f = this.follower;
+      if (!f || !f.visible || this.actors.indexOf(f) < 0) { this.follower = null; return; }
+      const dx = tx - f.x, dy = ty - f.y;
+      if (Math.abs(dx) + Math.abs(dy) === 1) f.step(dx > 0 ? 'right' : dx < 0 ? 'left' : dy > 0 ? 'down' : 'up', spd, true);
+      else if (dx || dy) { f.x = tx; f.y = ty; f.ox = f.oy = 0; }
     }
 
     bump() {
@@ -551,6 +590,18 @@
           return;
         }
       }
+      // wind: a gust tile blows you one tile on in its direction (chains across a run of gusts, like ice); the trainer check
+      // and wild grass wait until you land
+      const gust = m.tdef(p.x, p.y).gust;
+      if (gust) {
+        const [gx, gy] = DIRV[gust];
+        if (this.canEnter(p, p.x + gx, p.y + gy, gust) && !m.ledge(p.x + gx, p.y + gy)) {
+          if (!this.gustSfx) { NP.snd.sfx('leaf'); this.gustSfx = 20; }
+          const face = p.dir;
+          p.step(gust, 1.5, false); p.dir = face;
+          return;
+        }
+      }
       // trainers who can see the player
       for (const a of this.actors) {
         const tr = a.def && a.def.trainer;
@@ -558,7 +609,8 @@
         if (this.sees(a, tr.sight || 3)) { this.spawn(this.trainerEncounter(a, true), 'trainer'); return; }
       }
       // wild encounters
-      const enc = m.def.encounters && m.def.encounters[kind];
+      let enc = m.def.encounters && m.def.encounters[kind];
+      if (enc && m.def.encFilter) enc = m.def.encFilter(enc);   // e.g. Tumbi only while the dust blows
       if (enc && st.repel <= 0 && this.stepsSinceMap > 2 && st.steps - this.lastBattleStep > 3 && NP.rng.chance(0.11)) {
         const pick = NP.rng.weighted(enc);
         const lv = NP.rng.range(pick.min, pick.max);
@@ -678,6 +730,7 @@
         a.step(dir, 1, true);
       }
       if (this.bumpT > 0) this.bumpT--;
+      if (this.gustSfx > 0) this.gustSfx--;
     }
 
     // ---- start menu
@@ -753,6 +806,7 @@
       p.swim = this.paddling();
       if (!this.map.def.hidePlayer) list.push({ sortY: p.py + 16.5, x: p.px + 8, hero: true, draw: (f, X, Y) => p.draw(f, X, Y, fr) });
       this.map.draw(fb, cx, cy, fr, list);
+      if (this.weather) NP.Weather.draw(fb, this.weather, fr);
       // emotes
       for (const a of this.actors.concat([p])) {
         if (a.emoteT > 0 && a.visible) {

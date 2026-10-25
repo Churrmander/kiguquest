@@ -15,25 +15,25 @@
     yield* c.walk(b, ['down', 8]);
     yield* c.face('player', 'up');
     yield* c.sayT('basting_green.tidy.1', 'Tack: Good morning, citizen! Happy Tidy Day!\\pThe Society for Tidy Living thanks you for your patience.');
-    yield* c.sayT('basting_green.tidy.2', 'Ply: The parade of folded sheets is on the north road.\\pIt is very long. And very, very straight.');
-    yield* c.sayT('basting_green.tidy.3', 'Tack: Nobody crosses the parade. That would be untidy.\\pYou may stand in line and admire the folds.');
+    yield* c.sayT('basting_green.tidy.2', 'Ply: The parade of folded sheets is on the north road.\\pIt\'s very long, and very, very straight.');
+    yield* c.sayT('basting_green.tidy.3', 'Tack: Nobody crosses the parade, because that would be untidy.\\pYou may stand in line and admire the folds.');
     yield* c.sayT('basting_green.tidy.4', 'Ply: Participation is optional. Mostly.\\pFlat is fair!');
     yield* c.walk(a, ['up', 8]);
     yield* c.walk(b, ['up', 8]);
     yield* c.face(a, 'down'); yield* c.face(b, 'down');
     c.music('town_thimble');
-    yield* c.sayT('basting_green.tidy.5', 'Villager: Pressers. Every year the parade takes the main road.\\pRibbon Loop goes round to Thimble from the east road, dear.');
+    yield* c.sayT('basting_green.tidy.5', 'Villager: Oh, those Pressers. They march right down the main road every year.\\pIf you want Thimble, dear, take the east road round by Ribbon Loop.');
   }
 
   // ---- the crooked bunting: pat it flat and it springs right back (the small joke from the padding list)
   function* bunting(c) {
-    yield* c.sayT('basting_green.bunting.1', 'A string of bunting, hung a little crooked.');
+    yield* c.sayT('basting_green.bunting.1', 'Someone has hung this string of bunting a little crooked.');
     if (!(yield* c.ask('Pat the bunting straight?'))) return;
     NP.snd.sfx('leaf');
     yield* c.sayT('basting_green.bunting.2', '{player} patted the bunting flat...\\p...and it sprang right back, crooked as ever.');
     if (!c.flag('bunting_pat') && !c.flag('thimble_reached')) {
       c.set('bunting_pat');
-      yield* c.sayT('basting_green.bunting.3', 'Ply (from the parade): I saw that! ...Honestly? It looks nicer crooked.\\pDo not tell Tack I said so.');
+      yield* c.sayT('basting_green.bunting.3', 'Ply (from the parade): I saw that! ...Honestly? It looks nicer crooked.\\pDon\'t tell Tack I said so.');
     }
   }
 
@@ -61,7 +61,7 @@
       { id: 'flowerbed', x: 8, y: 8 }, { id: 'barrel', x: 3, y: 9 },
     ],
     interact: [
-      { x: 10, y: 17, say: 'BASTING GREEN\\nLoose stitches hold the best memories.' },
+      { x: 10, y: 17, say: 'BASTING GREEN\\nA little village with a big green. Picnics welcome!' },
       { x: 20, y: 10, say: 'EAST: RIBBON LOOP\\nThe long way round to Thimble Village.' },
       { x: 7, y: 15, script: bunting }, { x: 8, y: 15, script: bunting }, { x: 16, y: 13, script: bunting }, { x: 17, y: 13, script: bunting },
     ],
@@ -75,21 +75,21 @@
     npcs: [
       // the parade: folded-sheet bearers fill the north road until you have reached Thimble the long way round
       { id: 'march1', x: 11, y: 3, look: 'grunt_m', dir: 'right', hideIf: 'thimble_reached',
-        say: ['Left, right, fold! Left, right, fold!\\pPlease do not cross the parade. You will crease it.'] },
+        say: ['Left, right, fold! Left, right, fold!\\pPlease don\'t cross the parade. You\'ll crease it.'] },
       { id: 'march2', x: 12, y: 3, look: 'grunt_f', dir: 'left', hideIf: 'thimble_reached',
-        say: ['These sheets were folded in thirds by hand.\\pThen in thirds again. Then we ran out of thirds.'] },
+        say: ['These sheets were all folded in thirds by hand.\\pThen we folded the thirds in thirds, and then we ran out of thirds.'] },
       { id: 'march3', x: 11, y: 5, look: 'villager_m2', dir: 'down', hideIf: 'thimble_reached',
-        say: ['They asked me to carry a sheet. I could not think of a reason to say no.\\pThe parade goes all the way to Thimble. Try Ribbon Loop!'] },
+        say: ['They asked me to carry a sheet. I couldn\'t think of a reason to say no.\\pThe parade goes all the way to Thimble. Try Ribbon Loop!'] },
       { id: 'march4', x: 12, y: 5, look: 'villager_f2', dir: 'down', hideIf: 'thimble_reached',
-        say: ['I have been holding this sheet since breakfast. My arms are so flat.\\pIf you are off to Thimble, take the east road. It is lovely.'] },
+        say: ['I\'ve been holding this sheet since breakfast, and I can\'t feel my arms.\\pIf you\'re off to Thimble, take the east road. It\'s lovely.'] },
       { id: 'tack', x: 11, y: 7, look: 'grunt_m', dir: 'down', hideIf: 'thimble_reached',
-        say: ['Tack: The parade has right of way, citizen. Everything in its place!\\pThimble is that way. The parade is also that way. So: no.'] },
+        say: ['Tack: The parade has right of way, citizen. Everything in its place!\\pThimble is that way, but so is the parade. So, no.'] },
       { id: 'ply', x: 12, y: 7, look: 'grunt_f', dir: 'down', hideIf: 'thimble_reached',
-        say: ['Ply: Ribbon Loop is the scenic route. I would take it myself.\\p...Please do not tell Tack I said that either.'] },
+        say: ['Ply: Ribbon Loop is the scenic route. I\'d take it myself.\\p...Please don\'t tell Tack I said that either.'] },
       { id: 'kidb', x: 6, y: 11, look: 'child_m', dir: 'right', move: 'turn',
-        say: ['Ribbon Loop has a Silkie who munches leaves by the hay all day.\\pJust snacks and sunshine. I want to be her when I grow up.'] },
+        say: ['There\'s a Silkie on Ribbon Loop who sits by the hay munching leaves all day.\\pShe just snacks and sunbathes. I want to be her when I grow up.'] },
       { id: 'vlb', x: 17, y: 11, look: 'villager_f1', dir: 'left', move: 'wander', range: 2,
-        say: ['Tidy Day comes every year now. It used to be Ribbon Day.\\pWe tied ribbons on everything. Nobody folded anything.'] },
+        say: ['Tidy Day comes every year now. It used to be Ribbon Day.\\pWe tied ribbons on everything, and nobody folded anything.'] },
       { id: 'flb', x: 16, y: 18, look: 'fisher', dir: 'up',
         say: ['The Tailors on Ribbon Loop love a friendly battle.\\pWin a few and Master Poppy will hear about it!'] },
     ],
@@ -111,7 +111,7 @@
         NP.State.healAll();
         NP.snd.sfx('save');
         yield* c.sayT('basting_house.gran.2', 'It was a warm cup of cocoa. Your Kigu feel refreshed!');
-        yield* c.sayT('basting_house.gran.3', 'Gran Tansy: I stitched ribbons for Tidy Day when it was Ribbon Day.\\pNow they want everything folded. Folded! Ribbons!');
+        yield* c.sayT('basting_house.gran.3', 'Gran Tansy: I used to stitch all the ribbons for Ribbon Day, you know.\\pNow they want everything folded. Who folds a ribbon? Honestly!');
       },
     }],
   });

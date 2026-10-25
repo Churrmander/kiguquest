@@ -11,15 +11,15 @@
     c.set('rival3_started');
     yield* c.emote('player', 'exclaim');
     c.music('battle_rival');
-    yield* c.sayT('seamstead.rival3.1', '{rival}: {player}! Over here! Look at this place.\\pAnd that big white shop? Crisp & Co. My dad works there.\\pHe says they are the future of tailoring. Nothing ever creases.');
-    yield* c.sayT('seamstead.rival3.2', '{rival}: Mimi says the Society is bad. She has never seen the Linens floor.\\pI have. It is so clean, and so quiet.\\pIf you want in, you will have to get past me first.\\pNot because I am mean! I am just proud of my dad.');
+    yield* c.sayT('seamstead.rival3.1', '{rival}: {player}! Over here! Look at this place!\\pSee that big white shop? That\'s Crisp & Co., and my dad works there.\\pHe says they\'re the future of tailoring, because nothing there ever creases.');
+    yield* c.sayT('seamstead.rival3.2', '{rival}: Mimi says the Society is bad, but she\'s never seen the Linens floor.\\pI have. It\'s so clean, and so quiet.\\pIf you want to go in, you\'ll have to get past me first.\\pNot because I\'m mean! I\'m just proud of my dad.');
     // owner's rule: the rival's starter is weak to yours, but one teammate hits your starter hard, so switching pays off
     // without being forced (a Tide Kigu against Ember, Volt against Tide, Gale against Sprout)
     const counter = { konko: 'ribbi', ottopi: 'sparkin|ribbi', sprubun: 'larkette|peepi' }[c.state.starter] || 'sparkin|peepi';
     const team = L.team([[L.evoStarter(c.state.rivalStarter), 18], [counter, 17], ['kumi|mittsy', 16], ['silkie', 16]]);
     const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'rival', ai: 2, reward: 18, canLose: true, team });
     c.set('rival3_done'); c.music('city_seamstead');
-    if (won) yield* c.sayT('seamstead.rival3.win', '{rival}: ...Okay, okay! You beat me fair and square.\\pYou are really good, {player}. Really good.\\pBut Crisp & Co. is not bad. You will see.\\pMy dad has been in the basement three weeks. He says it is "very restful".\\pHe sounds... far away, sometimes.\\pOh, and Dad says the whole city\'s power runs through that basement now.\\pEven the Salon lights. Funny, right? They have been off all week.');
+    if (won) yield* c.sayT('seamstead.rival3.win', '{rival}: ...Okay, okay! You beat me fair and square.\\pYou\'re really good, {player}. Really, really good.\\pBut Crisp & Co. isn\'t so bad, you\'ll see.\\pMy dad\'s been down in the basement for three weeks. He says it\'s "very restful".\\pHe sounds... far away, sometimes.\\pOh, and Dad says the whole city\'s power runs through that basement now.\\pEven the Salon lights. Funny, right? They\'ve been off all week.');
     else yield* c.sayT('seamstead.rival3.lose', '{rival}: I won? I actually won! Go rest your Kigu, {player}.\\pCome with me to Crisp & Co. one day. Dad would love to meet you.');
     c.set('crisp_open');
   }
@@ -40,26 +40,59 @@
     NP.snd.sfx('door');
     c.showNpc('serge_s');
     yield* c.face('player', 'right');
-    yield* c.sayT('seamstead.after.2', 'Serge: You must be {rival}. You have his laugh. He spoke of it, before.\\pYou deserve plain words, so here they are.');
+    yield* c.sayT('seamstead.after.2', 'Serge: You must be {rival}. You have his laugh. He talked about you a lot.\\pYou deserve plain words, so here they are.');
     yield* c.face(s, 'down');
-    yield* c.sayT('seamstead.after.3', 'Serge: Your father has been transferred north. Madame Damask took him.\\pHe is pressed, but he is not hurt. Pressing can be undone.');
-    yield* c.sayT('seamstead.after.4', 'Serge: I filled in the forms myself. I am sorry.\\pI am finding out that sorry is a very creased word.');
+    yield* c.sayT('seamstead.after.3', 'Serge: Your father has been transferred north. Madame Damask took him.\\pHe\'s pressed, but he isn\'t hurt. Pressing can be undone.');
+    yield* c.sayT('seamstead.after.4', 'Serge: I filled in the forms myself, and I\'m sorry.\\pI\'m learning that "sorry" doesn\'t smooth out very much.');
     yield* c.walk(s, ['right', 4]);
     c.hideNpc('serge_s');
     yield* c.face('player', 'down');
-    yield* c.sayT('seamstead.after.5', '{rival}: Transferred. North.\\p...He always hated the cold.');
+    yield* c.sayT('seamstead.after.5', '{rival}: Transferred north, huh?\\p...He always hated the cold.');
     yield* c.sayT('seamstead.after.6', "{player} held out the name tag from the Pressing Floor.");
-    yield* c.sayT('seamstead.after.7', '{rival}: His name tag. Thank you for keeping it safe.\\pHe always kept his tags straight. Even at home.');
+    yield* c.sayT('seamstead.after.7', '{rival}: That\'s his name tag. Thank you for keeping it safe.\\pHe always kept his tags straight, even at home.');
     c.placeNpc(m, px - 1, py + 2, 'right');
     c.showNpc('mimi_s');
-    yield* c.sayT('seamstead.after.8', 'Mimi: I brought snack cakes. Nobody has to talk.\\pYou can just eat one. That is allowed.');
-    yield* c.sayT('seamstead.after.9', '{rival} took a cake. A very small smile.');
-    yield* c.sayT('seamstead.after.10', 'Mimi: And those pressed Kigu downstairs? Leave them to me and my Soft Rinse.\\pMy first big job! I will sketch them a costume each while they dry.');
-    yield* c.sayT('seamstead.after.11', '{rival}: You do not have to stay, {player}. I am okay. ...Okay enough to walk.\\pZip\'s Salon should be open now. Go on. I want to see the lights come on.');
+    yield* c.sayT('seamstead.after.8', 'Mimi: I brought snack cakes, and nobody has to talk.\\pYou can just eat one. That\'s allowed.');
+    yield* c.sayT('seamstead.after.9', '{rival} took a cake and gave a very small smile.');
+    yield* c.sayT('seamstead.after.10', 'Mimi: And those pressed Kigu downstairs? Leave them to me and my Soft Rinse.\\pMy first big job! I\'ll sketch them a costume each while they dry.');
+    yield* c.sayT('seamstead.after.11', '{rival}: You don\'t have to stay, {player}. I\'m okay. ...Okay enough to walk.\\pZip\'s Salon should be open now, so go on. I want to see the lights come on.');
     yield* c.walk(r, ['down', 4, 'left', 6]);
     c.hideNpc('rival_s');
     c.placeNpc(m, 19, 17, 'down');
   }
+
+  // ---- Chapter 4 opens: Zip clips his cable to the gate motor, the fence lifts, and {rival} runs past on the way to the Quarry.
+  //      Played at the end of Zip's light show (seamstead_salon.js), or on entering the city with a save from before Chapter 4.
+  function* eastGateScene(c) {
+    c.set('east_gate_open_seen');
+    yield* c.ow.fadeOut(10);
+    c.ow.loadMap('seamstead', 31, 14, 'right', { noEnter: true });
+    c.hideNpc('dark1'); c.hideNpc('dark2');
+    c.placeNpc('zip_s', 33, 16, 'up');
+    c.showNpc('zip_s');
+    yield* c.ow.fadeIn(10);
+    yield* c.sayT('story.east_gate.1', 'Zip: Here we go. The Society\'s "resurfacing" runs on a little motor,\\pand a little motor loves a big cable. Watch this!');
+    NP.snd.sfx('select');
+    NP.Game.flash = 6;
+    yield* c.wait(14);
+    L.setGate(c, 'east', true);
+    NP.snd.sfx('door');
+    yield* c.sayT('story.east_gate.2', 'The fence rattles, whirrs, and folds itself up out of the way.');
+    yield* c.face('zip_s', 'left');
+    yield* c.sayT('story.east_gate.3', 'Zip: Route 4 is open! Tents, sand, and a quarry full of very quiet people.\\pTell Gusset I said hi. He won\'t say it back, but he\'ll mean it.');
+    // {rival} sprints in along the avenue and straight out of the gate
+    const r = c.npc('rival_s');
+    c.placeNpc(r, 26, 15, 'right');
+    c.showNpc('rival_s');
+    yield* c.walk(r, ['right', 4], 2);
+    yield* c.emote(r, 'exclaim');
+    yield* c.sayT('story.east_gate.4', '{rival}: {player}! Is it open? It\'s open!\\pRace you to the Quarry! Last one there buys the cocoa!');
+    yield* c.walk(r, ['right', 5], 2);
+    c.hideNpc('rival_s');
+    yield* c.sayT('story.east_gate.5', 'Zip: Ha! You\'d better run, {player}. That kid doesn\'t take short cuts. They just go fast.');
+    c.hideNpc('zip_s');
+  }
+  NP.scripts.seamstead_east_gate = eastGateScene;
 
   const M = L.map({
     id: 'seamstead', name: 'Seamstead City', music: 'city_seamstead', battleBg: 'city', border: 'treeline', w: W, h: H,
@@ -67,6 +100,7 @@
     legend: { '.': 'grass', T: 'treeline', c: 'cobble', f: 'flowers', F: 'fence', p: 'path' },
     onEnter: function* (c) {
       if (c.flag('crisp_done')) { c.hideNpc('dark1'); c.hideNpc('dark2'); }
+      if (c.flag('badge3') && !c.flag('east_gate_open') && c.flag('zip_lights')) yield* NP.scripts.seamstead_east_gate(c);   // a save from before Ch. 4
       if (c.flag('crisp_done') && !c.flag('crisp_after') && !c.flag('badge3') && c.player.y < 10) yield* aftermath(c);   // just out of Crisp & Co.
     },
   });
@@ -79,7 +113,8 @@
   M.rect(16, 8, 3, 3, 'c').rect(5, 10, 3, 4, 'c').rect(28, 10, 3, 4, 'c');      // lanes to Crisp & Co. / Tea / Store doors, 3 wide and centred on each door
   M.rect(12, 18, 2, 5, 'c').rect(22, 18, 2, 5, 'c').rect(3, 23, 30, 2, 'c');    // lanes from the plaza to the back street (Salon, houses)
   M.rect(8, 17, 3, 1, 'f').rect(28, 17, 3, 1, 'f').rect(24, 8, 3, 1, 'f');
-  M.rect(34, 14, 2, 2, 'F');                                  // east gate: closed until Chapter 4
+  // east gate to Route 4: fenced off until Zip lifts it with his cable after the Volt Button (gateScene below)
+  M.gate('east', { cells: [[34, 14], [35, 14], [34, 15], [35, 15]], closed: 'F', open: 'c', flag: 'east_gate_open', note: 'east gate (opens after badge3)' });
 
   M.building('dept_store', 13, 2, null, 'crisp', 'crisp_1', { note: 'Crisp & Co. (department store)' });
   M.building('salon', 14, 18, 'volt', 'salon', 'seamstead_salon');
@@ -92,11 +127,12 @@
   M.sign(3, 13, 'SEAMSTEAD CITY\\nWest: Route 3, Hemline', 'west sign');
   M.stamp('sign', 32, 13);
   function* eastGate(c) {
+    if (c.flag('east_gate_open')) { yield* c.sayT('seamstead.sign_east.open', 'EAST: ROUTE 4\\nCanvas Rest, the Dust Bowl and Bobbin Quarry.\\pOpen again, no thanks to the Society!'); return; }
     yield* c.sayT('seamstead.sign_east', 'EAST: ROUTE 4\\nClosed for resurfacing. By order of the Society.');
-    if (c.flag('badge3')) yield* c.sayT('seamstead.sign_east.end', 'This is as far as the playtest build goes. Route 4 opens in Chapter 4.\\pThanks for playing!');
+    if (!c.flag('badge3')) yield* c.sayT('seamstead.sign_east.zip', 'Somebody has scribbled underneath: "Ask Zip. He\'s got a cable for everything."');
   }
-  // the sign, and the gate itself when you bump into it; after the Volt Button they mark the end of the playtest build
-  M.def.interact.push({ x: 32, y: 13, script: eastGate, note: 'east sign (Ch. 4 opens this)' }, { x: 34, y: 14, script: eastGate, note: 'east gate' }, { x: 34, y: 15, script: eastGate, note: 'east gate' });
+  // the sign, and the gate itself when you bump into it (the gate cells only while it's shut)
+  M.def.interact.push({ x: 32, y: 13, script: eastGate, note: 'east sign' }, { x: 34, y: 14, script: function* (c) { if (!c.flag('east_gate_open')) yield* eastGate(c); }, note: 'east gate' }, { x: 34, y: 15, script: function* (c) { if (!c.flag('east_gate_open')) yield* eastGate(c); }, note: 'east gate' });
   M.sign(19, 10, 'CRISP & CO.\\nEverything flat. Everything fair.\\pStaff only. Ask on the top floor.', 'Crisp & Co. sign');
   // lamps stand on the corners where two roads meet (each stamp's post is the tile below it)
   for (const x of [4, 8, 11, 24, 27, 31]) M.stamp('lamp', x, 12);   // north side of the avenue: Tea lane, plaza, Store lane
@@ -105,23 +141,23 @@
   M.trees([[2, 9], [9, 6], [24, 4], [33, 8], [2, 18], [33, 22], [33, 19], [11, 4]]);
   M.stamp('barrel', 26, 10).stamp('crate', 31, 10).stamp('bush', 3, 22).stamp('bush', 32, 25);
   M.spawn('west', 2, 14, 'right').spawn('east', 33, 14, 'left');
-  M.edge('w', 14, 15, 'route3', 'east');
+  M.edge('w', 14, 15, 'route3', 'east').edge('e', 14, 15, 'route4', 'west');
 
   // the Salon is dark: two Presser "electricians" in white collars stand at its door until the raid is done
   // round 4: they say plainly where the switch is, so the player knows Crisp & Co. is the way to the Salon (gatekeeping rule)
-  M.npc('dark1', 17, 23, 'grunt_m', 'up', ['Salon closed. The power is "being balanced".\\pBy the Society. For your benefit.',
-    'The switch? It is in the Crisp & Co. basement, Tailor.\\pStaff only. Customers never go down there.\\pSo the lights stay off. Flat is fair!']);
-  M.npc('dark2', 16, 23, 'grunt_f', 'up', ['Zip has been very loud lately. Noise is a crease in the air.\\pWe are smoothing it out.',
-    'You want to see Zip? You will not get past us.\\pNot unless head office at Crisp & Co. says so.\\pAnd head office never says so.']);
-  M.npc('jazz', 20, 13, 'rocker', 'left', ['Zip plays the main stage every night at seven!\\pAt least, she did. Last week the stage lights went out.\\pThe same night Crisp & Co. ran a big white cable\\pfrom its basement to the Salon. Nobody thinks that is odd.'], { move: 'turn' });
-  M.npc('shopper', 14, 13, 'lady', 'up', ['Crisp & Co. has a sale on everything that is flat.\\pIt is a very big sale.']);
-  M.npc('kid', 26, 15, 'child_f', 'up', ['I went in with my mom. The Linens floor is so quiet.\\pThey said I could not run. I did not even want to run!\\p...I wanted to. A little.'], { move: 'wander', range: 1 });
-  M.npc('old', 22, 9, 'elder_m', 'left', ['I used to sew in the basement of that store.\\pBack when it was the Seamstead Thimble Hall.\\pNow it is "storage". Nobody I know has come up sounding like themselves.']);
-  M.npc('peddler', 6, 16, 'gentleman', 'right', ['Ahoy! Mr. Sharp, humble peddler. Nothing suspicious at all.\\pThis cap? A sailor gave it to me. Or I gave it to a sailor.\\pKeep your eyes sharp, friend!']);
+  M.npc('dark1', 17, 23, 'grunt_m', 'up', ['The Salon is closed. The power is being "balanced" by the Society.\\pFor your benefit, of course. Please move along. Gently.',
+    'The switch? It\'s down in the Crisp & Co. basement, Tailor.\\pIt\'s staff only, and customers never go down there.\\pSo the lights stay off. Flat is fair!']);
+  M.npc('dark2', 16, 23, 'grunt_f', 'up', ['Zip has been very loud lately. Noise is a crease in the air.\\pWe\'re smoothing it out.',
+    'You want to see Zip? You won\'t get past us,\\pnot unless head office at Crisp & Co. says so. And head office never says so.']);
+  M.npc('jazz', 20, 13, 'rocker', 'left', ['Zip plays the main stage every night at seven!\\pAt least, he did, until the stage lights went out last week.\\pThat same night, Crisp & Co. ran a big white cable from its basement\\pto the Salon. Nobody seems to think that\'s odd.'], { move: 'turn' });
+  M.npc('shopper', 14, 13, 'lady', 'up', ['Crisp & Co. is having a sale on everything that\'s flat.\\pIt\'s a very big sale.']);
+  M.npc('kid', 26, 15, 'child_f', 'up', ['I went in with my mom. The Linens floor is so quiet.\\pThey said I couldn\'t run. I didn\'t even want to run!\\p...I wanted to. A little.'], { move: 'wander', range: 1 });
+  M.npc('old', 22, 9, 'elder_m', 'left', ['I used to sew in the basement of that store.\\pIt was the Seamstead Thimble Hall back then.\\pNow it\'s "storage". Nobody I know has come up sounding like themselves.']);
+  M.npc('peddler', 6, 16, 'gentleman', 'right', ['Ahoy! I\'m Mr. Sharp, just a humble peddler. Nothing suspicious at all.\\pThis cap? A sailor gave it to me. Or I gave it to a sailor.\\pKeep your eyes sharp, friend!']);
   M.npc('mimi_s', 19, 17, 'mimi', 'down', null, { hidden: false, script: function* (c) {
-    if (c.flag('crisp_done')) { yield* c.sayT('seamstead.mimi_s.after', 'Mimi: The lights are back! Zip will be warming up.\\pGo on, {player}. I will cheer from the plaza.'); return; }
-    yield* c.sayT('seamstead.mimi_s.1', 'Mimi: A whole city and not one quiet corner!\\pI love it. Also I am nervous.\\pCrisp & Co. smells like fresh paper and nothing else. That is not normal.');
-    yield* c.sayT('seamstead.mimi_s.2', 'Mimi: Did you see the Salon? Dark, with two Pressers on the door.\\pThey said the switch is down in the Crisp & Co. basement.\\pIf we want Zip\'s lights back, that is where we have to go.');
+    if (c.flag('crisp_done')) { yield* c.sayT('seamstead.mimi_s.after', 'Mimi: The lights are back! Zip will be warming up.\\pGo on, {player}. I\'ll cheer you on from the plaza.'); return; }
+    yield* c.sayT('seamstead.mimi_s.1', 'Mimi: A whole city and not one quiet corner! I love it!\\p...I\'m a little nervous, though.\\pCrisp & Co. smells like fresh paper and nothing else, and that\'s not normal.');
+    yield* c.sayT('seamstead.mimi_s.2', 'Mimi: Did you see the Salon? It\'s dark, with two Pressers on the door.\\pThey said the switch is down in the Crisp & Co. basement.\\pIf we want Zip\'s lights back, that\'s where we have to go.');
   } });
   // cast for the after-raid scene and Zip's lights (hidden until their scripts place them)
   M.npc('rival_s', 12, 24, 'rival', 'up', ['{rival}: ...'], { hidden: true });
@@ -133,16 +169,16 @@
 
   L.tea({ id: 'seamstead_tea', exit: { to: 'seamstead', door: 'tea' }, guests: [
     { id: 'g1', x: 7, y: 6, look: 'artist', dir: 'left', say: ['Seamstead tea comes with jazz.\\pThe jazz comes whether you like it or not.'] },
-    { id: 'g2', x: 2, y: 5, look: 'gentleman', dir: 'right', say: ['I work at Crisp & Co. in the Uniforms department.\\pThe tea here tastes of something. At work, tea tastes of... nothing.'] },
+    { id: 'g2', x: 2, y: 5, look: 'gentleman', dir: 'right', say: ['I work at Crisp & Co. in the Uniforms department.\\pThe tea here actually tastes of something. At work, it tastes of... nothing.'] },
   ] }).reg();
   L.store({ id: 'seamstead_store', exit: { to: 'seamstead', door: 'store' },
     stock: ['bond_spool', 'silk_spool', 'snack_cake', 'fancy_cake', 'aloe_balm', 'mint_tea', 'wake_bell', 'numb_away', 'scent_spray', 'thread_ball', 'revive_tea'],
     gated: [{ badges: 3, items: ['gold_spool'] }],
-    guests: [{ id: 'shopper', x: 7, y: 5, look: 'villager_f1', dir: 'left', say: ['The Gold Spools are behind the counter.\\pThe clerk says: three Buttons. I say: that is a lot of Buttons.'] }] }).reg();
+    guests: [{ id: 'shopper', x: 7, y: 5, look: 'villager_f1', dir: 'left', say: ['The Gold Spools are behind the counter.\\pThe clerk says you need three Buttons to buy one. I say that\'s a lot of Buttons.'] }] }).reg();
   L.room({ id: 'seamstead_house1', name: 'House', w: 9, h: 8, doorX: 3, exit: { to: 'seamstead', door: 'house1' } })
     .stamp('sewing_machine', 1, 2).stamp('table_l', 5, 3).stamp('bookshelf', 6, 0).stamp('plant', 1, 5)
-    .npc('s1', 4, 5, 'tailor_f', 'left', ['I used to hem for Crisp & Co., by the piece.\\pThen they switched to the Press. It does a hem in four seconds.\\pI do one in four minutes. But mine has a story in it.']).reg();
+    .npc('s1', 4, 5, 'tailor_f', 'left', ['I used to hem for Crisp & Co., and they paid me by the piece.\\pThen they switched to the Press, which does a hem in four seconds.\\pI take four minutes. But mine has a story in it.']).reg();
   L.room({ id: 'seamstead_house2', name: 'House', w: 8, h: 7, doorX: 3, exit: { to: 'seamstead', door: 'house2' } })
     .stamp('bed', 6, 2).stamp('tv', 1, 2).stamp('rug_b', 3, 3)
-    .npc('s2', 3, 2, 'villager_m1', 'down', ['Zip lives upstairs in the Salon. She plays through the wall.\\pI have never once complained.\\pNot once! ...Okay, twice.']).reg();
+    .npc('s2', 3, 2, 'villager_m1', 'down', ['Zip lives upstairs in the Salon, and he plays right through the wall.\\pI\'ve never once complained. Not once! ...Okay, twice.']).reg();
 })(typeof globalThis !== 'undefined' ? globalThis : window);

@@ -49,5 +49,26 @@
   I('disc_paddle', 'Disc: Paddle', 'key', 0, 'Lets your Kigu paddle across calm water. Face the water and press A.');
   I('everspool_silk', 'Everspool Silk', 'key', 0, 'A length of golden-green silk from the Everspool. It never frays and never runs out.');
   I('staff_pass', 'Staff Pass', 'key', 0, 'A white card stamped CRISP & CO. STAFF. Opens doors marked Staff Only.');
+  // ---- Chapter 4 (Route 4, the Dust Bowl, Bobbin Quarry)
+  I('dune_cocoa', 'Dune Cocoa', 'items', 300, 'Cocoa with cinnamon, from the tent camp. Restores 50 HP and wakes a sleepy Kigu.', { hp: 50, cure: ['slp'] }, BF);
+  I('starlit_thread', 'Starlit Thread', 'items', 0, 'Held: a thread that glitters like a geode. A certain crystal Kigu loves it.');
+  I('dust_scarf', 'Dust Scarf', 'key', 0, "Mimi sewed it from tent-cloth. It keeps the grit out of your eyes in a dust storm.");
+  I('slab_order', 'Slab Order', 'key', 0, "A Society order form for forty flat slabs. 'Deliver north to the Works. Pressing stone. Grade A.'");
+  I('spare_tape', "Bobbin's Tape Measure", 'key', 0, "Gusset's kept it for years. 'Tell her it's hers, and tell her I said so.'");
+  I('quarry_maps', 'Quarry Maps', 'key', 0, 'Every cart tunnel in Bobbin Quarry, drawn by hand. The drawing is bad, but the map is good.');
+  I('linen_thread', 'Linen Thread', 'key', 0, "A hank of Gusset's sand-coloured linen. It's rough, and it's very hard to break.");
+  I('disc_shove', 'Disc: Shove', 'key', 0, 'Lets your Kigu shove big loose rocks. Walk into one and keep pushing.');
+  // ---- Chapters 5 and 6 (Shibuyarn, the Spark Cellar, Kite Hill). Charms: held, +20% to one type's moves; Volt and Dusk Charms
+  //      are also what Coili and Neonki hold to evolve (kigu.js `held`).
+  const charm = (type) => ({ held: { modPower(c, p) { return c.move && c.move.type === type ? Math.floor(p * 1.2) : undefined; } } });
+  I('sun_charm', 'Sun Charm', 'items', 0, 'Held: a warm brass charm. Powers up Ember moves.', null, charm('ember'));
+  I('volt_charm', 'Volt Charm', 'items', 0, 'Held: it crackles faintly. Powers up Volt moves, and a certain springy Kigu loves it.', null, charm('volt'));
+  I('dusk_charm', 'Dusk Charm', 'items', 2000, 'Held: it glows violet at sundown. Powers up Shade moves, and a certain neon Kigu loves it.', null, charm('shade'));
+  I('float_balloon', 'Float Balloon', 'items', 0, 'Held: a tiny patched balloon. The holder floats over Terra moves until hit.');
+  I('onigiri', 'Onigiri', 'items', 150, 'A rice ball from the konbini. Restores 30 HP.', { hp: 30 }, BF);
+  I('rinse_salts', 'Rinse Salts', 'key', 0, "Mrs. Kasuri's soap salts. Mimi says they make a Soft Rinse much stronger.");
+  I('disc_glide', 'Disc: Glide', 'key', 0, 'Lets your Kigu glide on the wind. Dart says the rest is a surprise.');
+  I('post_letters', 'Balloon Post Letters', 'key', 0, 'Letters stuck at the Kite Hill post office while the balloons are grounded.');
+  I('balloon_patches', 'Balloon Patches', 'key', 0, "Mismatched patches for Dart's balloon, from all over Kite Hill.");
   I('zip_cable', 'Zip Cable', 'key', 0, "A coil of yellow cable Zip pressed into your hand. 'For a rainy day. Or a rainy Salon.'");
 })(typeof globalThis !== 'undefined' ? globalThis : window);

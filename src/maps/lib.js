@@ -101,7 +101,7 @@
     if (!(yield* c.ask('Use Snip on the tree?'))) return;
     NP.snd.sfx('leaf');
     L.setGate(c, key, true);
-    yield* c.sayT(id + '.done', ['{player} had a Kigu Snip the tree down!']);
+    yield* c.sayT(id + '.done', ['{player}\'s Kigu used Snip and cut the tree down!']);
   };
 
   // ------------------------------------------------------------------------------------------ things that change with story flags

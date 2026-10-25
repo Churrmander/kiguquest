@@ -84,7 +84,7 @@ for (const id of ids) {
     const seen = new Uint8Array(tm.w * tm.h);
     const q = [];
     for (const s of Object.values(def.spawns || {})) { q.push([s.x, s.y]); seen[s.y * tm.w + s.x] = 1; }
-    const bushAt = new Set(tm.placements.filter((p) => p.id === 'bush').map((p) => p.x + ',' + p.y));
+    const bushAt = new Set(tm.placements.filter((p) => p.id === 'bush' || (NP.stamps[p.id] && NP.stamps[p.id].shove)).map((p) => p.x + ',' + p.y));
     // flag gates (switch barriers, locked doors) count as open here: this test is about layout; tests/chapter3 checks the closed state
     const gateCells = new Set();
     for (const g of Object.values(def.gates || {})) if (g.closed !== 'h') for (const [gx, gy] of g.cells) gateCells.add(gx + ',' + gy);
@@ -115,14 +115,14 @@ for (const id of ids) {
   const touchWith = (x, y) => [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => reachWith(x + dx, y + dy));
   for (const p of def.props || []) {
     if (p.gate) { // behind a field move: unreachable on foot, reachable with Paddle/Snip
-      if (!['paddle', 'snip'].includes(p.gate)) bad(id, 'prop ' + p.id + ' has unknown gate ' + p.gate);
+      if (!['paddle', 'snip', 'shove'].includes(p.gate)) bad(id, 'prop ' + p.id + ' has unknown gate ' + p.gate);
       if (touch(p.x, p.y)) bad(id, 'prop ' + p.id + ' is marked gated (' + p.gate + ') but can be reached on foot');
       if (!touchWith(p.x, p.y)) bad(id, 'prop ' + p.id + ' is gated (' + p.gate + ') but cannot be reached even with field moves');
     } else if (!touch(p.x, p.y)) bad(id, 'prop ' + p.id + ' at ' + p.x + ',' + p.y + ' cannot be reached');
   }
   for (const n of def.npcs || []) {
     if (n.hidden) continue;
-    if (!touch(n.x, n.y)) bad(id, 'npc ' + n.id + ' at ' + n.x + ',' + n.y + ' is walled in');
+    if (n.gate ? !touchWith(n.x, n.y) : !touch(n.x, n.y)) bad(id, 'npc ' + n.id + ' at ' + n.x + ',' + n.y + ' is walled in');
   }
 }
 

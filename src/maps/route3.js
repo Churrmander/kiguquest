@@ -29,18 +29,18 @@
   M.enc('grass', [['sparkin|mittsy', 13, 15, 25], ['kumi|nibbi', 13, 15, 20], ['peepi', 14, 16, 20], ['mittsy', 14, 16, 20], ['sparkin|mittsy', 15, 17, 10]]);
 
   M.trainer('r3_t1', 13, 9, 'schoolgirl', 'down', { cls: 'Student', name: 'Bea', sight: 2, reward: 8, ai: 1, team: [['mittsy', 14], ['peepi', 14]],
-    intro: 'Pattern drafting class! Our teacher said to test everything. So: battle!', win: 'That was not on the syllabus.', after: 'Seamstead has a whole street for fabric. Whole. Street.' });
+    intro: 'Pattern drafting class! Our teacher said to test everything, so let\'s battle!', win: 'That wasn\'t on the syllabus!', after: 'Seamstead has a whole street just for fabric. I mean a whole street!' });
   M.trainer('r3_t2', 18, 12, 'camper', 'up', { cls: 'Hiker', name: 'Rolf', sight: 2, reward: 9, ai: 1, team: [['kumi|nibbi', 15], ['kumi|nibbi', 15]],
-    intro: 'I walked from Hemline in a straight line. Mostly straight!', win: 'Crooked. I lost crooked.', after: 'The road bends once. Just once. I counted.' });
+    intro: 'I walked from Hemline in a straight line. Mostly straight!', win: 'Huh. I walked here straight and lost crooked.', after: 'The road only bends once. I counted.' });
   M.trainer('r3_t3', 25, 9, 'rocker', 'down', { cls: 'Busker', name: 'Jax', sight: 2, reward: 10, ai: 1, team: [['sparkin|mittsy', 16], ['sparkin|mittsy', 16]],
-    intro: 'Seamstead rocks and so do I! Check my amp... oh, it is a sewing machine.', win: 'My ears are still ringing. Nice.', after: 'Zip taught me that tune. Zip teaches everyone that tune.' });
+    intro: 'Seamstead rocks and so do I! Check my amp... oh, it\'s a sewing machine.', win: 'My ears are still ringing! Nice one.', after: 'Zip taught me that tune. Zip teaches everyone that tune.' });
   M.trainer('r3_t4', 27, 12, 'pleat', 'up', { cls: 'Presser', name: 'Hem', sight: 2, reward: 10, ai: 1, music: 'battle_society', team: [['mittsy', 15], ['silkie', 16]],
-    intro: 'Seam road regulation: no dawdling, no wrinkles, no unauthorised skipping.', win: 'Skipping is... apparently unregulated. Noted.', after: 'I shall report the road is satisfactory. Barely.' });
+    intro: 'Seam Road rules: no dawdling, no wrinkles, and no unauthorised skipping.', win: 'Skipping is... apparently unregulated. I\'ll make a note of that.', after: 'I shall report that the road is satisfactory. ...Barely.' });
 
-  M.npc('baker', 24, 16, 'grunt_f', 'left', ['I wanted to be a baker. Warm bread, cold mornings.\\pThe Society says it is kinder than any bakery.\\pMadame Damask never raises her voice.\\pShe never has to. Everyone just gets... smoother.']);
+  M.npc('baker', 24, 16, 'grunt_f', 'left', ['I always wanted to be a baker. Warm bread on a cold morning, you know?\\pBut the Society told me it does more good than any bakery could.\\pMadame Damask never raises her voice. She never has to.\\pEveryone just gets... smoother.']);
   M.npc('rest', 15, 12, 'cook', 'down', null, { script: 'restfree', note: 'free tea stand' });
   // the button carter rests by his load at the Hemline end, off the road
-  M.npc('cart', 9, 8, 'villager_m2', 'down', ['This cart is full of buttons for Seamstead!\\pThe city eats three thousand buttons a day.\\pI do not know where they go.']);
+  M.npc('cart', 9, 8, 'villager_m2', 'down', ['This cart\'s full of buttons for Seamstead!\\pThe city eats three thousand buttons a day, and I\'ve no idea where they all go.']);
   M.pickup('cake', 27, 6, 'fancy_cake', 1);
   M.pickup('spool', 5, 17, 'bond_spool', 3);
   M.hidden('stump', 20, 6, 'wish_candy', 1, 'hidden candy');

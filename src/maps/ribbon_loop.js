@@ -8,7 +8,7 @@
 
   // ---- the snacking Silkie: a one-off chance to meet her by the hay (optional, once)
   function* silkie(c) {
-    if (c.flag('rl_silkie')) { yield* c.sayT('ribbon_loop.hay.after', 'A few nibbled leaves by the hay. Someone had a lovely lunch here.'); return; }
+    if (c.flag('rl_silkie')) { yield* c.sayT('ribbon_loop.hay.after', 'There are a few nibbled leaves by the hay. Someone had a lovely lunch here.'); return; }
     yield* c.sayT('ribbon_loop.hay.1', 'A wild Silkie is happily munching leaves beside the hay.\\pShe hums a little between bites.');
     if (!(yield* c.ask('Say hello to the Silkie?'))) return;
     c.set('rl_silkie');
@@ -63,18 +63,18 @@
     npcs: [
       { id: 'tam', x: 9, y: 22, look: 'hiker', dir: 'up',
         trainer: { cls: 'Hiker', name: 'Tam', sight: 2, reward: 6, ai: 0, team: team([['nibbi', 4], ['nibbi', 5]]),
-          intro: 'Taking the long way round? Me too! Every year. Battle while we walk?', win: 'Ha! You walk faster than I do, too.', after: 'The parade will be gone by tomorrow. The loop is here every day.' } },
+          intro: 'Taking the long way round? So am I, every year! Fancy a battle on the way?', win: 'Ha! You walk faster than I do, too.', after: 'The parade will be gone by tomorrow, but the loop is here every day.' } },
       { id: 'pim', x: 17, y: 22, look: 'picnicker', dir: 'up',
         trainer: { cls: 'Picnicker', name: 'Pim', sight: 2, reward: 6, ai: 0, team: team([['peepi', 5], ['mittsy', 4]]),
-          intro: 'I set my picnic up right where the parade would see it.\\pThey folded my blanket. Let me battle the grump out!', win: 'Much better! I feel nicely crumpled again.', after: 'Have a sandwich crust. ...No? More for Peepi.' } },
+          intro: 'I set my picnic up right where the parade would see it.\\pThen they went and folded my blanket! Battle me, I need to shake off the grumps.', win: 'Much better! I feel nicely crumpled again.', after: 'Have a sandwich crust. ...No? More for Peepi.' } },
       { id: 'oki', x: 26, y: 12, look: 'sailor', dir: 'left',
         trainer: { cls: 'Sailor', name: 'Oki', sight: 2, reward: 7, ai: 1, team: team([['ribbi', 6]]),
-          intro: 'Ahoy! My ship is in Seamstead, but my heart is in this pond.\\pShow me your sea legs!', win: 'Sunk! You sail a fine battle, matey.', after: 'Ribbi loves this pond. She says hello. Ribbit.' } },
+          intro: 'Ahoy! My ship is in Seamstead, but my heart is in this pond.\\pShow me your sea legs!', win: 'Sunk! You sail a fine battle, matey.', after: 'Ribbi loves this pond, and she says hello. Ribbit.' } },
       { id: 'rio', x: 14, y: 3, look: 'net_kid', dir: 'down',
         trainer: { cls: 'Net Kid', name: 'Rio', sight: 2, reward: 5, ai: 0, team: team([['silkie', 4], ['mittsy', 5]]),
-          intro: 'I came all this way to befriend the leaf-munching Silkie.\\pShe will not stop eating. Battle me while I wait!', win: 'Even my Mittsy wants a snack now.', after: 'The Silkie snacks by the hay at the corner. She loves leaves.' } },
+          intro: 'I came all this way to befriend the leaf-munching Silkie.\\pShe won\'t stop eating. Battle me while I wait!', win: 'Even my Mittsy wants a snack now.', after: 'The Silkie hangs about by the hay in the corner. She really loves leaves.' } },
       { id: 'rl_gran', x: 23, y: 22, look: 'elder_m', dir: 'left',
-        say: ['I walk Ribbon Loop every morning. Round and round.\\pThe parade folds the main road. Nobody can fold a loop!'] },
+        say: ['I walk Ribbon Loop every morning, round and round.\\pThey can fold up the main road all they like, but nobody can fold a loop!'] },
     ],
   });
 })(typeof globalThis !== 'undefined' ? globalThis : window);

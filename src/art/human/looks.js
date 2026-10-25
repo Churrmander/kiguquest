@@ -122,4 +122,26 @@
     face: { eyes: 'normal', mouth: 'flat' }, outfit: out('hoodie', 'white', 'starch', 'white'), bottom: { type: 'shorts', color: 'white' }, legs: 'white', shoes: 'white' });
   def('cocoona', { name: 'Cocoona', build: 'child', sex: 'f', skin: 'fair', hair: hair('pigtails', 'blonde'), eyes: 'amber',
     face: { eyes: 'happy', mouth: 'grin', blush: true }, outfit: out('hoodie', 'cream', 'gold', 'white'), bottom: { type: 'shorts', color: 'khaki' }, legs: 'white', shoes: 'brown' });
+  // ---- Chapters 4 to 6: Gusset (Bobbin Quarry), Mrs. Kasuri (Shibuyarn fabric shop), the Shibuyarn station master, Tuck again,
+  // Pleat Calender (the Works engineer, with his pocket watch), Dart (Kite Hill's Master Tailor) and a courier
+  def('gusset', { name: 'Gusset', build: 'stout', sex: 'm', skin: 'tan', hair: hair('cropped', 'grey'), eyes: 'brown', facial: 'beard', facialColor: 'grey',
+    face: { eyes: 'serious', mouth: 'flat', brows: 'stern' }, outfit: out('vest', 'khaki', 'brown', 'cream'), bottom: { type: 'pants', color: 'slate' }, shoes: 'chocolate',
+    acc: ['hat:#f2cc40/#f06a9c', 'belt:#7c4e30'] });
+  def('kasuri', { name: 'Mrs. Kasuri', build: 'elder', sex: 'f', skin: 'fair', hair: hair('bun', 'silver'), eyes: 'brown',
+    face: { eyes: 'happy', mouth: 'smile' }, outfit: out('cardigan', '#34487c', 'white', 'cream'), bottom: { type: 'longskirt', color: 'charcoal' }, shoes: 'black',
+    acc: ['roundglasses:#c8a020', 'tape'] });
+  def('station_master', { name: 'Station Master', build: 'adult', sex: 'm', skin: 'warm', hair: hair('short', 'black'), eyes: 'dark', facial: 'mustache',
+    face: { eyes: 'normal', mouth: 'smile' }, outfit: out('uniform', 'navy', 'gold', 'white'), bottom: { type: 'pants', color: 'navy' }, shoes: 'black',
+    acc: ['cap:#24305c/#e8b830'] });
+  def('tuck', { name: 'Tuck', build: 'teen', sex: 'm', skin: 'fair', hair: hair('sidepart', 'brown'), eyes: 'blue',
+    face: { eyes: 'wide', mouth: 'o', brows: 'worried' }, outfit: out('uniform', 'white', 'starch', 'white'), bottom: { type: 'pants', color: 'white' }, shoes: 'white' });
+  def('pleat_calender', { name: 'Pleat Calender', build: 'tall', sex: 'm', skin: 'fair', hair: hair('sidepart', '#9c9cac'), eyes: 'grey', facial: 'mustache', facialColor: '#9c9cac',
+    face: { eyes: 'sharp', mouth: 'flat', brows: 'stern' }, outfit: out('suit', 'white', 'starch', 'white'), bottom: { type: 'pants', color: 'white' }, shoes: 'black',
+    acc: ['brooch:#e8b830', 'glasses:#9c9cac'] });
+  def('dart', { name: 'Dart', build: 'adult', sex: 'f', skin: 'brown', hair: hair('ponytail', 'red'), eyes: 'amber',
+    face: { eyes: 'happy', mouth: 'grin', lashes: true }, outfit: out('jacket', '#5a9ae8', 'white', 'white'), bottom: { type: 'pants', color: 'khaki' }, shoes: 'chocolate',
+    acc: ['goggles:#d8a030', 'scarf:#f06a3a'] });
+  def('courier', { name: 'Courier', build: 'teen', sex: 'm', skin: 'tan', hair: hair('spiky', 'black'), eyes: 'dark',
+    face: { eyes: 'sharp', mouth: 'grin' }, outfit: out('jacket', 'red', 'white', 'black'), bottom: { type: 'shorts', color: 'charcoal' }, legs: 'white', shoes: 'red',
+    acc: ['cap:#d8363a/#f6f4f0', 'bag:#3a3a44'] });
 })(typeof globalThis !== 'undefined' ? globalThis : window);

@@ -30,9 +30,9 @@
   f1.npc('clerk1', 4, 3, 'shopkeeper', 'down', null, { script: 'shopx', note: 'Crisp & Co. clerk (shared shop)' });
   f1.def.interact.push({ x: 3, y: 4, script: 'shopx' }, { x: 4, y: 4, script: 'shopx' }, { x: 5, y: 4, script: 'shopx' });
   f1.def.shopStock = ['snack_cake', 'fancy_cake', 'aloe_balm', 'mint_tea', 'numb_away'];
-  f1.npc('greeter', 6, 9, 'tea_maid', 'right', ['Welcome to Crisp & Co.! Everything is flat! Everything is fair!\\pZip says we are the most respectable store in town.\\pMay I just smooth your collar? You look so much better.']);
+  f1.npc('greeter', 6, 9, 'tea_maid', 'right', ['Welcome to Crisp & Co.! Everything here is flat, and everything is fair!\\pZip says we\'re the most respectable store in town.\\pMay I just smooth your collar? ...There! Doesn\'t that look better?']);
   f1.trainer('c1_t1', 11, 8, 'grunt_f', 'right', { cls: 'Presser', name: 'Fold', sight: 3, reward: 9, ai: 1, music: 'battle_society', team: [['silkie', 16], ['mittsy', 16]],
-    intro: 'Customers must walk in straight lines. Yours is a squiggle. We shall fix it.', win: 'The squiggle... won.', after: 'The stairs are up on the right. Walk straight. Please.' });
+    intro: 'Customers must walk in straight lines. Yours is a squiggle, and we shall fix it.', win: 'The squiggle... won.', after: 'The stairs are up on the right. Walk straight, please.' });
   f1.reg();
 
   // ------------------------------------------------------------------------------------------ 2F Uniforms
@@ -44,10 +44,10 @@
   f2.stamp('fold_table', 9, 6).stamp('fold_table', 12, 6).stamp('cloth_shelf', 9, 8, 'uniforms').stamp('cloth_shelf', 12, 8, 'uniforms').stamp('plant', 11, 9).stamp('plant', 14, 10);
   f2.stamp('cloth_shelf', 1, 0, 'uniforms').stamp('cloth_shelf', 6, 0, 'uniforms').stamp('cloth_shelf', 10, 0, 'uniforms');
   f2.trainer('c2_t1', 7, 9, 'grunt_m', 'left', { cls: 'Presser', name: 'Pinch', sight: 2, reward: 10, ai: 1, music: 'battle_society', team: [['mittsy', 17], ['silkie', 17]],
-    intro: 'Our uniforms come in one size. We call it Fine.\\pYou are not Fine. Be Fine.', win: 'I am not feeling Fine either.', after: 'There is a hat department. It is very... flat.' });
+    intro: 'Our uniforms only come in one size, and we call it Fine.\\pYou aren\'t Fine yet. Please try to be Fine.', win: 'I\'m not feeling Fine either.', after: 'There\'s a hat department up top. It\'s very... flat.' });
   f2.trainer('c2_t2', 14, 4, 'pleat', 'up', { cls: 'Presser', name: 'Lint', sight: 2, reward: 10, ai: 1, music: 'battle_society', team: [['silkie', 17], ['sparkin|mittsy', 17]],
-    intro: 'Staff only beyond this rack! ...Well, you can see that. Staff only anyway!', win: 'Staff Only, but you won. Nobody trained me for this.', after: 'The Hats floor has the Staff Pass. Do not tell Serge I said so.' });
-  f2.npc('shopper2', 2, 6, 'lady', 'right', ['They gave me a uniform. It fits. It fits perfectly.\\p...I did not choose it. It fits perfectly.']);
+    intro: 'Staff only beyond this rack! ...Well, you can see that. Staff only anyway!', win: 'This is Staff Only, and you won anyway? Nobody trained me for this.', after: 'The Hats floor has the Staff Pass. Don\'t tell Serge I said so.' });
+  f2.npc('shopper2', 2, 6, 'lady', 'right', ['They gave me a uniform. It fits. It fits perfectly.\\p...I didn\'t choose it. It fits perfectly.']);
   f2.reg();
 
   // ------------------------------------------------------------------------------------------ 3F Hats (Staff Pass; Staff Only door to B1)
@@ -65,10 +65,10 @@
   f3.def.interact.push({ x: 6, y: 7, script: L.keyDoor('lock', 'staff_pass'), note: 'locked' }, { x: 7, y: 7, script: L.keyDoor('lock', 'staff_pass'), note: 'locked' });
   L.stairs(f3, 14, 10, 'down', 'crisp_b1', 'up'); f3.spawn('bstairs', 13, 10, 'left');   // stairs to the basement, in the stockroom
   f3.trainer('c3_t1', 8, 5, 'grunt_f', 'up', { cls: 'Presser', name: 'Brim', sight: 3, reward: 11, ai: 1, music: 'battle_society', team: [['mittsy', 18], ['silkie', 18]],
-    intro: 'Hats must sit level. Yours is not level. I must level it. With a battle.', win: 'The hat is still not level. Neither am I.', after: 'Serge is in the basement. He smiles at everyone. It is... a lot.' });
+    intro: 'Hats must sit level, and yours does not. I\'ll level it with a battle.', win: 'The hat is still not level. Neither am I.', after: 'Serge is in the basement. He smiles at everyone. It\'s... a lot.' });
   f3.npc('manager', 13, 6, 'gentleman', 'left', null, { script: function* (c) {
-    if (NP.state.bag.staff_pass) { yield* c.sayT('crisp_3.manager.2', ['Manager: You have the pass. Please do not go downstairs.\\pI would stop you. I am not able to stop you.\\pI have not been able to stop anything in weeks.']); return; }
-    yield* c.sayT('crisp_3.manager.1', ['Manager: ...You are not wearing a Crisp & Co. uniform. Good.\\pThe basement is Pressing Floor. I cannot go down. I will not go down.\\pTake my pass. Please. Bring them back up.']);
+    if (NP.state.bag.staff_pass) { yield* c.sayT('crisp_3.manager.2', ['Manager: You have the pass. Please don\'t go downstairs.\\pI\'d stop you if I could. I just can\'t.\\pI haven\'t been able to stop anything in weeks.']); return; }
+    yield* c.sayT('crisp_3.manager.1', ['Manager: ...You aren\'t wearing a Crisp & Co. uniform. Good.\\pThe basement is the Pressing Floor. I can\'t go down. I won\'t go down.\\pPlease, take my pass and bring them back up.']);
     yield* c.giveItem('staff_pass', 1);
   } });
   f3.reg();
@@ -77,35 +77,35 @@
   function* serge(c) {
     c.set('crisp_b1_seen');
     c.music('society_theme');
-    yield* c.sayT('crisp_b1.serge.1', ['Rows of white Kigu stand in the dark, perfectly still.', 'Their costumes are pressed flat as paper. They are smiling.']);
+    yield* c.sayT('crisp_b1.serge.1', ['Rows of white Kigu stand in the dark, perfectly still.', 'Their costumes are pressed flat as paper. They\'re all smiling.']);
     yield* c.walk(c.npc('serge'), ['down', 2]);
-    yield* c.sayT('crisp_b1.serge.2', ['Serge: Welcome to the Pressing Floor! Quality is consistency.\\pPlease mind your step. We do not walk here. We glide.', 'Serge: You are the Tailor who "rinsed" the shrine. We heard.\\pDo not worry. Nobody is hurt here. They are simply resting.']);
+    yield* c.sayT('crisp_b1.serge.2', ['Serge: Welcome to the Pressing Floor! Quality is consistency.\\pPlease mind your step. We don\'t walk here. We glide.', 'Serge: You\'re the Tailor who "rinsed" the shrine. We heard all about it.\\pDon\'t worry, nobody\'s hurt down here. They\'re simply resting.']);
     const won = yield* c.trainerBattle({ cls: 'Presser', name: 'Serge', look: 'pleat', ai: 2, reward: 20, music: 'battle_admin', team: T([['silkie', 20], ['mittsy', 20], ['sparkin|mittsy', 21], ['spindra|silkie', 21]]) });
-    if (!won) { yield* c.sayT('crisp_b1.serge.lose', ['Serge: Oh, dear. Please go and rest upstairs.\\pI will keep smiling until you come back.']); return; }
+    if (!won) { yield* c.sayT('crisp_b1.serge.lose', ['Serge: Oh, dear. Please go and rest upstairs.\\pI\'ll keep smiling until you come back.']); return; }
     c.set('crisp_serge_done');
-    yield* c.sayT('crisp_b1.serge.win', ['Serge: ...Oh. I seem to have creased.\\pThat is a very strange feeling. I do not like it. I... do not mind it.']);
+    yield* c.sayT('crisp_b1.serge.win', ['Serge: ...Oh. I seem to have creased.\\pThat\'s a very strange feeling. I don\'t like it. I... don\'t mind it.']);
     c.music('city_seamstead');
-    yield* c.sayT('crisp_b1.father.1', ['A man in a crisp uniform looks up. He is pleasant. He is empty.', '{rival}\'s Dad: Good afternoon. Is it afternoon? ...I was folding sleeves.\\pI was thinking of my kid. What was their name? They had such a loud laugh.']);
+    yield* c.sayT('crisp_b1.father.1', ['A man in a crisp uniform looks up. He\'s very pleasant, but his eyes look empty.', '{rival}\'s Dad: Good afternoon. Is it afternoon? ...I was folding sleeves.\\pI was thinking of my kid. What was their name? They had such a loud laugh.']);
     c.showNpc('damask');
     c.music('society_theme');
-    yield* c.sayT('crisp_b1.damask.1', ['Damask: Splendid. A child who creases a Pleat. How rare.', 'Damask: I am Madame Damask. I do not fight children.\\pI press them flat with kindness. It leaves no marks.']);
-    yield* c.sayT('crisp_b1.damask.2', ['Damask: I should like you to come to tea. Not today.\\pSoon. In the old harbour city. Bring your friend, and your stitches.\\pIt will be very quiet.', 'Damask: Serge, our floor manager is wanted up north. See him transferred.\\pAnd tidy this up. Gently.']);
+    yield* c.sayT('crisp_b1.damask.1', ['Damask: Splendid. A child who can crease a Pleat. How very rare.', 'Damask: I\'m Madame Damask. I don\'t fight children.\\pI press them flat with kindness, and it leaves no marks.']);
+    yield* c.sayT('crisp_b1.damask.2', ['Damask: I should like you to come to tea, dear. Not today, but soon.\\pIt will be in the old harbour city, so bring your friend, and your stitches.\\pIt will be very quiet.', 'Damask: Serge, our floor manager is wanted up north. See that he\'s transferred.\\pAnd tidy this up. Gently.']);
     yield* c.walk(c.npc('damask'), ['right', 4]);
     c.hideNpc('damask');
     c.set('damask_tea');
-    yield* c.sayT('crisp_b1.father.2', ['{rival}\'s Dad: Up north. Yes. That sounds very restful.', 'He folds his last sleeve, smooths his collar, and follows her out.']);
+    yield* c.sayT('crisp_b1.father.2', ['{rival}\'s Dad: Up north. Yes, that sounds very restful.', 'He folds his last sleeve, smooths his collar, and follows her out.']);
     c.hideNpc('father');
     c.music('city_seamstead');
-    yield* c.sayT('crisp_b1.after.1', ['The pressed Kigu stand in their rows, eyes dim.\\pBut one by one, they turn to look at you.', 'Serge: ...Take them upstairs. Your friend with the rinse will know what to do.\\pI will not stop you. I will make some tea.']);
+    yield* c.sayT('crisp_b1.after.1', ['The pressed Kigu stand in their rows, eyes dim.\\pBut one by one, they turn to look at you.', 'Serge: ...Take them upstairs. Your friend with the rinse will know what to do.\\pI won\'t stop you. I think I\'ll go and make some tea.']);
     c.set('crisp_done');
-    yield* c.sayT('crisp_b1.after.2', ['A name tag lies on the floor where {rival}\'s Dad stood.', 'It is perfectly straight. {player} keeps it safe for {rival}.']);
+    yield* c.sayT('crisp_b1.after.2', ['A name tag lies on the floor where {rival}\'s Dad stood.', 'It\'s perfectly straight. {player} keeps it safe for {rival}.']);
   }
   const b1 = floor({ id: 'crisp_b1', name: 'Crisp & Co.  Pressing Floor', w: 16, h: 12, up: 'crisp_3', upSpawn: 'bstairs' });
   // the one stairs cell is warped from crisp_3's side; this floor's own stairs go back up
   b1.def.triggers.push({ x: 7, y: 6, w: 2, h: 1, id: 'serge', when: (c) => !c.flag('crisp_serge_done'), script: serge });
-  for (let i = 0; i < 4; i++) for (const y of [3, 9]) b1.npc('press_' + i + '_' + y, 3 + i * 3, y, 'cocoona_pressed', 'down', ['It smiles at nothing. It does not blink.'], { move: 'none' });
+  for (let i = 0; i < 4; i++) for (const y of [3, 9]) b1.npc('press_' + i + '_' + y, 3 + i * 3, y, 'cocoona_pressed', 'down', ['She\'s smiling at nothing, and she doesn\'t blink.'], { move: 'none' });
   b1.npc('serge', 7, 4, 'pleat', 'down', ['Serge: Everything is so calm down here. ...Isn\'t it?']);
-  b1.npc('father', 12, 6, 'tailor_m', 'down', ['{rival}\'s Dad: I should go home. Soon. When the folding is done.']);
+  b1.npc('father', 12, 6, 'tailor_m', 'down', ['{rival}\'s Dad: I should go home soon, when the folding is done.']);
   b1.npc('damask', 14, 5, 'madame_damask', 'left', null, { hidden: true });
   b1.def.onEnter = function* (c) { if (c.flag('crisp_done')) c.hideNpc('father'); };   // he went north with Damask (freed at the Starch Works, Ch. 8)
   b1.reg();

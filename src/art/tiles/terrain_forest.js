@@ -130,9 +130,7 @@
   // ============================================================================================ fence
   // Wooden rail fence, connects N/E/S/W (ortho mask). Posts sit in the tile centre; rails run to connected sides.
   const FENCE_BG = (x, y) => col('g2');
-  K.terrain('fence', {
-    solid: true, autotile: true, maskMode: 'ortho', variants: 1, step: 'wood',
-    paint: (m) => {
+  const fencePaint = (m) => {
       const b = K.B(T, T);
       b.fillRect(0, 0, T, T, col('g2'));
       const N = !!(m & K.DIR.N), E = !!(m & K.DIR.E), S = !!(m & K.DIR.S), W = !!(m & K.DIR.W);
@@ -179,8 +177,15 @@
       b.hline(px, py - 1, 4, col('o5'));
       b.set(px - 1, py, col('o5')); b.set(px + 4, py, col('o5'));
       return b;
-    },
-  });
+    };
+  K.terrain('fence', { solid: true, autotile: true, maskMode: 'ortho', variants: 1, step: 'wood', group: 'fence', paint: fencePaint });
+  // the same fence standing in the desert: sand under it instead of grass (it joins up with the grass fence)
+  const SANDY = new Map([[col('g1'), col('#fff0c8')], [col('g2'), col('#f7dea5')], [col('g3'), col('#e2c084')], [col('g4'), col('#c8a068')]]);
+  K.terrain('fence_sand', { solid: true, autotile: true, maskMode: 'ortho', variants: 1, step: 'wood', group: 'fence', paint: (m) => {
+    const b = fencePaint(m);
+    for (let i = 0; i < b.u32.length; i++) { const c = SANDY.get(b.u32[i]); if (c !== undefined) b.u32[i] = c; }
+    return b;
+  } });
 
   // ============================================================================================ ledges (one-way hops)
   // A grassy step with a shaded earthen lip. ortho mask rounds the free ends of a row of ledge tiles.
@@ -194,10 +199,10 @@
     // lip: grass edge (y9), earth face (y10..13), ground shadow (y14..15)
     for (let x = 0; x < T; x++) {
       const wob = (x % 8 === 3 || x % 8 === 4) ? 1 : 0;
-      b.set(x, 8 + wob, col('g3'));
-      b.set(x, 9 + wob, col('g4'));
-      if (wob) b.set(x, 8, col('g2'));
-      b.set(x, 10, col('b0')); b.set(x, 11, col('b1'));
+      b.set(x, 6 + wob, col('g1')); b.set(x, 7 + wob, col('g3'));         // a lit grass lip over a deep earthen face
+      b.set(x, 8 + wob, col('g4'));
+      if (wob) { b.set(x, 6, col('g2')); b.set(x, 7, col('g1')); }
+      b.set(x, 9, col('b0')); b.set(x, 10, col('b1')); b.set(x, 11, col('b1'));
       b.set(x, 12, col('b2')); b.set(x, 13, col('b3'));
       b.set(x, 14, col('g4')); b.set(x, 15, col('g3'));
       if (x % 8 === 1) { b.set(x, 11, col('b2')); b.set(x, 12, col('b3')); }
@@ -222,14 +227,14 @@
       if (dir === 'l') cols = [[0, 'g3'], [1, 'b2'], [2, 'b1'], [3, 'b0'], [4, 'g4'], [5, 'g3']];
       else cols = [[10, 'g3'], [11, 'g4'], [12, 'b0'], [13, 'b1'], [14, 'b2'], [15, 'g3']];
       // darker on the right-hand side for shading
-      if (dir === 'l') cols = [[0, 'g3'], [1, 'b4'], [2, 'b3'], [3, 'b2'], [4, 'g4'], [5, 'g3']];
+      if (dir === 'l') cols = [[0, 'g3'], [1, 'b4'], [2, 'b3'], [3, 'b2'], [4, 'b1'], [5, 'b0'], [6, 'g4'], [7, 'g3'], [8, 'g1']];
       else cols = [[10, 'g3'], [11, 'g4'], [12, 'b0'], [13, 'b1'], [14, 'b3'], [15, 'g3']];
       for (const [x, c] of cols) b.set(x + (dir === 'l' ? wob : -wob), y, col(c));
       if (dir === 'l' && y % 8 === 2) b.set(2, y, col('b4'));
       if (dir === 'r' && y % 8 === 2) b.set(13, y, col('b3'));
     }
-    if (!N) { const xs = dir === 'l' ? [1, 2, 3] : [12, 13, 14]; for (const x of xs) b.set(x, 0, col('g2')); }
-    if (!S) { const xs = dir === 'l' ? [1, 2, 3] : [12, 13, 14]; for (const x of xs) b.set(x, 15, col('g3')); }
+    if (!N) { const xs = dir === 'l' ? [1, 2, 3, 4, 5] : [12, 13, 14]; for (const x of xs) b.set(x, 0, col('g2')); }
+    if (!S) { const xs = dir === 'l' ? [1, 2, 3, 4, 5] : [12, 13, 14]; for (const x of xs) b.set(x, 15, col('g3')); }
     return b;
   }
   K.terrain('ledge_l', { ledge: 'left', autotile: true, maskMode: 'ortho', variants: 1, step: 'grass', paint: (m) => ledgeSide(m, 'l') });

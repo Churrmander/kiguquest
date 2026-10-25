@@ -401,6 +401,57 @@
     paint: (m, f, v) => edgedGround(m, v, sandTex, { lip: 1.6, R: 8, px: PATH_PX, py: PATH_PY, edgeDark: P.g3, shadow: P.s2, rim: P.s0 }),
   });
 
+  // ---- dune: open desert sand with wind ripples. Not an autotile, so in the desert it meets cliffs, rails and dry grass without
+  //      the green meadow lip that `sand` draws (use `sand` where sand meets grass, `dune` as a desert's base fill)
+  const RIP = [[2, 3, 6], [9, 5, 5], [4, 10, 7], [11, 13, 4]];
+  K.terrain('dune', {
+    variants: 3, step: 'sand', group: 'sand',   // same group as `sand`, so sand draws no lip against it
+    paint: (m, f, v) => {
+      const b = K.B(T, T);
+      for (let i = 0; i < 256; i++) b.u32[i] = sandTex(i & 15, i >> 4, v & 1, 99);
+      for (const [x0, y0, len] of RIP) {
+        const sx = (x0 + v * 5) & 15, sy = (y0 + v * 3) & 15;
+        for (let k = 0; k < len; k++) { const x = (sx + k) & 15, y = (sy + (k > len / 2 ? 1 : 0)) & 15; b.u32[y * 16 + x] = P.s2; b.u32[((y + 1) & 15) * 16 + x] = P.s0; }
+      }
+      return b;
+    },
+  });
+
+  // ---- track: the caravan road across the desert, packed darker sand with two wheel ruts along it. Also in the `sand` group,
+  //      so it sits in dune without edges; `track_v` runs north-south
+  function trackTile(horiz) {
+    return (m, f, v) => {
+      const b = K.B(T, T);
+      for (let i = 0; i < 256; i++) {
+        const x = i & 15, y = i >> 4, a = horiz ? y : x, n = K.hf(x, y, 300 + v);
+        let c = n > 0.85 ? P.s1 : n > 0.12 ? P.s2 : P.s3;
+        if (a === 4 || a === 11) c = P.s3;                 // the ruts
+        if (a === 5 || a === 12) c = P.s1;                 // their sunlit far lip
+        if (a === 0 || a === 15) c = n > 0.5 ? P.s1 : P.s2; // soft, broken edges into the dune
+        b.u32[i] = c;
+      }
+      return b;
+    };
+  }
+  K.terrain('track', { variants: 2, step: 'sand', group: 'sand', paint: trackTile(true) });
+  K.terrain('track_v', { variants: 2, step: 'sand', group: 'sand', paint: trackTile(false) });
+
+  // ---- quarry: pale crushed-stone ground of Bobbin Quarry, chips of slate and the odd crystal. In the `sand` group like dune.
+  K.terrain('quarry', {
+    variants: 3, step: 'stone', group: 'sand',
+    paint: (m, f, v) => {
+      const b = K.B(T, T);
+      for (let i = 0; i < 256; i++) {
+        const x = i & 15, y = i >> 4, n = K.hf(x >> 1, y >> 1, 400 + v) * 0.5 + K.hf(x, y, 410 + v) * 0.5;
+        b.u32[i] = n > 0.84 ? col('#f4ead6') : n > 0.3 ? col('#e2d4b8') : n > 0.1 ? col('#cbb999') : col('#a99676');
+      }
+      const chips = [[3 + v * 4, 5], [11 - v * 3, 11], [7, 14 - v * 5]];
+      for (const [x, y] of chips) { b.set(x, y, col('#8a8aa0')); b.set(x + 1, y, col('#6a6a80')); b.set(x, y - 1, col('#c8c8d8')); }
+      if (v === 1) b.set(9, 3, col('#c8a0ff'));
+      return b;
+    },
+  });
+
   // ---- cobble (town paving): rounded stones with mortar, framed by a neat curb
   const COBBLE = [
     [

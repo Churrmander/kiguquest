@@ -35,7 +35,7 @@ assert.ok(t.travel(17, 9, 400), 'to the lab door');
 t.go('up');
 settle();
 at('button_town');
-assert.ok(said.some((s) => /you are early/.test(s)), 'Bobbin is not ready yet');
+assert.ok(said.some((s) => /you('re| are) early/.test(s)), 'Bobbin is not ready yet');
 assert.ok(!st.flags.intro_done, 'the lab intro waits for the morning');
 
 // the washing line: the kite, the tree house promise, the race

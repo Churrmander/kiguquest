@@ -103,6 +103,7 @@
       this.id = id;
       this.def = AR.games[id];
       this.free = (o && o.free) | 0;
+      this.storyGo = this.free > 0;
       this.phase = 'attract';
       this.t = 0;
       this.game = null;
@@ -120,6 +121,7 @@
         if (!go) break;
         yield* this.play();
         yield* this.results();
+        if (this.storyGo && this.free === 0) break;   // a story's free go (the rival's claw) hands straight back to the scene
       }
       NP.Game.pop();
     }
