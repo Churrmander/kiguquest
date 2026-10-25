@@ -2,7 +2,7 @@
 (function (root) {
   'use strict';
   const NP = root.NP, K = NP.mapkit;
-  const team = (list) => list.map(([sp, lv]) => ({ sp, lv }));
+  const team = (list) => list.map(([sp, lv, o]) => Object.assign({ sp, lv }, o && o.moves ? { moves: o.moves } : {}));
 
   // ---- Rival #2: the rival has just lost to Poppy and is waiting outside the Salon door. Conversation only: Rival #1 (Route 1) is the only
   //      rival fight before the first Salon, so the player is never forced into two rival battles in a row on low HP.
@@ -40,10 +40,10 @@
     yield* c.sayT('thimble.inspect.1', 'Tuck: Attention, Thimble Village!\\pBy order of the Society for Tidy Living, this is a routine inspection.');
     yield* c.sayT('thimble.inspect.2', 'Fold: Please remain in line. Flat is fair!');
     yield* c.sayT('thimble.inspect.3', 'Tuck: Item one. The Salon banner hangs two degrees crooked.\\pItem two. This Tailor\'s Kigu has a loose thread on her sleeve.');
-    yield* c.sayT('thimble.inspect.4', 'Fold: Loose threads become tangles, miss. Tangles become messes.\\pThe Society can press that right out. Free of charge!');
+    yield* c.sayT('thimble.inspect.4', 'Fold: Loose threads become tangles, Tailor. Tangles become messes.\\pThe Society can press that right out. Free of charge!');
     yield* c.sayT('thimble.inspect.5', '{player}\'s Kigu tugged her sleeve away from the Presser.');
     yield* c.sayT('thimble.inspect.6', 'Tuck: Resisting an inspection? That is... untidy.\\pStay in line, Tailor!');
-    const won = yield* c.trainerBattle({ cls: 'Presser', name: 'Tuck', look: 'grunt_m', ai: 1, reward: 8, music: 'battle_society', team: team([['mittsy', 8], ['silkie', 7]]) });
+    const won = yield* c.trainerBattle({ cls: 'Presser', name: 'Tuck', look: 'grunt_m', ai: 1, reward: 8, music: 'battle_society', canLose: true, team: team([['mittsy', 8], ['silkie', 7]]) });
     if (won) {
       yield* c.sayT('thimble.inspect.win.1', 'Tuck: Flat is fair... flat is fair... I was only supposed to count planks.');
       yield* c.sayT('thimble.inspect.win.2', 'Fold: Please do not tell the Inspector.\\pI would honestly rather be baking.');
@@ -63,6 +63,23 @@
     yield* c.walk(pop, ['up', 1]);
     c.hideNpc('poppy_out');
     c.set('presser1_done');
+  }
+
+  // ---- the Route 2 guards: before the first inspection they hold the road; after it, either one stands both down (once)
+  function* guards(c, npc) {
+    if (!c.flag('presser1_done')) {
+      if (npc && npc.id === 'guard2') yield* c.sayT('thimble.guard2', 'Stay in line, please.\\p...Your collar is untidy. May I? ...There. Much better. Flat is fair!');
+      else yield* c.sayT('thimble.guard1.a', 'Halt! This bridge is under inspection.\\pThe planks are uneven. Nobody crosses until they are level.');
+      return;
+    }
+    yield* c.sayT('thimble.guard1.b', ['...Hm. The village report says you are a licensed Tailor with a Button.\\pA licensed Tailor with a Button may cross at their own risk.\\pThe planks are uneven.']);
+    yield* c.sayT('thimble.guard2.b', ['Please mind the third plank from the end, Tailor.\\pIt is... a little crooked. We have not had the heart to press it.\\pFlat is fair!']);
+    const a = c.npc('guard1'), b = c.npc('guard2');
+    yield* c.walk(a, ['up', 3]);
+    c.hideNpc('guard1');
+    yield* c.walk(b, ['up', 3]);
+    c.hideNpc('guard2');
+    c.set('route2_open');
   }
 
   const W = 26, H = 22;
@@ -99,6 +116,7 @@
       { x: 11, y: 9, say: 'THIMBLE VILLAGE\\nWhere every stitch counts.' },
       { x: 22, y: 5, script: function* (c) {
         if (c.flag('route2_open')) yield* c.sayT('thimble.sign_r2.open', 'ROUTE 2  Licensed Tailors only.\\nPlanks uneven. Cross at your own risk.');
+        else if (c.flag('presser1_done')) yield* c.sayT('thimble.sign_r2.ask', 'ROUTE 2  Closed\\nInspection in progress.\\pLicensed Tailors with a Button may ask the guards.');
         else yield* c.sayT('thimble.sign_r2.closed', 'ROUTE 2  Closed\\nInspection in progress. Please be patient.');
       } },
     ],
@@ -121,24 +139,9 @@
       { xs: [22, 23], y: 0, to: 'route2', spawn: 'south', sound: 'none' },
     ],
     npcs: [
-      { id: 'guard1', x: 22, y: 3, look: 'grunt_m', dir: 'down', hideIf: 'route2_open',
-        script: function* (c) {
-          if (!c.flag('presser1_done')) {
-            yield* c.sayT('thimble.guard1.a', 'Halt! This bridge is under inspection.\\pThe planks are uneven. Nobody crosses until they are level.');
-            return;
-          }
-          // after the first inspection: the guards stand down (once) and the road to Route 2 opens
-          yield* c.sayT('thimble.guard1.b', ['...Hm. The village report says you are a licensed Tailor with a Button.\\pA licensed Tailor with a Button may cross at their own risk.\\pThe planks are uneven.']);
-          yield* c.sayT('thimble.guard2.b', ['Please mind the third plank from the end, Tailor.\\pIt is... a little crooked. We have not had the heart to press it.\\pFlat is fair!']);
-          const a = c.npc('guard1'), b = c.npc('guard2');
-          yield* c.walk(a, ['up', 3]);
-          c.hideNpc('guard1');
-          yield* c.walk(b, ['up', 3]);
-          c.hideNpc('guard2');
-          c.set('route2_open');
-        } },
-      { id: 'guard2', x: 23, y: 3, look: 'grunt_f', dir: 'down', hideIf: 'route2_open',
-        script: function* (c) { yield* c.sayT('thimble.guard2', 'Stay in line, please.\\p...Your collar is untidy. May I? ...There. Much better. Flat is fair!'); } },
+      { id: 'guard1', x: 22, y: 3, look: 'grunt_m', dir: 'down', hideIf: 'route2_open', script: guards },
+      { id: 'guard2', x: 23, y: 3, look: 'grunt_f', dir: 'down', hideIf: 'route2_open', script: guards },
+
       // cast for the Rival #2 and first-inspection scenes (hidden until their scripts place them)
       { id: 'tomo_t', x: 12, y: 6, look: 'rival', dir: 'down', hidden: true, say: ['{rival}: ...'] },
       { id: 'presser_s1', x: 12, y: 14, look: 'grunt_m', dir: 'up', hidden: true, say: ['Flat is fair!'] },
@@ -215,7 +218,8 @@
           intro: 'Halt! Nobody reaches Poppy without sewing a line past me.', win: 'You threaded that one perfectly...', after: 'Go on, Poppy is waiting.' } },
     ],
   });
-  NP.maps.salon.poppyTeam = team([['nibbi', 7], ['peepi', 8], ['mittsy', 9]]);
+  // softened for starter-only runs (playtest QA); her Peepi sticks to Fluff moves so the Gale ones don't flatten a Sprubun starter
+  NP.maps.salon.poppyTeam = team([['nibbi', 6], ['peepi', 7, { moves: ['pounce', 'tail_wag', 'sweet_talk'] }], ['mittsy', 8]]);
 
   // -------------------------------------------------------------------------------------- houses
   K.room({

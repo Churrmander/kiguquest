@@ -7,7 +7,7 @@ const { NP, G } = t;
 const ow = NP.quickStart('Ren', 'f');
 const st = NP.state;
 Object.assign(st.flags, { intro_done: true, has_starter: true, tomo_left_lab: true });
-st.starter = 'konko'; st.rivalStarter = 'ottopi';
+st.starter = 'konko'; st.rivalStarter = 'sprubun';
 const k = NP.Kigu.create('konko', 24, { ot: 'Ren' });
 st.party.push(k);
 st.bag.bond_spool = 5; st.bag.snack_cake = 5;

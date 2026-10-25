@@ -335,7 +335,10 @@
       yield* this.waitFor(() => scene.finished);
       const res = scene.result || { winner: 1 };
       yield* this.wait(2);
-      if (res.winner === 1) {
+      if (res.winner === 1 && cfg.canLose) {
+        // a story fight that is allowed to go either way (rivals, Society scenes): no blackout and no lost money, the scene carries on
+        NP.State.healAll();
+      } else if (res.winner === 1) {
         NP.snd.stop(0);
         yield* this.blackout(cfg);
         throw ABORT;
@@ -398,11 +401,11 @@
     }
 
     *trainerBattle(def) {
-      const party = def.team.map((t) => NP.Kigu.create(t.sp, t.lv, { ot: def.name }));
+      const party = def.team.map((t) => NP.Kigu.create(t.sp, t.lv, { ot: def.name, moves: t.moves, item: t.item, nature: t.nature }));   // L.team's moves/item/nature options
       yield* this.transitionToBattle(def.music || (def.cls === 'Rival' ? 'battle_rival' : 'battle_tailor'));
       let res;
       try {
-        res = yield* this.runBattle({ wild: false, foe: party, trainer: { name: NP.fmt(def.name), cls: def.cls, look: def.look || 'tailor_f', ai: def.ai === undefined ? 1 : def.ai, reward: def.reward || 5, master: !!def.master, lose: def.lose }, bg: this.map.def.battleBg || 'grass', music: def.music });
+        res = yield* this.runBattle({ wild: false, foe: party, trainer: { name: NP.fmt(def.name), cls: def.cls, look: def.look || 'tailor_f', ai: def.ai === undefined ? 1 : def.ai, reward: def.reward || 5, master: !!def.master, lose: def.lose }, bg: this.map.def.battleBg || 'grass', music: def.music, canLose: !!def.canLose });
       } catch (e) { throw e; }
       if (res.winner === 0) {
         const money = (def.reward || 5) * Math.max.apply(null, def.team.map((t) => t.lv));
@@ -452,7 +455,10 @@
       if (Input.pressed.a) { this.interact(); return; }
       const v3 = NP.view3d;
       if (v3 && v3.on) v3.q = v3.quarterFor(this.map, p.x, p.y);
-      const d = v3 ? v3.screenToMap(Input.dir()) : Input.dir();
+      // a held key keeps its map direction while the camera swings (a camera zone turning mid-walk must not bend your path)
+      const sd = Input.dir();
+      if (sd !== this.heldScreen) { this.heldScreen = sd; this.heldMap = v3 ? v3.screenToMap(sd) : sd; }
+      const d = this.heldMap;
       if (!d) { this.turnT = 0; return; }
       if (d !== p.dir && this.turnT === 0) { p.dir = d; this.turnT = 6; return; }
       if (this.turnT > 0) { this.turnT--; if (this.turnT > 0) return; }

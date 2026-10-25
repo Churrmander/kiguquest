@@ -65,7 +65,7 @@
       NP.Game.reset(ow);
       const p = st.pos;
       if (isNew) ow.loadMap('lab', 5, 9, 'up');
-      else ow.loadMap(p.map, p.x, p.y, p.dir, { noEnter: true });
+      else ow.loadMap(p.map, p.x, p.y, p.dir);   // run onEnter: it syncs story NPCs (e.g. Seamstead's Salon lane) to the flags
       NP.Game.fadeTo(0, 20);
     }
     draw(fb) {

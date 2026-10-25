@@ -9,7 +9,7 @@ const { NP } = t;
 const ow = NP.quickStart('Ren', 'f');
 const st = NP.state;
 Object.assign(st.flags, { intro_done: true, has_starter: true, tomo_left_lab: true, rival1_done: true, rival2_done: true, badge1: true, presser1_done: true, route2_open: true, route2_insp_done: true, shrine1_done: true, badge2: true });
-st.starter = 'konko'; st.rivalStarter = 'ottopi';
+st.starter = 'konko'; st.rivalStarter = 'sprubun';
 st.badges = [true, true];
 st.party.push(NP.Kigu.create('konko', 55, { ot: 'Ren' }), NP.Kigu.create('ottopi', 55, { ot: 'Ren' }), NP.Kigu.create('sprubun', 55, { ot: 'Ren' }));
 st.bag.bond_spool = 5; st.bag.snack_cake = 5;

@@ -43,6 +43,11 @@
 
   M.spawn('west', 2, 11, 'right').spawn('east', 25, 12, 'left');
   M.edge('w', 11, 12, 'spindle_shrine', 'east').edge('e', 11, 12, 'route3', 'west');
+  // no sequence break: the seam road east waits for the Buzz Button (otherwise Bryn, the Paddle Disc and Chapter 2's ending are skippable)
+  M.trigger({ x: 26, y: 11, w: 1, h: 2, id: 'east_before_bryn', when: (c) => !c.flag('badge2'), script: function* (c) {
+    yield* c.sayT('hemline.east_block', 'Mimi: Wait up, {player}! Bryn is expecting you at the Salon first.\\pIt is the big building north of the main street.\\pSeamstead will still be there after. Promise!');
+    yield* c.walk('player', ['left']);
+  } });
 
   // ---- townsfolk: the hemmers' grievance, one line at a time
   M.npc('peddler', 17, 5, 'gentleman', 'left', ['Mr. Sharp, humble peddler. Nothing suspicious!\\pThe chef\'s hat? I am not a chef. Keep your eyes sharp, friend!']);
@@ -86,7 +91,7 @@
     intro: 'Bryn says: ten stitches, ten bees, ten seconds. I am the ten seconds!', win: 'Eleven seconds. Oops.', after: 'Bryn is at the back. She is faster than she sounds.' });
   salon.trainer('salon_t2', 3, 5, 'tailor_m', 'right', { cls: 'Tailor', name: 'Dov', sight: 3, reward: 8, ai: 1, team: [['silkie', 12], ['sprubun', 12]],
     intro: 'Nobody reaches Bryn without showing me a clean hem first.', win: 'Clean hem. Very clean. Go on through.', after: 'Mind the bees. They do not bite. Much.' });
-  salon.reg().brynTeam = team([['webbi', 12], ['cocoona', 13], ['honeybelle', 15]]);
+  salon.reg().brynTeam = team([['webbi', 12], ['cocoona', 13], ['honeybelle', 14]]);
 
   // -------------------------------------------------------------------------------------- houses
   L.room({ id: 'hemline_house1', name: 'Hemmer\'s House', w: 9, h: 8, doorX: 3, exit: { to: 'hemline', door: 'house1' } })

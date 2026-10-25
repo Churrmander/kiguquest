@@ -7,7 +7,7 @@
 
   function* zip(c) {
     const st = c.state;
-    if (st.badges && st.badges[2]) { yield* c.sayT('script.zip.1', 'Zip: Thread, buzz, pulse! You are all wired up, {player}!\\pRoute 4 is east of the avenue. Mind the dust.\\pAnd the tents. And the camels. ...There are no camels. I checked.'); return; }
+    if (st.badges && st.badges[2]) { yield* c.sayT('script.zip.1', 'Zip: Thread, buzz, pulse! You are all wired up, {player}!\\pRoute 4 is east of the avenue, once the Society stops "resurfacing" it.\\pAnd the tents. And the camels. ...There are no camels. I checked.'); return; }
     if (!c.flag('crisp_done')) { yield* c.sayT('script.zip.0', 'Zip: Argh! The lights are out, and the Society says that is "balanced"!\\pDo something about Crisp & Co. first, would you? Pretty please?'); return; }
     yield* c.sayT('script.zip.2', 'Zip: Whoa! You pulled both levers! The Salon is ON, baby!\\pI am Zip, Master Tailor, Warden of the lights.\\pI put my name on Crisp & Co. I never once went down to look.\\pSo: I am sorry. Now let me make a fuss. A big, bright, very loud fuss!');
     const won = yield* c.trainerBattle({ cls: 'Master', name: 'Zip', look: 'zip|rocker', ai: 2, reward: 22, master: true, music: 'battle_master', team: c.map.def.zipTeam });
@@ -20,6 +20,7 @@
     yield* c.sayT('script.zip.6', 'Zip: With it, your Kigu obey you up to Lv40. Also take this Zip Cable.\\pIf the lights ever go out again, plug in and stand out!');
     yield* c.giveItem('zip_cable', 1);
     yield* c.sayT('script.zip.7', 'Zip: One more thing. Madame Damask came to a show once.\\pShe did not clap. She nodded, very politely, until I stopped.\\pDo not let her smooth your loud bits, {player}.');
+    yield* c.sayT('script.zip.end', 'That is the end of Chapter 3, and the end of the playtest build. Thanks for playing!\\pSave from the menu (Enter), and you can carry on when Chapter 4 is stitched in.');
   }
   NP.scripts.zip = zip;
 
@@ -35,5 +36,5 @@
   M.trainer('sal3_t2', 3, 7, 'artist', 'right', { cls: 'Tailor', name: 'Lux', sight: 3, reward: 11, ai: 1, team: [['kumi|nibbi', 19], ['sparkin|mittsy', 19]],
     intro: 'I draw lightning bolts on everything. Including you!', win: 'Lightning does strike twice. It struck me twice.', after: 'Zip is just past the second barrier. Do try not to flinch.' });
   M.npc('zip', 5, 3, 'zip|rocker', 'down', null, { script: 'zip', note: 'Master Tailor #3 (Volt)' });
-  M.reg().zipTeam = L.team([['sparkin|mittsy', 20], ['kumara|silkie', 21], ['voltessa|mittsy', 23]]);
+  M.reg().zipTeam = L.team([['sparkin|mittsy', 19], ['kumara|silkie', 20], ['voltessa|mittsy', 22]]);
 })(typeof globalThis !== 'undefined' ? globalThis : window);

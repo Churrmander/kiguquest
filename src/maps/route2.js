@@ -19,7 +19,7 @@
     yield* c.sayT('route2.insp.4', 'Notch: Since you are here, we will measure you too. Hold still.\\pCollar: three millimetres off standard.\\pHem: two millimetres crooked.');
     yield* c.sayT('route2.insp.5', 'Tally: A hem that crooked could snag a plank!\\pFor the safety of the bridge, we must iron you out.');
     yield* c.sayT('route2.insp.6', '{player}\'s Kigu stuck her tongue out at the folding ruler.');
-    const won = yield* c.trainerBattle({ cls: 'Presser', name: 'Tally', look: 'grunt_m', ai: 1, reward: 8, music: 'battle_society', team: L.team([['mittsy', 9], ['silkie', 9]]) });
+    const won = yield* c.trainerBattle({ cls: 'Presser', name: 'Tally', look: 'grunt_m', ai: 1, reward: 8, music: 'battle_society', canLose: true, team: L.team([['mittsy', 9], ['silkie', 9]]) });
     if (won) {
       yield* c.sayT('route2.insp.win.1', 'Tally: The ruler... bent. It has never bent. Notch, write that down.');
       yield* c.sayT('route2.insp.win.2', 'Notch: I would rather write that the bridge is fine. ...It is fine.\\pPlank fourteen is a little soft, but it is fine.');

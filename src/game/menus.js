@@ -24,6 +24,8 @@
       super('light');
       this.o = Object.assign({ mode: 'menu' }, o || {});
       this.cur = 0;
+      // a forced switch (the lead fainted) starts on the first Kigu who can still fight, so pressing A just works
+      if (this.o.forced) { const i = this.party.findIndex((k) => k.hp > 0); if (i >= 0) this.cur = i; }
       this.swap = -1;
       this.hint = this.o.prompt || (this.o.mode === 'menu' ? 'Choose a Kigu.' : 'Choose a Kigu.');
       this.result = null;
@@ -163,9 +165,13 @@
           ui.text(fb, mv.name, 120, y + 3, 'light');
           fb.blit(A().typePill(mv.type), 120, y + 16);
           ui.text(fb, 'PP ' + m.pp + '/' + m.maxpp, 162, y + 18, 'light', { shadow: null });
-          const pw = mv.category === 'status' ? '-' : mv.fixed ? 'Lv' : String(mv.power);
-          ui.text(fb, 'Pow ' + pw, 184, y + 3, 'light', { color: '#707890', shadow: null });
-          ui.text(fb, mv.category === 'status' ? 'Status' : mv.category === 'physical' ? 'Phys' : 'Spec', 216, y + 3, 'light', { color: '#707890', shadow: null });
+          // right-aligned inside the card: power on the top line, Phys/Spec under it (status moves just say Status)
+          const grey = { color: '#707890', shadow: null, align: 'right' };
+          if (mv.category === 'status') ui.text(fb, 'Status', 238, y + 3, 'light', grey);
+          else {
+            ui.text(fb, 'Pow ' + (mv.fixed ? 'Lv' : String(mv.power)), 238, y + 3, 'light', grey);
+            ui.text(fb, mv.category === 'physical' ? 'Phys' : 'Spec', 238, y + 18, 'light', grey);
+          }
         });
         for (let i = k.moves.length; i < 4; i++) ui.text(fb, '-', 120, 10 + i * 42 + 8, 'light', { color: '#b0b8d0' });
       }

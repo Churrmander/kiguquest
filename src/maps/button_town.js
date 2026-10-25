@@ -65,11 +65,12 @@
     { sp: 'ottopi', x: 5, name: 'Ottopi', type: 'Tide', blurb: 'the Tide otter Kigu' },
     { sp: 'sprubun', x: 6, name: 'Sprubun', type: 'Sprout', blurb: 'the Sprout bunny Kigu' },
   ];
-  const BEATS = { konko: 'ottopi', ottopi: 'sprubun', sprubun: 'konko' }; // what the rival takes against yours
+  // owner's rule: the rival (a friend, not a bully) takes the starter that is weak to yours, so your first fights lean your way
+  const WEAK = { konko: 'sprubun', ottopi: 'konko', sprubun: 'ottopi' };
 
   function* pick(c, s) {
     if (c.flag('has_starter')) return;
-    yield* c.say(s.name + ', ' + s.blurb + '.\\pIt wears a ' + s.type + ' costume and waits quietly on the spool.');
+    yield* c.say(s.name + ', ' + s.blurb + '.\\pIt wears ' + (/^[AEIOU]/i.test(s.type) ? 'an ' : 'a ') + s.type + ' costume and waits quietly on the spool.');
     if (!(yield* c.ask('Will you befriend ' + s.name + '?'))) return;
     c.hideProp('starter_' + s.sp);
     c.set('has_starter');
@@ -80,13 +81,12 @@
     const prof = c.npc('bobbin');
     yield* c.face(prof, 'down');
     yield* c.say('Wonderful! She chose you right back.\\pThe stitches between you and a Kigu are what make you a real Tailor.');
-    // the rival takes the one that beats yours
-    const rs = BEATS[s.sp];
+    const rs = WEAK[s.sp];
     c.state.rivalStarter = rs;
     const tomo = c.npc('tomo_lab');
     yield* c.emote(tomo, 'exclaim');
     const rp = STARTERS.find((x) => x.sp === rs);
-    yield* c.say('{rival}: I will take the one that beats yours. Dare you to beat it!\\pFair is fair!');
+    yield* c.say('{rival}: Then I pick ' + rp.name + '! Yours has the edge on mine, I know.\\pThat just means I have to train twice as hard!');
     yield* c.walk(tomo, ['down', 1, 'left', 9 - rp.x, 'up', 1]);
     yield* c.face(tomo, 'up');
     c.hideProp('starter_' + rs);
@@ -142,7 +142,7 @@
       yield* c.say('Today you become an apprentice Tailor.\\pThree Kigu wait on the table, each on a Bond Spool.\\pChoose the one you like best!');
       yield* c.say('{rival}: I should pick first! I was up before anyone this morning.\\pI was on the roof watching the sea before the sun was even out.');
       yield* c.say('Guests choose first, {rival}. Besides, {player} decides faster than you do.');
-      yield* c.say('{rival}: Fine! Then I get the one that beats yours.\\pDare you to pick a good one, {player}!');
+      yield* c.say('{rival}: Fine! Then I will pick after you.\\pChoose a good one, {player}!');
       yield* c.face(c.npc('tomo_lab'), 'left');
     },
   });

@@ -11,8 +11,11 @@
     c.music('battle_rival');
     yield* c.sayT('seamstead.rival3.1', '{rival}: {player}! Over here! Look at this place.\\pAnd that big white shop? Crisp & Co. My dad works there.\\pHe says they are the future of tailoring. Nothing ever creases.');
     yield* c.sayT('seamstead.rival3.2', '{rival}: Mimi says the Society is bad. She has never seen the Linens floor.\\pI have. It is so clean, and so quiet.\\pIf you want in, you will have to get past me first.\\pNot because I am mean! I am just proud of my dad.');
-    const team = L.team([[L.evoStarter(c.state.rivalStarter), 18], ['sparkin|peepi', 16], ['kumi|mittsy', 16], ['silkie', 17]]);
-    const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'rival', ai: 2, reward: 18, team });
+    // owner's rule: the rival's starter is weak to yours, but one teammate hits your starter hard, so switching pays off
+    // without being forced (a Tide Kigu against Ember, Volt against Tide, Gale against Sprout)
+    const counter = { konko: 'ribbi', ottopi: 'sparkin|ribbi', sprubun: 'larkette|peepi' }[c.state.starter] || 'sparkin|peepi';
+    const team = L.team([[L.evoStarter(c.state.rivalStarter), 18], [counter, 17], ['kumi|mittsy', 16], ['silkie', 16]]);
+    const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'rival', ai: 2, reward: 18, canLose: true, team });
     c.set('rival3_done'); c.music('city_seamstead');
     if (won) yield* c.sayT('seamstead.rival3.win', '{rival}: ...Okay, okay! You beat me fair and square.\\pYou are really good, {player}. Really good.\\pBut Crisp & Co. is not bad. You will see.\\pMy dad has been in the basement three weeks. He says it is "very restful".\\pHe sounds... far away, sometimes.');
     else yield* c.sayT('seamstead.rival3.lose', '{rival}: Ha! Told you! Crisp & Co. is great, you will see.\\pGo rest your Kigu, {player}. You will get me next time!');
@@ -25,7 +28,8 @@
     legend: { '.': 'grass', T: 'treeline', c: 'cobble', f: 'flowers', F: 'fence', p: 'path' },
     onEnter: function* (c) { if (c.flag('crisp_done')) { c.hideNpc('dark1'); c.hideNpc('dark2'); } },
   });
-  M.trigger({ x: 10, y: 14, w: 1, h: 2, id: 'rival3', when: (c) => !c.flag('rival3_done'), script: rival3 });
+  M.trigger({ x: 10, y: 2, w: 1, h: 24, id: 'rival3',   // the whole column, so the rival can't be walked round on the grass
+    when: (c) => !c.flag('rival3_done'), script: rival3 });
   M.def.cameraZones = [{ x: 26, y: 0, w: 10, h: H, camera: 1 }];   // 3D view swings east as you approach the Route 4 gate
   M.rect(0, 0, W, 2, 'T').rect(0, 26, W, 2, 'T').rect(0, 2, 2, 24, 'T').rect(W - 2, 2, 2, 24, 'T');
   M.rect(0, 14, W, 2, 'c');                                   // avenue: west = Route 3, east = Route 4 (Ch. 4)
@@ -34,6 +38,7 @@
   M.rect(11, 19, 2, 5, 'c').rect(24, 19, 2, 5, 'c').rect(3, 23, 30, 2, 'c');    // south lanes + back street
   M.rect(14, 4, 1, 1, 'f').rect(21, 8, 3, 1, 'f').rect(8, 17, 3, 1, 'f').rect(26, 17, 4, 1, 'f');
   M.rect(34, 14, 2, 2, 'F');                                  // east gate: closed until Chapter 4
+  M.rect(15, 7, 1, 2, 'F').rect(18, 7, 1, 2, 'F');            // railings beside the Salon lane, so the two Pressers really do block it
 
   M.building('salon', 14, 2, 'volt', 'salon', 'seamstead_salon');
   M.building('tea_house', 4, 6, null, 'tea', 'seamstead_tea');
@@ -44,7 +49,13 @@
 
   M.sign(15, 10, 'SEAMSTEAD CITY\\nBursting at the seams!\\pSalon: north of the plaza.', 'plaza sign');
   M.sign(3, 13, 'SEAMSTEAD CITY\\nWest: Route 3, Hemline', 'west sign');
-  M.sign(32, 13, 'EAST: ROUTE 4\\nClosed for resurfacing. By order of the Society.', 'east sign (Ch. 4 opens this)');
+  M.stamp('sign', 32, 13);
+  function* eastGate(c) {
+    yield* c.sayT('seamstead.sign_east', 'EAST: ROUTE 4\\nClosed for resurfacing. By order of the Society.');
+    if (c.flag('badge3')) yield* c.sayT('seamstead.sign_east.end', 'This is as far as the playtest build goes. Route 4 opens in Chapter 4.\\pThanks for playing!');
+  }
+  // the sign, and the gate itself when you bump into it; after the Volt Button they mark the end of the playtest build
+  M.def.interact.push({ x: 32, y: 13, script: eastGate, note: 'east sign (Ch. 4 opens this)' }, { x: 34, y: 14, script: eastGate, note: 'east gate' }, { x: 34, y: 15, script: eastGate, note: 'east gate' });
   M.sign(21, 22, 'CRISP & CO.\\nEverything flat. Everything fair.\\pStaff only. Ask on the top floor.', 'Crisp & Co. sign');
   M.stamp('lamp', 12, 12).stamp('lamp', 23, 12).stamp('lamp', 12, 17).stamp('lamp', 23, 17).stamp('lamp', 8, 12).stamp('lamp', 30, 12);
   M.stamp('bench', 14, 17).stamp('bench', 21, 17).stamp('flowerbed', 16, 12).stamp('flowerbed', 19, 12).stamp('well', 17, 15);

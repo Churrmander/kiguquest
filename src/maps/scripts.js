@@ -50,6 +50,11 @@
     yield* c.giveItem('cream_thread', 1);
     yield* c.sayT('script.poppy.8', "Poppy: One more thing. My old teacher stitched this.\\pSee the little 'D'? She knotted every hem twice.\\pI have not seen her in years...\\pIf you meet someone who sews like that, tell her the kettle is on.");
     yield* c.giveItem('d_handkerchief', 1);
+    // the Society's inspection waits right outside, so Poppy rests the team first (a forced fight on low HP is a gate, not a detour)
+    yield* c.sayT('script.poppy.tea', 'Poppy: Your Kigu look worn out after all that. Here, a cup of tea before you go.');
+    NP.snd.sfx('save');
+    NP.State.healAll();
+    yield* c.sayT('script.poppy.tea2', 'Your Kigu are feeling much better!');
     yield* c.sayT('script.poppy.9', 'Poppy: Now go and see Tsumugi, {player}. Every seam road has a story.\\pAnd remember: every stitch counts!');
   };
   S.bryn = function* (c) {
