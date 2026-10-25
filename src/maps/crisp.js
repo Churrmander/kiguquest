@@ -1,5 +1,6 @@
 /* Crisp & Co. — the Society's department-store front. Four floors: 1 Linens (shop + exit), 2 Uniforms, 3 Hats (Staff Pass + locked door),
- * B1 Pressing Floor (rows of pressed white Kigu, the rival's dad, Pleat Serge, then Madame Damask's first appearance).
+ * B1 Pressing Floor (rows of pressed white Kigu, the rival's dad, Pleat Serge, then Madame Damask's first appearance; she has the dad
+ *  "transferred" north, so he stays pressed until the Starch Works).
  * Mechanic: keyDoor (Staff Pass) + stairs between floors. Raid flag: crisp_done. */
 (function (root) {
   'use strict';
@@ -68,14 +69,16 @@
     c.showNpc('damask');
     c.music('society_theme');
     yield* c.sayT('crisp_b1.damask.1', ['Damask: Splendid. A child who creases a Pleat. How rare.', 'Damask: I am Madame Damask. I do not fight children.\\pI press them flat with kindness. It leaves no marks.']);
-    yield* c.sayT('crisp_b1.damask.2', ['Damask: I should like you to come to tea. Not today.\\pSoon. In the old harbour city. Bring your friend, and your stitches.\\pIt will be very quiet.', 'Damask: Serge. Tidy this up. Gently.']);
+    yield* c.sayT('crisp_b1.damask.2', ['Damask: I should like you to come to tea. Not today.\\pSoon. In the old harbour city. Bring your friend, and your stitches.\\pIt will be very quiet.', 'Damask: Serge, our floor manager is wanted up north. See him transferred.\\pAnd tidy this up. Gently.']);
     yield* c.walk(c.npc('damask'), ['right', 4]);
     c.hideNpc('damask');
     c.set('damask_tea');
+    yield* c.sayT('crisp_b1.father.2', ['{rival}\'s Dad: Up north. Yes. That sounds very restful.', 'He folds his last sleeve, smooths his collar, and follows her out.']);
+    c.hideNpc('father');
     c.music('city_seamstead');
-    yield* c.sayT('crisp_b1.after.1', ['The pressed Kigu blink. One by one, they sit down, surprised.', 'Serge: ...They can go home. I suppose. I will make some tea.']);
+    yield* c.sayT('crisp_b1.after.1', ['The pressed Kigu stand in their rows, eyes dim.\\pBut one by one, they turn to look at you.', 'Serge: ...Take them upstairs. Your friend with the rinse will know what to do.\\pI will not stop you. I will make some tea.']);
     c.set('crisp_done');
-    yield* c.sayT('crisp_b1.after.2', ['{rival}\'s Dad: {rival}. That is it. That is their name. I remember it now.\\pTell {rival} I am coming home. I am sorry I forgot.']);
+    yield* c.sayT('crisp_b1.after.2', ['A name tag lies on the floor where {rival}\'s Dad stood.', 'It is perfectly straight. {player} keeps it safe for {rival}.']);
   }
   const b1 = floor({ id: 'crisp_b1', name: 'Crisp & Co.  Pressing Floor', w: 16, h: 12, up: 'crisp_3', upSpawn: 'bstairs' });
   // the one stairs cell is warped from crisp_3's side; this floor's own stairs go back up
@@ -84,5 +87,6 @@
   b1.npc('serge', 7, 4, 'pleat', 'down', ['Serge: Everything is so calm down here. ...Isn\'t it?']);
   b1.npc('father', 12, 6, 'tailor_m', 'down', ['{rival}\'s Dad: I should go home. Soon. When the folding is done.']);
   b1.npc('damask', 14, 5, 'madame_damask', 'left', null, { hidden: true });
+  b1.def.onEnter = function* (c) { if (c.flag('crisp_done')) c.hideNpc('father'); };   // he went north with Damask (freed at the Starch Works, Ch. 8)
   b1.reg();
 })(typeof globalThis !== 'undefined' ? globalThis : window);
