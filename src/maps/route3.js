@@ -18,11 +18,12 @@
   // the seam road is fenced from x12 east (the meadows open only at the Hemline end), so the walk to Seamstead passes every
   // trainer's line of sight (owner's rule: no skipping); the gaps under the four trainers, the tea stand and the sign stay grass
   M.rect(12, 9, 18, 1, 'F').rect(12, 12, 18, 1, 'F');
-  for (const [x, y] of [[13, 9], [18, 12], [25, 9], [27, 12], [15, 12], [28, 9], [18, 9], [19, 9]]) M.rect(x, y, 1, 1, '.');
+  for (const [x, y] of [[13, 9], [18, 12], [25, 9], [27, 12], [15, 12], [28, 9]]) M.rect(x, y, 1, 1, '.');
   M.sign(3, 9, 'ROUTE 3  Seam Road\\nWest: Hemline\\nEast: Seamstead City', 'west sign');
   M.sign(28, 9, 'SEAMSTEAD CITY\\nThe city that never stops sewing.', 'east sign');
   M.trees([[2, 3], [12, 5], [20, 5], [29, 4], [10, 15], [22, 15], [29, 15], [6, 18], [16, 18], [26, 18]]);
-  M.stamp('bench', 18, 9).stamp('barrel', 8, 8).stamp('crate', 24, 8).stamp('bush', 12, 13);
+  // a bench in the meadow behind the fence (it used to sit in a gap in the fence, half on the road)
+  M.stamp('bench', 17, 7).stamp('barrel', 8, 8).stamp('crate', 7, 8).stamp('bush', 12, 13);
   M.spawn('west', 2, 10, 'right').spawn('east', 29, 11, 'left');
   M.edge('w', 10, 11, 'hemline', 'east').edge('e', 10, 11, 'seamstead', 'west');
 
@@ -39,7 +40,8 @@
 
   M.npc('baker', 24, 16, 'grunt_f', 'left', ['I wanted to be a baker. Warm bread, cold mornings.\\pThe Society says it is kinder than any bakery.\\pMadame Damask never raises her voice.\\pShe never has to. Everyone just gets... smoother.']);
   M.npc('rest', 15, 12, 'cook', 'down', null, { script: 'restfree', note: 'free tea stand' });
-  M.npc('cart', 22, 11, 'villager_m2', 'left', ['This cart is full of buttons for Seamstead!\\pThe city eats three thousand buttons a day.\\pI do not know where they go.']);
+  // the button carter rests by his load at the Hemline end, off the road
+  M.npc('cart', 9, 8, 'villager_m2', 'down', ['This cart is full of buttons for Seamstead!\\pThe city eats three thousand buttons a day.\\pI do not know where they go.']);
   M.pickup('cake', 27, 6, 'fancy_cake', 1);
   M.pickup('spool', 5, 17, 'bond_spool', 3);
   M.hidden('stump', 20, 6, 'wish_candy', 1, 'hidden candy');

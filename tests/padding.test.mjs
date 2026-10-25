@@ -69,7 +69,7 @@ assert.ok(said.some((s) => /pier/.test(s)), 'the townsfolk point at the pier');
 
 // the crate on the pier: a sleepy Peepi, a wild battle, the parcel
 st.party[0].level = 12; st.party[0].hp = NP.Kigu.maxHp(st.party[0]);
-assert.ok(t.travel(15, 17, 400), 'to the pier crate');
+assert.ok(t.travel(13, 19, 400), 'to the pier crate');
 t.tap('down'); t.tick(4); t.tap('a');
 assert.ok(t.mash(() => G.top() instanceof NP.BattleScene, 3000), 'the Peepi battle starts');
 assert.ok(t.mash(() => G.top() === t.ow && t.idle() && st.flags.parcel_got, 20000), 'the battle ends and the parcel is ours');
