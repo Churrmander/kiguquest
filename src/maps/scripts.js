@@ -35,6 +35,23 @@
       yield* c.sayT('script.poppy.1', 'Poppy: Your threads are strong, {player}. Keep sewing your own path!');
       return;
     }
+    // pre-Salon quest (padding): her yarn basket first, then her two apprentices. Both are a few steps away and both are friendly,
+    // so it reads as "help Poppy get ready", not as a locked door
+    if (!c.flag('yarn_basket')) {
+      c.set('poppy_asked');
+      yield* c.sayT('script.poppy.basket.1', 'Poppy: Oh! A challenger! How lovely. Welcome, welcome!\\pBut, oh dear... I cannot find my yarn basket anywhere.');
+      yield* c.sayT('script.poppy.basket.2', 'Poppy: My Kigu will not battle without their cardigans done up.\\pI last saw a little Mittsy batting my yarn about outside.');
+      yield* c.sayT('script.poppy.basket.3', 'Poppy: Would you be a dear and look for it? Try the flowers by the road.');
+      return;
+    }
+    if (!c.flag('poppy_basket_back')) {
+      c.set('poppy_basket_back');
+      yield* c.sayT('script.poppy.basket.4', 'Poppy: My yarn basket! And not a single tangle. Thank you, {player}!\\pEvery stitch counts, and that was a very kind one.');
+    }
+    if (!c.flag('tr_salon_salon_t1') || !c.flag('tr_salon_salon_t2')) {
+      yield* c.sayT('script.poppy.apprentices', 'Poppy: Now, house rules! Ren and Noa battle every challenger first.\\pThey have been practising all week. Go on, show them your stitches!');
+      return;
+    }
     yield* c.sayT('script.poppy.2', "Poppy: Welcome to the Thimble Salon! I am Poppy, Master Tailor.\\pMy Fluff Kigu look soft. Every cuddle is a clever stitch.\\pShow me what you and your Kigu are made of!");
     const won = yield* c.trainerBattle({ cls: 'Master', name: 'Poppy', look: 'poppy', ai: 2, reward: 12, master: true, music: 'battle_master', team: c.map.def.poppyTeam });
     if (!won) { yield* c.sayT('script.poppy.3', 'Poppy: Oh dear! Rest your Kigu and come back. I will keep the kettle on.'); return; }

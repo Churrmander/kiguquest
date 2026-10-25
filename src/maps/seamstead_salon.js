@@ -20,9 +20,33 @@
     yield* c.sayT('script.zip.6', 'Zip: With it, your Kigu obey you up to Lv40. Also take this Zip Cable.\\pIf the lights ever go out again, plug in and stand out!');
     yield* c.giveItem('zip_cable', 1);
     yield* c.sayT('script.zip.7', 'Zip: One more thing. Madame Damask came to a show once.\\pShe did not clap. She nodded, very politely, until I stopped.\\pDo not let her smooth your loud bits, {player}.');
+    yield* lights(c);
     yield* c.sayT('script.zip.end', 'That is the end of Chapter 3, and the end of the playtest build. Thanks for playing!\\pSave from the menu (Enter), and you can carry on when Chapter 4 is stitched in.');
   }
   NP.scripts.zip = zip;
+
+  // ---- after the Volt Button: up to the plaza stage, where Zip says sorry to the city and turns the lights back on
+  function* lights(c) {
+    c.set('zip_lights');
+    yield* c.sayT('script.zip.8', 'Zip: One more favour. Come up to the plaza with me?\\pI have a big switch with a sparkly handle, and something to say.');
+    yield* c.ow.fadeOut(12);
+    c.ow.loadMap('seamstead', 17, 13, 'up', { noEnter: true });
+    c.hideNpc('dark1'); c.hideNpc('dark2');
+    c.placeNpc('zip_s', 17, 12, 'down');
+    c.showNpc('zip_s');
+    yield* c.wait(8);
+    yield* c.ow.fadeIn(12);
+    yield* c.sayT('story.zip_lights.1', 'Zip: Seamstead! I put my name on that store, and I never once looked inside.\\pThat was on me. I am sorry.');
+    yield* c.sayT('story.zip_lights.2', 'Zip: I put my name on that store. Now I am putting the lights back on.');
+    NP.snd.sfx('select');
+    NP.Game.flash = 8;
+    yield* c.wait(20);
+    yield* c.sayT('story.zip_lights.3', 'One by one, the lamps down the avenue flicker... and glow.');
+    yield* c.sayT('story.zip_lights.4', 'Zip: Lamp by lamp! Seamstead, you remember how to shine, don\'t you?');
+    if (c.flag('crisp_after')) yield* c.sayT('story.zip_lights.5', 'At the edge of the crowd, {rival} is holding a name tag up to the light.\\pThey catch your eye, and give you a big thumbs up.');
+    yield* c.sayT('story.zip_lights.6', 'Zip: Next on my list: Route 4. The Society is "resurfacing" it.\\pI am going to resurface their resurfacing. Loudly.');
+    c.hideNpc('zip_s');
+  }
 
   const M = L.room({ id: 'seamstead_salon', name: 'Seamstead Salon', w, h, doorX: 5, floor: 'floor_wood', wall: 'wall_plaster', music: 'city_seamstead', battleBg: 'gym',
     exit: { to: 'seamstead', door: 'salon' }, carpet: [5, 2, 2, 11], carpetTerrain: 'carpet_red', legend: { B: 'fence' } });

@@ -4,6 +4,8 @@
 "src/maps/scripts.js",
 "src/maps/button_town.js",
 "src/maps/route1.js",
+"src/maps/basting_green.js",
+"src/maps/ribbon_loop.js",
 "src/maps/thimble.js",
 "src/maps/route2.js",
 "src/maps/gingham_woods.js",

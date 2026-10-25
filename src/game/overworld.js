@@ -168,7 +168,8 @@
     *pc() { const s = new NP.BoxScene(); NP.Game.push(s); yield* this.ow.waitFor(() => s.finished); }
     *warp(map, x, y, dir) { yield* this.ow.teleport(map, x, y, dir); }
     *trainerBattle(def) { return yield* this.ow.trainerBattle(def); }
-    *wildBattle(sp, lv) { return yield* this.ow.wildBattle(sp, lv); }
+    /** o: { status } starts the wild Kigu with a status, e.g. 'slp' for one found napping */
+    *wildBattle(sp, lv, o) { return yield* this.ow.wildBattle(sp, lv, o); }
     /** Field move Paddle: offer to step off the shore onto calm water (needs Disc: Paddle). */
     *paddle(dir) {
       if (yield* this.ask('The water looks calm.\\nPaddle across it?')) { NP.snd.sfx('splash'); yield* this.walk('player', [dir, 1]); }
@@ -394,8 +395,9 @@
       yield* this.say(tea ? 'You hurried to the nearest Tea House.\\pYour Kigu were tucked in and had a good nap.' : 'You hurried back to the last place you rested.\\pYour Kigu were tucked in and had a good nap.');
     }
 
-    *wildBattle(sp, lv) {
+    *wildBattle(sp, lv, o) {
       const foe = NP.Kigu.create(sp, lv);
+      if (o && o.status) foe.status = o.status;
       const st = NP.state;
       yield* this.transitionToBattle('battle_wild');
       const res = yield* this.runBattle({ wild: true, foe: [foe], bg: this.map.def.battleBg || 'grass', music: 'battle_wild' });
