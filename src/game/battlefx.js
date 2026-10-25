@@ -12,7 +12,9 @@
   const A = () => NP.assets;
   const STAGE_H = NP.BOX_Y;
   const FX = { ember: 'flame', tide: 'drop', sprout: 'leaf', volt: 'bolt', frost: 'flake', pebble: 'rock', gale: 'gust', dream: 'star', spook: 'shadow', buzz: 'sparkle', fluff: 'hit_normal', brawl: 'punch', nettle: 'poison', terra: 'dust', shade: 'shadow', iron: 'slash', drake: 'glow' };
-  const CAST_SFX = { ember: 'flame', tide: 'splash', sprout: 'leaf', volt: 'zap', pebble: 'rock', terra: 'rock', gale: 'whoosh', frost: 'ice' };
+  const CAST_SFX = { ember: 'flame', tide: 'splash', sprout: 'leaf', volt: 'zap', pebble: 'rock', gale: 'whoosh', frost: 'ice', fluff: 'cast_fluff', brawl: 'cast_brawl',
+    nettle: 'cast_nettle', terra: 'cast_terra', dream: 'cast_dream', buzz: 'cast_buzz', spook: 'cast_spook', drake: 'cast_drake', shade: 'cast_shade', iron: 'cast_iron' };
+  const SWING_SFX = { brawl: 'punch', iron: 'slash', shade: 'slash', drake: 'slash', sprout: 'whip', nettle: 'whip', buzz: 'whip', pebble: 'heavy', terra: 'heavy' };
   const COND = {
     brn: { col: '#ff7030', sfx: 'flame' }, psn: { col: '#b060e0', sfx: 'poison' }, tox: { col: '#9040d0', sfx: 'poison' },
     par: { col: '#ffe040', sfx: 'zap' }, slp: { col: '#a8b8ff', sfx: 'sleep' }, frz: { col: '#9fdcff', sfx: 'ice' },
@@ -123,18 +125,18 @@
       if (!on()) { yield* this.wait(4); return; }
       const side = e.who.side.index, self = mv.target === 'self';
       const t = this.disp[self ? side : 1 - side], col = typeCol(mv.type);
-      if (mv.category === 'physical') yield* this.animStrike(d, t, col);
+      if (mv.category === 'physical') yield* this.animStrike(d, t, col, mv);
       else if (mv.category === 'special') yield* this.animCast(d, t, mv, col);
       else yield* this.animSupport(d, t, mv, col, self);
       this.pendingLunge = d; // reset (pose, squash, tint, position) once the hit has played
     },
 
     /** Physical: wind-up squash and pull-back, then a hopping lunge at the target with dust at her feet. */
-    *animStrike(d, t, col) {
+    *animStrike(d, t, col, mv) {
       const dir = d.mon.side.index === 0 ? 1 : -1;
       d.pose = true;
       for (let i = 1; i <= 6; i++) { d.sx = 1 + i * 0.02; d.sy = 1 - i * 0.025; d.offx = -dir * i * 0.7; yield; }
-      NP.snd.sfx('swing');
+      NP.snd.sfx((mv && SWING_SFX[mv.type]) || 'swing');
       for (let i = 1; i <= 5; i++) {
         const k = i / 5;
         d.sx = 1.12 - k * 0.2; d.sy = 0.85 + k * 0.23;
@@ -224,6 +226,7 @@
       if (!d || d.mon !== e.who) return;
       NP.snd.sfx(e.eff > 1 ? 'hit_super' : e.eff < 1 && e.eff > 0 ? 'hit_weak' : 'hit');
       const mv = NP.data.moves[e.move];
+      if (mv && NP.data.sfx && NP.data.sfx['imp_' + mv.type]) NP.snd.sfx('imp_' + mv.type); // the move type's own impact layer
       if (on()) {
         const c = this.mid(d), col = mv ? typeCol(mv.type) : '#ffffff', away = d.mon.side.index === 0 ? -1 : 1, big = e.eff > 1 || e.crit;
         d.white = 3;

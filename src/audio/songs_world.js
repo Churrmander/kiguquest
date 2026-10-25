@@ -2,33 +2,41 @@
 (function (root) {
   'use strict';
   const NP = (root.NP = root.NP || {});
-  const { arp, bass } = NP.audio.dsl;
+  const { arp, bass, block, stab } = NP.audio.dsl;
   const song = NP.audio.song;
   const d = (pat, n) => (pat + ' ').repeat(n).trim();
 
-  // ---------------------------------------------------------------- route_meadow (sunny, walking tempo)
+  // ---------------------------------------------------------------- route_meadow (sunny, walking tempo) — DS-style arrangement
   {
     const cA = ['G', 'C', 'G', 'D', 'G', 'C', 'D', 'G'];
     const cB = ['Em', 'C', 'Am', 'D', 'Em', 'C', 'D', 'G'];
-    const A = {
-      p1: `d5:2 g5:2 b5:2 g5:2 d6:4 b5:4 | c6:2 e6:2 g6:2 e6:2 c6:4 g5:4 | b5:2 d6:2 g6:2 d6:2 b5:4 g5:4 | a5:2 d6:2 f#6:2 d6:2 a5:4 f#5:4 |
-           g5:2 b5:2 d6:2 b5:2 g6:4 d6:4 | e6:2 g6:2 c7:2 g6:2 e6:4 c6:4 | d6:2 f#6:2 a6:2 f#6:2 d6:4 a5:4 | g5:2 b5:2 d6:2 g6:2 g6:8 |`,
-      p2: arp(cA, 4),
-      tri: bass(cA, '1:2 5:2 8:2 5:2 1:2 5:2 8:2 5:2', 2),
-      noi: d('k:4 h:4 s:4 h:4 |', 8),
-    };
+    const cC = ['Em', 'C', 'G', 'D', 'Em', 'C', 'Am', 'D'];
+    const cI = ['G', 'C', 'G', 'D'];
+    // the original melodies (sounding an octave lower through inst.mel.tr)
+    const mA = `d5:2 g5:2 b5:2 g5:2 d6:4 b5:4 | c6:2 e6:2 g6:2 e6:2 c6:4 g5:4 | b5:2 d6:2 g6:2 d6:2 b5:4 g5:4 | a5:2 d6:2 f#6:2 d6:2 a5:4 f#5:4 |
+           g5:2 b5:2 d6:2 b5:2 g6:4 d6:4 | e6:2 g6:2 c7:2 g6:2 e6:4 c6:4 | d6:2 f#6:2 a6:2 f#6:2 d6:4 a5:4 | g5:2 b5:2 d6:2 g6:2 g6:8 |`;
+    const mB = `e6:4 g6:2 e6:2 b5:4 e6:4 | e6:4 g6:2 e6:2 c6:4 e6:4 | c6:4 e6:2 c6:2 a5:4 c6:4 | d6:4 f#6:2 d6:2 a5:4 d6:4 |
+           b5:2 e6:2 g6:2 e6:2 b6:4 g6:4 | g6:2 e6:2 c6:2 e6:2 g6:4 c6:4 | f#6:2 a6:2 d6:2 f#6:2 a5:4 d6:4 | g5:4 b5:4 d6:4 g6:4 |`;
+    // breakdown: a slower flute tune (written at pitch)
+    const flC = '%v10 b4:6 a4:2 g4:4 e4:4 | g4:6 e4:2 c5:8 | b4:6 a4:2 g4:4 d5:4 | a4:12 r:4 | b4:6 c5:2 d5:4 e5:4 | e5:6 d5:2 c5:4 g4:4 | a4:4 c5:4 e5:4 d5:4 | d5:8 f#4:4 a4:4 |';
+    const strum = (ch) => stab(ch, 'X:2 r:2 X:2 X:2 r:2 X:2 X:2 r:2', 3);
+    const walk = '1:2 5:2 8:2 5:2 1:2 5:2 8:2 5:2';
+    const I = { gtr: strum(cI), bass: bass(cI, '1:4 r:4 1:2 5:2 8:4', 2), drm: d('r:4 g:2 g:2 i:4 g:2 g:2 |', 4) };
+    const A = { mel: mA, gtr: strum(cA), bass: bass(cA, walk, 2), drm: d('k:4 h:2 h:2 s:4 h:2 g:2 |', 8) };
     const B = {
-      p1: `e6:4 g6:2 e6:2 b5:4 e6:4 | e6:4 g6:2 e6:2 c6:4 e6:4 | c6:4 e6:2 c6:2 a5:4 c6:4 | d6:4 f#6:2 d6:2 a5:4 d6:4 |
-           b5:2 e6:2 g6:2 e6:2 b6:4 g6:4 | g6:2 e6:2 c6:2 e6:2 g6:4 c6:4 | f#6:2 a6:2 d6:2 f#6:2 a5:4 d6:4 | g5:4 b5:4 d6:4 g6:4 |`,
-      p2: arp(cB, 4),
-      tri: bass(cB, '1:2 5:2 8:2 5:2 1:2 5:2 8:2 5:2', 2),
-      noi: d('k:4 h:4 s:4 h:2 k:2 |', 8),
+      mel: mB, harp: arp(cB, 3), pad: block(cB, 3), gtr: strum(cB), bass: bass(cB, walk, 2),
+      drm: 'x:4 h:2 o:2 s:4 h:2 k:2 | ' + d('k:4 h:2 o:2 s:4 h:2 k:2 |', 6) + ' k:2 h:2 s:2 h:2 s:2 s:2 t:2 t:2 |',
     };
+    const C = { fl: flC, harp: arp(cC, 3), pad: '%v3 ' + block(cC, 3), bass: '%v7 ' + bass(cC, '1:8 5:8', 2), drm: d('r:4 g:2 g:2 i:4 g:2 g:2 |', 7) + ' r:4 g:2 g:2 y:8 |' };
     song('route_meadow', {
-      desc: 'Meadow Lane and early routes: sunny, upbeat walking tempo.',
-      bpm: 126, loop: 0, order: 'A B A B',
-      inst: { p1: { duty: 2, vol: 11, env: 'pluck' }, p2: { duty: 1, vol: 5 }, noi: { vol: 6 } },
-      sections: { A, B },
+      desc: 'Meadow Lane and early routes: sunny, upbeat walking tempo (warm lead, brass, guitar strum, flute breakdown).',
+      bpm: 126, loop: 1, order: 'I A B A/fl C B', gain: 0.91,
+      inst: {
+        mel: { patch: 'warm', vol: 10, tr: -12 }, fl: { patch: 'flute', vol: 10, pan: 0.15 }, gtr: { patch: 'guitar', vol: 4, pan: -0.3 },
+        harp: { patch: 'harp', vol: 5, arp: 2, pan: 0.35 }, pad: { patch: 'strings', vol: 4 }, bass: { patch: 'ebass', vol: 11 }, drm: { patch: 'kit', vol: 9 },
+      },
+      vars: { fl: { mel: { patch: 'flute' } } },
+      sections: { I, A, B, C },
     });
   }
 
