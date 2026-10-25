@@ -50,9 +50,9 @@
   M.trainer('r5_t5', 15, 12, 'picnicker', 'down', { cls: 'Picnicker', name: 'Hana', sight: 3, reward: 13, ai: 1, team: [['peepi', 28], ['cactli|nibbi', 28], ['glowli', 29]],
     intro: 'I came up here for the view of the city lights, but they keep going out! I\'ll battle you while I wait.', win: 'Okay, you can have my view. It\'s mostly dark anyway.', after: 'When the city lights up at night, it looks like someone spilled a jewellery box. I\'ve only seen it once.' });
   M.trainer('r5_t6', 14, 26, 'grunt_m', 'up', { cls: 'Presser', name: 'Spool', sight: 3, reward: 15, ai: 2, music: 'battle_society', team: [['coili', 28], ['silkie', 28], ['chippi|nibbi', 29]],
-    intro: 'This cable is for maintenance. Very boring maintenance. Nothing to see here, so stop looking at it.', win: 'Fine, look at the cable all you like. It\'s just a cable.', after: 'It runs to the city, then down under the station. Why does it go under the station? That\'s classified. Also I don\'t know.' });
+    intro: 'This cable is for maintenance. It\'s very boring maintenance, so there\'s nothing to see here. Please stop looking at it.', win: 'Fine, look at the cable all you like. It\'s just a cable.', after: 'It runs to the city, then down under the station. Why does it go under the station? That\'s classified. Also I don\'t know.' });
 
-  M.npc('lineman', 21, 31, 'hiker', 'left', ['These pylons carry the power to Shibuyarn. The city drinks it like tea.\\pLately, someone\'s been sipping from the cup before it gets there.']);
+  M.npc('lineman', 21, 31, 'hiker', 'left', ['These pylons carry the power to Shibuyarn, and the city uses every bit of it.\\pLately, someone has been tapping into the line before it gets there.']);
   M.pickup('volt', 21, 27, 'thread_ball', 1);
   M.pickup('cake', 3, 5, 'fancy_cake', 1);
   M.pickup('spool', 18, 41, 'silk_spool', 3);

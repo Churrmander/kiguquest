@@ -27,7 +27,7 @@
     yield* c.sayT('script.dart.4', '{player} received the Gale Button!');
     yield* c.sayT('script.dart.5', 'Dart: Your Kigu will listen to you up to Lv60 now. And take this. It\'s Disc: Glide.\\pWith it, a Kigu can ride the wind across a gap. You\'ll want it up north, trust me.');
     yield* c.giveItem('disc_glide', 1);
-    yield* c.sayT('script.dart.6', 'Dart: Right! My balloon is by the hangar, flag and all. Meet me there, and we\'ll go over the pass.\\pBring your friends. And a scarf. It\'s cold over the top.');
+    yield* c.sayT('script.dart.6', 'Dart: Right! My balloon is by the hangar, flag and all. Meet me there, and we\'ll go over the pass.\\pBring your friends, and bring a scarf, because it\'s cold over the top.');
   }
   NP.scripts.dart = dart;
 
@@ -44,7 +44,7 @@
   M.stamp('plant', 1, 13).stamp('plant', 13, 13).stamp('plant', 1, 2).stamp('plant', 13, 2);
   M.sign(10, 13, 'KITE HILL SALON\\nMaster Tailor: Dart\\p"Lean into the wind, and it\'ll carry you."', 'salon sign');
   M.trainer('ks_t1', 4, 8, 'pilot', 'right', { cls: 'Pilot', name: 'Wren', sight: 3, reward: 18, ai: 2, team: [['kamipi', 34], ['propi', 35]],
-    intro: 'Most people end up flat against the wall on their first try. You made it through!', win: 'You read the wind better than I do.', after: 'The second fans blow east. The way up is west. Dart thinks that\'s hilarious.' });
+    intro: 'Most people end up flat against the wall on their first try. You made it through!', win: 'You read the wind better than I do.', after: 'The second lot of fans blow east, but the gap is in the west. Dart thinks that\'s hilarious.' });
   M.trainer('ks_t2', 10, 3, 'skier', 'down', { cls: 'Pilot', name: 'Lark', sight: 3, reward: 18, ai: 2, team: [['cloudli', 35], ['peepi', 35], ['kamipi', 36]],
     intro: 'Dart\'s right behind me, and she\'s in a flying mood. You\'ll have to get past me first!', win: 'Whoosh. Off you go, then.', after: 'When Dart wins, she does a little spin. When she loses, she does a bigger spin.' });
   M.npc('dart', 7, 2, 'dart', 'down', null, { script: 'dart', note: 'Master Tailor Dart (Gale)' });

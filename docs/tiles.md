@@ -26,12 +26,20 @@ decisions BIBLE left open (sizes, solid rows, variants). `solid` rows are writte
 | `counter_l/m/r/c` | 1x1 | `#` | 0 | l/m/r tile into one bar; `c` = middle piece with a cash register |
 | `rug_a` / `rug_b` | 3x2 / 2x2 | all `.` | 0 | `layer: 'floor'` (drawn under actors, walkable) |
 | `shrine` | 5x4 | `#####` `#####` `#####` `..D..` | 1 | `default pressed`. The Spindle Shrine: red-roofed hall, giant silk spool on a stone plinth with steps and an arched doorway, lanterns, ribbons. `D` = bottom centre (the approach row either side of it is walkable). `pressed` = drained white/pale blue-grey, threads dead straight, ribbons flat |
+| `arcade_cab` | 1x2 | `#` `#` | 0 | `moth button steam hop off` = the game on its screen (`off` = dark, the Shibuyarn brownout); 2 frames. Top row sits on a wall row like `fridge` |
+| `claw_machine` | 2x2 | all `#` | 0 | `default off`; 2 frames (chasing lights, the claw swings). Place with its top row on a wall row |
+| `prize_shelf` | 2x2 | all `#` | 0 | wall shelving of prizes (plushes, boxed toys, thread, a trophy); place on the two wall rows (y = 0) like `cloth_shelf` |
+| `neon_sign` | 2x1 | `##` | 0 | `default off`; 2 frames. Wall decor (a neon spool and thread) for a wall row |
 | `gate_house` | 5x3 | `##.##` `##.##` `##.##` | 2 | `default pressed`. Stone-and-timber gatehouse: the centre column is an open arch you walk straight through north-south (all three rows walkable); roof, tie-beam and arch (rows 0-1) draw above actors. `default` has a hanging sign, a shuttered window and a red pennant; `pressed` adds the Starch Society banner (white, blue piping, flat stripes, collar crest) over the window and a white-and-blue pennant. No `D`: do not give it `to`/`name` |
 
 Terrains (all from the BIBLE list): `floor_wood` `floor_tile` `floor_stone` plain floors (no autotile); `carpet_red/blue/green` and
 `mat` are autotiles with their own group (a border is drawn on every side not touching the same id); `wall_wood/plaster/stone` are
 solid autotiles in the shared group `wall` (the tile with floor to its south shows the skirting; wall tiles beside floor or in an
 inside corner show the flat wall top); `void` is solid black; `stairs_up/down` are walkable and visual only (a map warp does the work).
+
+`arcade_carpet` (4 position-picked variants, not an autotile): dark navy arcade carpet with small pink zigzags, blue rings and yellow
+stars, each motif inside its own tile so any variant sits beside any other. Used as the floor of the Lucky Spool arcade (`src/maps/shibuyarn_arcade.js`).
+All five arcade pieces live in `src/art/tiles/stamp_arcade.js`.
 
 `bridge_h` / `bridge_v` (not autotiles, 3 position-picked variants each: plain, red cloth patch, ribbon bow): walkable plank bridge over water
 (`water:false`, `step:'wood'`, no encounter). `bridge_h` has rails on the top/bottom edges and planks running left-right; `bridge_v` has rails

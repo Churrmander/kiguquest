@@ -28,7 +28,7 @@
   // ---- 6.1: arrival
   function* arrival(c) {
     c.set('kite_arrived');
-    yield* c.sayT('kite_hill.arrive.1', 'The wind tugs at your sleeves as you come over the ridge. Up on the hill, a dozen hot-air balloons\\pare tied down to pegs, swaying on their ropes like dogs that want to go for a walk.');
+    yield* c.sayT('kite_hill.arrive.1', 'The wind tugs at your sleeves as you come over the ridge. Up on the hill, a dozen hot-air balloons\\pare tied down to pegs, tugging at their ropes like dogs that want to go for a walk.');
     yield* c.sayT('kite_hill.arrive.2', 'A pilot: Lovely, aren\'t they? Shame none of them can fly.\\pThe Society nailed a notice to the hangar: every balloon is grounded, "for safety".');
     yield* c.sayT('kite_hill.arrive.3', 'A pilot: The post office is in a right state, too. Every letter in the region comes through here by balloon.\\pNow they\'re all stuck in sacks. If you\'ve got legs, they could use you.');
   }
@@ -78,7 +78,7 @@
     const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'rival', ai: 2, reward: 30, canLose: true, team });
     c.set('rival5_done');
     c.music(c.map.def.music);
-    if (won) yield* c.sayT('kite_hangar.rival5.win', '{rival}: Ha! You\'re still ahead. Somehow that makes me feel better. Like the world is the right way up.');
+    if (won) yield* c.sayT('kite_hangar.rival5.win', '{rival}: Ha! You\'re still ahead. Somehow that makes me feel better, like things are how they should be.');
     else yield* c.sayT('kite_hangar.rival5.lose', '{rival}: I won! I\'m going to remember this the next time you beat me, which will be soon.');
     yield* c.sayT('kite_hangar.rival5.8', 'Dart: Right, you two. My balloon is torn in four places, and I\'ve no patches left.\\pThe folks around the hill have scraps. Bring me four, and I\'ll sew her up.');
     yield* c.sayT('kite_hangar.rival5.9', '{rival}: Race you to the Salon after! Don\'t think I won\'t.');
@@ -89,7 +89,7 @@
   // ---- 6.5 and 6.6: sewing the patches on, then Mimi's flag
   function* dartBalloon(c) {
     const k = (s) => 'kite_hangar.dart.' + s;
-    if (c.flag('over_pass')) { yield* c.sayT(k('end'), 'Dart: The pass is still there. I checked this morning. Want to go again? Well, later. She needs a rest.'); return; }
+    if (c.flag('over_pass')) { yield* c.sayT(k('end'), 'Dart: I checked this morning, and the pass is still there. I\'d take you over again, but she\'s earned a rest first.'); return; }
     if (c.flag('badge5')) { yield* overThePass(c); return; }
     if (c.flag('balloon_fixed')) { yield* c.sayT(k('salon'), 'Dart: She\'s ready to fly, and so am I. But first, you owe me a battle at the Salon!\\pThe door\'s open. Mind the fans.'); return; }
     if (!c.flag('rival5_done')) { yield* c.sayT(k('busy'), 'Dart: Can\'t chat, I\'m glaring at a safety notice. Come back in a bit.'); return; }
@@ -107,7 +107,7 @@
       }
     }
     yield* c.sayT(k('sew.2'), 'Dart stitches each patch on with big, fast, sure stitches. Then she pulls one more patch out of her pocket.\\pIt\'s shaped exactly like you.');
-    yield* c.sayT(k('sew.3'), 'Dart: This one\'s my favourite. Every balloon needs one patch for luck, and you\'re mine.');
+    yield* c.sayT(k('sew.3'), 'Dart: This one\'s my favourite. Every balloon needs one patch for luck, and that\'s you.');
     c.set('balloon_fixed');
     delete c.state.bag.balloon_patches;
     L.syncStamps(c);
@@ -132,7 +132,7 @@
     yield* c.sayT('kite_hill.pass.3', 'Over the pass, the snow begins. Far below, a line of white carts crawls up the road north,\\peach one loaded with pale stone slabs.');
     yield* c.sayT('kite_hill.pass.4', 'Beyond them, in the valley, there\'s a huge mill. Every single window is lit,\\pand a tall chimney breathes white steam into the snow.');
     yield* c.sayT('kite_hill.pass.5', '{rival} doesn\'t say anything. They just hold the edge of the basket and watch the mill until it\'s out of sight.');
-    yield* c.sayT('kite_hill.pass.6', 'Dart: Hold tight, everyone. Landing in the snow is mostly like landing in a pillow.\\pMostly.');
+    yield* c.sayT('kite_hill.pass.6', 'Dart: Hold tight, everyone. Landing in the snow is mostly like landing on a pillow.\\pMostly.');
     yield* c.sayT('kite_hill.pass.7', 'END OF CHAPTER 6\\pThis is as far as the playtest goes for now. Woolen Peak is waiting in the next update.');
     yield* c.ow.fadeIn(20);
   }
@@ -200,8 +200,8 @@
   }) });
   // the letters (6.3)
   M.npc('knitter', 30, 12, 'villager_f2', 'down', null, { script: letter(2, 'kite_hill.knitter', {
-    before: 'Knitter: I knit the windsocks for the airfield. They wear out so fast. The wind is very hard on socks.',
-    give: 'Knitter: A letter! From my sister! She\'s been knitting a scarf for me since spring.\\pShe says it\'s nearly done. She said that last spring, too. Thank you, dear.',
+    before: 'Knitter: I knit the windsocks for the airfield, and they wear out so fast. The wind is very hard on socks.',
+    give: 'Knitter: A letter! From my sister! She\'s been knitting a scarf for me since spring.\\pShe says it\'s nearly done, but she said that last spring, too. Thank you, dear.',
     after: 'Knitter: My sister says the scarf is nearly done. I\'ve started knitting her a reply. It might take a while.',
   }) });
   // the patch quest (6.5): four favours
@@ -236,7 +236,7 @@
   M.npc('cocoa_kid', 20, 26, 'child_m', 'up', null, { script: function* (c) {
     if (c.flag('patch_cocoa')) { yield* c.sayT('kite_hill.cocoa.after', 'That was the best cocoa I\'ve ever had. I might save the mug forever.'); return; }
     yield* c.sayT('kite_hill.cocoa.1', 'I\'m so cold. The wind goes right through my coat. If I had a cocoa, I\'d give you anything.\\pI\'ve got a patch my gran gave me. It smells like cocoa already.');
-    if (!c.state.bag.dune_cocoa) { yield* c.sayT('kite_hill.cocoa.none', 'The store sells Dune Cocoa. Just one. Please.'); return; }
+    if (!c.state.bag.dune_cocoa) { yield* c.sayT('kite_hill.cocoa.none', 'The store sells Dune Cocoa. Could you get me one? Please.'); return; }
     if (!(yield* c.ask('Give a Dune Cocoa?'))) return;
     c.state.bag.dune_cocoa--;
     if (c.state.bag.dune_cocoa <= 0) delete c.state.bag.dune_cocoa;
@@ -277,7 +277,7 @@
   L.room({ id: 'kite_ogi', name: 'Mr. Ogi\'s House', w: 9, h: 8, doorX: 3, exit: { to: 'kite_hill', door: 'ogi' } })
     .stamp('bookshelf', 1, 0).stamp('table_s', 4, 4).stamp('chair', 6, 4).stamp('plant', 7, 2)
     .npc('ogi', 4, 3, 'elder_m', 'down', null, { script: letter(1, 'kite_ogi', {
-      before: 'Mr. Ogi: I like to read my post upside down. It makes the bad news look like good news, the right way up.',
+      before: 'Mr. Ogi: I read my post upside down. Bad news looks a lot less serious that way, and I\'d rather not be upset before breakfast.',
       give: 'You hand Mr. Ogi the letter, upside down. He beams.\\pMr. Ogi: Someone who knows the rules! It\'s from my nephew. Upside down, it says he\'s "doing well". The right way up, it says "doing well" too. Lovely.',
       after: 'Mr. Ogi: I\'ve hung my nephew\'s letter on the wall, upside down. It\'s the only proper way.',
     }) })

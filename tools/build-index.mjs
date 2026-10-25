@@ -24,6 +24,7 @@ const ORDER = [
   ['src/maps/files.json'],
   ['src/engine/files.json'],
   ['src/game/files.json'],
+  ['src/game/arcade/files.json'],
   ['src/platform/browser.js', true],
 ];
 

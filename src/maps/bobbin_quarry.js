@@ -26,7 +26,7 @@
     const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'rival', ai: 2, reward: 20, canLose: true, team });
     c.set('rival4_done');
     c.music(c.map.def.music);
-    if (won) yield* c.sayT('bobbin_quarry.rival4.win', '{rival}: Yep, that\'s about what I measured. You\'re a long way ahead.\\pThat\'s okay. It means I know which way to walk.');
+    if (won) yield* c.sayT('bobbin_quarry.rival4.win', '{rival}: Yep, that\'s about what I measured. You\'re a long way ahead.\\pThat\'s okay. At least now I know how far I\'ve got to go.');
     else yield* c.sayT('bobbin_quarry.rival4.lose', '{rival}: Huh. I won? Don\'t tell anyone, but I didn\'t expect that.\\pGo and rest your Kigu. The Tea House here does a cocoa with cinnamon.');
     yield* c.sayT('bobbin_quarry.rival4.4', '{rival}: The quarry\'s shut, did you hear? There\'s a whole herd of Pebbi stuck down the tunnels,\\pand the foreman went in after them and hasn\'t come out.\\pI\'m going to ask around town. You should try the tunnel up on the top terrace.');
     yield* c.walk(r, ['right', 6]);

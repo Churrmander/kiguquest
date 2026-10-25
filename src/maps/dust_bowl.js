@@ -11,7 +11,7 @@
 
   function* cart(c, npc) {
     const k = (s) => 'dust_bowl.carter.' + s;
-    if (c.flag('cart_pushed')) { yield* c.sayT(k('after'), 'Carter: The cart\'s rolling again, more or less. I\'ll wait for the wind to drop.\\pThe Works can wait for its slabs. It\'s been waiting for something for years.'); return; }
+    if (c.flag('cart_pushed')) { yield* c.sayT(k('after'), 'Carter: The cart\'s rolling again, more or less. I\'ll wait for the wind to drop.\\pThe Works can wait a bit longer for its slabs. Nobody up there has ever thanked me for being on time.'); return; }
     yield* c.sayT(k('1'), 'Carter: Don\'t look at me like that. The wheel sank, so here we are.\\pI\'ve been pushing for an hour and the cart\'s moved about a thumb.');
     const r = yield* c.choose(['Help push', 'Battle him', 'Leave it'], { cancel: 2 });
     if (r === 2 || r < 0) { yield* c.sayT(k('leave'), 'Carter: Sure, leave the man with the cart. Everyone does.'); return; }
@@ -19,7 +19,7 @@
       yield* c.sayT(k('battle'), 'Carter: A battle? Out here? ...Fine. Anything\'s better than pushing.');
       const won = yield* c.trainerBattle({ cls: 'Presser', name: 'Carter', look: 'grunt_m', ai: 1, reward: 12, music: 'battle_society', team: L.team([['chippi|nibbi', 24], ['sandkit|mittsy', 24]]) });
       if (!won) return;
-      yield* c.sayT(k('won'), 'Carter: You hit like a dust storm. Look, while we\'re both standing here,\\pyou might as well give the cart a shove. I\'ll even say please.');
+      yield* c.sayT(k('won'), 'Carter: You hit harder than the wind out here. Look, while we\'re both standing here,\\pyou might as well give the cart a shove. I\'ll even say please.');
     }
     yield* c.ow.fadeOut(10);
     NP.snd.sfx('ledge');
@@ -89,7 +89,7 @@
   M.trainer('db_t1', 13, 16, 'hiker', 'up', { cls: 'Hiker', name: 'Burl', sight: 3, reward: 13, ai: 1, team: [['chippi|nibbi', 23], ['slatli|kumi', 24]],
     intro: 'Can\'t see a thing in this storm! Oh, hello. Let\'s battle while we wait for it to clear.', win: 'I didn\'t see that coming. I didn\'t see anything coming.', after: 'Keep your scarf up. Sand in the teeth is no way to live.' });
   M.trainer('db_t2', 27, 6, 'picnicker', 'down', { cls: 'Nomad', name: 'Sefa', sight: 3, reward: 14, ai: 2, team: [['sandkit|mittsy', 24], ['jerbi|nibbi', 24], ['cactli|nibbi', 25]],
-    intro: 'You followed the red thread all the way here? Then you\'ve earned a proper battle!', win: 'The thread chose well. You\'re good.', after: 'My grandmother tied that red thread. She tied it twice, because the wind unties everything once.' });
+    intro: 'You followed the red thread all the way here? Then you\'ve earned a proper battle!', win: 'The red thread brought you to a proper fight, and you\'re good at it.', after: 'My grandmother tied that red thread. She tied it twice, because the wind always pulls one knot loose.' });
   M.trainer('db_t3', 24, 20, 'camper', 'left', { cls: 'Camper', name: 'Dov', sight: 3, reward: 11, ai: 1, team: [['jerbi|nibbi', 23], ['tumbi|peepi', 24]],
     intro: 'Are you lost too? Battle me, and then we can be lost together!', win: 'Okay, I\'m still lost, but I\'m lost and impressed.', after: 'Someone told me to follow the blue thread. I think they were teasing me.' });
   M.pickup('yellow_prize', 3, 4, 'wish_candy', 1);                     // the yellow detour pays off a little

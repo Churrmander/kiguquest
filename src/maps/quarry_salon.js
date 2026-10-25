@@ -10,7 +10,7 @@
   function* gusset(c) {
     const st = c.state;
     if (st.badges && st.badges[3]) {
-      yield* c.sayT('script.gusset.after', 'Gusset: Whatever that Press is, it\'s drinking the sparks out of the cave up north.\\pGo and look, then tell me I\'m wrong.');
+      yield* c.sayT('script.gusset.after', 'Gusset: Whatever that Press is, it\'s draining the sparks out of the cave up north.\\pGo and look, then tell me I\'m wrong.');
       return;
     }
     yield* c.sayT('script.gusset.1', 'Gusset: You found the points. Most people pull every lever at once and hope.\\pI\'m Gusset, Master Tailor of the Quarry. I cut stone, and I sew a little.\\pI don\'t talk much, so let\'s battle.');
@@ -25,7 +25,7 @@
     yield* c.giveItem('linen_thread', 1);
     yield* c.sayT('script.gusset.5', 'Gusset: And this is Disc: Shove. A loose rock is just a rock that\'s waiting for someone to ask it nicely.\\pThere\'s one down in my tunnels, on the lower floor. See what\'s behind it.');
     yield* c.giveItem('disc_shove', 1);
-    yield* c.sayT('script.gusset.6', 'Gusset: Whatever that Press is, it\'s drinking the sparks out of the cave up north.\\pGo and look, then tell me I\'m wrong.');
+    yield* c.sayT('script.gusset.6', 'Gusset: Whatever that Press is, it\'s draining the sparks out of the cave up north.\\pGo and look, then tell me I\'m wrong.');
     yield* c.sayT('script.gusset.7', 'Gusset: The road north starts at the top of the Dust Bowl. It\'ll be open by the time you get there.\\p...I may have had a word with the Pressers who were blocking it. A short word.');
   }
   NP.scripts.gusset = gusset;

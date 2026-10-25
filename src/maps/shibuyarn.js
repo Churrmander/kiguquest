@@ -4,8 +4,7 @@
  * Story: the neon keeps browning out because Pressers are siphoning the Spark Cellar's static for the Works. Every shop sign is dark
  * (the `_off` variants) and the crossing gates are stuck down until the cellar is fixed (flag shibuyarn_lights).
  * Beats: arrival and brownout (5.2), Mimi and Mrs. Kasuri (5.4), the rival at the claw machine (5.6), the station master opens the
- * maintenance stair (5.7), the lights come on (5.10). The arcade (its own thread) is the map shibuyarn_arcade: its door is named
- * 'arcade', and walking in only works once that map exists.
+ * maintenance stair (5.7), the lights come on (5.10). The prize arcade is the map shibuyarn_arcade (door 'arcade').
  * Flags: shibuyarn_arrived, kasuri_done, rival_claw_done, cellar_open, shibuyarn_lights (set in the Spark Cellar), lights_scene. */
 (function (root) {
   'use strict';
@@ -43,7 +42,7 @@
     let won = false;
     if (c.arcade) {
       const res = yield* c.arcade('claw', { free: 1 });
-      won = !!(res && res.score > 0);
+      won = !!(res && res.tickets >= 10);   // 2 tickets for a miss, 10+ for a plush (docs/arcade.md)
     } else {
       yield* c.sayT('shibuyarn.claw.4', 'You steer the claw over the plush and press the button. It drops, grabs, and lifts...');
       won = Math.random() < 0.5;
@@ -121,8 +120,8 @@
   shop('fabric', 7, 'fabric', 'shibuyarn_fabric', 'Mrs. Kasuri\'s fabric shop');
   shop('toys', 12, 'toys', 'shibuyarn_toys');
   shop('ramen', 20, 'ramen', 'shibuyarn_ramen');
-  shop('arcade', 25, 'arcade', null, 'the arcade (map shibuyarn_arcade, its own thread)');
-  M.def.stamps.push(L.variantByFlag({ id: 'claw_machine', x: 30, y: 15 }, LIT, 'off', 'on'));
+  shop('arcade', 25, 'arcade', 'shibuyarn_arcade', 'the prize arcade (map shibuyarn_arcade)');
+  M.def.stamps.push(L.variantByFlag({ id: 'claw_booth', x: 30, y: 15 }, LIT, 'off', 'on'));
   M.def.stamps.push(L.variantByFlag({ id: 'vending', x: 31, y: 15 }, LIT, 'red_off', 'red'));
   M.def.stamps.push(L.variantByFlag({ id: 'vending', x: 32, y: 15 }, LIT, 'blue_off', 'blue'));
   // the south ward: the Tea House and a house by the avenue, neon poles along the street
@@ -149,13 +148,6 @@
   M.enc('grass', [['vendi', 28, 31, 40], ['capsi', 28, 30, 22], ['bentobi', 28, 30, 22], ['glowli', 28, 30, 10], ['coili', 28, 30, 6]]);
   // Neonki come out on the rooftops at dusk, once the signs are lit
   M.def.encFilter = (list) => (NP.state.flags[LIT] ? list.concat([{ sp: 'neonki', min: 29, max: 31, w: 8 }]) : list);
-
-  // the arcade door: only opens once the arcade map exists (built in its own thread)
-  M.trigger({ x: 27, y: 16, id: 'arcade_door', when: () => !NP.maps.shibuyarn_arcade, script: function* (c) {
-    yield* c.sayT('shibuyarn.arcade.shut', 'The arcade doors are taped shut. A sign says: BACK SOON! WE\'RE RE-WIRING EVERYTHING.');
-    yield* c.walk('player', ['down', 1]);
-  } });
-  M.trigger({ x: 27, y: 16, id: 'arcade_in', when: () => !!NP.maps.shibuyarn_arcade, script: function* (c) { yield* c.ow.doWarp({ to: 'shibuyarn_arcade', spawn: 'door' }); } });
 
   M.trigger({ x: 17, y: 30, w: 3, h: 4, id: 'arrive', when: (c) => !c.flag('shibuyarn_arrived'), script: arrival });
   M.trigger({ x: 25, y: 17, w: 7, h: 3, id: 'claw', when: (c) => c.flag('kasuri_done') && !c.flag('rival_claw_done'), script: rivalClaw });
@@ -184,7 +176,7 @@
 
   // ---- the station: the station master and the maintenance stair down to the Spark Cellar (5.7)
   NP.scripts.station_master = function* (c) {
-    if (c.flag(LIT)) { yield* c.sayT('shibuyarn_station.master.lit', 'Station Master: Every train on time, and every light lit. You have no idea how happy that makes me.\\pIf you ever need a job, the railway is hiring.'); return; }
+    if (c.flag(LIT)) { yield* c.sayT('shibuyarn_station.master.lit', 'Station Master: Every train is on time, and every light is on. You have no idea how happy that makes me.\\pIf you ever need a job, the railway is hiring.'); return; }
     if (c.flag('cellar_open')) { yield* c.sayT('shibuyarn_station.master.again', 'Station Master: The maintenance stair is through that door at the back. Mind the sparks,\\pand if you find whoever is pulling on our cables, ask them nicely to stop.'); return; }
     c.set('cellar_open');
     yield* c.sayT('shibuyarn_station.master.1', 'Station Master: The brownouts? Don\'t get me started. The trains are fine, because they have their own line,\\pbut everything else in the city flickers like a candle.');
@@ -268,7 +260,7 @@
 
   // ---- the Tea House and a house
   L.tea({ id: 'shibuyarn_tea', name: 'Tea House', exit: { to: 'shibuyarn', door: 'tea' }, guests: [
-    { id: 'g1', x: 7, y: 6, look: 'scientist', dir: 'left', say: ['The static in the cellar comes from wild Kigu. Glowli, mostly. They glow, they spark, and the city runs on it.\\pIf someone were bottling it, the city would starve. Hypothetically.'] },
+    { id: 'g1', x: 7, y: 6, look: 'scientist', dir: 'left', say: ['The static in the cellar comes from wild Kigu. Glowli, mostly. They glow, they spark, and the city runs on it.\\pIf someone were bottling it, the city would go dark. Hypothetically.'] },
   ] }).reg();
   L.room({ id: 'shibuyarn_house', name: 'Flat', w: 9, h: 8, doorX: 3, exit: { to: 'shibuyarn', door: 'house' } })
     .stamp('bed', 1, 2).stamp('tv', 6, 1).stamp('table_s', 4, 4).stamp('plant', 7, 5)

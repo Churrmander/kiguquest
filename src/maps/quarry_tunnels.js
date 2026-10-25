@@ -77,7 +77,7 @@
     yield* c.walk(g, ['down', 1]);
     yield* c.face('player', 'up');
     yield* c.sayT('quarry_tunnels_2.gusset.1', 'A dusty man in a hard hat with tiny flowers stitched round the brim climbs out of the dark.\\pHe looks at the herd, then at you, for a long moment.');
-    yield* c.sayT('quarry_tunnels_2.gusset.2', 'Gusset: That\'s a good seam you\'ve got. Don\'t pick at it.\\p...And thank you.');
+    yield* c.sayT('quarry_tunnels_2.gusset.2', 'Gusset: She chose you, and that\'s a bond worth keeping. Look after it.\\p...And thank you.');
     yield* c.sayT('quarry_tunnels_2.gusset.3', 'Gusset: The herd will walk home on their own now. Come up to my hut.\\pThere\'s tea, and there\'s something I need to show somebody.');
     yield* c.ow.fadeOut(12);
     c.hideNpc('gusset_t');
@@ -117,7 +117,7 @@
     c.hideNpc(n.id);
   } });
   M2.trainer('qt2_t1', 7, 12, 'hiker', 'right', { cls: 'Miner', name: 'Clem', sight: 4, reward: 13, ai: 2, team: [['slatli|kumi', 26], ['pebbi|kumi', 26]],
-    intro: 'Down here, you either battle or you go back up. There\'s no third option!', win: 'All right, all right. Third option: you win.', after: 'The geodes down here grow where the dark is darkest. Some say a Kigu sleeps in one.' });
+    intro: 'Down here, you either battle or you go back up. There\'s no third option!', win: 'All right, all right. Third option: you win.', after: 'The geodes down here grow in the darkest corners. Some say a Kigu sleeps in one.' });
   M2.trainer('qt2_t2', 14, 16, 'grunt_m', 'up', { cls: 'Presser', name: 'Tack', sight: 3, reward: 14, ai: 2, music: 'battle_society', team: [['chippi|nibbi', 26], ['sandkit|mittsy', 26], ['silkie', 27]],
     intro: 'I\'m not lost. I\'m conducting a survey of what lost feels like.', win: 'Survey complete. Lost feels like losing.', after: 'If you see my team on the way out, tell them I said I\'m fine. Firmly.' });
   M2.pickup('spool', 12, 9, 'silk_spool', 2);
@@ -130,11 +130,11 @@
     const g = c.npc('gusset_h');
     yield* c.sayT('quarry_hut.1', 'Gusset pours two cups of tea and pushes one across the table without a word.\\pThen he lays a stack of papers next to it. Every one has a blue Society stamp.');
     if (!c.state.bag.slab_order) yield* c.giveItem('slab_order', 1);
-    yield* c.sayT('quarry_hut.2', 'Gusset: Slab orders. Forty a month, cut flat, polished like glass, shipped north to the Works.\\pI cut those slabs myself. They told me it was pressing stone,\\pbut nobody ever said what they meant to press.');
+    yield* c.sayT('quarry_hut.2', 'Gusset: These are slab orders. We cut forty a month, flat and polished like glass, and they all get shipped north to the Works.\\pI cut those slabs myself. They told me it was pressing stone,\\pbut nobody ever said what they meant to press.');
     yield* c.sayT('quarry_hut.3', 'Gusset: Look at the size on that order. That isn\'t a floor, or a wall.\\pThose are plates for a press, and a press that big could flatten a town.');
     yield* c.sayT('quarry_hut.4', 'Gusset: Here. These are my quarry maps, every cart tunnel I ever dug.\\pIf the Society wants my stone, they can find their own way through my hill.');
     yield* c.giveItem('quarry_maps', 1);
-    yield* c.sayT('quarry_hut.5', 'Gusset: And this. It\'s a tape measure. It belongs to an old friend, a professor down south.\\pTell her I still have her spare one. Well, I don\'t now, do I? You do.');
+    yield* c.sayT('quarry_hut.5', 'Gusset: And take this tape measure. It belongs to an old friend, a professor down south.\\pTell her I still have her spare one. Well, I don\'t now, do I? You do.');
     yield* c.giveItem('spare_tape', 1);
     yield* c.sayT('quarry_hut.6', 'Gusset: The Salon\'s open. Come and see me when you\'re ready.\\pI don\'t go easy on people I like.');
     c.hideNpc('gusset_h');

@@ -126,7 +126,7 @@
   M2.sign(7, 2, 'NOTICE: Magnet stones are charged. Push them onto a snapped cable to join it.\\pIf a stone gets stuck, go back up the stairs and it will roll home.', 'puzzle sign');
   M2.enc('grass', [['glowli', 29, 31, 34], ['coili', 29, 31, 20], ['stalli', 29, 31, 18], ['nocti', 29, 30, 16], ['chippi|nibbi', 29, 30, 12]]);
   M2.trainer('sc2_t1', 17, 5, 'grunt_m', 'left', { cls: 'Presser', name: 'Fuse', sight: 3, reward: 16, ai: 2, music: 'battle_society', team: [['coili', 30], ['vendi', 30]],
-    intro: 'Each jar holds one Glowli\'s worth of sparks. We label them all. Neatly.', win: 'You\'ve unlabelled me.', after: 'Calender says the Works needs a thousand jars. We\'ve done about forty. He\'s not happy about the schedule.' });
+    intro: 'Each jar holds one Glowli\'s worth of sparks, and we label every single one of them neatly.', win: 'You\'ve unlabelled me.', after: 'Calender says the Works needs a thousand jars. We\'ve done about forty. He\'s not happy about the schedule.' });
   M2.trainer('sc2_t2', 14, 14, 'grunt_f', 'down', { cls: 'Presser', name: 'Volta', sight: 4, reward: 16, ai: 2, music: 'battle_society', team: [['glowli', 30], ['mittsy', 30], ['coili', 31]],
     intro: 'The fences are for your safety. Mostly for our safety. Okay, they\'re to keep you out.', win: 'Well, the fences didn\'t work, and neither did I.', after: 'If the boss asks, you came in through a door that was already open.' });
   M2.pickup('charm', 2, 8, 'volt_charm', 1, 'Volt Charm on the warm ledge');
@@ -144,9 +144,9 @@
     yield* c.sayT('spark_cellar_3.cal.4', 'Pleat Calender: I have a timetable to keep. Let\'s make this quick.');
     const team = L.team([['coilika|coili', 31], ['glowmira|glowli', 31], ['vendox|vendi', 32], ['silkie', 30]]);
     const won = yield* c.trainerBattle({ cls: 'Pleat', name: 'Calender', look: 'pleat_calender', ai: 3, reward: 40, music: 'battle_admin', team });
-    if (!won) { yield* c.sayT('spark_cellar_3.cal.lose', 'Pleat Calender: Eleven seconds. Efficient. Now go and rest, and stay out of my timetable.'); return; }
+    if (!won) { yield* c.sayT('spark_cellar_3.cal.lose', 'Pleat Calender: That took eleven seconds, which is very efficient. Now go and rest, and stay out of my timetable.'); return; }
     c.set('calender_done');
-    yield* c.sayT('spark_cellar_3.cal.5', 'Pleat Calender: ...Nine minutes. That took nine minutes. That was not in the schedule.');
+    yield* c.sayT('spark_cellar_3.cal.5', 'Pleat Calender: ...Nine minutes. That took nine minutes, and that was not in the schedule.');
     yield* c.sayT('spark_cellar_3.cal.6', 'Pleat Calender: Very well. A good engineer knows when a line has failed. I\'m shutting the siphon down.\\pThe Works has other sources. Slower ones, but it will manage.');
     NP.snd.sfx('door');
     c.set('shibuyarn_lights');

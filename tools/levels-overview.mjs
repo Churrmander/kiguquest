@@ -5,7 +5,7 @@
 //   node tools/levels-overview.mjs designer                  # every map built with NP.levels
 //   node tools/levels-overview.mjs route2 --scale 2 --rect 0,30,30,24
 //   node tools/levels-overview.mjs salon_hemline --flags gate_salon_hemline_a,badge1 --plain
-//   options: --out DIR  --scale N  --rect x,y,w,h (tiles)  --flags a,b,c (story flags set)  --plain (no overlay)  --hidden (draw hidden npcs)
+//   options: --out DIR  --scale N  --rect x,y,w,h (tiles)  --flags a,b,c (story flags set)  --plain (no overlay)  --hidden (draw hidden npcs)  --clean (plain, and no ruler or grid)
 import path from 'node:path';
 import { loadNP, ROOT } from './load.mjs';
 import { writePNG } from './png.mjs';
@@ -17,7 +17,8 @@ const outDir = opt('out', process.env.LEVELS_OUT || path.join(ROOT, '.preview', 
 const scale = +opt('scale', 1);
 const rectArg = opt('rect', null);
 const flagList = (opt('flags', '') || '').split(',').filter(Boolean);
-const plain = has('plain');
+const clean = has('clean');
+const plain = has('plain') || clean;
 const showHidden = has('hidden');
 
 const { NP } = loadNP({ quiet: true });
@@ -156,7 +157,8 @@ function render(id) {
   let [x0, y0, tw, th] = [0, 0, tm.w, tm.h];
   if (rectArg) [x0, y0, tw, th] = rectArg.split(',').map(Number);
   tw = Math.min(tw, tm.w - x0); th = Math.min(th, tm.h - y0);
-  const out = ruler(tm.big, tm.w, tm.h, x0, y0, tw, th);
+  let out = ruler(tm.big, tm.w, tm.h, x0, y0, tw, th);
+  if (clean) { out = new NP.Bitmap(tw * T, th * T); out.blit(tm.big, 0, 0, { sx: x0 * T, sy: y0 * T, sw: tw * T, sh: th * T }); }
   const file = path.join(outDir, id + (rectArg ? '_' + rectArg.replace(/,/g, '-') : '') + '.png');
   writePNG(file, out, scale);
   console.log(file, `${tm.w}x${tm.h}`);

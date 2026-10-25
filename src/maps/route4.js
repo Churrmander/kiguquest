@@ -49,14 +49,14 @@
   M.trainer('r4_t2', 13, 12, 'picnicker', 'up', { cls: 'Picnicker', name: 'Lia', sight: 2, reward: 11, ai: 1, team: [['cactli|nibbi', 21], ['peepi', 21], ['mittsy', 22]],
     intro: 'This is the last shady spot before the desert, so it\'s my picnic spot. Battle for it!', win: 'Fine, you can share the shade.', after: 'Have a sandwich for the road. Oh, wait, I ate them all.' });
   M.trainer('r4_t3', 21, 12, 'net_kid', 'up', { cls: 'Net Kid', name: 'Pip', sight: 3, reward: 9, ai: 1, team: [['jerbi|nibbi', 21], ['jerbi|nibbi', 22]],
-    intro: 'I\'ve been trying to net a Jerbi all morning! You look easier to catch.', win: 'Okay, you were harder to catch.', after: 'Jerbi jump right over my net. Every time. They do it on purpose, I swear.' });
+    intro: 'I\'ve been trying to net a Jerbi all morning! You look easier to net.', win: 'Okay, you were harder to net.', after: 'Jerbi jump right over my net, every single time. They do it on purpose, I swear.' });
   M.trainer('r4_t4', 28, 9, 'grunt_m', 'down', { cls: 'Presser', name: 'Crimp', sight: 2, reward: 12, ai: 1, music: 'battle_society', team: [['mittsy', 22], ['silkie', 22], ['chippi|nibbi', 23]],
     intro: 'Hold still. Your map is all creased, so I\'m folding it properly while we battle.', win: 'There! Your map is folded beautifully. ...I lost, though.', after: 'Hospital corners on a map. That\'s my one joy out here.' });
   M.trainer('r4_t5', 34, 12, 'grunt_f', 'up', { cls: 'Presser', name: 'Starch', sight: 3, reward: 12, ai: 1, music: 'battle_society', team: [['sandkit|mittsy', 23], ['cactli|nibbi', 23]],
     intro: 'Those slabs are for the Works, and the Works needs them flat. You look a little lumpy.', win: 'Lumpy, and strong. That\'s not in the handbook.', after: 'The slabs go north to the Works. I don\'t know what they press up there, and I\'m told not to wonder.' });
 
   // the resting slab carriers: three lines of a running gag, each a little more tired
-  M.npc('slab1', 23, 9, 'grunt_m', 'down', ['We carry the slabs to Canvas Rest, then they go on by cart.\\pI\'ve carried slabs for three weeks now. My arms are very flat.']);
+  M.npc('slab1', 23, 9, 'grunt_m', 'down', ['We carry the slabs to Canvas Rest, then they go on by cart.\\pI\'ve carried slabs for three weeks now, and my arms are going flat. The Society would probably call that progress.']);
   M.npc('slab2', 26, 9, 'grunt_f', 'down', ['Each slab weighs as much as a Kigu. A big one.\\pI asked what they\'re for, and they said "pressing". I asked what we\'re pressing,\\pand they said "please lift with your knees".']);
   M.npc('slab3', 31, 9, 'grunt_m', 'down', ['Our cart\'s wheel keeps getting stuck. The desert doesn\'t like carts.\\pHonestly, the desert doesn\'t seem to like anything.']);
   M.npc('mimi_r4', 39, 11, 'mimi', 'left', null, { hideIf: 'mimi_camp_done', script: function* (c) {

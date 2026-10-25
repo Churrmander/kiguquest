@@ -280,7 +280,7 @@
 
   // ============================================================================================ claw machine
   // a glass prize booth with a claw on a gantry and a heap of plushes; the frame lights up pink when the power is on
-  K.stamp('claw_machine', {
+  K.stamp('claw_booth', {
     w: 1, h: 2, over: 1, solid: ['.', '#'], variants: ['on', 'off'],
     paint: (variant) => {
       const on = variant !== 'off';
