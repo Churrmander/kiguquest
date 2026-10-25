@@ -17,6 +17,7 @@
     yield* c.sayT('thimble.rival2.3', '{rival}: Her Fluff Kigu hit softer than they look.\\pDo not let them tuck you in. Here, take these.\\pMum packed far too many snack cakes.');
     yield* c.giveItem('snack_cake', 3);
     c.set('rival2_done');
+    if (!c.flag('yarn_basket')) yield* c.sayT('thimble.rival2.basket', '{rival}: Oh! And Poppy has lost her yarn basket. She is in a real flap.\\pI saw a Mittsy rolling yarn about in the flowers by the road.');
     yield* c.sayT('thimble.rival2.win', '{rival}: Next time we meet, I will have a plan. A great one.\\pGo on, {player}. Poppy is waiting, and you are going to be brilliant.');
     yield* c.face(t, 'up');
     yield* c.wait(12);
@@ -66,6 +67,16 @@
     c.set('presser1_done');
   }
 
+  // ---- Poppy's lost yarn basket: a Mittsy is having the time of her life with it. No battle, just a gentle swap.
+  function* yarn(c) {
+    yield* c.sayT('thimble.yarn.1', 'A trail of cream yarn leads into the flowers...\\pA Mittsy is pouncing on a yarn ball and rolling it round a basket!');
+    if (!(yield* c.ask('Roll her a pebble to chase instead?'))) return;
+    yield* c.sayT('thimble.yarn.2', 'The Mittsy batted the yarn one last time... then bounded after the pebble.\\pShe looks very pleased with her new toy.');
+    c.hideProp('yarn');
+    if (c.flag('poppy_asked')) yield* c.sayT('thimble.yarn.3', "{player} picked up Poppy's yarn basket!");
+    else yield* c.sayT('thimble.yarn.3b', "{player} picked up the yarn basket.\\pA tag says: PROPERTY OF THIMBLE SALON. Every stitch counts!");
+  }
+
   // ---- the Route 2 guards: before the first inspection they hold the road; after it, either one stands both down (once)
   function* guards(c, npc) {
     if (!c.flag('presser1_done')) {
@@ -92,6 +103,7 @@
   K.rect(g, 22, 0, 2, 9, 'p');                       // road to Route 2 (closed until `route2_open`)
   K.rect(g, 21, 2, 1, 1, 'T');                       // seals the road beside the guards (the General Store walls the rest)
   K.rect(g, 3, 15, 6, 1, 'c'); K.rect(g, 17, 16, 7, 1, 'c');
+  K.rect(g, 24, 16, 2, 2, 'c');                      // east gate to Ribbon Loop
   K.rect(g, 10, 10, 2, 2, 'c'); K.rect(g, 14, 10, 2, 2, 'c');
   K.rect(g, 3, 17, 4, 2, 'f'); K.rect(g, 19, 18, 4, 2, 'f'); K.rect(g, 8, 13, 3, 1, 'f');
   K.rect(g, 15, 13, 1, 4, 'F');
@@ -108,30 +120,35 @@
       { id: 'general_store', x: 17, y: 3, name: 'store', to: 'general_store' },
       { id: 'house_s', x: 3, y: 12, variant: 'yellow', name: 'house1', to: 'thimble_house1' },
       { id: 'house_m', x: 18, y: 12, variant: 'pink', name: 'house2', to: 'thimble_house2' },
-      { id: 'sign', x: 11, y: 9, name: 'sign_v' }, { id: 'sign', x: 22, y: 5 },
+      { id: 'sign', x: 11, y: 9, name: 'sign_v' }, { id: 'sign', x: 22, y: 5 }, { id: 'sign', x: 23, y: 15 },
       { id: 'lamp', x: 10, y: 8 }, { id: 'lamp', x: 15, y: 8 }, { id: 'well', x: 6, y: 9 }, { id: 'bench', x: 17, y: 9 },
       { id: 'cloth_line', x: 7, y: 13 }, { id: 'tree', x: 2, y: 10 }, { id: 'tree', x: 8, y: 18 }, { id: 'tree', x: 16, y: 18 }, { id: 'tree', x: 23, y: 10 },
       { id: 'flowerbed', x: 20, y: 9 }, { id: 'barrel', x: 8, y: 6 }, { id: 'crate', x: 16, y: 6 }, { id: 'windmill', x: 2, y: 16 },
     ],
     interact: [
       { x: 11, y: 9, say: 'THIMBLE VILLAGE\\nWhere every stitch counts.' },
+      { x: 23, y: 15, say: 'EAST: RIBBON LOOP\\nThe long way round to Basting Green.' },
       { x: 22, y: 5, script: function* (c) {
         if (c.flag('route2_open')) yield* c.sayT('thimble.sign_r2.open', 'ROUTE 2  Licensed Tailors only.\\nPlanks uneven. Cross at your own risk.');
         else if (c.flag('presser1_done')) yield* c.sayT('thimble.sign_r2.ask', 'ROUTE 2  Closed\\nInspection in progress.\\pLicensed Tailors with a Button may ask the guards.');
         else yield* c.sayT('thimble.sign_r2.closed', 'ROUTE 2  Closed\\nInspection in progress. Please be patient.');
       } },
     ],
+    // Poppy's yarn basket, with a Mittsy playing in it, in the flowers by the road (the Salon's pre-quest; see S.poppy)
+    props: [{ id: 'yarn', x: 10, y: 17, icon: 'item:cream_thread', hideIf: 'yarn_basket', script: yarn }],
     // Rival #2 ambushes anyone who steps up to the Salon door (12,7 is the only tile the door can be entered from; 13,7 is the road beside it)
     triggers: [{ x: 12, y: 7, w: 2, h: 1, id: 'rival2', when: (c) => !c.flag('rival2_done') && !c.flag('badge1'), script: rival2 }],
     // stepping back out of the Salon with the Button starts the Society's first inspection
     onEnter: function* (c) {
+      c.set('thimble_reached');   // the Tidy Day parade in Basting Green has moved on: the main road is open both ways
       if (c.flag('route2_open')) { c.hideNpc('guard1'); c.hideNpc('guard2'); }
       if (c.flag('badge1') && !c.flag('presser1_done')) yield* inspection(c);
     },
-    spawns: { south: { x: 12, y: 19, dir: 'up' }, north: { x: 22, y: 1, dir: 'down' } },
+    spawns: { south: { x: 12, y: 19, dir: 'up' }, north: { x: 22, y: 1, dir: 'down' }, east: { x: 24, y: 16, dir: 'left' } },
     // towns are safe: no wild encounters (owner's rule)
     warps: [
-      { xs: [12, 13], y: 21, to: 'route1', spawn: 'north', sound: 'none' },
+      { xs: [12, 13], y: 21, to: 'basting_green', spawn: 'north', sound: 'none' },
+      { x: 25, ys: [16, 17], to: 'ribbon_loop', spawn: 'north', sound: 'none' },
       { xs: [22, 23], y: 0, to: 'route2', spawn: 'south', sound: 'none' },
     ],
     npcs: [

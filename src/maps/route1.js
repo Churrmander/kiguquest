@@ -1,4 +1,4 @@
-/* Route 1 — Meadow Lane: Button Town -> Thimble Village. */
+/* Route 1 — Meadow Lane: Button Town -> Basting Green (then Thimble Village). */
 (function (root) {
   'use strict';
   const NP = root.NP, K = NP.mapkit;
@@ -37,13 +37,13 @@
       { id: 'flowerbed', x: 7, y: 7 }, { id: 'stump', x: 15, y: 3 },
     ],
     interact: [
-      { x: 14, y: 37, say: 'MEADOW LANE\\nNorth: Thimble Village\\nSouth: Button Town' },
-      { x: 11, y: 3, say: 'THIMBLE VILLAGE is just ahead!\\nTea House - General Store - Salon' },
+      { x: 14, y: 37, say: 'MEADOW LANE\\nNorth: Basting Green, Thimble Village\\nSouth: Button Town' },
+      { x: 11, y: 3, say: 'BASTING GREEN is just ahead!\\nThimble Village lies beyond it.' },
     ],
     spawns: { south: { x: 12, y: 37, dir: 'up' }, north: { x: 12, y: 2, dir: 'down' } },
     warps: [
       { xs: [12, 13], y: 39, to: 'button_town', spawn: 'north', sound: 'none' },
-      { xs: [12, 13], y: 0, to: 'thimble', spawn: 'south', sound: 'none' },
+      { xs: [12, 13], y: 0, to: 'basting_green', spawn: 'south', sound: 'none' },
     ],
     encounters: {
       grass: [
@@ -82,12 +82,12 @@
           yield* c.say('{rival}: Hold it, {player}!');
           yield* c.walk(t, ['down', 3]);
           yield* c.face('player', 'up');
-          yield* c.say('{rival}: Did you think you could beat me to Thimble? Not a chance!\\pI trained all morning. Come on, show me what you have got!');
+          yield* c.say('{rival}: Thimble first, {player}? I have been practising since the kite.\\pCome on, then. Show me your best, and I will show you mine!');
           const rs = c.state.rivalStarter || 'ottopi';
           const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'rival', ai: 2, reward: 10, canLose: true, team: team([[rs, 5], ['peepi', 4]]) });
           c.set('rival1_done');
-          if (won) yield* c.say('{rival}: Whoa! Okay, your Kigu are tougher than I thought.\\pNice one, {player}. I will catch up in Thimble Village!');
-          else yield* c.say('{rival}: Ha! Told you my Kigu were tough!\\pYou did great, though. Rest up, and we will go again soon.');
+          if (won) yield* c.say('{rival}: Whoa! Okay, your Kigu are tougher than I thought.\\pNice one, {player}. I will be right behind you in Thimble Village!');
+          else yield* c.say('{rival}: Told you they were tough! But you were brilliant, {player}.\\pRest up. Rematch at the Salon? Deal?');
           yield* c.walk(t, ['right', 3]);
           c.hideNpc('tomo_r1');
         },

@@ -18,15 +18,55 @@
     const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'rival', ai: 2, reward: 18, canLose: true, team });
     c.set('rival3_done'); c.music('city_seamstead');
     if (won) yield* c.sayT('seamstead.rival3.win', '{rival}: ...Okay, okay! You beat me fair and square.\\pYou are really good, {player}. Really good.\\pBut Crisp & Co. is not bad. You will see.\\pMy dad has been in the basement three weeks. He says it is "very restful".\\pHe sounds... far away, sometimes.');
-    else yield* c.sayT('seamstead.rival3.lose', '{rival}: Ha! Told you! Crisp & Co. is great, you will see.\\pGo rest your Kigu, {player}. You will get me next time!');
+    else yield* c.sayT('seamstead.rival3.lose', '{rival}: I won? I actually won! Go rest your Kigu, {player}.\\pCome with me to Crisp & Co. one day. Dad would love to meet you.');
     c.set('crisp_open');
+  }
+
+  // ---- after the Crisp & Co. raid: Serge comes out and tells {rival} about Dad himself, plainly. The hero hands over the name tag,
+  //      Mimi brings snack cakes (and takes the pressed Kigu as her first big Soft Rinse job), and {rival} goes to watch the lights.
+  function* aftermath(c) {
+    c.set('crisp_after');
+    const px = c.player.x, py = c.player.y;
+    const r = c.npc('rival_s'), s = c.npc('serge_s'), m = c.npc('mimi_s');
+    yield* c.wait(12);
+    c.placeNpc(r, px - 4, py + 1, 'right');   // along the back street from the west
+    c.showNpc('rival_s');
+    yield* c.walk(r, ['right', 4]);
+    yield* c.face(r, 'up');
+    yield* c.sayT('seamstead.after.1', '{rival}: {player}! I heard the alarms from across the plaza.\\pIs everyone okay? Did you see my dad in there?');
+    c.placeNpc(s, px + 1, py, 'down');
+    NP.snd.sfx('door');
+    c.showNpc('serge_s');
+    yield* c.face('player', 'right');
+    yield* c.sayT('seamstead.after.2', 'Serge: You must be {rival}. You have his laugh. He spoke of it, before.\\pYou deserve plain words, so here they are.');
+    yield* c.face(s, 'down');
+    yield* c.sayT('seamstead.after.3', 'Serge: Your father has been transferred north. Madame Damask took him.\\pHe is pressed, but he is not hurt. Pressing can be undone.');
+    yield* c.sayT('seamstead.after.4', 'Serge: I filled in the forms myself. I am sorry.\\pI am finding out that sorry is a very creased word.');
+    yield* c.walk(s, ['right', 4]);
+    c.hideNpc('serge_s');
+    yield* c.face('player', 'down');
+    yield* c.sayT('seamstead.after.5', '{rival}: Transferred. North.\\p...He always hated the cold.');
+    yield* c.sayT('seamstead.after.6', "{player} held out the name tag from the Pressing Floor.");
+    yield* c.sayT('seamstead.after.7', '{rival}: His name tag. Thank you for keeping it safe.\\pHe always kept his tags straight. Even at home.');
+    c.placeNpc(m, px - 1, py + 2, 'right');
+    c.showNpc('mimi_s');
+    yield* c.sayT('seamstead.after.8', 'Mimi: I brought snack cakes. Nobody has to talk.\\pYou can just eat one. That is allowed.');
+    yield* c.sayT('seamstead.after.9', '{rival} took a cake. A very small smile.');
+    yield* c.sayT('seamstead.after.10', 'Mimi: And those pressed Kigu downstairs? Leave them to me and my Soft Rinse.\\pMy first big job! I will sketch them a costume each while they dry.');
+    yield* c.sayT('seamstead.after.11', '{rival}: You do not have to stay, {player}. I am okay. ...Okay enough to walk.\\pZip\'s Salon should be open now. Go on. I want to see the lights come on.');
+    yield* c.walk(r, ['left', 5, 'up', 4]);
+    c.hideNpc('rival_s');
+    c.placeNpc(m, 19, 17, 'down');
   }
 
   const M = L.map({
     id: 'seamstead', name: 'Seamstead City', music: 'city_seamstead', battleBg: 'city', border: 'treeline', w: W, h: H,
     view: 'street',   // 3D camera preset (street | town | flat-ish), see src/engine/persp.js
     legend: { '.': 'grass', T: 'treeline', c: 'cobble', f: 'flowers', F: 'fence', p: 'path' },
-    onEnter: function* (c) { if (c.flag('crisp_done')) { c.hideNpc('dark1'); c.hideNpc('dark2'); } },
+    onEnter: function* (c) {
+      if (c.flag('crisp_done')) { c.hideNpc('dark1'); c.hideNpc('dark2'); }
+      if (c.flag('crisp_done') && !c.flag('crisp_after') && !c.flag('badge3') && c.player.y > 20) yield* aftermath(c);   // just out of Crisp & Co.
+    },
   });
   M.trigger({ x: 10, y: 2, w: 1, h: 24, id: 'rival3',   // the whole column, so the rival can't be walked round on the grass
     when: (c) => !c.flag('rival3_done'), script: rival3 });
@@ -73,6 +113,10 @@
   M.npc('old', 22, 21, 'elder_m', 'right', ['I used to sew in the basement of that store.\\pBack when it was the Seamstead Thimble Hall.\\pNow it is "storage". Nobody I know has come up sounding like themselves.']);
   M.npc('peddler', 6, 16, 'gentleman', 'right', ['Ahoy! Mr. Sharp, humble peddler. Nothing suspicious at all.\\pThis cap? A sailor gave it to me. Or I gave it to a sailor.\\pKeep your eyes sharp, friend!']);
   M.npc('mimi_s', 19, 17, 'mimi', 'down', ['Mimi: A whole city and not one quiet corner!\\pI love it. Also I am nervous.\\pCrisp & Co. smells like fresh paper and nothing else. That is not normal.'], { hidden: false });
+  // cast for the after-raid scene and Zip's lights (hidden until their scripts place them)
+  M.npc('rival_s', 12, 24, 'rival', 'up', ['{rival}: ...'], { hidden: true });
+  M.npc('serge_s', 13, 24, 'pleat', 'down', ['Serge: ...'], { hidden: true });
+  M.npc('zip_s', 18, 12, 'zip|rocker', 'down', ['Zip: Lamp by lamp!'], { hidden: true });
   M.pickup('cake', 31, 18, 'fancy_cake', 1);
   M.hidden('barrel_spool', 26, 10, 'silk_spool', 1, 'silk spool in a barrel');
   M.reg();

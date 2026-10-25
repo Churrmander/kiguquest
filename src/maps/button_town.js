@@ -19,6 +19,49 @@
   K.rect(g, 22, 2, 2, 7, 'T');
   K.rect(g, 10, 14, 1, 3, 'F'); K.rect(g, 15, 14, 1, 3, 'F');
 
+  // ---- the first morning (padding beat 1): Mom asks you to peg out the sheets; {rival}'s kite is tangled in the washing line out back.
+  //      Untangling it brings back the tree house promise, then the race to the lab. Nothing is locked: the lab just "is not open yet".
+  function* morning(c) {
+    if (c.flag('morning_done')) { yield* c.sayT('button_town.sheets.after', 'The sheets flap in the sea breeze.\\pThey are nearly dry already.'); return; }
+    const t = c.npc('tomo_bt');
+    yield* c.face(t, 'down');
+    yield* c.sayT('button_town.morning.1', '{rival}: {player}! Thank goodness. My kite went straight into your washing line.\\pIt is all tangled up in the pegs. I only touched the sheets a little.');
+    yield* c.ow.fadeOut(10);
+    c.placeNpc('player', 7, 4, 'up');
+    c.placeNpc(t, 7, 3, 'down');
+    yield* c.wait(10);
+    yield* c.ow.fadeIn(10);
+    yield* c.sayT('button_town.morning.2', '{player} and {rival} pegged up the sheets and teased the kite string free.');
+    yield* c.sayT('button_town.morning.3', '{rival}: Look. It is our old kite. The one with the wonky tail.\\pWe made it in the tree house, remember?');
+    yield* c.ow.fadeOut(16, '#fff4e0');
+    yield* c.wait(20);
+    yield* c.sayT('button_town.morning.4', 'Years ago, in a tree house at the edge of the wood...');
+    yield* c.sayT('button_town.morning.5', '{rival}: When we get our Kigu, we visit every Salon. Both of us.\\pPromise? Pinky promise?');
+    yield* c.sayT('button_town.morning.6', 'Two small pinkies hooked together.\\p"Every Salon, together."');
+    yield* c.wait(16);
+    yield* c.ow.fadeIn(16);
+    yield* c.sayT('button_town.morning.7', '{rival}: Still counts, you know. Every single Salon.\\pNow come on! Professor Bobbin said nine sharp. ...It IS nine.');
+    yield* c.sayT('button_town.morning.8', '{rival}: Race you to the lab!');
+    yield* c.walk(t, ['right', 2, 'down', 6, 'right', 8, 'up', 1]);
+    c.hideNpc('tomo_bt');
+    NP.snd.sfx('door');
+    c.set('morning_done');
+  }
+
+  // ---- Prof. Bobbin's parcel (padding beat 2): fetched from the pier after the starters. A sleepy wild Peepi is napping on it,
+  //      so the first wild battle is a little story moment instead of a random one. Any ending (win, flee, befriend) frees the parcel.
+  function* parcel(c) {
+    if (!c.flag('has_starter')) { yield* c.sayT('button_town.crate.0', 'A crate on the pier. The morning boat drops the post here.'); return; }
+    if (c.flag('parcel_got') || c.flag('errand_done')) { yield* c.sayT('button_town.crate.after', 'An empty crate. It smells a little of the sea.'); return; }
+    yield* c.sayT('button_town.crate.1', 'A parcel tied with string sits on the crate.\\p...Something fluffy is asleep on top of it!');
+    yield* c.emote('player', 'exclaim');
+    yield* c.sayT('button_town.crate.2', 'A wild Peepi will not budge from her warm spot.\\pWeaken her, or offer a Bond Spool if she looks curious.');
+    const res = yield* c.wildBattle('peepi', 3);
+    if (res && res.caught) yield* c.sayT('button_town.crate.3a', 'With a brand new friend, {player} picked up the parcel.');
+    else yield* c.sayT('button_town.crate.3b', 'The Peepi fluttered off to find a sunnier spot.\\p{player} picked up the parcel. It is addressed to Prof. Bobbin.');
+    c.set('parcel_got');
+  }
+
   K.reg({
     id: 'button_town', name: 'Button Town', music: 'home_town', battleBg: 'grass', border: 'treeline',
     view: 'street',   // 3D camera preset (street | town | flat-ish), see src/engine/persp.js
@@ -32,10 +75,13 @@
       { id: 'tree', x: 10, y: 3 }, { id: 'tree', x: 15, y: 2 }, { id: 'tree', x: 21, y: 10 }, { id: 'tree', x: 8, y: 17 }, { id: 'tree', x: 17, y: 14 },
       { id: 'sign', x: 11, y: 10, name: 'sign_town' }, { id: 'sign', x: 21, y: 8, name: 'sign_lab' },
       { id: 'mailbox', x: 9, y: 8 }, { id: 'flowerbed', x: 6, y: 11 }, { id: 'bench', x: 16, y: 10 }, { id: 'lamp', x: 14, y: 10 },
+      { id: 'cloth_line', x: 5, y: 3 }, { id: 'crate', x: 15, y: 18 },
     ],
     interact: [
       { x: 11, y: 10, say: 'BUTTON TOWN\\nA town stitched with new beginnings.' },
       { x: 21, y: 8, say: "PROF. BOBBIN'S LAB\\nKigu research and tailoring." },
+      { x: 5, y: 3, script: morning }, { x: 6, y: 3, script: morning },
+      { x: 15, y: 18, script: parcel },
     ],
     spawns: { south: { x: 12, y: 17, dir: 'up' }, north: { x: 12, y: 2, dir: 'down' } },
     warps: [{ xs: [12, 13], y: 0, to: 'route1', spawn: 'south', sound: 'none' }],
@@ -46,17 +92,30 @@
         say: ['Is that {player}? Are you getting a Kigu today?\\pI am going to have one someday. Mom says I must be taller first.'] },
       { id: 'elder_a', x: 11, y: 15, look: 'elder_f', dir: 'right',
         say: ['Kigu choose the people they trust.\\pIt is not a thing you can force.'] },
+      { id: 'tomo_bt', x: 7, y: 3, look: 'rival', dir: 'left', hideIf: 'morning_done', script: morning },
     ],
     triggers: [
       {
         x: 12, y: 2, w: 2, h: 1, id: 'north_block',
-        when: (c) => !c.flag('has_starter'),
+        when: (c) => !c.flag('errand_done'),
         script: function* (c) {
-          yield* c.say('Wait, {player}!\\pProfessor Bobbin asked to see you at her lab first.');
+          if (!c.flag('has_starter')) yield* c.sayT('button_town.north.0', 'Wait, {player}!\\pProfessor Bobbin asked to see you at her lab first.');
+          else if (!c.flag('parcel_got')) yield* c.sayT('button_town.north.1', 'Wait, {player}! Did you fetch the Professor\'s parcel?\\pIt is on the crate at the end of the pier, south of town.');
+          else yield* c.sayT('button_town.north.2', 'That parcel looks heavy, {player}!\\pProfessor Bobbin will want it before you set off.');
           yield* c.walk('player', ['down', 2]);
         },
       },
     ],
+    onEnter: function* (c) {
+      // saves from before the morning and parcel beats existed carry on as if both had happened
+      if (c.flag('has_starter')) c.set('morning_done');
+      if (c.flag('rival1_done') || c.flag('badge1')) c.set('errand_done');
+      if (c.flag('woke') && !c.flag('morning_done') && !c.flag('kite_call')) {
+        c.set('kite_call');
+        yield* c.wait(16);
+        yield* c.sayT('button_town.kite_call', 'Someone is calling from behind the house...\\p"{player}! Round the back! Help!"');
+      }
+    },
   });
 
   // -------------------------------------------------------------------------------------- the lab
@@ -100,7 +159,7 @@
     yield* c.walk(tomo, ['down', 1, 'right', 7 - rp.x, 'down', 3]);
     c.hideNpc('tomo_lab');
     c.set('tomo_left_lab');
-    yield* c.say('Off you go, dear! And visit your mother before you leave town.');
+    yield* c.sayT('lab.errand.1', 'Oh! {player}, before you go. One small favour, dear.\\pA parcel came in on the morning boat. It is sitting on the pier.\\pWould you fetch it for me? Your new partner can stretch her legs.');
   }
 
   K.room({
@@ -119,11 +178,21 @@
     npcs: [
       { id: 'bobbin', x: 5, y: 3, look: 'prof_bobbin', dir: 'down',
         script: function* (c, n) {
-          if (!c.flag('has_starter')) yield* c.say('Take your time, {player}. Step up to the table and look at each spool.\\pA Kigu will be waiting on every one.');
-          else yield* c.say('Meadow Lane is full of wild Kigu.\\pOffer a Bond Spool when one looks curious.\\pDo visit the Tea House in Thimble. Their cocoa is famous.\\pHave you seen my tape measure? ...Oh. Around my neck. Again.');
+          if (!c.flag('has_starter')) { yield* c.say('Take your time, {player}. Step up to the table and look at each spool.\\pA Kigu will be waiting on every one.'); return; }
+          if (!c.flag('errand_done')) {
+            if (!c.flag('parcel_got')) { yield* c.sayT('lab.errand.2', 'The parcel is on the crate at the end of the pier, dear.\\pStraight down the main road, past the cobbles.'); return; }
+            yield* c.sayT('lab.errand.3', 'My parcel! Thank you, {player}. Let us see...\\pMy new Town Maps! And they sent two, the dears.');
+            yield* c.sayT('lab.errand.4', 'Keep this one. Every Tailor should know where the road goes.');
+            yield* c.giveItem('town_map', 1);
+            yield* c.heal('And let me patch up your partner after her first adventure.\\pYour Kigu are feeling much better!');
+            c.set('errand_done');
+            yield* c.sayT('lab.errand.5', 'Meadow Lane is north of town. Thimble Village is past Basting Green.\\p{rival} has a head start, but I doubt that will last. Off you go!');
+            return;
+          }
+          yield* c.say('Meadow Lane is full of wild Kigu.\\pOffer a Bond Spool when one looks curious.\\pDo visit the Tea House in Thimble. Their cocoa is famous.\\pHave you seen my tape measure? ...Oh. Around my neck. Again.');
         } },
       { id: 'tomo_lab', x: 9, y: 6, look: 'rival', dir: 'left', hideIf: 'tomo_left_lab',
-        script: function* (c) { yield* c.say('{rival}: Hurry up, slowpoke! The Professor is watching.'); } },
+        script: function* (c) { yield* c.say('{rival}: Come on, {player}! I saved you the spot by the window.\\pBobbin is tapping her pencil.'); } },
       { id: 'aide1', x: 2, y: 7, look: 'aide_f', dir: 'right', say: ['These are this year\'s apprentice spools.\\pThey have been waiting for you two for weeks!'] },
       { id: 'aide2', x: 9, y: 9, look: 'aide_m', dir: 'up', say: ['The Sketchbook records every Kigu you meet.\\pThe Professor hopes you will fill it.', 'See the photo on her desk? Two girls, laughing.\\pOne of them is folding a napkin in thirds. Nobody asks who they are.'] },
     ],
@@ -133,6 +202,13 @@
     ],
     onEnter: function* (c) {
       if (c.flag('intro_done')) return;
+      if (!c.flag('morning_done')) {
+        // too early: the lab "is not open yet", which points you at the washing line without a locked door
+        yield* c.wait(10);
+        yield* c.sayT('lab.early', 'Prof. Bobbin: Oh! {player}, you are early, dear. I am still dusting the spools.\\pDid your mother not ask you to peg out the sheets? Go on, I will be ready.');
+        yield* c.warp('button_town', 17, 9, 'down');
+        return;
+      }
       c.set('intro_done');
       yield* c.wait(20);
       const prof = c.npc('bobbin');
@@ -154,6 +230,7 @@
     npcs: [{
       id: 'mom', x: 3, y: 4, look: 'mom', dir: 'down',
       script: function* (c) {
+        if (!c.flag('morning_done')) { yield* c.sayT('player_house.mom.sheets', 'Sheets first, love! The washing line is round the back of the house.'); return; }
         if (!c.flag('has_starter')) { yield* c.say('{player}! Professor Bobbin is expecting you.\\pHer lab is just up the road. Go on, shoo!'); return; }
         if (!c.flag('mom_gift')) {
           c.set('mom_gift');
@@ -164,6 +241,16 @@
         yield* c.heal('It was a warm cup of cocoa. Your Kigu feel refreshed!');
       },
     }],
+    // a new game starts here, beside the bed, on the morning of the big day
+    onEnter: function* (c) {
+      if (c.flag('woke') || c.flag('has_starter')) return;
+      c.set('woke');
+      yield* c.wait(30);
+      yield* c.face(c.npc('mom'), 'right');
+      yield* c.sayT('player_house.wake.1', 'Mom: {player}! Up you get, sleepyhead. Today is your big day!\\pProfessor Bobbin is expecting you at nine.');
+      yield* c.sayT('player_house.wake.2', 'Mom: Before you go, would you peg the sheets out for me?\\pThe washing line is round the back of the house. Thank you, love!');
+      yield* c.face(c.npc('mom'), 'down');
+    },
   });
 
   K.room({

@@ -64,7 +64,7 @@
       const ow = new NP.Overworld();
       NP.Game.reset(ow);
       const p = st.pos;
-      if (isNew) ow.loadMap('lab', 5, 9, 'up');
+      if (isNew) ow.loadMap('player_house', 6, 3, 'down');   // the first morning: Mom wakes you
       else ow.loadMap(p.map, p.x, p.y, p.dir);   // run onEnter: it syncs story NPCs (e.g. Seamstead's Salon lane) to the flags
       NP.Game.fadeTo(0, 20);
     }
