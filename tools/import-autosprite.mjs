@@ -236,7 +236,15 @@ for (const [look, hero] of Object.entries(HEROES)) {
 // 40-75% down the figure), where the spool leaves.
 const TRAINER_H = 84, trainers = {};
 // enclosed background the border flood can't reach (white clothing is enclosed too, so gaps are listed by hand): source px seeds
-const TRAINER_GAPS = { hero_f: [[507, 549], [579, 351]], hero_m: [[363, 213]] }; // Dahlia: between the legs, inside the hip arm; Draco: inside the raised arm
+const TRAINER_GAPS = {
+  hero_f: [[507, 549], [579, 351]], // Dahlia: between the legs, inside the hip arm
+  hero_m: [[363, 213]], // Draco: inside the raised arm
+  grunt_f: [[417, 195]], // between the ponytail and the neck
+  lady: [[399, 231]], // between the raised hand and the hat brim
+  pleat: [[471, 201]], // between the raised hand and the neck
+  tailor_f: [[453, 393]], // inside the hip arm
+  tailor_m: [[585, 387]], // inside the hip arm
+};
 const trainerFiles = fs.readdirSync(path.join(ROOT, 'art/autosprite/npc/battle')).filter((f) => f.endsWith('.png'))
   .map((f) => [f.slice(0, -4), path.join(ROOT, 'art/autosprite/npc/battle', f)])
   .concat(Object.entries(HEROES).map(([look, hero]) => [look, path.join(ROOT, 'art/autosprite/heroes', hero + '-ready.png')]));
