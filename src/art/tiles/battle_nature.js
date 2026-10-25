@@ -99,6 +99,63 @@
     },
   }));
 
+  // ================================================================================================ desert (Route 4, the Dust Bowl, Bobbin Quarry)
+  /** a flat-topped sandstone mesa: lit left face, shaded right face, a few strata lines, hazed toward the distance */
+  function mesa(b, x0, x1, top, base, hz) {
+    const f = (c) => mix(rgb(c), hz[0], hz[1]);
+    const lit = f('#f0c890'), mid = f('#dca46c'), dark = f('#b47a54'), seam = f('#c48a5c'), cap = f('#fae0b0');
+    const slope = (base - top) * 0.35;
+    BB.poly(b, [[x0, base], [x0 + slope, top], [x1 - slope, top], [x1, base]], (x, y) => {
+      const t = (x + 0.5 - x0) / (x1 - x0);
+      let c = t < 0.22 ? lit : t < 0.78 ? mid : dark;
+      if (((y - top) | 0) % 5 === 3 && t > 0.1 && t < 0.92) c = seam;
+      return c;
+    });
+    BB.poly(b, [[x0 + slope - 1, top + 1.5], [x0 + slope, top], [x1 - slope, top], [x1 - slope + 1, top + 1.5]], cap, 1);
+  }
+  /** a saguaro-style cactus: trunk plus one or two arms, lit on the left */
+  function cactus(b, x, by, h, hz) {
+    const f = (c) => mix(rgb(c), hz[0], hz[1]);
+    const lit = f('#8cd070'), mid = f('#5aa452'), dark = f('#3a7a44');
+    const col = (xx, x0, w) => ((xx + 0.5 - x0) / w < 0.34 ? lit : (xx + 0.5 - x0) / w < 0.72 ? mid : dark);
+    const w = M.max(2, h * 0.22);
+    BB.paint(b, M.round(x - w / 2), M.round(by - h), M.round(x + w / 2), M.round(by), (xx) => col(xx, x - w / 2, w));
+    const ay = by - h * 0.55, aw = w * 0.8;
+    BB.paint(b, M.round(x - w / 2 - aw * 1.6), M.round(ay), M.round(x - w / 2), M.round(ay + aw), () => mid);
+    BB.paint(b, M.round(x - w / 2 - aw * 1.6), M.round(ay - h * 0.28), M.round(x - w / 2 - aw * 0.6), M.round(ay + aw), (xx) => col(xx, x - w / 2 - aw * 1.6, aw));
+    if (h > 9) {
+      const by2 = by - h * 0.4;
+      BB.paint(b, M.round(x + w / 2), M.round(by2), M.round(x + w / 2 + aw * 1.4), M.round(by2 + aw), () => dark);
+      BB.paint(b, M.round(x + w / 2 + aw * 0.4), M.round(by2 - h * 0.22), M.round(x + w / 2 + aw * 1.4), M.round(by2 + aw), (xx) => col(xx, x + w / 2 + aw * 0.4, aw));
+    }
+  }
+  const HAZE_D = rgb('#fbeed2');
+  BB.define('desert', Object.assign(BB.stage(tint({ rim: ['#f2dcb4', '#b08a62'], edge: ['#b0845a', '#7a5438'], halo: '#4a2c1c' })), {
+    sky(b) {
+      skyGrad(b, [[0, '#3c8ce0'], [0.3, '#78b8ec'], [0.6, '#b8dcf0'], [0.84, '#f2ecd8'], [1, '#fbeed2']], '#fff0c0');
+      BB.streak(b, 192, 10, 70, 3, 21, '#ffffff', 0.42);
+      BB.streak(b, 70, 20, 60, 2.6, 22, '#ffffff', 0.3);
+      BB.streak(b, 230, 30, 40, 2.4, 23, '#ffffff', 0.3);
+      // far mesas in the haze, then low dunes
+      mesa(b, 4, 62, 44, 70, [HAZE_D, 0.45]);
+      mesa(b, 150, 196, 49, 70, [HAZE_D, 0.5]);
+      mesa(b, 206, 258, 40, 70, [HAZE_D, 0.38]);
+      BB.ridge(b, { base: 68, h: BB.hills(41, 7, 0.028, 2), color: (x, y, d) => mix(mix(rgb('#f6d8a0'), rgb('#e2b47c'), sstep(0, 6, d)), HAZE_D, 0.18 + 0.3 * sstep(0, 10, d)) });
+      const tops = BB.ridge(b, { base: 72, h: BB.hills(47, 6, 0.04, 1), color: (x, y, d) => mix(d < 1.4 ? rgb('#fff0c8') : mix(rgb('#f2cc8c'), rgb('#d8a468'), sstep(0, 5, d)), HAZE_D, 0.06 + 0.2 * sstep(2, 10, d)) });
+      for (const [cx, ch] of [[24, 11], [120, 8], [242, 12], [96, 6]]) cactus(b, cx, tops[cx] + 3, ch, [HAZE_D, 0.18]);
+    },
+    ground(b) {
+      groundGrad(b, [[0, '#fff0cc'], [0.16, '#f6dca4'], [0.5, '#eac084'], [1, '#d09a62']], 63, 10, '#fff8d8', '#6a3a28', 0.18);
+      // wind ripples: soft curved bands across the sand
+      BB.plane(b, { yh: HY, vx: 136, kx: 3.2, kz: 300, cell: (b2, x, y, iu, iv) => { if ((iv & 3) === 0) px(b2, x, y, [190, 128, 80], 0.08); else if ((iv & 3) === 1) px(b2, x, y, [255, 250, 225], 0.07); } });
+      BB.scatter(31, 10, 0, 76, W, 140, (x, y) => BB.free(x, y, 3), (x, y, r, k) => {   // pebbles and a few tufts of dry grass
+        BB.glow(b, x, y + 1.2, 3, 1.2, '#7a4a30', 0.22, 1);
+        if (k % 3) { px(b, x, y, [196, 150, 112], 1); px(b, x + 1, y, [160, 116, 86], 1); px(b, x, y - 1, [236, 206, 170], 1); }
+        else for (let i = -1; i <= 1; i++) { px(b, x + i, y, [176, 160, 84], 1); px(b, x + i * 1.6, y - 2, [206, 196, 110], 0.9); }
+      });
+    },
+  }));
+
   // ================================================================================================ forest (Gingham Woods)
   const HAZE_F = rgb('#eef3c0');
   BB.define('forest', Object.assign(BB.stage(tint({ rim: ['#bcd8c6', '#587f7c'], edge: ['#487a7a', '#2a4858'], halo: '#143436' })), {

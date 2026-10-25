@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { loadNP } from '../tools/load.mjs';
 
 const { NP } = loadNP({ quiet: true });
-const isPath = (id) => !!id && /cobble|path|dirt|road|bridge|plank|sand|boardwalk/.test(id);
+const isPath = (id) => !!id && /cobble|path|dirt|road|bridge|plank|sand|boardwalk|track/.test(id);
 const bad = [];
 for (const [mid, def] of Object.entries(NP.maps)) {
   if (def.indoor) continue;

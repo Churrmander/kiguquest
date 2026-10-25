@@ -87,4 +87,57 @@
     H.twinkle(b, 21, 3, '#ffffff');
     return H.done(b, '#4a3624', 'quarry_maps');
   });
+
+  // ================================================================== linen thread: a rough sand-coloured hank, twisted and tied
+  H.add('linen_thread', 'key', false, (b) => {
+    const Ln = R('#d8c08a'), Tie = R('#8a5a34');
+    H.ell(b, 8, 12, 5, 8, Ln, { mode: 'dome' });
+    H.ell(b, 15, 12, 5, 8, Ln, { mode: 'dome' });
+    for (let y = 6; y < 19; y += 2) { b.set(6 + (y & 2 ? 1 : 0), y, P(Ln.d1)); b.set(16 - (y & 2 ? 1 : 0), y, P(Ln.d1)); }
+    H.rect(b, 10, 9, 3, 7, Tie, { mode: 'cel', sh: 1, hi: 1 });          // the tie round the middle
+    H.pline(b, [[12, 16], [15, 21], [18, 20]], Ln.d1);                    // a loose end
+    H.twinkle(b, 21, 3, '#ffffff');
+    return H.done(b, '#4a3818', 'linen_thread');
+  });
+
+  // ================================================================== onigiri: a rice triangle with a nori band
+  H.add('onigiri', 'healing', false, (b) => {
+    const Ri = R('#fbfaf2'), No = R('#2e4a3a');
+    H.poly(b, [[12, 3], [21, 19], [3, 19]], Ri, { mode: 'cel', sh: 1, hi: 1 });
+    H.rect(b, 8, 13, 8, 7, No, { mode: 'cel', sh: 1, hi: 0 });
+    H.pxs(b, [[10, 8, '#e8e4d4'], [14, 10, '#e8e4d4'], [12, 6, '#ffffff']]);
+    return H.done(b, '#3a3a34', 'onigiri');
+  });
+
+  // ================================================================== rinse salts: a corked jar of pale blue bath salts
+  H.add('rinse_salts', 'key', false, (b) => {
+    const Gl = R('#cfe8f4'), Sl = R('#8ac8e8'), Ck = R('#b0844e');
+    H.rrect(b, 5, 7, 14, 15, 3, Gl, { mode: 'cyl' });
+    H.rect(b, 6, 12, 12, 9, Sl, { mode: 'cel', sh: 1, hi: 1 });
+    H.rect(b, 8, 3, 8, 4, Ck, { mode: 'cel', sh: 1, hi: 1 });
+    H.pxs(b, [[8, 14, '#ffffff'], [12, 16, '#ffffff'], [15, 13, '#ffffff'], [10, 18, '#e8f8ff']]);
+    H.twinkle(b, 20, 4, '#ffffff');
+    return H.done(b, '#1e3a4a', 'rinse_salts');
+  });
+
+  // ================================================================== balloon post letters: a bundle of envelopes tied with string
+  H.add('post_letters', 'key', false, (b) => {
+    const En = R('#f6f0e0'), Sp = R('#d84a4a');
+    H.rect(b, 4, 6, 15, 10, En, { mode: 'cel', sh: 1, hi: 1 });
+    H.rect(b, 6, 9, 15, 10, En, { mode: 'cel', sh: 1, hi: 1 });
+    H.pline(b, [[6, 9], [13, 14], [20, 9]], En.d2);                      // the flap
+    H.rect(b, 17, 11, 3, 3, Sp, { mode: 'cel', sh: 0, hi: 1 });          // a stamp
+    b.vline(12, 6, 13, P('#8a5a34'));                                     // string
+    return H.done(b, '#3a3020', 'post_letters');
+  });
+
+  // ================================================================== balloon patches: three mismatched fabric squares, stacked
+  H.add('balloon_patches', 'key', false, (b) => {
+    H.rect(b, 3, 10, 9, 9, R('#5ab4e8'), { mode: 'cel', sh: 1, hi: 1 });
+    H.rect(b, 9, 5, 9, 9, R('#f4c84a'), { mode: 'cel', sh: 1, hi: 1 });
+    H.rect(b, 12, 12, 9, 9, R('#e86a8a'), { mode: 'cel', sh: 1, hi: 1 });
+    art(b, 13, 13, ['#.#.#.#', '.......', '#.....#'], { '#': '#7a2a3a' });
+    art(b, 10, 6, ['.#.#.#.'], { '#': '#8a6a1a' });
+    return H.done(b, '#2a2a3a', 'balloon_patches');
+  });
 })(typeof globalThis !== 'undefined' ? globalThis : window);

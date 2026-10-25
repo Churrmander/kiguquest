@@ -33,7 +33,7 @@
       const A = NP.assets;
       for (const s of def.stamps || []) {
         const sd = A.stampDef(s.id);
-        const p = { id: s.id, x: s.x, y: s.y, variant: s.variant, def: sd, name: s.name, w: sd.w, h: sd.h, over: sd.over || 0, layer: sd.layer || 'obj' };
+        const p = { id: s.id, x: s.x, y: s.y, variant: s.variant, def: sd, name: s.name, w: sd.w, h: sd.h, over: sd.over || 0, layer: sd.layer || 'obj', goneIf: s.goneIf, showIf: s.showIf };
         this.placements.push(p);
         let door = null;
         for (let yy = 0; yy < sd.h; yy++) {
@@ -93,6 +93,20 @@
      *  Idempotent both ways, so a cached map never leaks one game's cuts into another. */
     syncSnips(flags) {
       for (const p of this.placements.slice()) if (p.id === 'bush' && flags['snip:' + this.id + ':' + p.x + ',' + p.y]) this.removeStamp(p);
+      // story stamps: `goneIf: flag` (a stuck cart that gets pushed away) and `showIf: flag` (the same cart, pushed clear)
+      const off = (p) => !!((p.goneIf && flags[p.goneIf]) || (p.showIf && !flags[p.showIf]));
+      let changed = false;
+      for (const p of this.placements.slice()) if ((p.goneIf || p.showIf) && off(p)) { changed = true; this.removeStamp(p); this.snipped.delete('snip:' + this.id + ':' + p.x + ',' + p.y); (this.offStamps = this.offStamps || new Set()).add(p); }
+      for (const p of Array.from(this.offStamps || [])) {
+        if (off(p)) continue;
+        changed = true;
+        this.offStamps.delete(p);
+        this.placements.push(p);
+        this._solidCells(p, 1);
+        this.objs = this.placements.filter((q) => q.layer !== 'floor');
+        this.floors = this.placements.filter((q) => q.layer === 'floor');
+      }
+      if (changed) this.placeRev = (this.placeRev || 0) + 1;
       if (!this.snipped) return;
       for (const [k, p] of Array.from(this.snipped)) {
         if (flags[k]) continue;
@@ -101,6 +115,25 @@
         this._solidCells(p, 1);
         this.objs = this.placements.filter((q) => q.layer !== 'floor');
         this.floors = this.placements.filter((q) => q.layer === 'floor');
+      }
+    }
+
+    /** Field move Shove: slide a pushable stamp (stamp def `shove: true`) one tile. Remembered in the flag
+     *  `shove:<map>:<homeX>,<homeY>` = 'x,y', so syncShoves puts every rock back where the save says it is. */
+    moveStamp(p, x, y) {
+      this._solidCells(p, 0);
+      p.x = x; p.y = y;
+      this._solidCells(p, 1);
+      this.placeRev = (this.placeRev || 0) + 1;
+    }
+    shoveAt(x, y) { return this.placements.find((p) => p.def.shove && p.x === x && p.y === y) || null; }
+    syncShoves(flags) {
+      for (const p of this.placements) {
+        if (!p.def.shove) continue;
+        if (p.homeX === undefined) { p.homeX = p.x; p.homeY = p.y; }
+        const v = flags['shove:' + this.id + ':' + p.homeX + ',' + p.homeY];
+        const [x, y] = v ? v.split(',').map(Number) : [p.homeX, p.homeY];
+        if (x !== p.x || y !== p.y) this.moveStamp(p, x, y);
       }
     }
 

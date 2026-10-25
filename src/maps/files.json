@@ -15,5 +15,13 @@
 "src/maps/route3.js",
 "src/maps/seamstead.js",
 "src/maps/crisp.js",
-"src/maps/seamstead_salon.js"
+"src/maps/seamstead_salon.js",
+"src/maps/ch4_lib.js",
+"src/maps/route4.js",
+"src/maps/canvas_rest.js",
+"src/maps/dust_bowl.js",
+"src/maps/dust_oasis.js",
+"src/maps/bobbin_quarry.js",
+"src/maps/quarry_tunnels.js",
+"src/maps/quarry_salon.js"
 ]

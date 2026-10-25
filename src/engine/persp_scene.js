@@ -30,7 +30,7 @@
   // ------------------------------------------------------------------------------------------------ build
   S.get = function (tm) {
     let sc = scenes.get(tm);
-    if (sc && sc.nPlace === tm.placements.length && sameGrid(sc.grid, tm.grid)) return sc;
+    if (sc && sc.nPlace === tm.placements.length && sc.rev === (tm.placeRev || 0) && sameGrid(sc.grid, tm.grid)) return sc;
     sc = build(tm);
     scenes.set(tm, sc);
     return sc;
@@ -38,7 +38,7 @@
 
   function build(tm) {
     const A = NP.assets, tiles = art();
-    const sc = { tm, grid: tm.grid.slice(), nPlace: tm.placements.length, trees: [], bills: [], vols: [], shadows: [], anim: null, R: 10, depth: null };
+    const sc = { tm, grid: tm.grid.slice(), nPlace: tm.placements.length, rev: tm.placeRev || 0, trees: [], bills: [], vols: [], shadows: [], anim: null, R: 10, depth: null };
     const border = tm.def.border || 'void';
     // animated terrain (water, tall grass, flowers...): tile lists per terrain id, refreshed in place by persp.js when their frame changes
     const groups = new Map();
@@ -110,6 +110,23 @@
           quads.push({ part: 'top', pts: [[cx - px, cy - py, 11.5], [x1 - px, y1 - py, 11.5], [x1 + px, y1 + py, 11.5], [cx + px, cy + py, 11.5]], uv: [[0, 0], [8, 0], [8, 3], [0, 3]], n: [0, 0, 1], noCull: false, shade: 256 });
         }
         sc.fences.push({ x: cx, y: cy, quads });
+      }
+    }
+    // ---- cliffs (terrains with `cliff3d`): each tile stands up as a block; a face on every side open to lower ground, a top cap
+    sc.cliffs = [];
+    if (tiles.cliff3d) {
+      const Hc = tiles.CLIFF_H || 22;
+      const isC = (x, y) => { const id = tm.idAt(x, y); return id !== null && !!A.terrainDef(id).cliff3d; };
+      for (let y = 0; y < tm.h; y++) for (let x = 0; x < tm.w; x++) {
+        const kind = A.terrainDef(tm.grid[y * tm.w + x]).cliff3d;
+        if (!kind) continue;
+        const x0 = x * T, y0 = y * T, x1 = x0 + T, y1 = y0 + T, v = h32(x, y, 41) & 1, quads = [];
+        quads.push({ part: 'top', v, pts: [[x0, y1, Hc], [x1, y1, Hc], [x1, y0, Hc], [x0, y0, Hc]], uv: [[0, 16], [16, 16], [16, 0], [0, 0]], n: [0, 0, 1], shade: 256 });
+        if (tm.inBounds(x, y + 1) && !isC(x, y + 1)) quads.push({ part: 'face', v, pts: [[x0, y1, 0], [x1, y1, 0], [x1, y1, Hc], [x0, y1, Hc]], uv: [[0, Hc], [16, Hc], [16, 0], [0, 0]], n: [0, 1, 0], shade: 236 });
+        if (tm.inBounds(x, y - 1) && !isC(x, y - 1)) quads.push({ part: 'face', v, pts: [[x1, y0, 0], [x0, y0, 0], [x0, y0, Hc], [x1, y0, Hc]], uv: [[0, Hc], [16, Hc], [16, 0], [0, 0]], n: [0, -1, 0], shade: 200 });
+        if (tm.inBounds(x - 1, y) && !isC(x - 1, y)) quads.push({ part: 'face', v, pts: [[x0, y0, 0], [x0, y1, 0], [x0, y1, Hc], [x0, y0, Hc]], uv: [[0, Hc], [16, Hc], [16, 0], [0, 0]], n: [-1, 0, 0], shade: 256 });
+        if (tm.inBounds(x + 1, y) && !isC(x + 1, y)) quads.push({ part: 'face', v, pts: [[x1, y1, 0], [x1, y0, 0], [x1, y0, Hc], [x1, y1, Hc]], uv: [[0, Hc], [16, Hc], [16, 0], [0, 0]], n: [1, 0, 0], shade: 196 });
+        sc.cliffs.push({ x: x0 + 8, y: y0 + 8, kind, quads });
       }
     }
     // ---- stamps: tree-like ones become billboard trees, everything else a billboard / volume
@@ -348,6 +365,18 @@
     }
   };
 
+  const CLIFF_OPT = { shade: 256, noCull: false };
+  S.drawCliffs = function (fb, st, sc) {
+    const tiles = art(), R = V.raster, list = sc.cliffs;
+    const tex = sc.cliffTex || (sc.cliffTex = {});
+    const get = (kind, part, v) => tex[kind + part + v] || (tex[kind + part + v] = V.grade.bitmap(tiles.cliff3d(kind, part, v)));
+    for (let i = 0; i < list.length; i++) {
+      const c = list[i], dx = c.x - st.px, dy = c.y - st.py, v = dx * st.Fx + dy * st.Fy;
+      if (v > V.cfg.fogEnd || v < -st.f * 0.9) continue;
+      for (const q of c.quads) { CLIFF_OPT.shade = q.shade; R.face(fb, st, get(c.kind, q.part, q.v), q.pts, q.uv, q.n, CLIFF_OPT); }
+    }
+  };
+
   // ------------------------------------------------------------------------------------------------ drawing
   /** project a map point into scratch [X, Y, Z]; returns false when behind the near plane */
   const P3 = { X: 0, Y: 0, Z: 0, s: 0, v: 0 };
@@ -366,6 +395,7 @@
     if (S.drawVolumes) S.drawVolumes(fb, st, sc, tick);
     // ---- fences
     if (sc.fences.length) S.drawFences(fb, st, sc);
+    if (sc.cliffs && sc.cliffs.length) S.drawCliffs(fb, st, sc);
     // ---- trees
     const trees = sc.trees;
     for (let i = 0; i < trees.length; i++) {

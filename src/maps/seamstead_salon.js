@@ -7,7 +7,7 @@
 
   function* zip(c) {
     const st = c.state;
-    if (st.badges && st.badges[2]) { yield* c.sayT('script.zip.1', 'Zip: Thread, buzz, pulse! You\'re all wired up, {player}!\\pRoute 4 is east of the avenue, once the Society stops "resurfacing" it.\\pThere are tents out that way, and camels too! ...There are no camels. I checked.'); return; }
+    if (st.badges && st.badges[2]) { yield* c.sayT('script.zip.1', 'Zip: Thread, buzz, pulse! You\'re all wired up, {player}!\\pRoute 4 is through the east gate. There are tents out that way,\\pand camels too! ...There are no camels. I checked.'); return; }
     if (!c.flag('crisp_done')) { yield* c.sayT('script.zip.0', 'Zip: Argh! The lights are out, and the Society says that\'s "balanced"!\\pCould you do something about Crisp & Co. first? Pretty please?'); return; }
     yield* c.sayT('script.zip.2', 'Zip: Whoa! You pulled both levers! The Salon is ON, baby!\\pI\'m Zip, Master Tailor, Warden of the lights.\\pI put my name on Crisp & Co., and I never once went down to look.\\pSo, I\'m sorry. And now let me make a fuss. A big, bright, very loud fuss!');
     const won = yield* c.trainerBattle({ cls: 'Master', name: 'Zip', look: 'zip|rocker', ai: 2, reward: 22, master: true, music: 'battle_master', team: c.map.def.zipTeam });
@@ -21,7 +21,7 @@
     yield* c.giveItem('zip_cable', 1);
     yield* c.sayT('script.zip.7', 'Zip: One more thing. Madame Damask came to a show once.\\pShe didn\'t clap. She just nodded, very politely, until I stopped.\\pDon\'t let her smooth out your loud bits, {player}.');
     yield* lights(c);
-    yield* c.sayT('script.zip.end', 'That\'s the end of Chapter 3, and of the playtest build. Thanks for playing!\\pSave from the menu (Enter), and you can carry on when Chapter 4 is stitched in.');
+    yield* NP.scripts.seamstead_east_gate(c);
   }
   NP.scripts.zip = zip;
 

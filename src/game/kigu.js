@@ -206,7 +206,8 @@
         if (ctx.trigger !== 'level') continue;
         if (evo.level && k.level < evo.level) continue;
         if (evo.bond && k.bond < evo.bond) continue;
-        if (evo.time && ctx.time && ctx.time !== evo.time) continue;
+        // time 'night': there's no clock, so night means somewhere dark (a cave map with `dark: true`, NP.Weather.dark)
+        if (evo.time && (ctx.time || (NP.Weather && NP.Weather.dark ? 'night' : 'day')) !== evo.time) continue;
         if (evo.move && !Kigu.knows(k, evo.move)) continue;
         if (evo.weather && (ctx.weather !== undefined ? ctx.weather : NP.Weather && NP.Weather.now) !== evo.weather) continue;
         if (evo.withKigu && !((ctx.party || (NP.state && NP.state.party) || []).some((o) => o !== k && o.species === evo.withKigu))) continue;

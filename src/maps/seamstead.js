@@ -61,12 +61,46 @@
     c.placeNpc(m, 19, 17, 'down');
   }
 
+  // ---- Chapter 4 opens: Zip clips his cable to the gate motor, the fence lifts, and {rival} runs past on the way to the Quarry.
+  //      Played at the end of Zip's light show (seamstead_salon.js), or on entering the city with a save from before Chapter 4.
+  function* eastGateScene(c) {
+    c.set('east_gate_open_seen');
+    yield* c.ow.fadeOut(10);
+    c.ow.loadMap('seamstead', 31, 14, 'right', { noEnter: true });
+    c.hideNpc('dark1'); c.hideNpc('dark2');
+    c.placeNpc('zip_s', 33, 16, 'up');
+    c.showNpc('zip_s');
+    yield* c.ow.fadeIn(10);
+    yield* c.sayT('story.east_gate.1', 'Zip: Here we go. The Society\'s "resurfacing" runs on a little motor,\\pand a little motor loves a big cable. Watch this!');
+    NP.snd.sfx('select');
+    NP.Game.flash = 6;
+    yield* c.wait(14);
+    L.setGate(c, 'east', true);
+    NP.snd.sfx('door');
+    yield* c.sayT('story.east_gate.2', 'The fence rattles, whirrs, and folds itself up out of the way.');
+    yield* c.face('zip_s', 'left');
+    yield* c.sayT('story.east_gate.3', 'Zip: Route 4 is open! Tents, sand, and a quarry full of very quiet people.\\pTell Gusset I said hi. He won\'t say it back, but he\'ll mean it.');
+    // {rival} sprints in along the avenue and straight out of the gate
+    const r = c.npc('rival_s');
+    c.placeNpc(r, 26, 15, 'right');
+    c.showNpc('rival_s');
+    yield* c.walk(r, ['right', 4], 2);
+    yield* c.emote(r, 'exclaim');
+    yield* c.sayT('story.east_gate.4', '{rival}: {player}! Is it open? It\'s open!\\pRace you to the Quarry! Last one there buys the cocoa!');
+    yield* c.walk(r, ['right', 5], 2);
+    c.hideNpc('rival_s');
+    yield* c.sayT('story.east_gate.5', 'Zip: Ha! You\'d better run, {player}. That kid doesn\'t take short cuts. They just go fast.');
+    c.hideNpc('zip_s');
+  }
+  NP.scripts.seamstead_east_gate = eastGateScene;
+
   const M = L.map({
     id: 'seamstead', name: 'Seamstead City', music: 'city_seamstead', battleBg: 'city', border: 'treeline', w: W, h: H,
     view: 'street',   // 3D camera preset (street | town | flat-ish), see src/engine/persp.js
     legend: { '.': 'grass', T: 'treeline', c: 'cobble', f: 'flowers', F: 'fence', p: 'path' },
     onEnter: function* (c) {
       if (c.flag('crisp_done')) { c.hideNpc('dark1'); c.hideNpc('dark2'); }
+      if (c.flag('badge3') && !c.flag('east_gate_open') && c.flag('zip_lights')) yield* NP.scripts.seamstead_east_gate(c);   // a save from before Ch. 4
       if (c.flag('crisp_done') && !c.flag('crisp_after') && !c.flag('badge3') && c.player.y < 10) yield* aftermath(c);   // just out of Crisp & Co.
     },
   });
@@ -79,7 +113,8 @@
   M.rect(16, 8, 3, 3, 'c').rect(5, 10, 3, 4, 'c').rect(28, 10, 3, 4, 'c');      // lanes to Crisp & Co. / Tea / Store doors, 3 wide and centred on each door
   M.rect(12, 18, 2, 5, 'c').rect(22, 18, 2, 5, 'c').rect(3, 23, 30, 2, 'c');    // lanes from the plaza to the back street (Salon, houses)
   M.rect(8, 17, 3, 1, 'f').rect(28, 17, 3, 1, 'f').rect(24, 8, 3, 1, 'f');
-  M.rect(34, 14, 2, 2, 'F');                                  // east gate: closed until Chapter 4
+  // east gate to Route 4: fenced off until Zip lifts it with his cable after the Volt Button (gateScene below)
+  M.gate('east', { cells: [[34, 14], [35, 14], [34, 15], [35, 15]], closed: 'F', open: 'c', flag: 'east_gate_open', note: 'east gate (opens after badge3)' });
 
   M.building('dept_store', 13, 2, null, 'crisp', 'crisp_1', { note: 'Crisp & Co. (department store)' });
   M.building('salon', 14, 18, 'volt', 'salon', 'seamstead_salon');
@@ -92,11 +127,12 @@
   M.sign(3, 13, 'SEAMSTEAD CITY\\nWest: Route 3, Hemline', 'west sign');
   M.stamp('sign', 32, 13);
   function* eastGate(c) {
+    if (c.flag('east_gate_open')) { yield* c.sayT('seamstead.sign_east.open', 'EAST: ROUTE 4\\nCanvas Rest, the Dust Bowl and Bobbin Quarry.\\pOpen again, no thanks to the Society!'); return; }
     yield* c.sayT('seamstead.sign_east', 'EAST: ROUTE 4\\nClosed for resurfacing. By order of the Society.');
-    if (c.flag('badge3')) yield* c.sayT('seamstead.sign_east.end', 'This is as far as the playtest build goes. Route 4 opens in Chapter 4.\\pThanks for playing!');
+    if (!c.flag('badge3')) yield* c.sayT('seamstead.sign_east.zip', 'Somebody has scribbled underneath: "Ask Zip. He\'s got a cable for everything."');
   }
-  // the sign, and the gate itself when you bump into it; after the Volt Button they mark the end of the playtest build
-  M.def.interact.push({ x: 32, y: 13, script: eastGate, note: 'east sign (Ch. 4 opens this)' }, { x: 34, y: 14, script: eastGate, note: 'east gate' }, { x: 34, y: 15, script: eastGate, note: 'east gate' });
+  // the sign, and the gate itself when you bump into it (the gate cells only while it's shut)
+  M.def.interact.push({ x: 32, y: 13, script: eastGate, note: 'east sign' }, { x: 34, y: 14, script: function* (c) { if (!c.flag('east_gate_open')) yield* eastGate(c); }, note: 'east gate' }, { x: 34, y: 15, script: function* (c) { if (!c.flag('east_gate_open')) yield* eastGate(c); }, note: 'east gate' });
   M.sign(19, 10, 'CRISP & CO.\\nEverything flat. Everything fair.\\pStaff only. Ask on the top floor.', 'Crisp & Co. sign');
   // lamps stand on the corners where two roads meet (each stamp's post is the tile below it)
   for (const x of [4, 8, 11, 24, 27, 31]) M.stamp('lamp', x, 12);   // north side of the avenue: Tea lane, plaza, Store lane
@@ -105,7 +141,7 @@
   M.trees([[2, 9], [9, 6], [24, 4], [33, 8], [2, 18], [33, 22], [33, 19], [11, 4]]);
   M.stamp('barrel', 26, 10).stamp('crate', 31, 10).stamp('bush', 3, 22).stamp('bush', 32, 25);
   M.spawn('west', 2, 14, 'right').spawn('east', 33, 14, 'left');
-  M.edge('w', 14, 15, 'route3', 'east');
+  M.edge('w', 14, 15, 'route3', 'east').edge('e', 14, 15, 'route4', 'west');
 
   // the Salon is dark: two Presser "electricians" in white collars stand at its door until the raid is done
   // round 4: they say plainly where the switch is, so the player knows Crisp & Co. is the way to the Salon (gatekeeping rule)

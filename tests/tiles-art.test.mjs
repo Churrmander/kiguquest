@@ -160,7 +160,7 @@ ok(usedStamps.size >= 40, 'maps should use the full stamp set');
 // ------------------------------------------------------------------------------------------------ battle backgrounds
 // 9 stages (BIBLE 5): 256x144 (NP.W x NP.BOX_Y, painted natively), opaque, a platform under each anchor, deterministic, soft (no pixel noise), layers + discs for the camera.
 const M = Math;
-const BG_IDS = ['grass', 'forest', 'indoor', 'cave', 'city', 'gym', 'water', 'night', 'society'];
+const BG_IDS = ['grass', 'forest', 'indoor', 'cave', 'city', 'gym', 'water', 'night', 'society', 'desert'];
 const K = NP.art.tiles.kit;
 for (const id of BG_IDS) ok(NP.art.tiles.battleBgIds().includes(id), 'missing battle background ' + id);
 const bgSeen = new Set();
