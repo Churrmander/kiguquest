@@ -42,6 +42,33 @@ land to land; the end tiles just butt up against the grass.
 Caveat for map authors: `tilemap.js` unblocks the default door tile of any stamp that has a `name` or `to` but no `D` in `solid`,
 so a named 1x1 stamp (e.g. a `sign` with `name:`) becomes walkable. Use `to`/`name` only on door stamps.
 
+## Town layout rules (owner's, 2026-10-25): get these right in every new town
+These came from fixing the existing towns by hand. Build new towns to them from the start.
+
+**Doors and lanes.** Every building has a 1-tile door (`D` in the bottom row of its `solid`), and the door art is centred on that tile.
+A lane leading to a door must be **centred on the door tile**, so the lane needs an **odd width**: use **3 tiles** (door column -1 to +1).
+A 2-wide lane is always half a tile off, and that was the bug in 7 doors. A wide street running straight across under the door is fine.
+`tests/doors.test.mjs` checks every door in every map and fails if a lane is off-centre.
+
+| Building | Footprint | Door column (from the stamp's x) | Door art | Lane to the door |
+|---|---|---|---|---|
+| `house_s` | 4x3 | 2 | 18 px | x+1 to x+3, 3 wide |
+| `house_m` | 5x4 | 2 | 18 px | x+1 to x+3 |
+| `house_l` | 6x4 | 3 | 20 px | x+2 to x+4 |
+| `tea_house`, `general_store` | 5x4 | 2 | 18 / 20 px | x+1 to x+3 |
+| `lab`, `salon` | 7x5 | 3 | 22 px | x+2 to x+4 |
+| `dept_store` | 9x6 | 4 | 30 px (double door) | x+3 to x+5 |
+
+For example, `M.building('tea_house', 4, 6, ...)` has its door at x6, so the lane is `M.rect(5, 10, 3, n, 'c')`.
+
+**Other rules:**
+- **Lampposts** stand on the grass at the corners where two roads meet, never mid-verge.
+- **Benches** run parallel to the road beside them. Use `bench` (2x1) beside an east-west road and `bench_v` (1x2) beside a north-south one.
+- **Plaza features** (fountain, `well`) sit dead centre of the plaza, lined up with the lanes that meet there.
+- **Gates** (`gate_house`) are centred on their road, and the road runs straight through the 2-tile arch.
+- **Nothing on a path:** no tree, bench, sign or NPC stands on a road tile or in a fence gap.
+- **Each town shows its story** (e.g. Hemline's skeps, Buzzlets and honey stall), so add props that fit the town's theme.
+
 ## How to add a stamp
 1. Pick the file by theme in `src/art/tiles/` (`stamp_buildings.js`, `stamp_nature.js`, `stamp_props.js`, `stamp_indoor.js`).
 2. Call `K.stamp(id, { w, h, solid, over, layer, variants, frames, animSpeed, paint(variant, frame) })`; `paint` returns a Bitmap of exactly `w*16 x h*16`.
