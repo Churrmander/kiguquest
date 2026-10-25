@@ -38,7 +38,7 @@
     ],
     interact: [
       { x: 14, y: 37, say: 'MEADOW LANE\\nNorth: Basting Green, Thimble Village\\nSouth: Button Town' },
-      { x: 11, y: 3, say: 'BASTING GREEN is just ahead!\\nThimble Village lies beyond it.' },
+      { x: 11, y: 3, say: 'BASTING GREEN is just ahead!\\nThimble Village is a short walk past it.' },
     ],
     spawns: { south: { x: 12, y: 37, dir: 'up' }, north: { x: 12, y: 2, dir: 'down' } },
     warps: [
@@ -58,18 +58,18 @@
     ],
     npcs: [
       { id: 'hiker', x: 11, y: 36, look: 'elder_m', dir: 'right',
-        say: ['Tall grass is where wild Kigu nap in the sun.\\pWeaken one first. A sleepy Kigu is much easier to befriend.'] },
+        say: ['Tall grass is where wild Kigu nap in the sun.\\pWeaken one first, since a sleepy Kigu is much easier to befriend.'] },
       { id: 'kid', x: 9, y: 19, look: 'child_f', dir: 'down', move: 'turn',
-        say: ['My Peepi learned Quick Dash!\\pShe always gets to the snack first.'] },
+        say: ['My Peepi learned Quick Dash!\\pNow she always gets to the snacks first.'] },
       { id: 'lia', x: 8, y: 25, look: 'tailor_f', dir: 'left',
         trainer: { cls: 'Tailor', name: 'Lia', sight: 2, reward: 6, ai: 0, team: team([['peepi', 3], ['nibbi', 3]]),
-          intro: 'You have a Kigu too? Let us compare stitches!', win: 'Oh! Your seams are tighter than mine.', after: 'My Peepi has forgiven you. I am still working on it.' } },
+          intro: 'You have a Kigu too? Let\'s compare stitches!', win: 'Oh! Your seams are tighter than mine.', after: 'My Peepi has forgiven you. I\'m still working on it.' } },
       { id: 'bo', x: 13, y: 17, look: 'net_kid', dir: 'right',
         trainer: { cls: 'Net Kid', name: 'Bo', sight: 2, reward: 5, ai: 0, team: team([['mittsy', 4]]),
           intro: 'I befriended my Mittsy in this very grass!', win: 'She fell asleep on me...', after: 'Mittsy naps a lot, but she naps fiercely.' } },
       { id: 'suzu', x: 11, y: 5, look: 'picnicker', dir: 'right',
         trainer: { cls: 'Picnicker', name: 'Suzu', sight: 2, reward: 6, ai: 1, team: team([['sprubun', 4], ['peepi', 4]]),
-          intro: 'My picnic is over, so now it is battle time! Ready?', win: 'My sandwiches are going to get cold...', after: 'Thimble has a Salon with a Master Tailor. Pack a snack first.' } },
+          intro: 'My picnic is over, so now it\'s battle time! Ready?', win: 'My sandwiches are going to get cold...', after: 'There\'s a Salon in Thimble with a real Master Tailor. Pack a snack first!' } },
     ],
     triggers: [
       {
@@ -82,12 +82,12 @@
           yield* c.say('{rival}: Hold it, {player}!');
           yield* c.walk(t, ['down', 3]);
           yield* c.face('player', 'up');
-          yield* c.say('{rival}: Thimble first, {player}? I have been practising since the kite.\\pCome on, then. Show me your best, and I will show you mine!');
+          yield* c.say('{rival}: Thimble first, {player}? I\'ve been practising since the kite.\\pCome on, then. Show me your best, and I\'ll show you mine!');
           const rs = c.state.rivalStarter || 'ottopi';
           const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'rival', ai: 2, reward: 10, canLose: true, team: team([[rs, 5], ['peepi', 4]]) });
           c.set('rival1_done');
-          if (won) yield* c.say('{rival}: Whoa! Okay, your Kigu are tougher than I thought.\\pNice one, {player}. I will be right behind you in Thimble Village!');
-          else yield* c.say('{rival}: Told you they were tough! But you were brilliant, {player}.\\pRest up. Rematch at the Salon? Deal?');
+          if (won) yield* c.say('{rival}: Whoa! Okay, your Kigu are tougher than I thought.\\pNice one, {player}. I\'ll be right behind you in Thimble Village!');
+          else yield* c.say('{rival}: Told you they were tough! But you were brilliant, {player}.\\pYou should rest up. Rematch at the Salon? Deal?');
           yield* c.walk(t, ['right', 3]);
           c.hideNpc('tomo_r1');
         },

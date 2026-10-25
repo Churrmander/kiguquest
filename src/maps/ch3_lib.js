@@ -26,7 +26,7 @@
     o = o || {};
     const id = c.map.id + '.' + (n && n.id || key);
     if (L.gateOpen(c, key)) return;
-    if (!NP.state.bag[item]) { yield* c.sayT(id + '.no', o.no || ['The door is locked. A sign reads STAFF ONLY.']); return; }
+    if (!NP.state.bag[item]) { yield* c.sayT(id + '.no', o.no || ['The door\'s locked. There\'s a sign on it that says STAFF ONLY.']); return; }
     yield* c.sayT(id + '.yes', o.yes || ['{player} swiped the Staff Pass. The door slid open!']);
     NP.snd.sfx('door');
     L.setGate(c, key, true);

@@ -15,16 +15,16 @@
     yield* c.sayT('route2.insp.2', 'Notch: A splinter is a crease in the wood, Tally.\\pWe must note it in the report.');
     yield* c.walk(a, ['down', 3]);
     yield* c.walk(b, ['down', 3]);
-    yield* c.sayT('route2.insp.3', 'Tally: Halt, Tailor! The Society is measuring this bridge.\\pEvery plank, every nail.\\pFlat is fair!');
-    yield* c.sayT('route2.insp.4', 'Notch: Since you are here, we will measure you too. Hold still.\\pCollar: three millimetres off standard.\\pHem: two millimetres crooked.');
+    yield* c.sayT('route2.insp.3', 'Tally: Halt, Tailor! The Society is measuring this bridge.\\pWe\'re checking every plank and every nail. Flat is fair!');
+    yield* c.sayT('route2.insp.4', 'Notch: Since you are here, we will measure you too. Hold still.\\pYour collar is three millimetres off standard.\\pAnd your hem is two millimetres crooked.');
     yield* c.sayT('route2.insp.5', 'Tally: A hem that crooked could snag a plank!\\pFor the safety of the bridge, we must iron you out.');
     yield* c.sayT('route2.insp.6', '{player}\'s Kigu stuck her tongue out at the folding ruler.');
     const won = yield* c.trainerBattle({ cls: 'Presser', name: 'Tally', look: 'grunt_m', ai: 1, reward: 8, music: 'battle_society', canLose: true, team: L.team([['mittsy', 9], ['silkie', 9]]) });
     if (won) {
-      yield* c.sayT('route2.insp.win.1', 'Tally: The ruler... bent. It has never bent. Notch, write that down.');
-      yield* c.sayT('route2.insp.win.2', 'Notch: I would rather write that the bridge is fine. ...It is fine.\\pPlank fourteen is a little soft, but it is fine.');
+      yield* c.sayT('route2.insp.win.1', 'Tally: The ruler... it bent. That ruler has never bent in its life.\\pNotch, write that down.');
+      yield* c.sayT('route2.insp.win.2', 'Notch: I would rather write that the bridge is fine. ...It\'s fine.\\pPlank fourteen is a little soft, but it\'s fine.');
       yield* c.sayT('route2.insp.win.3', 'Tally: ...Fall in, Notch. The Pleat will want our report.');
-      yield* c.sayT('route2.insp.win.4', 'Notch: Tailor? The Pleat is at the Spindle Shrine today.\\pIf you are going that way, do not fuss.\\pShe does not like fuss. Flat is fair!');
+      yield* c.sayT('route2.insp.win.4', 'Notch: Tailor? The Pleat is at the Spindle Shrine today.\\pIf you\'re going that way, please don\'t make a fuss. She doesn\'t like fuss.\\pFlat is fair!');
     }
     c.music('route_meadow');
     // they march off up the planks side by side, so the player sees why she is held for a moment. The done flag (which hides
@@ -69,7 +69,7 @@
   // ---- scenery
   M.sign(9, 43, 'ROUTE 2  Plankwater\\nNorth: Gingham Woods\\nSouth: Thimble Village', 'south signpost');
   M.sign(9, 28, 'PLANKWATER BRIDGE\\nMind the third plank from the end.', 'bridge sign (south bank)');
-  M.sign(12, 4, 'GINGHAM WOODS ahead.\\nQuiet, please. The trees are listening.', 'north signpost');
+  M.sign(12, 4, 'GINGHAM WOODS ahead.\\nQuiet, please! Wild Kigu are nesting.', 'north signpost');
   M.stamp('gate_house', 8, 39, 'pressed');   // its 2-wide arch (x10-11) sits square on the road
   L.variantByFlag(M.def.stamps[M.def.stamps.length - 1], GATE_FLAG, 'pressed', 'default');
   // trees are 1x2 (top y, base y+1)
@@ -82,15 +82,15 @@
   M.edge('s', 10, 11, 'thimble', 'north').edge('n', 10, 11, 'gingham_woods', 'south');
 
   M.trainer('reed', 13, 35, 'camper', 'left', { cls: 'Camper', name: 'Reed', sight: 3, reward: 6, ai: 0, team: [['sprubun', 8], ['mittsy', 8]],
-    intro: 'This trail is my campsite! Well, the bit beside it is.\\pLet us see whose Kigu sleeps better!', win: 'My Kigu really did need a nap...', after: 'The bridge is just up ahead. Walk it slowly. It creaks.' });
+    intro: 'This trail is my campsite! Well, the bit beside it is.\\pLet\'s see whose Kigu sleeps better!', win: 'My Kigu really did need a nap...', after: 'The bridge is just up ahead. Take it slowly, because it creaks a lot.' });
   M.trainer('mina', 4, 32, 'schoolgirl', 'right', { cls: 'Schoolgirl', name: 'Mina', sight: 3, reward: 6, ai: 0, team: [['nibbi', 8], ['peepi', 9]],
-    intro: 'I walked all the way from Hemline for a field trip.\\pSo I am going to battle everyone on the way home!', win: 'Teacher says to learn from every loss. This is a lot of learning.', after: 'Hemline is past the woods. They hem everything there, even the curtains.' });
+    intro: 'I walked all the way from Hemline for a field trip.\\pSo I\'m going to battle everyone on the way home!', win: 'Teacher says to learn from every loss. This is a lot of learning.', after: 'Hemline is past the woods. They hem everything there, even the curtains.' });
   M.trainer('gus', 13, 17, 'fisher', 'left', { cls: 'Fisher', name: 'Gus', sight: 3, reward: 8, ai: 1, team: [['ribbi', 8], ['ribbi', 9]],   // was Ribbi 10 + Ottopi 10: a wall for a Konko start
-    intro: 'The fish are not biting today. You will have to do.', win: 'There goes my supper...', after: 'The river is calm today. The Pressers upstream keep checking its width.' });
+    intro: 'The fish aren\'t biting today, so you\'ll have to do.', win: 'There goes my supper...', after: 'The river\'s calm today. The Pressers upstream keep measuring how wide it is.' });
   M.trainer('kei', 7, 16, 'net_kid', 'right', { cls: 'Net Kid', name: 'Kei', sight: 4, reward: 6, ai: 1, team: [['webbi', 9], ['silkie', 10]],
-    intro: 'Shh! Do not scare the webs! ...Oh. Battle? Okay!', win: 'My webs got tangled up in yours.', after: 'There are webs in the woods. They are stronger than they look.' });
+    intro: 'Shh! Don\'t scare the webs! ...Oh. Battle? Okay!', win: 'My webs got tangled up in yours.', after: 'There are webs all over the woods, and they\'re stronger than they look.' });
   M.trainer('brock', 17, 9, 'hiker', 'left', { cls: 'Hiker', name: 'Brock', sight: 4, reward: 9, ai: 0, team: [['molli', 9], ['kumi', 8]],   // was Molli 10 + Kumi 10 + Molli 11 with smart AI: a wall 1 Button in (round 4)
-    intro: 'Good boots, good socks, good Kigu. That is the whole secret!', win: 'My boots are fine. It is my pride that has a blister.', after: 'The woods past this road are quiet. Quiet is a kind of trail marker.' });
+    intro: 'Good boots, good socks, and good Kigu. That\'s the whole secret!', win: 'My boots are fine. It\'s my pride that has a blister.', after: 'The woods up ahead are very quiet. Stick to the trail and you won\'t get lost.' });
 
   M.npc('picnic', 19, 16, 'lady', 'left', null, { script: 'restfree', note: 'free rest spot' });
   M.pickup('cake', 7, 40, 'snack_cake', 2);
@@ -107,7 +107,7 @@
 
   // the inspectors wait on the middle of the bridge until the scene removes them (cast defs)
   M.npc('insp_a', 10, 21, 'grunt_m', 'down', ['Tally: Plank twelve... level.'], { hideIf: 'route2_insp_done' });
-  M.npc('insp_b', 11, 21, 'grunt_f', 'down', ['Notch: Please wait. Planks are being measured.'], { hideIf: 'route2_insp_done' });
+  M.npc('insp_b', 11, 21, 'grunt_f', 'down', ['Notch: Please wait there. We\'re still measuring the planks.'], { hideIf: 'route2_insp_done' });
   M.trigger({ x: 10, y: 26, w: 2, h: 1, id: 'route2_inspectors', when: (c) => !c.flag('route2_insp_done'), script: inspectors });
 
   M.reg();
