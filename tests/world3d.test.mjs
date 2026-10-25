@@ -50,8 +50,9 @@ for (const id of BUILD) {
   const s = NP.stamps[id], D = s.h * 16 - 8;
   for (const v of s.variants) {
     const o = tiles.volume(id, v), d = o.d;
-    ok(o.front.w === s.w * 16 && o.front.h === s.h * 16, id + ':' + v + ' facade size');
-    ok(o.back.w === s.w * 16 && o.back.h === s.h * 16, id + ':' + v + ' back size');
+    ok(o.front.w === s.w * 16 && o.front.h === s.h * 16 + s.rise, id + ':' + v + ' facade size');
+    ok(o.back.w === s.w * 16 && o.back.h === s.h * 16 + s.rise, id + ':' + v + ' back size');
+    if (id !== 'gate_house' && id !== 'shrine') ok(s.rise > 0 && (d.opts.doorH || 14) >= 34, id + ': door is taller than a 32 px person');
     ok(o.depth === D && o.wallW.w === D && o.wallW.h === d.Hw && o.wallE.w === D && o.wallE.h === d.Hw, id + ':' + v + ' wall textures span the footprint depth');
     ok(o.roofW.w === D && o.roofE.w === D && o.cap.h === D && o.cap.w === o.capW, id + ':' + v + ' roof textures');
     ok(d.Hw > 8 && d.Hw < d.Ztop && d.Ztop <= d.H && d.inset * 2 < d.roofR - d.roofL, id + ':' + v + ' geometry is sane');
