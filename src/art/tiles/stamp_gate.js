@@ -47,25 +47,28 @@
       const pressed = variant === 'pressed';
       const b = K.B(96, 48);
       const r = K.ramp('brown');
-      const cx = 47.5;
+      const cx = 47.5, AY = 35;   // arch spring line: the ring's crown sits just under the tie-beam, so it shows in 3D too
 
       // ---- stone wings with a timber tie-beam, corner posts and a stone footing
       stoneWall(b, 2, 22, 93, 47);
       b.fillRect(2, 46, 92, 2, ST[4]);
       // arch ring (semicircle on top, jambs below), then cut the passage out
       for (let y = 18; y < 48; y++) for (let x = 29; x <= 66; x++) {
-        const inRing = y <= 30 ? ((x - cx) / 18.5) ** 2 + ((y - 30) / 11.5) ** 2 <= 1 : true;
+        const inRing = y <= AY ? ((x - cx) / 18.5) ** 2 + ((y - AY) / 11.5) ** 2 <= 1 : true;
         if (!inRing) continue;
-        const a = Math.atan2(y - 30, x - cx);
-        const joint = y <= 30 ? Math.abs(((a / Math.PI) * 8) % 1) < 0.12 : (y - 30) % 5 === 0;
-        b.set(x, y, joint ? ST[4] : (x < cx ? ST[1] : ST[2]));
+        const a = Math.atan2(y - AY, x - cx);
+        const joint = y <= AY ? Math.abs(((a / Math.PI) * 8) % 1) < 0.12 : (y - AY) % 5 === 0;
+        const edge = y <= AY && ((x - cx) / 17.5) ** 2 + ((y - AY) / 10.5) ** 2 > 1;   // a dark 1px line round the outside of the ring
+        b.set(x, y, edge ? P.n5 : joint ? ST[4] : (x < cx - 6 ? ST[2] : ST[3]));
       }
       for (let y = 18; y < 48; y++) for (let x = 32; x <= 63; x++) {
-        const open = y <= 30 ? ((x - cx) / 15.5) ** 2 + ((y - 30) / 8.5) ** 2 <= 1 : true;
-        if (open) b.u32[y * b.w + x] = 0;
+        const open = y <= AY ? ((x - cx) / 15.5) ** 2 + ((y - AY) / 8.5) ** 2 <= 1 : true;
+        if (open) b.u32[y * b.w + x] = y < AY ? P.n6 : 0;   // the passage vault in deep shadow, following the curve
       }
-      // shaded underside just inside the arch
-      K.shadowRect(b, 33, 24, 30, 9, 70);
+      // keystone, and the jambs' inner faces in shade
+      for (let k = 0; k < 5; k++) { const x0 = 45 + (k >> 1), x1 = 50 - (k >> 1); b.hline(x0, 22 + k, x1 - x0 + 1, ST[1]); b.set(x0 - 1, 22 + k, P.n5); b.set(x1 + 1, 22 + k, P.n5); b.set(x0, 22 + k, ST[0]); b.set(x1, 22 + k, ST[3]); }   // wedge keystone
+      b.hline(45, 22, 5, ST[0]); b.hline(47, 27, 2, P.n5);
+      for (let y = AY; y < 46; y++) { b.set(32, y, ST[3]); b.set(33, y, ST[4]); b.set(63, y, ST[4]); b.set(62, y, ST[3]); }
       // roof (hip, brown shingles) over a timber tie-beam
       K.roof(b, 1, 6, 94, 18, r, { inset: 18, row: 4, alt: r[1] });
       b.fillRect(1, 19, 94, 3, P.o3); b.hline(1, 19, 94, P.o1); b.hline(1, 20, 94, P.o2); b.hline(1, 21, 94, P.o4);

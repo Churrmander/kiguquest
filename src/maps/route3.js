@@ -14,7 +14,6 @@
   M.rect(0, 10, W, 2, 'c');                                  // the seam road itself
   M.rect(4, 4, 7, 4, ',').rect(13, 14, 8, 4, ',').rect(22, 3, 6, 4, ',').rect(3, 14, 6, 3, ',');
   M.rect(11, 8, 2, 1, 'f').rect(24, 13, 4, 1, 'f').rect(16, 6, 3, 1, 'f');
-  M.rect(14, 3, 6, 1, 'F');
   // the seam road is fenced from x12 east (the meadows open only at the Hemline end), so the walk to Seamstead passes every
   // trainer's line of sight (owner's rule: no skipping); the gaps under the four trainers, the tea stand and the sign stay grass
   M.rect(12, 9, 18, 1, 'F').rect(12, 12, 18, 1, 'F');

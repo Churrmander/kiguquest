@@ -37,7 +37,7 @@
   M.trees([[17, 33], [5, 32], [25, 34], [12, 24], [23, 14], [26, 19], [7, 8], [20, 6], [8, 14], [6, 15]]);
   M.trees([[3, 23], [9, 26], [27, 16], [16, 6], [7, 6]], 'pine');
   M.stamp('stump', 8, 21).stamp('stump', 26, 17).stamp('boulder', 18, 35).stamp('boulder', 4, 36).stamp('rock', 24, 35).stamp('bush', 12, 26).stamp('bush', 7, 10).stamp('bush', 7, 17);
-  M.stamp('flowerbed', 3, 17).stamp('flowerbed', 26, 22);
+  M.stamp('bush', 3, 17).stamp('bush', 26, 22);   // (wild bushes: a stone planter in the woods made no sense)
 
   // ---- people and pickups
   M.spawn('south', 13, 38, 'up').spawn('north', 14, 2, 'down');

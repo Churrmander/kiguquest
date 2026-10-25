@@ -266,23 +266,31 @@
 
   /** a wild Buzzlet (a bee onesie with stripes and tiny antennae) hovering about, wings a blur. 4 frames: bob + flap. */
   K.stamp('buzzlet_fly', {
-    w: 1, h: 1, rise: 10, solid: ['.'], frames: 4, animSpeed: 6,
+    // a wild Buzzlet in its bee onesie: hood up with a rim round the face, spiky fringe, stubby mitts and feet. Only the wings and the bob move.
+    w: 1, h: 1, rise: 8, solid: ['.'], frames: 4, animSpeed: 6,
     paint: (variant, f) => {
-      const b = K.B(16, 26);
-      const bob = [0, -1, -2, -1][f], y = 5 + bob;
-      // wings (big on even frames, folded on odd)
-      const wing = f % 2 ? [[3, y + 4, 3, 2], [10, y + 4, 3, 2]] : [[2, y + 1, 4, 4], [10, y + 1, 4, 4]];
-      for (const [wx, wy, ww, wh] of wing) { b.fillRect(wx, wy, ww, wh, P.w1); b.set(wx, wy, P.white); b.set(wx + ww - 1, wy + wh - 1, P.w2); }
-      // striped onesie body
-      b.fillRect(5, y + 5, 6, 6, P.yl2); b.vline(5, y + 5, 6, P.yl1);
-      b.hline(5, y + 7, 6, P.ink); b.hline(5, y + 9, 6, P.ink); b.set(8, y + 11, P.ink);   // stripes and a tiny stinger
-      // hooded head with a face
-      b.fillRect(5, y, 6, 5, P.yl2); b.set(5, y, 0); b.set(10, y, 0);
-      b.fillRect(6, y + 2, 4, 3, P.p1); b.set(7, y + 3, P.ink); b.set(9, y + 3, P.ink); b.set(8, y + 4, P.pk2);
+      const b = K.B(16, 24);
+      const y = 6 + [0, -1, -2, -1][f];
+      // wings behind the shoulders (spread on even frames, half-folded on odd)
+      const wy = y + (f % 2 ? 3 : 0), wing = [[0, wy, 4, 6], [12, wy, 4, 6]];   // same wings every frame, flicked up and down
+      for (const [wx, wy, ww, wh] of wing) { b.fillRect(wx, wy, ww, wh, P.w1); b.hline(wx, wy, ww, P.white); b.hline(wx, wy + wh - 1, ww, P.w2); }
+      // striped body, arms with white mitts, little feet
+      b.fillRect(4, y + 8, 8, 5, P.yl2); b.vline(4, y + 8, 4, P.yl1); b.vline(11, y + 8, 4, P.yl3); b.set(4, y + 12, 0); b.set(11, y + 12, 0); b.hline(5, y + 12, 6, P.yl3);   // rounded tum
+      b.hline(4, y + 9, 8, P.ink); b.hline(4, y + 11, 8, P.ink);
+      for (const ax of [2, 12]) { b.fillRect(ax, y + 8, 2, 2, P.yl2); b.fillRect(ax, y + 10, 2, 2, P.o3); b.set(ax, y + 10, P.o2); }   // honey-brown mitts
+      b.fillRect(5, y + 13, 2, 1, P.yl4); b.fillRect(9, y + 13, 2, 1, P.yl4);
+      // hood with a darker rim round the face opening
+      b.fillRect(3, y, 10, 8, P.yl2); b.set(3, y, 0); b.set(12, y, 0); b.hline(4, y + 1, 3, P.yl1);
+      b.hline(5, y + 1, 6, P.yl3); b.vline(4, y + 2, 5, P.yl3); b.vline(11, y + 2, 5, P.yl3); b.hline(5, y + 7, 6, P.yl3);
+      // face: spiky brown fringe, eyes, blush, a small smile
+      b.fillRect(5, y + 2, 6, 5, P.p1);
+      b.hline(5, y + 2, 6, P.o3); b.set(5, y + 3, P.o3); b.set(7, y + 3, P.o3); b.set(10, y + 3, P.o3); b.set(6, y + 2, P.o2);
+      b.set(6, y + 4, P.ink); b.set(9, y + 4, P.ink); b.set(5, y + 5, P.pk1); b.set(10, y + 5, P.pk1); b.hline(7, y + 6, 2, P.red2);
       // antennae with bobbles
-      b.set(6, y - 1, P.ink); b.set(5, y - 2, P.ink); b.set(9, y - 1, P.ink); b.set(10, y - 2, P.ink);
-      K.outer(b, S.omap([[[P.yl1, P.yl2, P.p1], P.yl4], [[P.w1, P.w2, P.white], P.w4]], 'ink'));
-      b.ellipse(8, 23, 3, 1, P.alpha ? P.g4 : P.g4, true);   // little shadow on the grass far below
+      b.set(5, y - 1, P.ink); b.set(4, y - 2, P.ink); b.set(10, y - 1, P.ink); b.set(11, y - 2, P.ink);
+      for (const kx of [2, 12]) { b.fillRect(kx, y - 4, 2, 2, P.yl4); b.set(kx, y - 4, P.yl2); }   // thin stalks, round honey knobs
+      K.outer(b, S.omap([[[P.yl1, P.yl2, P.yl3, P.yl4, P.p1, P.o2, P.o3, P.pk1, P.red2], P.o5], [[P.w1, P.w2, P.white], P.bl3]], 'ink'));
+      b.ellipse(8, 22, 3, 1, P.g4, true);   // little shadow on the grass below
       return b;
     },
   });

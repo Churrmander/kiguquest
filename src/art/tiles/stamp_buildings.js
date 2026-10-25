@@ -254,7 +254,7 @@
   });
 
   // ============================================================================================ dept_store (Crisp & Co.)
-  // The Society's department store: four storeys of starch-white stone that loom over the plaza. A rooftop sign spells the name,
+  // The Society's department store: three tall storeys of starch-white stone that loom over the plaza. A rooftop sign spells the name,
   // a Society banner hangs down the middle, and the display windows hold rows of identical white uniforms. Glass double doors.
   const LETTERS = {
     C: ['.###', '#...', '#...', '#...', '#...', '#...', '.###'],
@@ -268,17 +268,19 @@
     ' ': ['..', '..', '..', '..', '..', '..', '..'],
   };
   const textW = (str) => str.split('').reduce((n, ch) => n + LETTERS[ch][0].length + 1, -1);
-  function letters(b, x, y, str, c, sh) {
+  /** k = pixel scale (2 = 2 px strokes, for signs that must survive the 3D view's resampling) */
+  function letters(b, x, y, str, c, sh, k) {
+    k = k || 1;
     for (const ch of str) {
       const g = LETTERS[ch];
       for (let yy = 0; yy < g.length; yy++) for (let xx = 0; xx < g[yy].length; xx++) if (g[yy][xx] === '#') {
-        if (sh) b.set(x + xx + 1, y + yy + 1, sh);
-        b.set(x + xx, y + yy, c);
+        if (sh) b.fillRect(x + (xx + 1) * k - (k - 1), y + (yy + 1) * k - (k - 1), k, k, sh);
+        b.fillRect(x + xx * k, y + yy * k, k, k, c);
       }
-      x += g[0].length + 1;
+      x += (g[0].length + 1) * k;
     }
   }
-  const STORE_COLLAR = ['ooo...ooo', 'owwo.owwo', 'owwwowwwo', '.owwbwwo.', '..owbwo..', '...obo...'];
+  const STORE_MARK = ['..xxxxxxxx..', '.xxxxxxxxxx.', 'xxx..xx..xxx', 'xxx..xx..xxx', 'xxxxxxxxxxxx', 'xxx..xx..xxx', 'xxx..xx..xxx', '.xxxxxxxxxx.', '..xxxxxxxx..'];   // a four-hole button
   /** a uniform on a stand in a display window: identical white tunic, blue collar */
   function uniform(b, cx, y) {
     b.fillRect(cx - 3, y + 2, 7, 9, P.st0); b.fillRect(cx - 3, y + 2, 1, 9, P.st2); b.fillRect(cx + 3, y + 2, 1, 9, P.st3);
@@ -287,7 +289,7 @@
     b.vline(cx, y + 11, 4, P.n4); b.hline(cx - 2, y + 15, 5, P.n4);
   }
   const OPT_DEPT = (mode) => {
-    const r = K.ramp('navy');
+    const n = K.ramp('navy'), r = [n[1], n[2], n[3], n[4], n[5], P.ink];   // slate one step darker than the navy roofs
     return {
       w: 9, h: 6, rise: 56, ramp: r, roofTop: 18, roofBottom: 32, inset: 6, doorCol: 4, doorW: 30, doorH: 38,
       wall: { base: 'st1', hi: 'st0', sh: 'st2', dk: 'st3' }, trimBand: 'st4',
@@ -307,40 +309,48 @@
       windows: [],
       extras: (b, ctx) => {
         const { W, H, rb } = ctx;
-        // ---- storey cornices and pilasters
-        for (const cy of [rb + 1, 64, 94]) { b.fillRect(3, cy, W - 6, 3, P.st0); b.hline(3, cy + 3, W - 6, P.st3); b.hline(3, cy, W - 6, P.n0); }
+        // ---- clean flat stone: repaint the wall (the cottage builder speckles it) everywhere but the doorway
+        b.fillRect(3, rb + 1, W - 6, 93 - rb, P.st1);
+        b.fillRect(3, 94, 52, H - 97, P.st1); b.fillRect(89, 94, W - 92, H - 97, P.st1);
+        // ---- storey cornices (with a shadow line under each) and steel-blue pilasters
+        for (const cy of [rb + 1, 64]) { b.fillRect(3, cy, W - 6, 3, P.st2); b.hline(3, cy, W - 6, P.st0); b.hline(3, cy + 3, W - 6, P.st4); }
         for (const px of [3, 33, 107, 137]) {
-          const y1 = px === 3 || px === 137 ? H - 4 : 94;   // the corner piers run to the plinth (no cottage timber posts on this one)
-          b.fillRect(px, rb + 1, 4, y1 - rb, P.st2); b.vline(px, rb + 1, y1 - rb, P.st0); b.vline(px + 3, rb + 1, y1 - rb, P.st3);
+          const y1 = px === 3 || px === 137 ? H - 4 : 92;   // the corner piers run to the plinth (no cottage timber posts on this one)
+          b.fillRect(px, rb + 1, 4, y1 - rb, P.st3); b.vline(px, rb + 1, y1 - rb, P.st2); b.vline(px + 3, rb + 1, y1 - rb, P.st4);
         }
-        // ---- upper floors: two rows of tall windows either side of the banner
+        // ---- upper floors: two rows of steel-framed windows either side of the banner, blinds drawn to regulation heights
+        let k = 0;
         for (const wy of [42, 70]) for (const wx of [12, 40, 92, 120]) {
-          S.window(b, wx, wy, 13, 16);
-          b.fillRect(wx + 1, wy + 1, 11, 3, P.st0); for (let xx = wx + 1; xx < wx + 12; xx += 2) b.set(xx, wy + 4, P.st2);   // identical blinds, all at one height
+          b.fillRect(wx - 1, wy - 1, 15, 18, P.n4); b.fillRect(wx, wy, 13, 16, P.gl3);
+          for (let yy = 0; yy < 16; yy++) { const xx = 9 - yy; if (xx >= 0 && xx < 13) { b.set(wx + xx, wy + yy, P.gl2); if (xx + 1 < 13) b.set(wx + xx + 1, wy + yy, P.gl2); } }
+          b.vline(wx + 6, wy, 16, P.n3); b.hline(wx, wy + 8, 13, P.n3);
+          const blind = k++ % 2 ? 7 : 4;
+          b.fillRect(wx, wy, 13, blind, P.st0); b.hline(wx, wy + blind, 13, P.st3);
+          b.fillRect(wx - 2, wy + 17, 17, 1, P.n2); b.hline(wx - 2, wy + 18, 17, P.st4);   // sill + its shadow
         }
-        // ---- the Society banner down the middle (white, flat blue stripes, starch-collar crest)
+        // ---- the Society banner down the middle (white, flat blue stripes, a plain two-tone button crest that holds up in 3D)
         b.fillRect(56, rb + 2, 32, 2, P.n4); b.hline(56, rb + 2, 32, P.n2);
         b.fillRect(59, rb + 4, 26, 52, P.st5);
         b.fillRect(60, rb + 4, 24, 51, P.st0);
         for (let x = 62; x <= 82; x += 4) b.vline(x, rb + 4, 51, P.st2);
-        b.fillRect(63, rb + 12, 18, 16, P.st0); b.strokeRect(63, rb + 12, 18, 16, P.st4);
-        b.blit(K.spr(STORE_COLLAR, { o: P.st5, w: P.st0, b: P.st4 }), 68, rb + 17);
+        b.fillRect(63, rb + 12, 18, 16, P.st0); b.strokeRect(63, rb + 12, 18, 16, P.st5);
+        b.blit(K.spr(STORE_MARK, { x: P.st5 }), 65, rb + 15);
         for (let yy = 0; yy < 6; yy++) for (let xx = 0; xx < 6 - yy; xx++) { b.set(71 - xx, rb + 54 - yy, P.st1); b.set(72 + xx, rb + 54 - yy, P.st1); }   // swallow-tail hem
         b.hline(60, rb + 50, 24, P.st4);
-        // ---- name band over the ground floor
-        b.fillRect(8, 97, W - 16, 13, P.st5); b.fillRect(9, 98, W - 18, 11, P.st6); b.hline(9, 98, W - 18, P.st4);
+        // ---- name band over the ground floor: near-navy with a light rim, the name in 2 px strokes so it reads in the 3D view
+        b.fillRect(6, 92, W - 12, 20, P.st0); b.fillRect(7, 93, W - 14, 18, P.st6); b.hline(7, 93, W - 14, P.st5);
         const name = 'CRISP & CO.', tw = textW(name);
-        letters(b, (W - tw) >> 1, 100, name, P.st0, P.st4);
+        letters(b, (W - tw * 2) >> 1, 95, name, P.st0, P.st4, 2);
         // ---- ground floor: display windows with rows of identical uniforms under starch-blue awnings
         if (mode !== '3d') {
-          S.awning(b, 8, 111, 42, 4, P.st0, P.st4, [P.st0, P.st6, P.st5, P.st3]);
-          S.awning(b, 94, 111, 42, 4, P.st0, P.st4, [P.st0, P.st6, P.st5, P.st3]);
+          S.awning(b, 8, 112, 42, 3, P.st0, P.st4, [P.st0, P.st6, P.st5, P.st3]);
+          S.awning(b, 94, 112, 42, 3, P.st0, P.st4, [P.st0, P.st6, P.st5, P.st3]);
         }
         for (const wx of [10, 96]) {
           b.fillRect(wx - 1, 118, 40, 29, P.n5);
           b.fillRect(wx, 119, 38, 27, P.gl3);
           b.fillRect(wx, 119, 38, 2, P.gl1);
-          for (let k = 0; k < 4; k++) uniform(b, wx + 6 + k * 9, 126);
+          for (let q = 0; q < 4; q++) uniform(b, wx + 6 + q * 9, 126);
           for (let yy = 0; yy < 27; yy++) { const xx = 30 - yy; if (xx >= 0) b.set(wx + xx, 119 + yy, P.gl2); }
           b.fillRect(wx - 2, 146, 42, 2, P.n2);
         }
@@ -362,7 +372,7 @@
     w: 9, h: 6, rise: 56, solid: solidRows(9, 6, 4),
     paint: (variant, f, mode) => S.house(OPT_DEPT(mode)),
     vol: () => Object.assign(S.houseVol(OPT_DEPT('3d')), {
-      awnings: [8, 94].map((x0) => ({ x0, x1: x0 + 42, y: 111, h: 4, c1: P.st0, c2: P.st4, edge: [P.st0, P.st6, P.st5, P.st3] })),
+      awnings: [8, 94].map((x0) => ({ x0, x1: x0 + 42, y: 112, h: 3, c1: P.st0, c2: P.st4, edge: [P.st0, P.st6, P.st5, P.st3] })),
     }),
   });
 

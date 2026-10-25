@@ -25,7 +25,7 @@
   const f1 = floor({ id: 'crisp_1', name: 'Crisp & Co.  Linens', up: 'crisp_2', exit: { to: 'seamstead', door: 'crisp' }, carpet: [7, 8, 2, 3] });
   f1.stamp('display_case', 1, 7).stamp('display_case', 3, 7).stamp('display_case', 5, 7).stamp('display_case', 7, 7).stamp('display_case', 9, 7).stamp('display_case', 11, 7)
     .stamp('counter_l', 13, 7);
-  f1.stamp('cloth_shelf', 3, 0).stamp('cloth_shelf', 6, 0).stamp('cloth_shelf', 9, 0).stamp('counter_l', 3, 4).stamp('counter_m', 4, 4).stamp('counter_r', 5, 4)
+  f1.stamp('cloth_shelf', 3, 0, 'uniforms').stamp('cloth_shelf', 6, 0, 'uniforms').stamp('cloth_shelf', 9, 0, 'uniforms').stamp('counter_l', 3, 4).stamp('counter_m', 4, 4).stamp('counter_r', 5, 4)
     .stamp('mannequin', 9, 4, 'uniform').stamp('mannequin', 11, 4, 'uniform').stamp('plant', 1, 10).stamp('plant', 14, 10);
   f1.npc('clerk1', 4, 3, 'shopkeeper', 'down', null, { script: 'shopx', note: 'Crisp & Co. clerk (shared shop)' });
   f1.def.interact.push({ x: 3, y: 4, script: 'shopx' }, { x: 4, y: 4, script: 'shopx' }, { x: 5, y: 4, script: 'shopx' });
@@ -41,8 +41,8 @@
   for (let y = 2; y <= 8; y += 2) f2.stamp('mannequin', 4, y, 'uniform');                        // rail A: x4, y2-9 (gap at the bottom)
   for (let y = 3; y <= 9; y += 2) f2.stamp('mannequin', 8, y, 'uniform');                        // rail B: x8, y3-10 (gap at the top)
   f2.stamp('display_case', 9, 4).stamp('display_case', 11, 4).stamp('counter_l', 13, 4);   // the back-wall aisle (rows 2-3)
-  f2.stamp('table_l', 9, 6).stamp('table_l', 12, 6).stamp('cloth_shelf', 9, 8).stamp('cloth_shelf', 12, 8).stamp('plant', 11, 9).stamp('plant', 14, 10);
-  f2.stamp('cloth_shelf', 1, 0).stamp('cloth_shelf', 6, 0).stamp('cloth_shelf', 10, 0);
+  f2.stamp('fold_table', 9, 6).stamp('fold_table', 12, 6).stamp('cloth_shelf', 9, 8, 'uniforms').stamp('cloth_shelf', 12, 8, 'uniforms').stamp('plant', 11, 9).stamp('plant', 14, 10);
+  f2.stamp('cloth_shelf', 1, 0, 'uniforms').stamp('cloth_shelf', 6, 0, 'uniforms').stamp('cloth_shelf', 10, 0, 'uniforms');
   f2.trainer('c2_t1', 7, 9, 'grunt_m', 'left', { cls: 'Presser', name: 'Pinch', sight: 2, reward: 10, ai: 1, music: 'battle_society', team: [['mittsy', 17], ['silkie', 17]],
     intro: 'Our uniforms come in one size. We call it Fine.\\pYou are not Fine. Be Fine.', win: 'I am not feeling Fine either.', after: 'There is a hat department. It is very... flat.' });
   f2.trainer('c2_t2', 14, 4, 'pleat', 'up', { cls: 'Presser', name: 'Lint', sight: 2, reward: 10, ai: 1, music: 'battle_society', team: [['silkie', 17], ['sparkin|mittsy', 17]],
@@ -53,10 +53,11 @@
   // ------------------------------------------------------------------------------------------ 3F Hats (Staff Pass; Staff Only door to B1)
   // Hat stands split the floor; Brim watches the only way round them. A partition wall closes off the stockroom at the back, and its
   // one way in is a real pair of steel STAFF ONLY doors (they swing open for the Staff Pass); the stairs down to B1 are behind them.
-  const f3 = floor({ id: 'crisp_3', name: 'Crisp & Co.  Hats', down: 'crisp_2', legend: { D: 'floor_tile', X: 'wall_plaster' } });
+  const f3 = floor({ id: 'crisp_3', name: 'Crisp & Co.  Hats', down: 'crisp_2', carpet: [2, 3, 12, 1], legend: { D: 'floor_tile', X: 'wall_plaster' } });
   f3.rect(1, 7, 14, 2, 'W');                                                         // the stockroom partition
-  f3.stamp('display_case', 1, 5).stamp('mannequin', 3, 4).stamp('display_case', 4, 5).stamp('display_case', 6, 5).stamp('mannequin', 9, 4).stamp('display_case', 10, 5);   // hat stands, row 5 (x8 is Brim's post; x12-14 is the way round)
-  f3.stamp('cloth_shelf', 4, 0).stamp('cloth_shelf', 9, 0).stamp('plant', 14, 6).stamp('crate', 1, 9).stamp('crate', 2, 9).stamp('crate', 1, 10).stamp('crate', 10, 9);   // stockroom boxes
+  f3.stamp('display_case', 1, 5).stamp('mannequin', 3, 4, 'uniform').stamp('display_case', 4, 5).stamp('display_case', 6, 5).stamp('mannequin', 9, 4, 'uniform').stamp('display_case', 10, 5);   // hat stands, row 5 (x8 is Brim's post; x12-14 is the way round)
+  f3.stamp('cloth_shelf', 4, 0, 'uniforms').stamp('cloth_shelf', 9, 0, 'uniforms').stamp('plant', 14, 6).stamp('plant', 1, 6);
+  for (const x of [1, 2, 3, 4, 9, 10, 11, 12]) f3.stamp('crate', x, 9);   // stockroom boxes along the partition (row 10 stays clear to the stairs)
   f3.gate('lock', { cells: [[6, 7], [7, 7], [6, 8], [7, 8]], closed: 'X', open: 'D', note: 'Staff Only door (needs staff_pass)', flag: 'crisp_lock_open' });
   f3.stamp('staff_door', 6, 7, 'closed');
   L.variantByFlag(f3.def.stamps[f3.def.stamps.length - 1], 'crisp_lock_open', 'closed', 'open');

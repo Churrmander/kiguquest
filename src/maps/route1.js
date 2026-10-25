@@ -34,7 +34,7 @@
       { id: 'tree', x: 4, y: 35 }, { id: 'tree', x: 9, y: 28 }, { id: 'tree', x: 17, y: 32 }, { id: 'tree', x: 20, y: 20 }, { id: 'tree', x: 10, y: 17 },
       { id: 'tree', x: 3, y: 15 }, { id: 'tree', x: 19, y: 9 }, { id: 'tree', x: 8, y: 5 }, { id: 'tree', x: 16, y: 6 }, { id: 'tree', x: 4, y: 3 },
       { id: 'bush', x: 3, y: 30 }, { id: 'bush', x: 21, y: 35 }, { id: 'bush', x: 22, y: 26 }, { id: 'boulder', x: 10, y: 11 }, { id: 'rock', x: 18, y: 19 },
-      { id: 'flowerbed', x: 7, y: 7 }, { id: 'stump', x: 15, y: 3 },
+      { id: 'bush', x: 7, y: 7 }, { id: 'stump', x: 15, y: 3 },
     ],
     interact: [
       { x: 14, y: 37, say: 'MEADOW LANE\\nNorth: Basting Green, Thimble Village\\nSouth: Button Town' },

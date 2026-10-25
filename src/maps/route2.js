@@ -69,7 +69,7 @@
   // trees are 1x2 (top y, base y+1)
   M.trees([[3, 35], [6, 40], [20, 42], [19, 33], [4, 27], [20, 28], [18, 11], [8, 7], [20, 7], [12, 14], [3, 10], [16, 3]]);
   M.trees([[14, 32], [20, 36]], 'pine');
-  M.stamp('bush', 4, 36).stamp('bush', 18, 41).stamp('boulder', 17, 28).stamp('rock', 5, 42).stamp('stump', 3, 17).stamp('flowerbed', 20, 11).stamp('bench', 17, 16);
+  M.stamp('bush', 4, 36).stamp('bush', 18, 41).stamp('boulder', 17, 28).stamp('rock', 5, 42).stamp('stump', 3, 17).stamp('bush', 20, 11).stamp('bench', 17, 16);
 
   // ---- people and pickups
   M.spawn('south', 10, 43, 'up').spawn('north', 10, 2, 'down');

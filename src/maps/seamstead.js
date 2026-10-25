@@ -1,6 +1,6 @@
 /* Seamstead City — big, bright, jazzy. Salon 3 (Zip, Volt), Tea House, General Store, Crisp & Co. department store, two houses.
  * Story: Rival #3 on the plaza; the Salon is dark until the Crisp & Co. raid is over (crisp_done). East gate (Route 4) comes in Ch. 4.
- * Layout: Crisp & Co. (four storeys, `dept_store`) looms over the north side of the plaza, square in front of you as you walk in, so
+ * Layout: Crisp & Co. (three storeys, `dept_store`) looms over the north side of the plaza, square in front of you as you walk in, so
  * the city's story is the first thing you see. Zip's dark Salon faces the back street south of the plaza, its door held by Pressers. */
 (function (root) {
   'use strict';

@@ -103,10 +103,28 @@
     },
   });
 
+  /** one folded Crisp & Co. tunic, 8x5: starch white, a blue collar, a crisp pressed edge. Every one exactly the same. */
+  function foldedTunic(b, x, y) {
+    b.fillRect(x, y, 8, 5, P.p0); b.hline(x, y + 3, 8, P.p1); b.hline(x, y + 4, 8, P.n2);   // warm starch white, a crisp fold line
+    b.vline(x, y, 5, P.p1); b.vline(x + 7, y, 5, P.n2);
+    b.set(x + 2, y, P.st4); b.set(x + 5, y, P.st4); b.set(x + 3, y + 1, P.st5); b.set(x + 4, y + 1, P.st5);   // navy V collar
+    b.set(x + 4, y + 2, P.yl2);   // one gold button
+  }
+
   K.stamp('cloth_shelf', {
-    w: 2, h: 2,
-    paint: () => {
+    w: 2, h: 2, variants: ['bolts', 'uniforms'],
+    paint: (variant) => {
       const b = K.B(32, 32);
+      if (variant === 'uniforms') {
+        // steel store shelving, three boards of identical folded uniforms
+        b.fillRect(1, 1, 30, 31, P.n5);
+        for (const x of [1, 29]) { b.fillRect(x, 1, 2, 31, P.n2); b.vline(x + 1, 1, 31, P.n3); }
+        b.fillRect(1, 1, 30, 2, P.n2); b.hline(1, 1, 30, P.n1);
+        for (const y of [11, 21, 30]) { b.fillRect(1, y, 30, 2, P.n2); b.hline(1, y, 30, P.n1); b.hline(1, y + 1, 30, P.n3); }
+        for (const board of [11, 21, 30]) for (const x of [4, 12, 20]) { foldedTunic(b, x, board - 5); foldedTunic(b, x, board - 9); b.hline(x, board - 10, 8, P.n5); }
+        K.outer(b, S.omap([[[P.n0, P.n1, P.n2, P.n3, P.n4, P.n5, P.st4, P.st5, P.p0, P.p1, P.yl2], P.n6]], 'n6'));
+        return b;
+      }
       shelfFrame(b, 32, 32, P.p4, [11, 21, 30]);
       const names = ['red', 'pink', 'sky', 'yellow', 'mint', 'lilac', 'orange', 'blue', 'green'];
       for (let row = 0; row < 3; row++) for (let k = 0; k < 3; k++) {
@@ -174,6 +192,22 @@
       teacup(b, 14, 4);
       K.outer(b, WOOD_OUT);
       K.shadow(b, 16, 15, 14, 1);
+      return b;
+    },
+  });
+
+  K.stamp('fold_table', {
+    // a shop-floor display table: white top on steel legs, piled with identical folded uniforms
+    w: 3, h: 2, solid: ['###', '###'],
+    paint: () => {
+      const b = K.B(48, 32);
+      for (const x of [3, 43]) { b.fillRect(x, 24, 2, 6, P.n3); b.vline(x, 24, 6, P.n2); }
+      b.fillRect(1, 4, 46, 19, P.st5); b.hline(1, 4, 46, P.st4); b.vline(1, 4, 19, P.st4); b.fillRect(2, 22, 45, 1, P.st6);   // navy felt top
+      b.fillRect(1, 23, 46, 2, P.n3); b.hline(1, 24, 46, P.n4);
+      for (const [x, y] of [[5, 7], [16, 6], [25, 7], [35, 6], [9, 14], [20, 15], [30, 14]]) { foldedTunic(b, x, y + 2); foldedTunic(b, x, y); }
+      b.fillRect(41, 16, 3, 2, P.red2); b.set(42, 16, P.white);   // price card
+      K.outer(b, S.omap([[[P.n0, P.n1, P.n2, P.n3, P.n4, P.st4, P.st5, P.st6, P.p0, P.p1, P.yl2, P.red2, P.white], P.n6]], 'n6'));
+      K.shadow(b, 24, 30, 22, 1);
       return b;
     },
   });
@@ -582,7 +616,7 @@
   // frame and the leaves folded back against the jambs, so the floor shows through and you walk under the lintel. Not solid: the
   // map's gate terrain under it decides whether you can pass (see L.keyDoor).
   const PICO = {
-    S: ['###', '#..', '###', '..#', '###'], T: ['###', '.#.', '.#.', '.#.', '.#.'], A: ['###', '#.#', '###', '#.#', '#.#'],
+    S: ['###', '#..', '###', '..#', '###'], T: ['###', '.#.', '.#.', '.#.', '.#.'], A: ['.#.', '#.#', '###', '#.#', '#.#'],
     F: ['###', '#..', '##.', '#..', '#..'], O: ['###', '#.#', '#.#', '#.#', '###'], N: ['#.#', '###', '###', '#.#', '#.#'],
     L: ['#..', '#..', '#..', '#..', '###'], Y: ['#.#', '#.#', '.#.', '.#.', '.#.'], ' ': ['.', '.', '.', '.', '.'],
   };
@@ -598,24 +632,27 @@
       for (const x of [0, 29]) { b.fillRect(x, 0, 3, 32, P.n4); b.vline(x, 0, 32, P.n2); b.vline(x + 2, 6, 26, P.n5); }
       if (!open) {
         for (const x of [3, 16]) {
-          b.fillRect(x, 6, 13, 26, P.st3); b.vline(x, 6, 26, P.st2); b.vline(x + 12, 6, 26, P.st4);
+          b.fillRect(x, 6, 13, 26, P.n3); b.vline(x, 6, 26, P.n2); b.vline(x + 12, 6, 26, P.n4);   // brushed steel
+          b.hline(x + 1, 7, 11, P.n2);
           b.fillRect(x + 3, 9, 7, 6, P.gl3); b.strokeRect(x + 3, 9, 7, 6, P.n5); b.set(x + 4, 10, P.gl1);   // wired glass
           b.vline(x + 6, 10, 4, P.n4); b.hline(x + 4, 12, 5, P.n4);
-          b.fillRect(x + (x === 3 ? 9 : 1), 19, 3, 6, P.n1); b.vline(x + (x === 3 ? 9 : 1), 19, 6, P.n0);   // push plates
-          b.hline(x + 1, 30, 11, P.st5);
+          const px = x + (x === 3 ? 9 : 1);   // push plates
+          b.fillRect(px, 19, 3, 6, P.n1); b.vline(px, 19, 6, P.n0); b.hline(px, 25, 3, P.n5); b.vline(px + 3, 20, 6, P.n5);
+          b.hline(x + 1, 30, 11, P.n5);
         }
-        b.vline(15, 6, 26, P.n5); b.vline(16, 6, 26, P.st2);
+        b.vline(15, 6, 26, P.n5); b.vline(16, 6, 26, P.n2);
         // STAFF ONLY plate across both leaves
         b.fillRect(4, 16, 24, 1, P.n5); b.fillRect(5, 17, 22, 1, P.red2);
       } else {
         // the leaves folded back flat against the jambs, a strip of light on the floor
-        for (const x of [3, 26]) { b.fillRect(x, 6, 3, 26, P.st3); b.vline(x, 6, 26, x === 3 ? P.st2 : P.st4); }
-        b.fillRect(6, 6, 20, 2, P.n6);
+        b.fillRect(6, 6, 20, 26, P.n5); b.fillRect(6, 6, 20, 14, P.n6);   // the dark stockroom beyond
+        b.fillRect(8, 28, 16, 4, P.n4); b.hline(8, 28, 16, P.n3);   // light spilling across the threshold
+        for (const x of [3, 26]) { b.fillRect(x, 6, 3, 26, P.n3); b.vline(x, 6, 26, x === 3 ? P.n2 : P.n4); }
       }
       // name plate on the lintel
       b.fillRect(4, 0, 24, 6, P.red3); b.fillRect(5, 0, 22, 5, P.red2);
       pico(b, 6, 0, 'STAFF', P.white);
-      K.outer(b, S.omap([[[P.n0, P.n1, P.n2, P.n4], P.n6], [[P.st2, P.st3, P.st4], P.st6]], 'n6'));
+      K.outer(b, S.omap([[[P.n0, P.n1, P.n2, P.n3, P.n4], P.n6]], 'n6'));
       return b;
     },
   });

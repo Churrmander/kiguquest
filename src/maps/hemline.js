@@ -44,12 +44,13 @@
   M.stamp('bush', 25, 14).stamp('bush', 2, 18).stamp('boulder', 25, 20).stamp('rock', 10, 20);
   // ---- the honey: Bryn's apiary south of the back street, a stall on the main street, and wild Buzzlets about the flowers
   M.stamp('skep', 14, 20).stamp('skep', 16, 20).stamp('skep', 18, 20);
+  M.stamp('skep', 11, 8).stamp('skep', 14, 8);   // Bryn keeps a hive either side of the Salon path
   M.stamp('honey_stall', 14, 13);
   for (const [x, y] of [[15, 20], [17, 21], [9, 2], [18, 2], [16, 14], [6, 13]]) M.stamp('buzzlet_fly', x, y);
   const STALL = 'HEMLINE HONEY\\nFresh from Bryn\'s hives.\\pJars at the General Store. 250 each.';
   const SKEP = 'A straw skep, humming happily. Bryn\'s bees live here.\\nThey are very busy and very polite.';
   M.interact(14, 13, STALL, 'honey stall').interact(15, 13, STALL, 'honey stall');
-  M.interact(14, 20, SKEP, 'skep').interact(16, 20, SKEP, 'skep').interact(18, 20, SKEP, 'skep');
+  M.interact(14, 20, SKEP, 'skep').interact(16, 20, SKEP, 'skep').interact(18, 20, SKEP, 'skep').interact(11, 8, SKEP, 'skep').interact(14, 8, SKEP, 'skep');
 
   M.spawn('west', 2, 11, 'right').spawn('east', 25, 12, 'left');
   M.edge('w', 11, 12, 'spindle_shrine', 'east').edge('e', 11, 12, 'route3', 'west');
