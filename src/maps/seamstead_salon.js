@@ -30,9 +30,9 @@
     c.set('zip_lights');
     yield* c.sayT('script.zip.8', 'Zip: One more favour. Come up to the plaza with me?\\pI have a big switch with a sparkly handle, and something to say.');
     yield* c.ow.fadeOut(12);
-    c.ow.loadMap('seamstead', 17, 13, 'up', { noEnter: true });
+    c.ow.loadMap('seamstead', 18, 13, 'up', { noEnter: true });
     c.hideNpc('dark1'); c.hideNpc('dark2');
-    c.placeNpc('zip_s', 17, 12, 'down');
+    c.placeNpc('zip_s', 18, 12, 'down');
     c.showNpc('zip_s');
     yield* c.wait(8);
     yield* c.ow.fadeIn(12);

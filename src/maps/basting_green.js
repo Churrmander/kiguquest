@@ -57,7 +57,7 @@
       { id: 'cloth_line', x: 7, y: 15 }, { id: 'cloth_line', x: 16, y: 13 },
       { id: 'well', x: 8, y: 11 }, { id: 'bench', x: 4, y: 15 }, { id: 'lamp', x: 10, y: 10 }, { id: 'lamp', x: 13, y: 14 },
       { id: 'tree', x: 3, y: 12 }, { id: 'tree', x: 19, y: 18 }, { id: 'tree', x: 8, y: 18 }, { id: 'sign', x: 10, y: 17 }, { id: 'sign', x: 20, y: 10 },
-      { id: 'flowerbed', x: 17, y: 9 }, { id: 'barrel', x: 3, y: 10 },
+      { id: 'flowerbed', x: 8, y: 8 }, { id: 'barrel', x: 3, y: 10 },
     ],
     interact: [
       { x: 10, y: 17, say: 'BASTING GREEN\\nLoose stitches hold the best memories.' },

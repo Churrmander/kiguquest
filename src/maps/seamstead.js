@@ -114,9 +114,9 @@
   M.npc('peddler', 6, 16, 'gentleman', 'right', ['Ahoy! Mr. Sharp, humble peddler. Nothing suspicious at all.\\pThis cap? A sailor gave it to me. Or I gave it to a sailor.\\pKeep your eyes sharp, friend!']);
   M.npc('mimi_s', 19, 17, 'mimi', 'down', ['Mimi: A whole city and not one quiet corner!\\pI love it. Also I am nervous.\\pCrisp & Co. smells like fresh paper and nothing else. That is not normal.'], { hidden: false });
   // cast for the after-raid scene and Zip's lights (hidden until their scripts place them)
-  M.npc('rival_s', 17, 20, 'rival', 'up', ['{rival}: ...'], { hidden: true });
-  M.npc('serge_s', 18, 20, 'pleat', 'down', ['Serge: ...'], { hidden: true });
-  M.npc('zip_s', 17, 12, 'zip|rocker', 'down', ['Zip: Lamp by lamp!'], { hidden: true });
+  M.npc('rival_s', 12, 24, 'rival', 'up', ['{rival}: ...'], { hidden: true });
+  M.npc('serge_s', 13, 24, 'pleat', 'down', ['Serge: ...'], { hidden: true });
+  M.npc('zip_s', 18, 12, 'zip|rocker', 'down', ['Zip: Lamp by lamp!'], { hidden: true });
   M.pickup('cake', 31, 18, 'fancy_cake', 1);
   M.hidden('barrel_spool', 26, 10, 'silk_spool', 1, 'silk spool in a barrel');
   M.reg();
