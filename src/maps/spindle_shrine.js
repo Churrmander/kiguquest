@@ -43,11 +43,14 @@
       yield* c.sayT(k('welt.win'), 'Welt: I keep folding things. I cannot stop. Is that normal?');
     }
 
-    // Crease comes round the Everspool to see to the problem herself
+    // Crease comes round the Everspool to see to the problem herself. Three story fights in a row with no Tea House near:
+    // a breather first, so the Pleat is a fair test, not a war of attrition
+    NP.State.healAll();
+    yield* c.sayT(k('breather'), '{player}\'s Kigu shook out their costumes and took a deep breath.');
     yield* c.walk(crease, ['left', 1, 'down', 3, 'right', 1], 2);
     crease.dir = 'down';
     yield* c.sayT(k('crease.intro'), 'Crease: Two Pressers, pressed flat. Hm. Messy, but brisk. I like brisk.\\pLet me measure you myself.');
-    yield* c.trainerBattle({ cls: 'Pleat', name: 'Crease', look: 'pleat', ai: 2, reward: 14, music: 'battle_admin', team: L.team([['peepi', 13], ['silkie', 14], ['webbi', 15]]) });
+    yield* c.trainerBattle({ cls: 'Pleat', name: 'Crease', look: 'pleat', ai: 2, reward: 14, music: 'battle_admin', team: L.team([['peepi', 12], ['silkie', 13], ['webbi', 14]]) });
     c.music('society_theme');
     yield* c.sayT(k('crease.win.1'), 'Crease: One crease. ...One. On my own sleeve.\\pI hate that.');
     yield* c.walk(crease, ['left', 1, 'up', 2], 2);

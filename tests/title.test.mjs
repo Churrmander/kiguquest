@@ -22,10 +22,11 @@ t.tap('right'); t.tap('a'); t.tick(120);
 assert.ok(G.top() instanceof NP.Overworld, 'game starts: ' + G.top().constructor.name);
 assert.equal(NP.state.name, 'Dahlia');
 assert.equal(NP.state.gender, 'f');
-assert.equal(t.pos()[0], 'lab');
-// the opening cutscene plays to its end
+// a new game starts at home on the first morning: Mom wakes you and asks for help with the sheets
+assert.equal(t.pos()[0], 'player_house');
 assert.ok(t.mash(() => t.idle(), 4000));
-assert.deepEqual(t.pos(), ['lab', 5, 6]);
+assert.deepEqual(t.pos(), ['player_house', 6, 3]);
+assert.ok(NP.state.flags.woke, 'the wake-up scene played');
 // save from the start menu, then "Continue" on a new title screen restores it
 t.tap('start'); t.tick(6);
 assert.ok(t.ow.menus.length === 1, 'start menu open');
@@ -41,5 +42,5 @@ assert.equal(G.top().menus[0].items[0].label, 'Continue');
 t.tap('a'); t.tick(120);
 assert.ok(G.top() instanceof NP.Overworld);
 assert.equal(NP.state.name, 'Dahlia');
-assert.equal(JSON.stringify(NP.state.pos.map), '"lab"');
+assert.equal(JSON.stringify(NP.state.pos.map), '"player_house"');
 console.log('title ok');

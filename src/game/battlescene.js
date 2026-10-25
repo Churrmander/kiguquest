@@ -27,9 +27,9 @@
   /** Fight / Bag / Kigu / Run as four coloured buttons (2x2, same navigation as a 2-column ui.Menu). */
   class CommandMenu extends ui.Menu {
     draw(fb) {
-      const bw = 70, bh = 21;
+      const bw = 66, bh = 20; // 6px margins inside the 148x48 panel, so the right column and bottom row stay inside the frame
       this.items.forEach((it, i) => {
-        const x = this.x + 4 + (i % 2) * (bw + 4), y = this.y + 3 + Math.floor(i / 2) * (bh + 2);
+        const x = this.x + 6 + (i % 2) * (bw + 4), y = this.y + 3 + Math.floor(i / 2) * (bh + 2);
         const sel = i === this.cur, edge = button(fb, x, y + (sel ? 0 : 1), bw, bh, CMD_COL[it.label] || '#8088a0', sel);
         Font.draw(fb, it.label.toUpperCase(), x + (bw >> 1), y + 7 + (sel ? 0 : 1), { color: '#ffffff', shadow: edge, align: 'center' });
       });
@@ -38,20 +38,20 @@
   /** The move menu: four buttons in the move's type colour with name, type and PP. */
   class MoveMenu extends ui.Menu {
     draw(fb) {
-      const bw = 124, bh = 22;
+      const bw = 121, bh = 20; // 5px side margins and a 3px floor, so no button runs off the 256x48 panel
       for (let i = 0; i < 4; i++) {
-        const x = this.x + 3 + (i % 2) * (bw + 3), y = this.y + 2 + Math.floor(i / 2) * (bh + 1);
+        const x = this.x + 5 + (i % 2) * (bw + 4), y = this.y + 3 + Math.floor(i / 2) * (bh + 1);
         const it = this.items[i];
         if (!it) { button(fb, x, y + 1, bw, bh, '#5a6070', false, true); Font.draw(fb, '-', x + (bw >> 1), y + 8, { color: '#a0a8b8', shadow: null, align: 'center' }); continue; }
         const mv = NP.data.moves[it.m.id], t = NP.data.types[mv.type];
         const sel = i === this.cur, dy = sel ? 0 : 1;
         const edge = button(fb, x, y + dy, bw, bh, t ? t.color : '#8088a0', sel, it.disabled);
-        Font.draw(fb, mv.name, x + 6, y + 3 + dy, { color: '#ffffff', shadow: edge });
+        Font.draw(fb, mv.name, x + 6, y + 2 + dy, { color: '#ffffff', shadow: edge });
         const tn = t ? t.name.toUpperCase() : '???';
-        fb.fillRect(x + 5, y + 12 + dy, Font.width(tn) + 4, 8, C.shade(t ? t.color : '#8088a0', -0.45));
-        Font.draw(fb, tn, x + 7, y + 13 + dy, { color: '#ffffff', shadow: null });
+        fb.fillRect(x + 5, y + 11 + dy, Font.width(tn) + 4, 8, C.shade(t ? t.color : '#8088a0', -0.45));
+        Font.draw(fb, tn, x + 7, y + 12 + dy, { color: '#ffffff', shadow: null });
         const low = it.m.pp === 0 ? '#ff9a9a' : it.m.pp * 4 <= it.m.maxpp ? '#ffe070' : '#ffffff';
-        Font.draw(fb, 'PP ' + it.m.pp + '/' + it.m.maxpp, x + bw - 6, y + 12 + dy, { color: low, shadow: edge, align: 'right' });
+        Font.draw(fb, 'PP ' + it.m.pp + '/' + it.m.maxpp, x + bw - 6, y + 11 + dy, { color: low, shadow: edge, align: 'right' });
       }
     }
   }
@@ -578,7 +578,7 @@
       const b = this.battle;
       const legal = b.legalMoves(mon);
       const items = mon.moves.map((m, i) => ({ label: NP.data.moves[m.id].name, disabled: !legal[i].usable, m }));
-      const menu = new MoveMenu({ items, theme: 'battle', x: 0, y: NP.BOX_Y, w: NP.W, h: 48, cols: 2, colW: 127, cancelable: true, pad: 4 });
+      const menu = new MoveMenu({ items, theme: 'battle', x: 0, y: NP.BOX_Y, w: NP.W, h: 48, cols: 2, colW: 127, cancelable: true, pad: 4, cursor: mon.lastMoveIdx || 0 });
       // a usable-moves guard: struggle is handled by the core when none is usable
       this.moveMenuRef = menu;
       this.menus.push(menu);
@@ -587,6 +587,7 @@
       while (!(res = menu.update())) yield;
       this.menus = this.menus.filter((x) => x !== menu);
       this.moveMenuRef = null;
+      if (res.type === 'select') mon.lastMoveIdx = res.index;   // the cursor starts on it next turn, as in the 5th-gen games
       return res.type === 'select' ? res.index : -1;
     }
 

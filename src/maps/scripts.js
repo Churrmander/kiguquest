@@ -35,6 +35,23 @@
       yield* c.sayT('script.poppy.1', 'Poppy: Your threads are strong, {player}. Keep sewing your own path!');
       return;
     }
+    // pre-Salon quest (padding): her yarn basket first, then her two apprentices. Both are a few steps away and both are friendly,
+    // so it reads as "help Poppy get ready", not as a locked door
+    if (!c.flag('yarn_basket')) {
+      c.set('poppy_asked');
+      yield* c.sayT('script.poppy.basket.1', 'Poppy: Oh! A challenger! How lovely. Welcome, welcome!\\pBut, oh dear... I cannot find my yarn basket anywhere.');
+      yield* c.sayT('script.poppy.basket.2', 'Poppy: My Kigu will not battle without their cardigans done up.\\pI last saw a little Mittsy batting my yarn about outside.');
+      yield* c.sayT('script.poppy.basket.3', 'Poppy: Would you be a dear and look for it? Try the flowers by the road.');
+      return;
+    }
+    if (!c.flag('poppy_basket_back')) {
+      c.set('poppy_basket_back');
+      yield* c.sayT('script.poppy.basket.4', 'Poppy: My yarn basket! And not a single tangle. Thank you, {player}!\\pEvery stitch counts, and that was a very kind one.');
+    }
+    if (!c.flag('tr_salon_salon_t1') || !c.flag('tr_salon_salon_t2')) {
+      yield* c.sayT('script.poppy.apprentices', 'Poppy: Now, house rules! Ren and Noa battle every challenger first.\\pThey have been practising all week. Go on, show them your stitches!');
+      return;
+    }
     yield* c.sayT('script.poppy.2', "Poppy: Welcome to the Thimble Salon! I am Poppy, Master Tailor.\\pMy Fluff Kigu look soft. Every cuddle is a clever stitch.\\pShow me what you and your Kigu are made of!");
     const won = yield* c.trainerBattle({ cls: 'Master', name: 'Poppy', look: 'poppy', ai: 2, reward: 12, master: true, music: 'battle_master', team: c.map.def.poppyTeam });
     if (!won) { yield* c.sayT('script.poppy.3', 'Poppy: Oh dear! Rest your Kigu and come back. I will keep the kettle on.'); return; }
@@ -50,6 +67,11 @@
     yield* c.giveItem('cream_thread', 1);
     yield* c.sayT('script.poppy.8', "Poppy: One more thing. My old teacher stitched this.\\pSee the little 'D'? She knotted every hem twice.\\pI have not seen her in years...\\pIf you meet someone who sews like that, tell her the kettle is on.");
     yield* c.giveItem('d_handkerchief', 1);
+    // the Society's inspection waits right outside, so Poppy rests the team first (a forced fight on low HP is a gate, not a detour)
+    yield* c.sayT('script.poppy.tea', 'Poppy: Your Kigu look worn out after all that. Here, a cup of tea before you go.');
+    NP.snd.sfx('save');
+    NP.State.healAll();
+    yield* c.sayT('script.poppy.tea2', 'Your Kigu are feeling much better!');
     yield* c.sayT('script.poppy.9', 'Poppy: Now go and see Tsumugi, {player}. Every seam road has a story.\\pAnd remember: every stitch counts!');
   };
   S.bryn = function* (c) {

@@ -15,6 +15,10 @@
   M.rect(4, 4, 7, 4, ',').rect(13, 14, 8, 4, ',').rect(22, 3, 6, 4, ',').rect(3, 14, 6, 3, ',');
   M.rect(11, 8, 2, 1, 'f').rect(24, 13, 4, 1, 'f').rect(16, 6, 3, 1, 'f');
   M.rect(14, 3, 6, 1, 'F');
+  // the seam road is fenced from x12 east (the meadows open only at the Hemline end), so the walk to Seamstead passes every
+  // trainer's line of sight (owner's rule: no skipping); the gaps under the four trainers, the tea stand and the sign stay grass
+  M.rect(12, 9, 18, 1, 'F').rect(12, 12, 18, 1, 'F');
+  for (const [x, y] of [[13, 9], [18, 12], [25, 9], [27, 12], [15, 12], [28, 9], [18, 9], [19, 9]]) M.rect(x, y, 1, 1, '.');
   M.sign(3, 9, 'ROUTE 3  Seam Road\\nWest: Hemline\\nEast: Seamstead City', 'west sign');
   M.sign(28, 9, 'SEAMSTEAD CITY\\nThe city that never stops sewing.', 'east sign');
   M.trees([[2, 3], [12, 5], [20, 5], [29, 4], [10, 15], [22, 15], [29, 15], [6, 18], [16, 18], [26, 18]]);
@@ -24,13 +28,13 @@
 
   M.enc('grass', [['sparkin|mittsy', 13, 15, 25], ['kumi|nibbi', 13, 15, 20], ['peepi', 14, 16, 20], ['mittsy', 14, 16, 20], ['sparkin|mittsy', 15, 17, 10]]);
 
-  M.trainer('r3_t1', 9, 6, 'schoolgirl', 'down', { cls: 'Student', name: 'Bea', sight: 3, reward: 8, ai: 1, team: [['mittsy', 14], ['peepi', 14]],
+  M.trainer('r3_t1', 13, 9, 'schoolgirl', 'down', { cls: 'Student', name: 'Bea', sight: 2, reward: 8, ai: 1, team: [['mittsy', 14], ['peepi', 14]],
     intro: 'Pattern drafting class! Our teacher said to test everything. So: battle!', win: 'That was not on the syllabus.', after: 'Seamstead has a whole street for fabric. Whole. Street.' });
-  M.trainer('r3_t2', 18, 15, 'camper', 'left', { cls: 'Hiker', name: 'Rolf', sight: 4, reward: 9, ai: 1, team: [['kumi|nibbi', 15], ['kumi|nibbi', 15]],
+  M.trainer('r3_t2', 18, 12, 'camper', 'up', { cls: 'Hiker', name: 'Rolf', sight: 2, reward: 9, ai: 1, team: [['kumi|nibbi', 15], ['kumi|nibbi', 15]],
     intro: 'I walked from Hemline in a straight line. Mostly straight!', win: 'Crooked. I lost crooked.', after: 'The road bends once. Just once. I counted.' });
-  M.trainer('r3_t3', 25, 5, 'rocker', 'down', { cls: 'Busker', name: 'Jax', sight: 3, reward: 10, ai: 1, team: [['sparkin|mittsy', 16], ['sparkin|mittsy', 16]],
+  M.trainer('r3_t3', 25, 9, 'rocker', 'down', { cls: 'Busker', name: 'Jax', sight: 2, reward: 10, ai: 1, team: [['sparkin|mittsy', 16], ['sparkin|mittsy', 16]],
     intro: 'Seamstead rocks and so do I! Check my amp... oh, it is a sewing machine.', win: 'My ears are still ringing. Nice.', after: 'Zip taught me that tune. Zip teaches everyone that tune.' });
-  M.trainer('r3_t4', 6, 12, 'pleat', 'right', { cls: 'Presser', name: 'Hem', sight: 3, reward: 10, ai: 1, music: 'battle_society', team: [['mittsy', 15], ['silkie', 16]],
+  M.trainer('r3_t4', 27, 12, 'pleat', 'up', { cls: 'Presser', name: 'Hem', sight: 2, reward: 10, ai: 1, music: 'battle_society', team: [['mittsy', 15], ['silkie', 16]],
     intro: 'Seam road regulation: no dawdling, no wrinkles, no unauthorised skipping.', win: 'Skipping is... apparently unregulated. Noted.', after: 'I shall report the road is satisfactory. Barely.' });
 
   M.npc('baker', 24, 16, 'grunt_f', 'left', ['I wanted to be a baker. Warm bread, cold mornings.\\pThe Society says it is kinder than any bakery.\\pMadame Damask never raises her voice.\\pShe never has to. Everyone just gets... smoother.']);

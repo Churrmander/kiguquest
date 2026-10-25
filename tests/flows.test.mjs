@@ -119,7 +119,7 @@ console.log('>> a trainer spots you, walks up and fights (Lia on R');
   st.party[0].level = 20; st.party[0].exp = NP.expForLevel('mediumSlow', 20); st.party[0].hp = NP.Kigu.maxHp(st.party[0]);
   ow.loadMap('route1', 6, 31, 'up', { noEnter: true });
   t.tick(3);
-  t.go('up', 2);                              // now (6,29) -> Lia at (6,25) looks down 4 tiles
+  t.go('up', 6);                              // up the lane to (6,25): Lia at (8,25) looks left across it
   assert.ok(t.mash(() => st.flags.tr_route1_lia && t.idle(), 30000), 'lia beaten');
   assert.ok(st.money > 1000);
   // talking to her afterwards only chats

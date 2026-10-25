@@ -1,4 +1,4 @@
-/* Route 1 — Meadow Lane: Button Town -> Thimble Village. */
+/* Route 1 — Meadow Lane: Button Town -> Basting Green (then Thimble Village). */
 (function (root) {
   'use strict';
   const NP = root.NP, K = NP.mapkit;
@@ -14,9 +14,13 @@
   K.rect(g, 14, 30, 7, 5, ','); K.rect(g, 3, 22, 3, 6, ','); K.rect(g, 8, 23, 6, 5, ','); K.rect(g, 16, 12, 6, 6, ',');
   K.rect(g, 4, 8, 6, 6, ','); K.rect(g, 17, 22, 5, 3, ','); K.rect(g, 8, 33, 3, 3, ',');
   // flowers, pond, ledge
-  K.rect(g, 8, 36, 3, 1, 'f'); K.rect(g, 15, 26, 4, 1, 'f'); K.rect(g, 8, 13, 3, 2, 'f');
+  K.rect(g, 8, 36, 3, 1, 'f'); K.rect(g, 15, 25, 4, 1, 'f'); K.rect(g, 8, 13, 3, 2, 'f');
   K.rect(g, 18, 3, 5, 4, 'w');
   K.rect(g, 15, 28, 6, 1, 'd');
+  // one-way ledges (hop down, never climb) funnel the walk north through each trainer's line of sight (owner's rule: no skipping)
+  K.rect(g, 3, 26, 3, 1, 'd'); K.rect(g, 8, 26, 14, 1, 'd');   // Lia's row: only the lane at x6-7 goes north
+  K.rect(g, 3, 18, 11, 1, 'd'); K.rect(g, 16, 18, 7, 1, 'd');  // Bo's row: only the lane at x14-15
+  K.rect(g, 3, 6, 9, 1, 'd'); K.rect(g, 14, 6, 4, 1, 'd');     // Suzu's row: only the lane at x12-13
 
   const team = (list) => list.map(([sp, lv]) => ({ sp, lv }));
 
@@ -33,18 +37,18 @@
       { id: 'flowerbed', x: 7, y: 7 }, { id: 'stump', x: 15, y: 3 },
     ],
     interact: [
-      { x: 14, y: 37, say: 'MEADOW LANE\\nNorth: Thimble Village\\nSouth: Button Town' },
-      { x: 11, y: 3, say: 'THIMBLE VILLAGE is just ahead!\\nTea House - General Store - Salon' },
+      { x: 14, y: 37, say: 'MEADOW LANE\\nNorth: Basting Green, Thimble Village\\nSouth: Button Town' },
+      { x: 11, y: 3, say: 'BASTING GREEN is just ahead!\\nThimble Village lies beyond it.' },
     ],
     spawns: { south: { x: 12, y: 37, dir: 'up' }, north: { x: 12, y: 2, dir: 'down' } },
     warps: [
       { xs: [12, 13], y: 39, to: 'button_town', spawn: 'north', sound: 'none' },
-      { xs: [12, 13], y: 0, to: 'thimble', spawn: 'south', sound: 'none' },
+      { xs: [12, 13], y: 0, to: 'basting_green', spawn: 'south', sound: 'none' },
     ],
     encounters: {
       grass: [
-        { sp: 'peepi', min: 3, max: 5, w: 30 }, { sp: 'nibbi', min: 3, max: 5, w: 30 },
-        { sp: 'mittsy', min: 4, max: 6, w: 25 }, { sp: 'silkie', min: 4, max: 5, w: 10 },
+        { sp: 'peepi', min: 2, max: 4, w: 30 }, { sp: 'nibbi', min: 2, max: 4, w: 30 },   // a Lv5 starter should win these comfortably
+        { sp: 'mittsy', min: 3, max: 5, w: 25 }, { sp: 'silkie', min: 3, max: 4, w: 10 },
       ],
     },
     props: [
@@ -57,14 +61,14 @@
         say: ['Tall grass is where wild Kigu nap in the sun.\\pWeaken one first. A sleepy Kigu is much easier to befriend.'] },
       { id: 'kid', x: 9, y: 19, look: 'child_f', dir: 'down', move: 'turn',
         say: ['My Peepi learned Quick Dash!\\pShe always gets to the snack first.'] },
-      { id: 'lia', x: 6, y: 25, look: 'tailor_f', dir: 'down',
-        trainer: { cls: 'Tailor', name: 'Lia', sight: 4, reward: 6, ai: 0, team: team([['peepi', 3], ['nibbi', 3]]),
+      { id: 'lia', x: 8, y: 25, look: 'tailor_f', dir: 'left',
+        trainer: { cls: 'Tailor', name: 'Lia', sight: 2, reward: 6, ai: 0, team: team([['peepi', 3], ['nibbi', 3]]),
           intro: 'You have a Kigu too? Let us compare stitches!', win: 'Oh! Your seams are tighter than mine.', after: 'My Peepi has forgiven you. I am still working on it.' } },
-      { id: 'bo', x: 12, y: 25, look: 'net_kid', dir: 'left',
-        trainer: { cls: 'Net Kid', name: 'Bo', sight: 3, reward: 5, ai: 0, team: team([['mittsy', 4]]),
+      { id: 'bo', x: 13, y: 17, look: 'net_kid', dir: 'right',
+        trainer: { cls: 'Net Kid', name: 'Bo', sight: 2, reward: 5, ai: 0, team: team([['mittsy', 4]]),
           intro: 'I befriended my Mittsy in this very grass!', win: 'She fell asleep on me...', after: 'Mittsy naps a lot, but she naps fiercely.' } },
-      { id: 'suzu', x: 15, y: 15, look: 'picnicker', dir: 'left',
-        trainer: { cls: 'Picnicker', name: 'Suzu', sight: 4, reward: 6, ai: 1, team: team([['sprubun', 4], ['peepi', 4]]),
+      { id: 'suzu', x: 11, y: 5, look: 'picnicker', dir: 'right',
+        trainer: { cls: 'Picnicker', name: 'Suzu', sight: 2, reward: 6, ai: 1, team: team([['sprubun', 4], ['peepi', 4]]),
           intro: 'My picnic is over, so now it is battle time! Ready?', win: 'My sandwiches are going to get cold...', after: 'Thimble has a Salon with a Master Tailor. Pack a snack first.' } },
     ],
     triggers: [
@@ -78,12 +82,12 @@
           yield* c.say('{rival}: Hold it, {player}!');
           yield* c.walk(t, ['down', 3]);
           yield* c.face('player', 'up');
-          yield* c.say('{rival}: Did you think you could beat me to Thimble? Not a chance!\\pI trained all morning. Come on, show me what you have got!');
+          yield* c.say('{rival}: Thimble first, {player}? I have been practising since the kite.\\pCome on, then. Show me your best, and I will show you mine!');
           const rs = c.state.rivalStarter || 'ottopi';
-          const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'rival', ai: 2, reward: 10, team: team([[rs, 5], ['peepi', 4]]) });
+          const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'rival', ai: 2, reward: 10, canLose: true, team: team([[rs, 5], ['peepi', 4]]) });
           c.set('rival1_done');
-          if (won) yield* c.say('{rival}: Whoa! Okay, your Kigu are tougher than I thought.\\pNice one, {player}. I will catch up in Thimble Village!');
-          else yield* c.say('{rival}: Ha! Told you my Kigu were tough!\\pYou did great, though. Rest up, and we will go again soon.');
+          if (won) yield* c.say('{rival}: Whoa! Okay, your Kigu are tougher than I thought.\\pNice one, {player}. I will be right behind you in Thimble Village!');
+          else yield* c.say('{rival}: Told you they were tough! But you were brilliant, {player}.\\pRest up. Rematch at the Salon? Deal?');
           yield* c.walk(t, ['right', 3]);
           c.hideNpc('tomo_r1');
         },

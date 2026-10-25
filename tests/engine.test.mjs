@@ -62,7 +62,7 @@ const tm = new NP.TileMap(NP.maps.route1);
 assert.ok(tm.solid(0, 0), 'border trees are solid');
 assert.ok(!tm.solid(12, 35));
 assert.equal(tm.ledge(16, 28), 'down');
-assert.ok(tm.warpAt(12, 0) && tm.warpAt(12, 0).to === 'thimble');
+assert.ok(tm.warpAt(12, 0) && tm.warpAt(12, 0).to === 'basting_green');
 const bt = new NP.TileMap(NP.maps.button_town);
 assert.ok(bt.doors.lab && bt.warpAt(bt.doors.lab.x, bt.doors.lab.y).to === 'lab');
 assert.ok(bt.solid(bt.doors.lab.x - 1, bt.doors.lab.y), 'wall next to the door is solid');
