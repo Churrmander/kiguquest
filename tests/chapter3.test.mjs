@@ -79,6 +79,9 @@ press('crisp_done', 120000);
 assert.ok(st.flags.crisp_serge_done && st.flags.damask_tea && st.flags.crisp_done);
 
 // ---- the Volt Salon: the lane opens, the switch puzzle gates the stage
+// (the bot only ever picks its first move, and Crisp & Co. now forces every Presser fight, so it has run that move's PP dry:
+//  rest up as a player would at the Tea House across the avenue)
+NP.State.healAll();
 ow.loadMap('seamstead', 17, 24, 'up', { noEnter: false }); t.tick(10);
 assert.ok(t.ow.find('dark1').hidden && t.ow.find('dark2').hidden, 'Pressers leave the Salon door');
 ow.loadMap('seamstead_salon', 5, 12, 'up', { noEnter: true }); t.tick(5);
