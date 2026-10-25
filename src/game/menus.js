@@ -57,7 +57,9 @@
           } else {
             NP.snd.sfx('select');
             const battle = o.mode === 'battle';
-            const items = [battle ? 'Send Out' : 'Summary', battle ? 'Summary' : 'Switch', 'Cancel'];
+            const items = [battle ? 'Send Out' : 'Summary', battle ? 'Summary' : 'Switch'];
+            if (!battle && k.item) items.push('Take Item');
+            items.push('Cancel');
             const m = new ui.Menu({ items, theme: 'light', x: 160, y: 88, cursor: 0 });
             m.x = NP.W - m.w - 4; m.y = NP.H - 14 - m.h;
             const r = yield* this.menu(m);
@@ -71,6 +73,11 @@
               } else if (pick === 'Summary') {
                 const s = new SummaryScene(this.cur); NP.Game.push(s); yield* this.waitFor(() => s.finished);
                 this.cur = s.idx;
+              } else if (pick === 'Take Item') {
+                const d = NP.data.items[k.item];
+                NP.State.addItem(k.item, 1);
+                this.hint = 'Took the ' + (d ? d.name : 'item') + ' from ' + NP.Kigu.displayName(k) + '.';
+                k.item = null;
               } else if (pick === 'Switch') {
                 this.swap = this.cur; this.hint = 'Move to where?';
               }
@@ -222,10 +229,26 @@
       const o = this.o, u = it.d.use;
       const battle = o.mode === 'battle';
       this.note = '';
-      const m = new ui.Menu({ items: ['Use', 'Cancel'], theme: 'light', x: 160, y: 70 });
+      // held items (Expert Belt, type pins...) are given to a Kigu to hold instead of used
+      const give = !!(it.d.held && !u && !battle);
+      const m = new ui.Menu({ items: [give ? 'Give' : 'Use', 'Cancel'], theme: 'light', x: 160, y: 70 });
       m.x = NP.W - m.w - 4; m.y = 100;
       const r = yield* this.menu(m);
       if (r.type !== 'select' || r.index !== 0) return false;
+      if (give) {
+        const s = new PartyScene({ mode: 'pick', prompt: 'Give to which Kigu?' });
+        NP.Game.push(s);
+        yield* this.waitFor(() => s.finished);
+        const idx = s.result;
+        if (idx === null || idx === undefined || idx < 0) return false;
+        const k = NP.state.party[idx], old = k.item;
+        if (old) NP.State.addItem(old, 1);
+        k.item = it.id;
+        NP.State.removeItem(it.id, 1);
+        NP.snd.sfx('select');
+        this.note = K().displayName(k) + ' is now holding the ' + it.d.name + (old && NP.data.items[old] ? ', and the ' + NP.data.items[old].name + ' went back in the bag.' : '.');
+        return false;
+      }
       if (!u) { this.note = 'It cannot be used now.'; NP.snd.sfx('error'); return false; }
       if (u.spool) {
         if (!battle) { this.note = 'Not now. Spools are for wild Kigu.'; NP.snd.sfx('error'); return false; }

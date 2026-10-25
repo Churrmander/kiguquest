@@ -18,10 +18,10 @@
       const base = K.TYPE[id].color, r = ramp(base), light = luma(base) > 150;
       const St = R('steel');
       // needle (2px wide near the head, 1px toward the point)
-      b.line(12, 12, 2, 22, P(St.m));
-      b.line(13, 12, 3, 22, P(St.d1));
+      b.line(12, 12, 3, 21, P(St.m));
+      b.line(13, 12, 4, 21, P(St.d1));
       b.line(11, 12, 3, 20, P(St.l1));
-      b.set(1, 23, P(St.l2));
+      b.set(2, 22, P(St.l2));
       // thread wrapped once around the shaft
       H.pxs(b, [[8, 15], [7, 16], [9, 16]], r.m);
       // pearl head
