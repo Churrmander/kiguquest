@@ -42,6 +42,7 @@
   I('tailor_license', 'Tailor License', 'key', 0, 'Proof that you are an apprentice Tailor.');
   I('button_case', 'Button Case', 'key', 0, 'Holds the Buttons you earn.');
   I('town_map', 'Town Map', 'key', 0, 'A map of Tsumugi.');
+  I('exp_share', 'Exp Share', 'key', 0, 'Kigu who sit out a battle still get half its Exp. Points. Use it to switch it on or off.', { toggle: 'exp_share_off' }, F);
   I('cream_thread', 'Cream Thread', 'key', 0, "A spool of Poppy's cream cotton. A good seam begins with good thread.");
   I('d_handkerchief', "'D' Handkerchief", 'key', 0, "Hand-stitched, with a tidy 'D' in the corner. Every hem is knotted twice.");
   I('disc_snip', 'Disc: Snip', 'key', 0, 'Lets your Kigu snip small bushes. Face one and press A.');

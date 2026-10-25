@@ -27,11 +27,17 @@
       yield* c.sayT('route2.insp.win.4', 'Notch: Tailor? The Pleat is at the Spindle Shrine today.\\pIf you are going that way, do not fuss.\\pShe does not like fuss. Flat is fair!');
     }
     c.music('route_meadow');
-    c.set('route2_insp_done');
+    // they march off up the planks side by side, so the player sees why she is held for a moment. The done flag (which hides
+    // them through hideIf) is only set once they are out of sight, or they would vanish and the walk would play invisibly.
+    yield* c.face(a, 'up');
+    yield* c.face(b, 'up');
+    let bDone = false;
+    c.ow.spawn((function* () { yield* c.wait(6); yield* c.walk(b, ['up', 9]); bDone = true; })(), 'insp_b_walk');
     yield* c.walk(a, ['up', 9]);
+    while (!bDone) yield;
     c.hideNpc('insp_a');
-    yield* c.walk(b, ['up', 9]);
     c.hideNpc('insp_b');
+    c.set('route2_insp_done');
   }
 
   const M = L.map({
@@ -83,7 +89,7 @@
     intro: 'The fish are not biting today. You will have to do.', win: 'There goes my supper...', after: 'The river is calm today. The Pressers upstream keep checking its width.' });
   M.trainer('kei', 7, 16, 'net_kid', 'right', { cls: 'Net Kid', name: 'Kei', sight: 4, reward: 6, ai: 1, team: [['webbi', 9], ['silkie', 10]],
     intro: 'Shh! Do not scare the webs! ...Oh. Battle? Okay!', win: 'My webs got tangled up in yours.', after: 'There are webs in the woods. They are stronger than they look.' });
-  M.trainer('brock', 17, 9, 'hiker', 'left', { cls: 'Hiker', name: 'Brock', sight: 4, reward: 8, ai: 1, team: [['molli', 10], ['kumi', 10], ['molli', 11]],
+  M.trainer('brock', 17, 9, 'hiker', 'left', { cls: 'Hiker', name: 'Brock', sight: 4, reward: 9, ai: 0, team: [['molli', 9], ['kumi', 8]],   // was Molli 10 + Kumi 10 + Molli 11 with smart AI: a wall 1 Button in (round 4)
     intro: 'Good boots, good socks, good Kigu. That is the whole secret!', win: 'My boots are fine. It is my pride that has a blister.', after: 'The woods past this road are quiet. Quiet is a kind of trail marker.' });
 
   M.npc('picnic', 19, 16, 'lady', 'left', null, { script: 'restfree', note: 'free rest spot' });

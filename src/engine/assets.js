@@ -137,7 +137,13 @@
     });
   }
   /** 'rival' is a pseudo-look: the other protagonist (opposite-gender hero), so the rival always looks like the hero you did not pick */
-  const rl = (look) => (look === 'rival' ? (NP.State && NP.state ? NP.State.rivalLookId() : 'hero_m') : look);
+  const rl = (look) => {
+    if (look === 'rival') return NP.State && NP.state ? NP.State.rivalLookId() : 'hero_m';
+    // the heroes as little kids (tree house memory): the player's own look, or the other hero's, with '_kid'
+    if (look === 'player_kid') return (NP.State && NP.state ? NP.State.lookId() : 'hero_f') + '_kid';
+    if (look === 'rival_kid') return (NP.State && NP.state ? NP.State.rivalLookId() : 'hero_m') + '_kid';
+    return look;
+  };
   A.human = function (look) {
     look = rl(look);
     const h = art().human;

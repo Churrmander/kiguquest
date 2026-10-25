@@ -19,7 +19,7 @@
     const team = L.team([[L.evoStarter(c.state.rivalStarter), 18], [counter, 17], ['kumi|mittsy', 16], ['silkie', 16]]);
     const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'rival', ai: 2, reward: 18, canLose: true, team });
     c.set('rival3_done'); c.music('city_seamstead');
-    if (won) yield* c.sayT('seamstead.rival3.win', '{rival}: ...Okay, okay! You beat me fair and square.\\pYou are really good, {player}. Really good.\\pBut Crisp & Co. is not bad. You will see.\\pMy dad has been in the basement three weeks. He says it is "very restful".\\pHe sounds... far away, sometimes.');
+    if (won) yield* c.sayT('seamstead.rival3.win', '{rival}: ...Okay, okay! You beat me fair and square.\\pYou are really good, {player}. Really good.\\pBut Crisp & Co. is not bad. You will see.\\pMy dad has been in the basement three weeks. He says it is "very restful".\\pHe sounds... far away, sometimes.\\pOh, and Dad says the whole city\'s power runs through that basement now.\\pEven the Salon lights. Funny, right? They have been off all week.');
     else yield* c.sayT('seamstead.rival3.lose', '{rival}: I won? I actually won! Go rest your Kigu, {player}.\\pCome with me to Crisp & Co. one day. Dad would love to meet you.');
     c.set('crisp_open');
   }
@@ -108,14 +108,21 @@
   M.edge('w', 14, 15, 'route3', 'east');
 
   // the Salon is dark: two Presser "electricians" in white collars stand at its door until the raid is done
-  M.npc('dark1', 17, 23, 'grunt_m', 'up', ['Salon closed. The power is "being balanced".\\pBy the Society. For your benefit.\\pPlease move along. Gently.']);
-  M.npc('dark2', 16, 23, 'grunt_f', 'up', ['Zip has been very loud lately. Noise is a crease in the air.\\pWe are smoothing it out.']);
-  M.npc('jazz', 20, 13, 'rocker', 'left', ['Zip plays the main stage every night at seven!\\pAt least, she did. Last week the stage lights went out.\\pNobody knows why. Everyone is "so sure it is fine".'], { move: 'turn' });
+  // round 4: they say plainly where the switch is, so the player knows Crisp & Co. is the way to the Salon (gatekeeping rule)
+  M.npc('dark1', 17, 23, 'grunt_m', 'up', ['Salon closed. The power is "being balanced".\\pBy the Society. For your benefit.',
+    'The switch? It is in the Crisp & Co. basement, Tailor.\\pStaff only. Customers never go down there.\\pSo the lights stay off. Flat is fair!']);
+  M.npc('dark2', 16, 23, 'grunt_f', 'up', ['Zip has been very loud lately. Noise is a crease in the air.\\pWe are smoothing it out.',
+    'You want to see Zip? You will not get past us.\\pNot unless head office at Crisp & Co. says so.\\pAnd head office never says so.']);
+  M.npc('jazz', 20, 13, 'rocker', 'left', ['Zip plays the main stage every night at seven!\\pAt least, she did. Last week the stage lights went out.\\pThe same night Crisp & Co. ran a big white cable\\pfrom its basement to the Salon. Nobody thinks that is odd.'], { move: 'turn' });
   M.npc('shopper', 14, 13, 'lady', 'up', ['Crisp & Co. has a sale on everything that is flat.\\pIt is a very big sale.']);
   M.npc('kid', 26, 15, 'child_f', 'up', ['I went in with my mom. The Linens floor is so quiet.\\pThey said I could not run. I did not even want to run!\\p...I wanted to. A little.'], { move: 'wander', range: 1 });
   M.npc('old', 22, 9, 'elder_m', 'left', ['I used to sew in the basement of that store.\\pBack when it was the Seamstead Thimble Hall.\\pNow it is "storage". Nobody I know has come up sounding like themselves.']);
   M.npc('peddler', 6, 16, 'gentleman', 'right', ['Ahoy! Mr. Sharp, humble peddler. Nothing suspicious at all.\\pThis cap? A sailor gave it to me. Or I gave it to a sailor.\\pKeep your eyes sharp, friend!']);
-  M.npc('mimi_s', 19, 17, 'mimi', 'down', ['Mimi: A whole city and not one quiet corner!\\pI love it. Also I am nervous.\\pCrisp & Co. smells like fresh paper and nothing else. That is not normal.'], { hidden: false });
+  M.npc('mimi_s', 19, 17, 'mimi', 'down', null, { hidden: false, script: function* (c) {
+    if (c.flag('crisp_done')) { yield* c.sayT('seamstead.mimi_s.after', 'Mimi: The lights are back! Zip will be warming up.\\pGo on, {player}. I will cheer from the plaza.'); return; }
+    yield* c.sayT('seamstead.mimi_s.1', 'Mimi: A whole city and not one quiet corner!\\pI love it. Also I am nervous.\\pCrisp & Co. smells like fresh paper and nothing else. That is not normal.');
+    yield* c.sayT('seamstead.mimi_s.2', 'Mimi: Did you see the Salon? Dark, with two Pressers on the door.\\pThey said the switch is down in the Crisp & Co. basement.\\pIf we want Zip\'s lights back, that is where we have to go.');
+  } });
   // cast for the after-raid scene and Zip's lights (hidden until their scripts place them)
   M.npc('rival_s', 12, 24, 'rival', 'up', ['{rival}: ...'], { hidden: true });
   M.npc('serge_s', 13, 24, 'pleat', 'down', ['Serge: ...'], { hidden: true });

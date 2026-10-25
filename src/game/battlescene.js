@@ -133,6 +133,7 @@
         sides: [{ player: true, name: st.name, party: st.party }, foeSide],
         consume: (id) => NP.State.removeItem(id, 1),
         data: { badges: st.badges.filter(Boolean).length },
+        expShare: !!(st.bag && st.bag.exp_share) && !st.flags.exp_share_off,   // Prof. Bobbin's Exp Share (key item, on unless switched off)
       });
       if (cfg.trainer) this.foeTrainer = { x: this.bgInfo.enemyBase.x };
       this.hero = { x: this.bgInfo.playerBase.x };
@@ -239,6 +240,7 @@
         case 'status': yield* this.evStatus(e); break;
         case 'use': case 'item': yield* this.evUse(e); break;
         case 'exp': yield* this.evExp(e); break;
+        case 'expShare': yield* this.evExpShare(e); break;
         case 'spool': yield* this.evSpool(e); break;
         case 'miss': yield* this.evMiss(e); break;
         default: break;
@@ -435,6 +437,20 @@
       if (isActive) { d.maxhp = e.who.maxhp; d.hp = k.hp; }
     }
 
+    /** Exp Share: one line for the whole bench, then level-ups (and new moves) for whoever grew */
+    *evExpShare(e) {
+      NP.snd.sfx('exp');
+      yield* this.msgWait('The rest of your team gained Exp. Points thanks to the Exp Share!', { auto: 36 });
+      for (const r of e.list) {
+        for (const lv of r.levels) {
+          NP.snd.jingle('j_levelup');
+          yield* this.msgWait(r.who.name + ' grew to Lv' + lv.level + '!', { auto: 40 });
+          yield* this.showLevelBox(lv);
+          yield* this.learnMoves(r.who.kigu, r.who, lv.learn);
+        }
+      }
+    }
+
     *showLevelBox(lv) {
       this.levelBox = lv;
       yield* this.wait(10);
@@ -616,14 +632,8 @@
       } else if (b.winner === 1 && cfg.trainer && cfg.trainer.lose) {
         yield* this.msgWait(NP.fmt(cfg.trainer.lose), { auto: 50 });
       }
-      // evolutions
-      if (b.winner === 0 || b.caught) {
-        for (const k of st.party) {
-          if (k.hp <= 0) continue;
-          if (!k._lvl) continue;
-        }
-        yield* this.evolutions();
-      }
+      // evolutions wait: the overworld plays them once the trainer's parting words and the rest of the scene are over (round 4)
+      if (b.winner === 0 || b.caught) NP.state.evoPending = true;
       this.result = outcome;
       NP.Game.fadeTo(1, 14, '#000000');
       yield* this.wait(16);
@@ -635,18 +645,6 @@
       NP.snd.jingle(id, () => (done = true));
       let g = 0;
       while (!done && g++ < 240) yield;
-    }
-
-    *evolutions() {
-      const st = NP.state;
-      for (const k of st.party) {
-        if (k.hp <= 0) continue;
-        const ev = NP.Kigu.evolutionFor(k, { trigger: 'level' });
-        if (!ev) continue;
-        const s = new NP.EvolutionScene(k, ev.to);
-        NP.Game.push(s);
-        yield* this.waitFor(() => s.finished);
-      }
     }
 
     // -------------------------------------------------------------------------------------- drawing

@@ -237,4 +237,29 @@
       sections: { I, A, B, C },
     });
   }
+
+  // ---------------------------------------------------------------- evolution — a rising, wondering ostinato that keeps climbing
+  {
+    const cA = ['Am', 'F', 'G', 'E'];
+    const cB = ['Am', 'F', 'Dm', 'E7'];
+    // the bell ostinato: the same little figure, a step higher each bar
+    const bell = 'a4:2 e5:2 a5:2 e5:2 c6:2 e5:2 a5:2 e5:2 | a4:2 f5:2 a5:2 f5:2 c6:2 f5:2 a5:2 f5:2 | b4:2 g5:2 b5:2 g5:2 d6:2 g5:2 b5:2 g5:2 | b4:2 e5:2 g#5:2 e5:2 b5:2 e5:2 g#5:2 b5:2 |';
+    const melB = 'e5:8 a5:8 | c6:8 a5:8 | d6:8 f6:8 | e6:12 g#5:4 |';
+    const A = { bell, pad: block(cA, 3), bass: bass(cA, '1:4 1:4 1:4 1:4', 2), drm: d('g:2 g:2 w:4 g:2 g:2 w:4 |', 3) + ' g:2 g:2 g:2 g:2 t:2 t:2 y:4 |' };
+    const B = { bell, mel: melB, pad: block(cB, 3), bass: bass(cB, '1:2 1:2 8:2 1:2 1:2 8:2 5:2 1:2', 2), drm: d('k:4 g:2 g:2 s:4 g:2 g:2 |', 3) + ' k:2 g:2 s:2 s:2 t:2 t:2 y:4 |' };
+    // C: the bells drop out, strings and a soft pulse climb on their own; D: everything back, the flute an octave up
+    const cC = ['Fmaj7', 'G', 'Em7', 'Am'];
+    const melC = 'c5:4 e5:4 a5:8 | b4:4 d5:4 g5:8 | g4:4 b4:4 e5:4 g5:4 | a5:12 r:4 |';
+    const C = { mel: melC, harp: weave(cC, 3, [0, 1, 2, 3], 16, 2), pad: block(cC, 3), bass: bass(cC, '1:8 5:8', 2), drm: d('g:2 g:2 g:2 g:2 w:4 g:2 g:2 |', 3) + ' y:16 |' };
+    const D = { bell, mel: 'a5:8 c6:8 | f6:8 c6:8 | g6:8 b5:8 | g#5:4 b5:4 e6:8 |', pad: block(cA, 3), bass: bass(cA, '1:2 1:2 8:2 1:2 1:2 8:2 5:2 1:2', 2), drm: d('k:4 h:2 h:2 s:4 h:2 k:2 |', 3) + ' k:2 s:2 s:2 s:2 t:2 t:2 x:4 |' };
+    song('evolution', {
+      desc: 'Evolution: a bell ostinato that keeps climbing, with strings swelling underneath (glock, strings, flute, soft pulse).',
+      bpm: 132, loop: 0, order: 'A B C D A B C D B', gain: 0.9,
+      inst: {
+        bell: { patch: 'harp', vol: 8, pan: 0.2 }, mel: { patch: 'flute', vol: 10, tr: -12 }, harp: { patch: 'harp', vol: 5, arp: 2, pan: -0.3 }, pad: { patch: 'strings', vol: 5, env: 'swell' },
+        bass: { patch: 'synbass', vol: 9 }, drm: { patch: 'kit', vol: 6 },
+      },
+      sections: { A, B, C, D },
+    });
+  }
 })(typeof globalThis !== 'undefined' ? globalThis : window);
