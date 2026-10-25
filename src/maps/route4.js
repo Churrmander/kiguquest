@@ -1,7 +1,7 @@
 /* Route 4 — the Slab Road: Seamstead City -> Canvas Rest. The meadow dries out as you go east: grass, then scrub, then open dune
  * under sandstone shelves. Levels 20-24. First wild Jerbi, Cactli, Chippi and Sandkit.
- * Story: a line of Pressers carries pale stone slabs east on poles (a running joke, never a wall). Five Tailors, and a ledge run
- * that walks you past each of them. The hook for later: the slabs are going north "to the Works". */
+ * Story: a line of Pressers carries pale stone slabs east on poles (a running joke, never a wall). Five Tailors, and the road is
+ * fenced so the walk east passes each of them. The hook for later: the slabs are going north "to the Works". */
 (function (root) {
   'use strict';
   const NP = root.NP, L = NP.levels;
@@ -75,5 +75,8 @@
   M.pickup('cocoa', 35, 4, 'dune_cocoa', 1);
   M.pickup('spool', 6, 16, 'silk_spool', 2);
   M.hidden('boulder', 15, 8, 'sugar_cube', 1, 'hidden sugar cube in the boulder by the road');
+  // the Slab Road is fenced on both sides, so the walk east passes every Tailor (owner's rule: route trainers can't be skipped).
+  // One gate into each side: the north meadow at x10, the south meadow at x8 (the ledge gap)
+  L.fenceRoad(M, { h: true, lines: [9, 12], from: 2, to: W - 3, open: [[10, 9], [8, 12]] });
   M.reg();
 })(typeof globalThis !== 'undefined' ? globalThis : window);

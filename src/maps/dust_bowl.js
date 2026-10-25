@@ -86,9 +86,9 @@
   // Tumbi only rolls in on the wind: without the storm, her slot goes to Jerbi
   M.def.encFilter = (list) => (NP.Weather.now === 'dust' ? list : list.map((e) => (e.sp === 'tumbi' ? Object.assign({}, e, { sp: L.sp('jerbi|nibbi') }) : e)));
 
-  M.trainer('db_t1', 13, 16, 'hiker', 'up', { cls: 'Hiker', name: 'Burl', sight: 3, reward: 13, ai: 1, team: [['chippi|nibbi', 23], ['slatli|kumi', 24]],
+  M.trainer('db_t1', 11, 16, 'hiker', 'right', { cls: 'Hiker', name: 'Burl', sight: 3, reward: 13, ai: 1, team: [['chippi|nibbi', 23], ['slatli|kumi', 24]],
     intro: 'Can\'t see a thing in this storm! Oh, hello. Let\'s battle while we wait for it to clear.', win: 'I didn\'t see that coming. I didn\'t see anything coming.', after: 'Keep your scarf up. Sand in the teeth is no way to live.' });
-  M.trainer('db_t2', 27, 6, 'picnicker', 'down', { cls: 'Nomad', name: 'Sefa', sight: 3, reward: 14, ai: 2, team: [['sandkit|mittsy', 24], ['jerbi|nibbi', 24], ['cactli|nibbi', 25]],
+  M.trainer('db_t2', 25, 8, 'picnicker', 'right', { cls: 'Nomad', name: 'Sefa', sight: 3, reward: 14, ai: 2, team: [['sandkit|mittsy', 24], ['jerbi|nibbi', 24], ['cactli|nibbi', 25]],
     intro: 'You followed the red thread all the way here? Then you\'ve earned a proper battle!', win: 'The red thread brought you to a proper fight, and you\'re good at it.', after: 'My grandmother tied that red thread. She tied it twice, because the wind always pulls one knot loose.' });
   M.trainer('db_t3', 24, 20, 'camper', 'left', { cls: 'Camper', name: 'Dov', sight: 3, reward: 11, ai: 1, team: [['jerbi|nibbi', 23], ['tumbi|peepi', 24]],
     intro: 'Are you lost too? Battle me, and then we can be lost together!', win: 'Okay, I\'m still lost, but I\'m lost and impressed.', after: 'Someone told me to follow the blue thread. I think they were teasing me.' });

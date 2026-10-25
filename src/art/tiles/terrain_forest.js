@@ -130,9 +130,7 @@
   // ============================================================================================ fence
   // Wooden rail fence, connects N/E/S/W (ortho mask). Posts sit in the tile centre; rails run to connected sides.
   const FENCE_BG = (x, y) => col('g2');
-  K.terrain('fence', {
-    solid: true, autotile: true, maskMode: 'ortho', variants: 1, step: 'wood',
-    paint: (m) => {
+  const fencePaint = (m) => {
       const b = K.B(T, T);
       b.fillRect(0, 0, T, T, col('g2'));
       const N = !!(m & K.DIR.N), E = !!(m & K.DIR.E), S = !!(m & K.DIR.S), W = !!(m & K.DIR.W);
@@ -179,8 +177,15 @@
       b.hline(px, py - 1, 4, col('o5'));
       b.set(px - 1, py, col('o5')); b.set(px + 4, py, col('o5'));
       return b;
-    },
-  });
+    };
+  K.terrain('fence', { solid: true, autotile: true, maskMode: 'ortho', variants: 1, step: 'wood', group: 'fence', paint: fencePaint });
+  // the same fence standing in the desert: sand under it instead of grass (it joins up with the grass fence)
+  const SANDY = new Map([[col('g1'), col('#fff0c8')], [col('g2'), col('#f4dca4')], [col('g3'), col('#e2c084')], [col('g4'), col('#c8a068')]]);
+  K.terrain('fence_sand', { solid: true, autotile: true, maskMode: 'ortho', variants: 1, step: 'wood', group: 'fence', paint: (m) => {
+    const b = fencePaint(m);
+    for (let i = 0; i < b.u32.length; i++) { const c = SANDY.get(b.u32[i]); if (c !== undefined) b.u32[i] = c; }
+    return b;
+  } });
 
   // ============================================================================================ ledges (one-way hops)
   // A grassy step with a shaded earthen lip. ortho mask rounds the free ends of a row of ledge tiles.

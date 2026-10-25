@@ -125,9 +125,9 @@
   for (const [x, y] of [[16, 2], [17, 2], [18, 2], [21, 2], [22, 2], [23, 2]]) M2.stamp('static_jar', x, y);
   M2.sign(7, 2, 'NOTICE: Magnet stones are charged. Push them onto a snapped cable to join it.\\pIf a stone gets stuck, go back up the stairs and it will roll home.', 'puzzle sign');
   M2.enc('grass', [['glowli', 29, 31, 34], ['coili', 29, 31, 20], ['stalli', 29, 31, 18], ['nocti', 29, 30, 16], ['chippi|nibbi', 29, 30, 12]]);
-  M2.trainer('sc2_t1', 17, 5, 'grunt_m', 'left', { cls: 'Presser', name: 'Fuse', sight: 3, reward: 16, ai: 2, music: 'battle_society', team: [['coili', 30], ['vendi', 30]],
+  M2.trainer('sc2_t1', 15, 2, 'grunt_m', 'down', { cls: 'Presser', name: 'Fuse', sight: 3, reward: 16, ai: 2, music: 'battle_society', team: [['coili', 30], ['vendi', 30]],
     intro: 'Each jar holds one Glowli\'s worth of sparks, and we label every single one of them neatly.', win: 'You\'ve unlabelled me.', after: 'Calender says the Works needs a thousand jars. We\'ve done about forty. He\'s not happy about the schedule.' });
-  M2.trainer('sc2_t2', 14, 14, 'grunt_f', 'down', { cls: 'Presser', name: 'Volta', sight: 4, reward: 16, ai: 2, music: 'battle_society', team: [['glowli', 30], ['mittsy', 30], ['coili', 31]],
+  M2.trainer('sc2_t2', 12, 12, 'grunt_f', 'down', { cls: 'Presser', name: 'Volta', sight: 4, reward: 16, ai: 2, music: 'battle_society', team: [['glowli', 30], ['mittsy', 30], ['coili', 31]],
     intro: 'The fences are for your safety. Mostly for our safety. Okay, they\'re to keep you out.', win: 'Well, the fences didn\'t work, and neither did I.', after: 'If the boss asks, you came in through a door that was already open.' });
   M2.pickup('charm', 2, 8, 'volt_charm', 1, 'Volt Charm on the warm ledge');
   M2.pickup('spool', 23, 16, 'gold_spool', 1);
@@ -166,7 +166,7 @@
   M3.spawn('up', 4, 3, 'down');
   M3.def.stamps.push(L.variantByFlag({ id: 'siphon', x: 15, y: 3 }, 'shibuyarn_lights', 'on', 'off'));
   for (const [x, y] of [[13, 4], [13, 6], [19, 4], [19, 6], [13, 9], [20, 9]]) M3.def.stamps.push(L.variantByFlag({ id: 'static_jar', x, y }, 'shibuyarn_lights', 'full', 'empty'));
-  M3.trainer('sc3_t1', 11, 13, 'grunt_m', 'left', { cls: 'Presser', name: 'Ohm', sight: 4, reward: 17, ai: 2, music: 'battle_society', team: [['vendi', 31], ['glowli', 31], ['coili', 31]],
+  M3.trainer('sc3_t1', 11, 12, 'grunt_m', 'down', { cls: 'Presser', name: 'Ohm', sight: 2, reward: 17, ai: 2, music: 'battle_society', team: [['vendi', 31], ['glowli', 31], ['coili', 31]],
     intro: 'Mr. Calender is not to be disturbed. He\'s exactly three minutes into his quiet time.', win: 'Now he\'s four minutes in, and very disturbed.', after: 'If you\'re going in, knock first. Twice. He likes things in pairs.' });
   M3.npc('calender', 16, 6, 'pleat_calender', 'down', null, { hideIf: 'calender_done', script: calender, note: 'Pleat Calender, the cellar boss' });
   M3.trigger({ x: 14, y: 8, w: 5, h: 1, id: 'calender', when: (c) => !c.flag('calender_done'), script: calender });

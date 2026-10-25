@@ -43,9 +43,9 @@
   M.interact(8, 9, L.switchLever('fan2', 'fan2', 'A lever marked FANS. An arrow on it points east, then west.'), 'band 2 fan lever');
   M.stamp('plant', 1, 13).stamp('plant', 13, 13).stamp('plant', 1, 2).stamp('plant', 13, 2);
   M.sign(10, 13, 'KITE HILL SALON\\nMaster Tailor: Dart\\p"Lean into the wind, and it\'ll carry you."', 'salon sign');
-  M.trainer('ks_t1', 4, 8, 'pilot', 'right', { cls: 'Pilot', name: 'Wren', sight: 3, reward: 18, ai: 2, team: [['kamipi', 34], ['propi', 35]],
+  M.trainer('ks_t1', 11, 8, 'pilot', 'down', { cls: 'Pilot', name: 'Wren', sight: 1, reward: 18, ai: 2, team: [['kamipi', 34], ['propi', 35]],
     intro: 'Most people end up flat against the wall on their first try. You made it through!', win: 'You read the wind better than I do.', after: 'The second lot of fans blow east, but the gap is in the west. Dart thinks that\'s hilarious.' });
-  M.trainer('ks_t2', 10, 3, 'skier', 'down', { cls: 'Pilot', name: 'Lark', sight: 3, reward: 18, ai: 2, team: [['cloudli', 35], ['peepi', 35], ['kamipi', 36]],
+  M.trainer('ks_t2', 2, 3, 'skier', 'down', { cls: 'Pilot', name: 'Lark', sight: 1, reward: 18, ai: 2, team: [['cloudli', 35], ['peepi', 35], ['kamipi', 36]],
     intro: 'Dart\'s right behind me, and she\'s in a flying mood. You\'ll have to get past me first!', win: 'Whoosh. Off you go, then.', after: 'When Dart wins, she does a little spin. When she loses, she does a bigger spin.' });
   M.npc('dart', 7, 2, 'dart', 'down', null, { script: 'dart', note: 'Master Tailor Dart (Gale)' });
   M.reg();

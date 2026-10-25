@@ -55,7 +55,7 @@
   M.stamp('ore_cart', 5, 13, 'full').stamp('ore_cart', 6, 6, 'empty').stamp('slab_stack', 2, 9).stamp('plant', 1, 14);
   M.trainer('sal4_t1', 5, 11, 'hiker', 'left', { cls: 'Miner', name: 'Flint', sight: 4, reward: 12, ai: 2, team: [['chippi|nibbi', 26], ['slatli|kumi', 26]],
     intro: 'Gusset says I talk too much, so this is me talking less. Battle!', win: 'That\'s... a lot to take in. Quietly.', after: 'Points 2 is on the left wall. Don\'t tell Gusset I told you.' });
-  M.trainer('sal4_t2', 8, 6, 'hiker', 'down', { cls: 'Miner', name: 'Mica', sight: 1, reward: 13, ai: 2, team: [['pebbi|kumi', 26], ['chippi|nibbi', 27], ['sandkit|mittsy', 26]],
+  M.trainer('sal4_t2', 8, 5, 'hiker', 'down', { cls: 'Miner', name: 'Mica', sight: 2, reward: 13, ai: 2, team: [['pebbi|kumi', 26], ['chippi|nibbi', 27], ['sandkit|mittsy', 26]],
     intro: 'Gusset trained me himself, and he never said a word the whole time!', win: 'Huh. That\'s what losing sounds like.', after: 'Gusset stitched the flowers on his hard hat himself. Don\'t mention them. He goes red.' });
   M.npc('gusset', 4, 2, 'gusset|hiker', 'down', null, { script: 'gusset', note: 'Master Tailor #4 (Terra)' });
   M.reg().gussetTeam = L.team([['chippona|chippi', 27, { nature: 'adamant' }], ['slatina|slatli', 27], ['boulderina|pebbi', 29]]);

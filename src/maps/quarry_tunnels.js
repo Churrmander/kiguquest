@@ -40,7 +40,7 @@
   pebbi('peb3', 10, 7, 'down', 'This Pebbi keeps looking down the tunnel towards the deep end, where her leader is.\\pShe\'s waiting to be told it\'s safe.');
   M.trainer('qt_t1', 16, 16, 'grunt_m', 'down', { cls: 'Presser', name: 'Rivet', sight: 3, reward: 13, ai: 1, music: 'battle_society', team: [['chippi|nibbi', 24], ['slatli|kumi', 25]],
     intro: 'We dug a little fast, all right? The quota said "faster". You can\'t argue with a quota.', win: 'I can\'t argue with you either, apparently.', after: 'The big one\'s down on the next floor. She doesn\'t like Pressers. Honestly, I can\'t blame her.' });
-  M.trainer('qt_t2', 22, 5, 'grunt_f', 'left', { cls: 'Presser', name: 'Twill', sight: 4, reward: 13, ai: 1, music: 'battle_society', team: [['mittsy', 24], ['pebbi|kumi', 25], ['sandkit|mittsy', 25]],
+  M.trainer('qt_t2', 22, 4, 'grunt_f', 'down', { cls: 'Presser', name: 'Twill', sight: 2, reward: 13, ai: 1, music: 'battle_society', team: [['mittsy', 24], ['pebbi|kumi', 25], ['sandkit|mittsy', 25]],
     intro: 'This gallery is now Society property. Please exit flatly.', win: 'That was not a flat exit.', after: 'I signed the slab orders without reading them. I\'m starting to think I should have.' });
   M.trainer('qt_t3', 16, 9, 'hiker', 'down', { cls: 'Miner', name: 'Haddie', sight: 2, reward: 12, ai: 1, team: [['pebbi|kumi', 25], ['chippi|nibbi', 25]],
     intro: 'Gusset\'s my boss. If you\'re going down after him, you\'ll get past me first!', win: 'Fair enough. You\'ll do.', after: 'Tell Gusset we\'ve put the kettle on. He\'ll know what that means.' });
@@ -116,9 +116,9 @@
     yield* c.wildBattle('geodie', 26);
     c.hideNpc(n.id);
   } });
-  M2.trainer('qt2_t1', 7, 12, 'hiker', 'right', { cls: 'Miner', name: 'Clem', sight: 4, reward: 13, ai: 2, team: [['slatli|kumi', 26], ['pebbi|kumi', 26]],
+  M2.trainer('qt2_t1', 7, 12, 'hiker', 'left', { cls: 'Miner', name: 'Clem', sight: 4, reward: 13, ai: 2, team: [['slatli|kumi', 26], ['pebbi|kumi', 26]],
     intro: 'Down here, you either battle or you go back up. There\'s no third option!', win: 'All right, all right. Third option: you win.', after: 'The geodes down here grow in the darkest corners. Some say a Kigu sleeps in one.' });
-  M2.trainer('qt2_t2', 14, 16, 'grunt_m', 'up', { cls: 'Presser', name: 'Tack', sight: 3, reward: 14, ai: 2, music: 'battle_society', team: [['chippi|nibbi', 26], ['sandkit|mittsy', 26], ['silkie', 27]],
+  M2.trainer('qt2_t2', 14, 15, 'grunt_m', 'down', { cls: 'Presser', name: 'Tack', sight: 2, reward: 14, ai: 2, music: 'battle_society', team: [['chippi|nibbi', 26], ['sandkit|mittsy', 26], ['silkie', 27]],
     intro: 'I\'m not lost. I\'m conducting a survey of what lost feels like.', win: 'Survey complete. Lost feels like losing.', after: 'If you see my team on the way out, tell them I said I\'m fine. Firmly.' });
   M2.pickup('spool', 12, 9, 'silk_spool', 2);
   M2.pickup('candy', 25, 6, 'wish_candy', 1);

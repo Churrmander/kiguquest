@@ -42,6 +42,10 @@
   M.spawn('west', 2, 12, 'right').spawn('east', 47, 12, 'left').spawn('cave', 7, 5, 'down');
   M.edge('w', 11, 13, 'shibuyarn', 'east').edge('e', 11, 13, 'kite_hill', 'west');
 
+  // the ridge road is fenced on both sides, so the walk east passes every trainer (owner's rule: route trainers can't be skipped).
+  // One gate into each side: the open top at x13, and the lower slope at x31, where the north-blowing gust lifts you back through it
+  L.fenceRoad(M, { h: true, lines: [10, 14], from: 2, to: W - 3, open: [[13, 10], [31, 14]] });
+
   M.enc('grass', [['kamipi', 30, 32, 26], ['propi', 30, 32, 24], ['peepi', 30, 31, 16], ['larkette|peepi', 31, 33, 8], ['glowli', 30, 31, 10], ['cloudli', 31, 33, 16]]);
   // Cloudli only drift in on the rain: without it, her slot goes to Kamipi
   M.def.encFilter = (list) => (NP.Weather.now === 'rain' ? list : list.map((e) => (e.sp === 'cloudli' ? Object.assign({}, e, { sp: L.sp('kamipi') }) : e)));

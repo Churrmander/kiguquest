@@ -51,15 +51,15 @@
   // ---- the five Tailors
   M.trainer('r5_t1', 11, 40, 'scientist', 'right', { cls: 'Scientist', name: 'Volta', sight: 3, reward: 15, ai: 2, team: [['coili', 27], ['sparkin|mittsy', 28]],
     intro: 'The pylons are humming in B flat today. Usually it\'s C. Something is pulling on the line, and I want to know what!', win: 'You\'re a lot more charged up than the pylons.', after: 'The hum drops every time the city browns out. I\'ve written it all down. Nobody has asked to read it.' });
-  M.trainer('r5_t2', 7, 33, 'courier', 'down', { cls: 'Courier', name: 'Zed', sight: 4, reward: 14, ai: 1, team: [['jerbix|nibbi', 28], ['peepi', 27]],
+  M.trainer('r5_t2', 15, 36, 'courier', 'left', { cls: 'Courier', name: 'Zed', sight: 4, reward: 14, ai: 1, team: [['jerbix|nibbi', 28], ['peepi', 27]],
     intro: 'I deliver parcels to Shibuyarn faster than anyone! I also battle faster than anyone. Ready? Too slow!', win: 'Okay, you were faster. Please don\'t tell my boss.', after: 'The city\'s lifts stop when the lights go out. I\'ve carried a fridge up nine floors. Twice.' });
   M.trainer('r5_t3', 7, 22, 'twins_a', 'right', { cls: 'Twins', name: 'Ami', sight: 3, reward: 12, ai: 1, team: [['glowli', 27], ['peepi', 27]],
     intro: 'Ami: We\'re twins! I\'m the one who battles first, and Yumi battles second. That\'s the rule.', win: 'Ami: Yumi, it\'s your turn! Get them!', after: 'Ami: We tried battling at the same time once. It got very confusing.' });
   M.trainer('r5_t4', 11, 22, 'twins_b', 'left', { cls: 'Twins', name: 'Yumi', sight: 3, reward: 12, ai: 1, team: [['coili', 27], ['mittsy', 28]],
     intro: 'Yumi: Ami lost, so now it\'s me. I\'m the one who wins! ...Usually.', win: 'Yumi: Hmm. We both lost. That\'s also twins, I suppose.', after: 'Yumi: Ami gets the top bunk because she\'s three minutes older. Three minutes!' });
-  M.trainer('r5_t5', 15, 12, 'picnicker', 'down', { cls: 'Picnicker', name: 'Hana', sight: 3, reward: 13, ai: 1, team: [['peepi', 28], ['cactli|nibbi', 28], ['glowli', 29]],
+  M.trainer('r5_t5', 15, 10, 'picnicker', 'left', { cls: 'Picnicker', name: 'Hana', sight: 3, reward: 13, ai: 1, team: [['peepi', 28], ['cactli|nibbi', 28], ['glowli', 29]],
     intro: 'I came up here for the view of the city lights, but they keep going out! I\'ll battle you while I wait.', win: 'Okay, you can have my view. It\'s mostly dark anyway.', after: 'When the city lights up at night, it looks like someone spilled a jewellery box. I\'ve only seen it once.' });
-  M.trainer('r5_t6', 14, 26, 'grunt_m', 'up', { cls: 'Presser', name: 'Spool', sight: 3, reward: 15, ai: 2, music: 'battle_society', team: [['coili', 28], ['silkie', 28], ['chippi|nibbi', 29]],
+  M.trainer('r5_t6', 11, 27, 'grunt_m', 'left', { cls: 'Presser', name: 'Spool', sight: 3, reward: 15, ai: 2, music: 'battle_society', team: [['coili', 28], ['silkie', 28], ['chippi|nibbi', 29]],
     intro: 'This cable is for maintenance. It\'s very boring maintenance, so there\'s nothing to see here. Please stop looking at it.', win: 'Fine, look at the cable all you like. It\'s just a cable.', after: 'It runs to the city, then down under the station. Why does it go under the station? That\'s classified. Also I don\'t know.' });
 
   M.npc('lineman', 20, 31, 'hiker', 'left', ['These pylons carry the power to Shibuyarn, and the city uses every bit of it.\\pLately, someone has been tapping into the line before it gets there.']);
@@ -67,5 +67,13 @@
   M.pickup('cake', 3, 5, 'fancy_cake', 1);
   M.pickup('spool', 18, 41, 'silk_spool', 3);
   M.hidden('bush', 21, 13, 'wish_candy', 1, 'a Wish Candy in the bush by the meadow');
+  // the Pylon Road is fenced on both sides, so the walk north passes every trainer (owner's rule: route trainers can't be skipped).
+  // Each trainer stands in the fence line looking across the road. One gate into each side: the west meadow at (11,8), the east
+  // fields at (15,44)
+  const gates = [[11, 8], [15, 44]];
+  for (const [h, lines, from, to] of [[false, [11, 15], 2, 14], [true, [14], 8, 11], [false, [15], 15, 17], [true, [18], 11, 15],
+    [false, [7], 15, 33], [false, [11], 18, 29], [true, [29], 12, 15], [false, [15], 30, 32], [true, [33], 7, 11], [false, [11, 15], 33, 48]]) {
+    L.fenceRoad(M, { h, lines, from, to, open: gates });
+  }
   M.reg();
 })(typeof globalThis !== 'undefined' ? globalThis : window);
