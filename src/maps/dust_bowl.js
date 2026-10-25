@@ -72,8 +72,15 @@
   M.stamp('slab_cart', 20, 7, null, { showIf: 'cart_pushed' });
   M.npc('carter', 20, 12, 'grunt_m', 'left', null, { script: cart, note: 'stuck slab cart (help push or battle); with the cart he blocks the shelf' });
 
+  // the road north to Route 5 and Shibuyarn: three Pressers stand on it until the Terra Button (Gusset "has a word" with them)
+  M.rect(26, 0, 3, 3, 'u');
+  M.npc('north1', 26, 2, 'grunt_m', 'down', ['Presser: This road is for Works traffic only, by order of the Society.\\pIt\'s a very tidy road. We\'d hate for anyone to scuff it.'], { hideIf: 'badge4', note: 'blocks the north road until badge4' });
+  M.npc('north2', 28, 2, 'grunt_f', 'down', ['Presser: The foreman at the Quarry keeps glaring at us from his hut.\\pIf he comes over here, I\'m going to pretend I\'m a post.'], { hideIf: 'badge4', note: 'blocks the north road until badge4' });
+  M.npc('north3', 27, 2, 'grunt_m', 'down', ['Presser: North of here is Route 5, then the big city. You\'re not allowed up there yet.\\pYou\'re not allowed up there until somebody with a Button says so.'], { hideIf: 'badge4', note: 'blocks the north road until badge4' });
+  M.sign(29, 3, 'NORTH: ROUTE 5\\nPylon Road to Shibuyarn', 'north sign');
+  M.spawn('north', 27, 1, 'down');
   M.spawn('west', 1, 21, 'right').spawn('east', 38, 4, 'left').spawn('south', 33, 28, 'up');
-  M.edge('w', 20, 22, 'canvas_rest', 'east').edge('e', 3, 5, 'bobbin_quarry', 'west').edge('s', 32, 35, 'dust_oasis', 'north');
+  M.edge('n', 26, 28, 'route5', 'south').edge('w', 20, 22, 'canvas_rest', 'east').edge('e', 3, 5, 'bobbin_quarry', 'west').edge('s', 32, 35, 'dust_oasis', 'north');
 
   M.enc('grass', [['jerbi|nibbi', 22, 25, 22], ['sandkit|mittsy', 22, 25, 20], ['skorpi|peepi', 23, 25, 18], ['cactli|nibbi', 23, 25, 16], ['chippi|nibbi', 22, 24, 12], ['jerbix|nibbi', 25, 26, 4], ['tumbi|peepi', 23, 25, 8]]);
   // Tumbi only rolls in on the wind: without the storm, her slot goes to Jerbi

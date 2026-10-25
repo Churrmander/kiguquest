@@ -218,14 +218,19 @@
   // `shove: true` makes it pushable with Disc: Shove (overworld.js). It sits on fresh scrape marks and has a crack across it,
   // so it reads as different from the fixed `boulder`.
   K.stamp('shove_rock', {
-    w: 1, h: 1, shove: true, variants: ['desert', 'cave'],
+    w: 1, h: 1, shove: true, variants: ['desert', 'cave', 'magnet'],
     paint: (v) => {
       const b = K.B(16, 16);
-      const tn = v === 'cave' ? K.tn('cv0', 'cv1', 'cv2', 'cv3', 'cv4') : K.tn('ss0', 'ss1', 'ss2', 'ss3', 'ss4');
+      // `magnet`: a charged lodestone from the Spark Cellar, slate blue with a yellow bolt where it hums
+      const tn = v === 'cave' ? K.tn('cv0', 'cv1', 'cv2', 'cv3', 'cv4') : v === 'magnet' ? K.tn('st0', 'st1', 'st2', 'st3', 'st4') : K.tn('ss0', 'ss1', 'ss2', 'ss3', 'ss4');
       K.blob(b, 8, 8, 7, 6, tn);
-      b.line(4, 6, 8, 9, tn[4]); b.line(8, 9, 11, 7, tn[4]); b.line(8, 10, 9, 12, tn[3]);
+      if (v === 'magnet') {
+        const y = col('#f4d040'), yd = col('#c89a20');
+        for (const [x, yy] of [[9, 4], [8, 5], [7, 6], [8, 7], [9, 7], [8, 8], [7, 9], [6, 10]]) b.set(x, yy, y);
+        b.set(10, 4, yd); b.set(9, 8, yd); b.set(7, 10, yd);
+      } else { b.line(4, 6, 8, 9, tn[4]); b.line(8, 9, 11, 7, tn[4]); b.line(8, 10, 9, 12, tn[3]); }
       b.set(5, 4, tn[0]); b.set(6, 4, tn[0]); b.set(5, 5, tn[0]);
-      K.outer(b, S.omap([[tn, v === 'cave' ? P.cv6 : P.ss6]], 'ink'));
+      K.outer(b, S.omap([[tn, v === 'cave' ? P.cv6 : v === 'magnet' ? P.st6 : P.ss6]], 'ink'));
       b.hline(1, 15, 3, P.s3); b.hline(12, 15, 3, P.s3);               // scrape marks either side
       K.shadow(b, 8, 14, 7, 2);
       return b;

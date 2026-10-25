@@ -277,4 +277,120 @@
       return b;
     },
   });
+
+  // ============================================================================================ claw machine
+  // a glass prize booth with a claw on a gantry and a heap of plushes; the frame lights up pink when the power is on
+  K.stamp('claw_machine', {
+    w: 1, h: 2, over: 1, solid: ['.', '#'], variants: ['on', 'off'],
+    paint: (variant) => {
+      const on = variant !== 'off';
+      const b = K.B(T, 32);
+      const fr = on ? col('#ff7ae0') : col('#8a6a98'), frd = on ? col('#c04aa8') : col('#5a4a68');
+      b.fillRect(1, 2, 14, 29, frd); b.fillRect(1, 2, 14, 3, fr); b.vline(1, 2, 29, fr);
+      b.fillRect(3, 6, 10, 13, on ? col('#d8f0ff') : col('#7a8494'));
+      b.hline(3, 7, 10, P.n3); b.vline(8, 7, 4, P.n2); b.hline(7, 11, 3, P.n2); b.set(6, 12, P.n2); b.set(10, 12, P.n2);
+      const plush = ['#f4a8c8', '#8ad8e8', '#f4d84a', '#a8e0a0'];
+      for (let q = 0; q < 4; q++) { b.fillRect(3 + q * 2 + (q & 1), 15 - (q & 1), 3, 4, col(plush[q])); b.set(4 + q * 2 + (q & 1), 15 - (q & 1), P.n6); }
+      b.fillRect(3, 21, 10, 5, P.n5); b.fillRect(5, 22, 2, 2, col('#e05450')); b.set(10, 22, P.n2); b.vline(10, 23, 2, P.n3);
+      b.fillRect(9, 27, 4, 3, P.n6);
+      K.outer(b, S.omap([], 'n6'));
+      return b;
+    },
+  });
+
+  // ============================================================================================ the Spark Cellar
+  // `socket`: cave floor where an old cable has snapped; the two ends spit sparks across the gap (push a magnet stone onto it to
+  // join them). `cable` / `cable_v`: cave floor with a fat black cable running east-west / north-south. `arc_gate`: a crackling
+  // arc of static between two posts (solid), the Pressers' siphon fence; animated.
+  const caveFloor = (v) => (NP.terrain && NP.terrain.cave_floor ? NP.terrain.cave_floor.draw(0, 0, v || 0).clone() : K.B(T, T));
+  const CB = ['#2a2a34', '#4a4a58', '#141418'].map(col);
+  const SPK = ['#fff8c0', '#f4d040'].map(col);
+  function cableRun(b, vert) {
+    for (let i = 0; i < 16; i++) {
+      const a = vert ? [7, i] : [i, 7], c2 = vert ? [8, i] : [i, 8], d = vert ? [9, i] : [i, 9];
+      b.set(a[0], a[1], CB[1]); b.set(c2[0], c2[1], CB[0]); b.set(d[0], d[1], CB[2]);
+    }
+  }
+  K.terrain('cable', { variants: 1, step: 'stone', paint: () => { const b = caveFloor(1); cableRun(b, false); return b; } });
+  K.terrain('cable_v', { variants: 1, step: 'stone', paint: () => { const b = caveFloor(1); cableRun(b, true); return b; } });
+  K.terrain('socket', {
+    variants: 1, frames: 2, animSpeed: 8, step: 'stone',
+    paint: (m, f) => {
+      const b = caveFloor(0);
+      for (const [x0, x1] of [[0, 4], [12, 16]]) for (let x = x0; x < x1; x++) { b.set(x, 7, CB[1]); b.set(x, 8, CB[0]); b.set(x, 9, CB[2]); }
+      b.fillRect(4, 6, 1, 5, col('#c87a40')); b.fillRect(11, 6, 1, 5, col('#c87a40'));     // bare copper ends
+      const sp = f ? [[6, 6], [7, 8], [9, 7], [10, 9]] : [[5, 9], [7, 7], [8, 9], [10, 6]];
+      for (const [x, y] of sp) { b.set(x, y, SPK[0]); b.set(x + 1, y, SPK[1]); }
+      return b;
+    },
+  });
+  K.terrain('arc_gate', {
+    solid: true, variants: 1, frames: 2, animSpeed: 6, step: 'stone',
+    paint: (m, f) => {
+      const b = caveFloor(2);
+      for (const x of [1, 13]) { b.fillRect(x, 2, 2, 13, P.n3); b.vline(x, 2, 13, P.n1); b.fillRect(x - 1, 1, 4, 2, col('#f4d040')); }
+      let y = 4 + f;
+      for (let x = 3; x < 13; x++) { y = Math.max(3, Math.min(12, y + ((K.h32(x, f, 5) % 3) - 1))); b.set(x, y, SPK[0]); b.set(x, y + 1, SPK[1]); }
+      let y2 = 9 - f;
+      for (let x = 3; x < 13; x++) { y2 = Math.max(3, Math.min(13, y2 + ((K.h32(x, f, 9) % 3) - 1))); b.set(x, y2, SPK[1]); }
+      return b;
+    },
+  });
+
+  // `static_jar` (1x1): a big glass jar of bottled static, stoppered and labelled with a Society tag. Variant `empty` once it's let go.
+  K.stamp('static_jar', {
+    w: 1, h: 1, solid: ['#'], variants: ['full', 'empty'], frames: 2, animSpeed: 10,
+    paint: (variant, frame) => {
+      const b = K.B(T, T);
+      b.fillRect(3, 4, 10, 11, col('#a8d8e8')); b.vline(3, 4, 11, col('#e8f8ff')); b.vline(12, 4, 11, col('#6898b0'));
+      b.fillRect(5, 1, 6, 3, P.o3); b.hline(5, 1, 6, P.o1);
+      if (variant !== 'empty') {
+        b.fillRect(4, 6, 8, 8, col('#f4e070'));
+        const pts = frame ? [[5, 8], [6, 9], [8, 8], [9, 10], [10, 12]] : [[5, 11], [7, 10], [8, 12], [10, 8], [6, 7]];
+        for (const [x, y] of pts) b.set(x, y, P.p0);
+      }
+      b.fillRect(6, 9, 4, 3, P.p0); b.hline(6, 10, 4, col('#3a60b0'));    // the Society tag
+      K.outer(b, S.omap([], 'n6'));
+      K.shadow(b, 8, 15, 6, 1);
+      return b;
+    },
+  });
+  // `siphon` (3x2): the Pressers' static siphon, a riveted tank on legs with pipes running off to the jars; a dial and a red lamp.
+  // Variant `off` after it's shut down (lamp dark, gauge at zero).
+  K.stamp('siphon', {
+    w: 3, h: 2, solid: ['###', '###'], variants: ['on', 'off'], frames: 2, animSpeed: 12,
+    paint: (variant, frame) => {
+      const on = variant !== 'off';
+      const b = K.B(48, 32);
+      const st = ['#e8ecf4', '#c8d0e0', '#98a4bc', '#6c7890'].map(col);
+      b.fillRect(8, 2, 32, 24, st[1]); b.vline(8, 2, 24, st[0]); b.vline(39, 2, 24, st[2]); b.hline(8, 2, 32, st[0]); b.hline(8, 25, 32, st[3]);
+      for (let x = 11; x < 38; x += 6) { b.set(x, 4, st[3]); b.set(x, 23, st[3]); }
+      b.fillRect(10, 26, 3, 6, st[3]); b.fillRect(35, 26, 3, 6, st[3]);
+      // the gauge
+      b.circle(18, 13, 5, P.n5, true); b.circle(18, 13, 4, P.p0, true);
+      if (on) b.line(18, 13, 21, 10, col('#e05450')); else b.line(18, 13, 15, 15, col('#e05450'));
+      // a window into the tank, glowing while it pulls
+      b.fillRect(26, 8, 9, 10, P.n5); b.fillRect(27, 9, 7, 8, on ? col(frame ? '#fff090' : '#f4d040') : col('#4a5060'));
+      b.fillRect(22, 4, 3, 3, on ? col('#ff5a4a') : P.n4);                  // the lamp
+      // pipes off both sides
+      b.fillRect(0, 12, 8, 4, st[2]); b.hline(0, 12, 8, st[0]); b.fillRect(40, 12, 8, 4, st[2]); b.hline(40, 12, 8, st[0]);
+      // the Society's blue band
+      b.fillRect(9, 20, 30, 2, col('#3a60b0'));
+      K.outer(b, S.omap([], 'n6'));
+      return b;
+    },
+  });
+
+  // a back alley between buildings: dark, damp asphalt with cardboard and litter. Wild city Kigu live here (encounter 'grass').
+  K.terrain('alley', {
+    variants: 3, step: 'stone', encounter: 'grass',
+    paint: (m, f, v) => {
+      const b = K.B(T, T);
+      for (let i = 0; i < 256; i++) { const x = i & 15, y = i >> 4, n = K.hf(x, y, 911 + v); b.u32[i] = n > 0.88 ? AS[2] : n < 0.3 ? AS[3] : col('#3c3e48'); }
+      if (v === 0) { b.fillRect(3, 4, 7, 5, col('#b08a5a')); b.hline(3, 4, 7, col('#d0aa78')); b.vline(9, 4, 5, col('#80603c')); b.hline(4, 6, 5, col('#80603c')); }
+      if (v === 1) { b.fillRect(9, 9, 3, 4, col('#e05450')); b.hline(9, 9, 3, col('#ff8a70')); b.set(4, 12, col('#f4d84a')); b.set(5, 12, col('#f4d84a')); }
+      if (v === 2) { for (let x = 2; x < 14; x++) b.set(x, 7 + ((x >> 2) & 1), col('#2a6a8a')); }
+      return b;
+    },
+  });
 })(typeof globalThis !== 'undefined' ? globalThis : window);
