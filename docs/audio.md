@@ -129,6 +129,9 @@ type's own impact layer `imp_<type>`. `engine.js` gives battle sounds (`hit*`, `
 Ids without species data (numbers, test ids) get a pseudo-word from the hash. Cries are deterministic, 0.2-0.55 s long, at most 2.5 kHz per event. They take
 a string/number id or an object with `.id`. `tools/audio-render.mjs cry:<id>` loads the species table so it renders the real word.
 
+Type motifs: `MOTIFS` in notation.js layers a short accent per type into every species cry (primary type full, secondary at 0.6): Ember crackles,
+Tide bubbles, Volt buzzes, Sprout rustles, Terra rumbles, Iron rings, and so on. The cry stays under 0.66 s.
+
 ## Content
 DS-style arrangements so far: home_town, route_meadow, town_thimble, battle_wild (the rest are legacy and play through the softened patches).
 Songs: title, intro, home_town, route_meadow, town_thimble, tea_house, battle_wild, battle_tailor, battle_master, battle_rival, battle_society,

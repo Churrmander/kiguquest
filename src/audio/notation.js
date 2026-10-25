@@ -603,7 +603,7 @@
     const base = region * [1, 0.8, 0.66][st] * (0.93 + ri() * 0.14);
     if (contour === 4 && st === 0 && base > 300) contour = 3; // small, high voices chirp instead of growling
     return {
-      word, syl: syllables(word), stage: st + 1, body, duty, det, fshift,
+      types: (sp && sp.types) || [], word, syl: syllables(word), stage: st + 1, body, duty, det, fshift,
       base, contour,
       speed: [1, 1.12, 1.25][st] * (0.9 + ri() * 0.22),
       wob: ri() < 0.35,
@@ -692,8 +692,38 @@
       else if (/^z/.test(co)) noise(t0, dur, 1800, 1500, 0.2, 'hold');
       t = t0 + dur + (last ? 0 : 0.018);
     });
+    addMotifs(ev, p);
     for (const e of ev) e.vol = Math.min(1, e.vol * CRY_GAIN);
     return ev;
+  }
+  // Type motifs: a short accent per type layered into the cry (primary type full, secondary at 0.6), so a Kigu's type can be heard
+  // in its voice, the way Gen 5 cries hint at fire, water or electricity. T = voiced length, b = base pitch, k = level scale.
+  const MOTIFS = {
+    ember: (T, b, k, n, o) => { n(T * 0.1, T * 0.9, 600, 350, 0.18 * k, 'swell'); [0.35, 0.6, 0.82, 1.02].forEach((x, i) => n(T * x, 0.014, 2300 - i * 150, 2000, 0.3 * k)); },
+    tide: (T, b, k, n, o) => { [0, 0.07, 0.14].forEach((d, i) => o({ t: T + d - 0.02, dur: 0.05, ch: 'sin', f: 380 + i * 90, f2: 760 + i * 160, vol: 0.4 * k, env: 'pluck' })); },
+    volt: (T, b, k, n, o) => { o({ t: 0, dur: T, ch: 'sq', f: Math.max(70, b / 2), f2: Math.max(70, b / 2.2), vol: 0.22 * k, env: 'hold', lp: 1800, vib: { rate: 42, depth: b * 0.05 } }); n(0, 0.03, 2400, 1600, 0.28 * k); },
+    sprout: (T, b, k, n, o) => { n(0, T, 1900, 1300, 0.14 * k, 'swell'); n(T - 0.02, 0.06, 2300, 1500, 0.18 * k); },
+    frost: (T, b, k, n, o) => { [0, 0.06, 0.12].forEach((d, i) => o({ t: T - 0.02 + d, dur: 0.08, ch: 'sin', f: [1568, 2093, 1760][i], vol: 0.2 * k * (1 - i * 0.25), env: 'decay' })); },
+    fluff: (T, b, k, n, o) => { o({ t: 0, dur: T, ch: 'sin', f: Math.max(60, b / 2), f2: Math.max(60, b / 2.1), vol: 0.35 * k, env: 'swell' }); n(0, 0.06, 700, 400, 0.15 * k); },
+    brawl: (T, b, k, n, o) => { o({ t: 0, dur: 0.07, ch: 'sin', f: 160, f2: 70, vol: 0.6 * k, env: 'decay' }); n(0, T, 340, 280, 0.2 * k, 'hold'); },
+    nettle: (T, b, k, n, o) => { o({ t: T - 0.03, dur: 0.1, ch: 'tri', f: b * 0.8, f2: b * 0.5, vol: 0.4 * k, env: 'decay', vib: { rate: 18, depth: b * 0.05 } }); n(T - 0.02, 0.08, 600, 300, 0.2 * k); },
+    terra: (T, b, k, n, o) => { o({ t: 0, dur: T, ch: 'sin', f: 75, f2: 60, vol: 0.45 * k, env: 'swell', vib: { rate: 9, depth: 3 } }); n(0, T, 260, 160, 0.18 * k, 'swell'); },
+    gale: (T, b, k, n, o) => { o({ t: T * 0.3, dur: T * 0.8, ch: 'sin', f: Math.min(1600, b * 2), f2: Math.min(2000, b * 2.6), vol: 0.14 * k, env: 'swell' }); n(0, T, 800, 2000, 0.16 * k, 'swell'); },
+    dream: (T, b, k, n, o) => { o({ t: 0, dur: T, ch: 'sin', f: b * 1.5, f2: b * 1.45, vol: 0.18 * k, env: 'swell', vib: { rate: 5, depth: b * 0.04 } }); o({ t: T - 0.02, dur: 0.12, ch: 'tri', f: 1047, vol: 0.25 * k, env: 'decay' }); },
+    buzz: (T, b, k, n, o) => { o({ t: 0, dur: T, ch: 'saw', f: 170, f2: 160, vol: 0.2 * k, env: 'hold', lp: 1200, vib: { rate: 36, depth: 8 } }); },
+    pebble: (T, b, k, n, o) => { o({ t: 0, dur: 0.03, ch: 'tri', f: 520, f2: 380, vol: 0.5 * k, env: 'decay' }); o({ t: T - 0.01, dur: 0.03, ch: 'tri', f: 440, f2: 330, vol: 0.45 * k, env: 'decay' }); },
+    spook: (T, b, k, n, o) => { o({ t: T * 0.5, dur: T * 0.6, ch: 'tri', f: b * 0.75, f2: b * 0.6, vol: 0.28 * k, env: 'swell', vib: { rate: 5, depth: b * 0.03 } }); },
+    drake: (T, b, k, n, o) => { o({ t: 0, dur: T, ch: 'saw', f: Math.max(60, b / 2), f2: Math.max(55, b / 2.4), vol: 0.24 * k, env: 'swell', lp: 700, vib: { rate: 16, depth: 3 } }); n(0, T, 420, 220, 0.2 * k, 'swell'); },
+    shade: (T, b, k, n, o) => { o({ t: T * 0.2, dur: T, ch: 'sin', f: Math.max(60, b / 2), f2: Math.max(55, b / 3), vol: 0.35 * k, env: 'decay' }); n(0, T, 500, 250, 0.12 * k, 'swell'); },
+    iron: (T, b, k, n, o) => { o({ t: T - 0.02, dur: 0.12, ch: 'tri', f: 880, vol: 0.25 * k, env: 'decay' }); o({ t: T - 0.02, dur: 0.1, ch: 'tri', f: 1245, vol: 0.15 * k, env: 'decay' }); n(0, 0.03, 2200, 1500, 0.2 * k); },
+  };
+  function addMotifs(ev, p) {
+    const T = Math.min(0.5, Math.max(...ev.map((e) => e.t + e.dur)));
+    const fz = (f) => Math.min(2500, Math.max(55, f));
+    const n = (t, dur, f, f2, vol, env) => ev.push({ t, dur, ch: 'noi', d: 'n', f: fz(f), f2: fz(f2), vol, env: env || 'decay' });
+    const o = (e) => ev.push(e);
+    p.types.slice(0, 2).forEach((ty, i) => { if (MOTIFS[ty]) MOTIFS[ty](T, p.base, i ? 0.6 : 1, n, o); });
+    for (const e of ev) if (e.t + e.dur > 0.66) e.dur = Math.max(0.01, 0.66 - e.t); // keep the cry under the length cap
   }
   /** Deterministic short "voice" for a species id. Returns { events, seconds, params, fp, gain }. */
   function cryEvents(id) {
