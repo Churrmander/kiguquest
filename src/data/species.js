@@ -91,9 +91,9 @@
     ls: [[1, 'cocoon_up'], [1, 'thread_shot'], [10, 'nibble'], [20, 'snip_cutter']], dex: 'Curled up in a pale-green cocoon bag with only her head and hands showing.' });
   sp('mothelia', 'Mothelia', ['buzz', 'gale'], [80, 70, 65, 100, 85, 75], { catch: 45, exp: 180, ab: ['compound_eyes'], cry: 'Moth', stage: 3, family: 'silkie',
     ls: [[1, 'gust_puff'], [1, 'nibble'], [30, 'buzz_song'], [36, 'daydream'], [42, 'glide_strike']], dex: 'Patterned moth wings shimmer with sparkling scales.' });
-  sp('buzzlet', 'Buzzlet', ['buzz'], [45, 55, 40, 40, 45, 60], { catch: 255, exp: 52, ab: ['swarm'], cry: 'Bzz', evo: [{ to: 'honeybelle', level: 20 }],
+  sp('buzzlet', 'Buzzlet', ['buzz'], [45, 55, 40, 40, 45, 60], { catch: 255, exp: 52, ab: ['swarm'], cry: 'Bzz', evo: [{ to: 'hunnibloom', level: 20 }],
     ls: [[1, 'stinger'], [1, 'tail_wag'], [6, 'thread_shot'], [10, 'nibble'], [16, 'sap_bite']], dex: 'A bee onesie with stripes and tiny antennae. Guards her honey pot fiercely.' });
-  sp('honeybelle', 'Honeybelle', ['buzz', 'sprout'], [75, 90, 65, 75, 65, 95], { catch: 75, exp: 150, ab: ['swarm'], cry: 'Bzzbelle', stage: 2, family: 'buzzlet',
+  sp('hunnibloom', 'Hunnibloom', ['buzz', 'sprout'], [75, 90, 65, 75, 65, 95], { catch: 75, exp: 150, ab: ['swarm'], cry: 'Bzzbloom', stage: 2, family: 'buzzlet',
     ls: [[1, 'stinger'], [1, 'nibble'], [16, 'sap_bite'], [20, 'sap_drain'], [26, 'buzz_song']], dex: 'A honeycomb dress and a flower crown. She stirs honey with a dipper wand.' });
   sp('webbi', 'Webbi', ['buzz'], [45, 50, 42, 50, 42, 50], { catch: 190, exp: 55, ab: ['swarm'], cry: 'Wib', evo: [{ to: 'webelle', level: 22 }],
     ls: [[1, 'thread_shot'], [1, 'stinger'], [8, 'shadow_lick'], [14, 'nibble']], dex: 'A shy girl in a purple hoodie with four extra sleeves for knitting.' });

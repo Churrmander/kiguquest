@@ -77,8 +77,8 @@ tail / accessories carry it. Distinct silhouette + palette per family. Stage 2 a
 17. `silkie` Silkie — Buzz — 1/3, →Lv10 `cocoona` — silkworm: white fuzzy segmented onesie, stubby nub antennae hood, pale lavender hair, sleepy.
 18. `cocoona` Cocoona — Buzz — 2/3, →Lv30 `mothelia` — girl curled in a pale-green cocoon sleeping bag (only head + hands out), half-lidded.
 19. `mothelia` Mothelia — Buzz/Gale — 3/3 — moth-wing dress-cape with big patterned wings, feathery antenna headband, sparkle scales.
-20. `buzzlet` Buzzlet — Buzz — 1/2, →Lv20 `honeybelle` — bee: yellow-black striped onesie, tiny antennae, honey pot, blonde bobbles.
-21. `honeybelle` Honeybelle — Buzz/Sprout — 2/2 — honeycomb dress, flower crown, translucent wings, honey-dipper wand.
+20. `buzzlet` Buzzlet — Buzz — 1/2, →Lv20 `hunnibloom` — bee: yellow-black striped onesie, tiny antennae, honey pot, blonde bobbles.
+21. `hunnibloom` Hunnibloom — Buzz/Sprout — 2/2 — honeycomb dress, flower crown, translucent wings, honey-dipper wand.
 22. `webbi` Webbi — Buzz — 1/2, →Lv22 `webelle` — spider: dark-purple hoodie with four extra small sleeve-arms for knitting, eight tiny red eye-spots on the hood, yarn ball; shy.
 23. `webelle` Webelle — Buzz/Spook — 2/2 — weaver: web-lace shawl, knitting needles, long black hair with silver threads.
 24. `daisip` Daisip — Sprout — 1/2, →Lv21 `daisia` — daisy: white petal hood framing her face, yellow onesie.

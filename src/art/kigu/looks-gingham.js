@@ -46,8 +46,8 @@
       ['shapes', { stage: 'front', at: 'handR', g: 'pot', list: [['e', 1, 1, 3.5, 3, 'honey'], ['r', -2, -3, 6, 2, 'honey', 1]] }],
     ],
   });
-  D('honeybelle', {
-    name: 'Honeybelle', stage: 2, size: 78, rise: 10, pal: BEE,
+  D('hunnibloom', {
+    name: 'Hunnibloom', stage: 2, size: 78, rise: 10, pal: BEE,
     hood: { type: 'none' }, hair: { style: 'twin', bangs: 'part', len: 13 },
     arms: { mittMat: 'mitt' }, footMat: 'foot',
     parts: [
