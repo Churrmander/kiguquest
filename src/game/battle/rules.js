@@ -152,6 +152,9 @@
     mon.moveThisTurn = true;
     battle.moveUser = mon;
     battle.add({ t: 'move', who: mon, move: move.id });
+    // a go-first move that beat a faster foe says so, so turn order never looks broken
+    const cut = (move.priority || 0) > 0 && mon.foes.find((f) => battle.queue.some((q) => q.mon === f && q.type === 'move') && battle.getSpeed(f) > battle.getSpeed(mon));
+    if (cut) battle.msg(mon.label() + ' dashed in ahead of ' + cut.label() + '!');
     battle.msg(mon.label() + ' used ' + move.name + '!');
     const target = resolveTarget(battle, mon, move, ch);
     if (!target) { battle.msg('But there was no target...'); return; }
