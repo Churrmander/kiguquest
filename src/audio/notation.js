@@ -561,7 +561,13 @@
     };
   }
   const rngOf = (s) => mulberry(fmix(fnv(s)));
-  const VOWEL_F = { a: 1050, e: 1500, i: 1900, o: 720, u: 520, z: 1700 }; // breath/formant band per vowel (kept <= 2.5 kHz)
+  const VOWEL_F = { a: 1050, e: 1500, i: 1900, o: 720, u: 520, z: 1700 }; // breath/formant band per vowel
+  // Voice textures (measured against Gen 5 cries: only ~half of a cry is clean tone, the rest rasp, screech, growl or breath).
+  const TEXTURES = ['clean', 'rasp', 'screech', 'breathy', 'warble', 'growl'];
+  const TYPE_TEX = { ember: ['rasp', 'growl', 'rasp'], tide: ['warble', 'clean', 'breathy'], volt: ['screech', 'rasp'], sprout: ['breathy', 'clean'],
+    frost: ['clean', 'screech'], fluff: ['clean', 'warble', 'breathy'], brawl: ['growl', 'rasp'], nettle: ['warble', 'rasp'], terra: ['growl', 'rasp'],
+    gale: ['screech', 'breathy'], dream: ['warble', 'clean'], buzz: ['rasp', 'screech'], pebble: ['growl', 'rasp'], spook: ['breathy', 'warble'],
+    drake: ['growl', 'screech'], shade: ['growl', 'breathy'], iron: ['screech', 'rasp'] };
   const ONSETS = ['k', 'p', 'm', 'n', 'r', 'ky', 'b', 't', 's', 'w', 'g', 'my', 'py', 'l', 'f', 'ch'];
   const VOWELS = ['a', 'i', 'u', 'o', 'e', 'ii', 'uu', 'aa', 'oo', 'ai'];
   const CODAS = ['', '', '', 'n', 'k', 'l', 'p', 'm'];
@@ -593,7 +599,7 @@
       stage = 1 + Math.floor(ri() * 3);
     }
     const rf = rngOf('cryfam:' + family);
-    const region = 210 * Math.pow(2, rf() * 1.35); // family pitch region ~210..535 Hz (stage 1)
+    const region = 250 * Math.pow(2, rf() * 1.9); // family pitch region ~250..930 Hz (stage 1; Gen 5 cries centre around ~550 Hz)
     const body = Math.floor(rf() * 3); // 0 pulse + detuned triangle, 1 soft triangle/sine, 2 pulse + sub-octave
     const duty = [1, 2, 1, 3][Math.floor(rf() * 4)];
     const det = 7 + rf() * 16; // cents
@@ -602,8 +608,14 @@
     let contour = Math.floor(ri() * 8);
     const base = region * [1, 0.8, 0.66][st] * (0.93 + ri() * 0.14);
     if (contour === 4 && st === 0 && base > 300) contour = 3; // small, high voices chirp instead of growling
+    const types = (sp && sp.types) || [];
+    const pool = TYPE_TEX[types[0]] || TEXTURES;
+    let tex = pool[Math.floor(rf() * pool.length)];
+    if (st === 2 && tex === 'clean' && rf() < 0.6) tex = 'rasp'; // final forms get some grit
+    if (contour === 4) tex = 'growl';
     return {
-      types: (sp && sp.types) || [], word, syl: syllables(word), stage: st + 1, body, duty, det, fshift,
+      tex, rough: 0.5 + rf() * 0.5,
+      types, word, syl: syllables(word), stage: st + 1, body, duty, det, fshift,
       base, contour,
       speed: [1, 1.12, 1.25][st] * (0.9 + ri() * 0.22),
       wob: ri() < 0.35,
@@ -629,13 +641,15 @@
     const syl = p.syl.length ? p.syl : [{ on: '', v: 'a', co: '' }];
     const n = syl.length;
     // syllable lengths: long vowels and buzzes are longer, the last syllable is drawn out
-    let lens = syl.map((s, i) => (s.buzz ? 0.26 : s.v.length > 1 ? 0.2 : 0.12) * (i === n - 1 ? 1.55 : 1) * p.speed);
+    // (Gen 5 cries run ~0.3-1.7 s and evolved forms are much longer, so stage stretches the word and raises the cap)
+    const stretch = [1.45, 2.0, 2.6][p.stage - 1], cap = [0.55, 0.85, 1.15][p.stage - 1];
+    let lens = syl.map((s, i) => (s.buzz ? 0.26 : s.v.length > 1 ? 0.2 : 0.12) * (i === n - 1 ? 1.55 : 1) * p.speed * stretch);
     const total = lens.reduce((a, b) => a + b, 0);
-    if (total > 0.5) lens = lens.map((l) => (l * 0.5) / total);
+    if (total > cap) lens = lens.map((l) => (l * cap) / total);
     const sum = lens.reduce((a, b) => a + b, 0);
-    const fz = (f) => Math.min(2500, Math.max(55, f));
+    const fz = (f) => Math.min(4000, Math.max(55, f));
     const noise = (t, dur, f, f2, vol, env) => ev.push({ t, dur, ch: 'noi', d: 'n', f: fz(f), f2: fz(f2), vol, env: env || 'decay' });
-    const growl = p.contour === 4;
+    const growl = p.contour === 4 || p.tex === 'growl';
     let t = 0, x = 0;
     syl.forEach((s, i) => {
       const L = lens[i], x0 = x / sum, x1 = (x + L) / sum;
@@ -658,32 +672,42 @@
       if (glide) a *= 0.82;
       const segs = Math.abs(mid / Math.sqrt(a * b) - 1) > 0.04 && L > 0.08 ? [[a, mid, 0, 0.5], [mid, b, 0.5, 1]] : [[a, b, 0, 1]];
       const dur = L - (t0 - t);
-      const vib = s.buzz || /z/.test(on) ? { rate: 38, depth: 0.09 } : growl ? { rate: 27, depth: 0.06 } : p.contour === 5 || p.trill ? { rate: 8.5, depth: 0.05 } : p.wob && L > 0.15 ? { rate: 6, depth: 0.025 } : null;
+      const vib = s.buzz || /z/.test(on) ? { rate: 38, depth: 0.09 } : growl ? { rate: 27, depth: 0.07 * p.rough + 0.02 } : p.tex === 'rasp' ? { rate: 33 + 12 * p.rough, depth: 0.05 * p.rough + 0.02 }
+        : p.tex === 'warble' || p.contour === 5 || p.trill ? { rate: 7 + 4 * p.rough, depth: 0.05 } : p.wob && L > 0.15 ? { rate: 6, depth: 0.025 } : null;
       const env = nasal ? 'swell' : plos ? 'pluck' : 'hold';
       for (const [f, f2, u0, u1] of segs) {
         const st = t0 + dur * u0 - (u0 > 0 ? 0.008 : 0);
         const d = dur * (u1 - u0) + (u0 > 0 ? 0.008 : 0);
         const e = u0 > 0 ? 'hold' : env;
-        const lp = Math.round(Math.max(900, F * 1.8));
+        const lp = Math.round(Math.min(4500, Math.max(1600, F * (p.tex === 'screech' ? 4.5 : 3.5))));
         const v = (vb, ff) => (vb ? { vib: { rate: vb.rate, depth: ff * vb.depth } } : {});
         const add = (o) => ev.push(Object.assign({ t: st, dur: d, env: e, lp }, o));
         const r = Math.pow(2, p.det / 1200);
         if (p.body === 0) {
-          add(Object.assign({ ch: 'p1', duty: p.duty, f: fz(f), f2: fz(f2), vol: 0.5 }, v(vib, f)));
-          add(Object.assign({ ch: 'tri', f: fz(f * r), f2: fz(f2 * r), vol: 0.75 }, v(vib, f)));
+          add(Object.assign({ ch: 'p1', duty: p.duty, f: fz(f), f2: fz(f2), vol: 0.7 }, v(vib, f)));
+          add(Object.assign({ ch: 'tri', f: fz(f * r), f2: fz(f2 * r), vol: 0.5 }, v(vib, f)));
         } else if (p.body === 1) {
           add(Object.assign({ ch: 'tri', f: fz(f), f2: fz(f2), vol: 0.85 }, v(vib, f)));
           add(Object.assign({ ch: 'sin', f: fz(f * r), f2: fz(f2 * r), vol: 0.6 }, v(vib, f)));
           add(Object.assign({ ch: 'p1', duty: 1, f: fz(f), f2: fz(f2), vol: 0.22 }, v(vib, f)));
         } else {
-          add(Object.assign({ ch: 'p1', duty: p.duty, f: fz(f), f2: fz(f2), vol: 0.5 }, v(vib, f)));
+          add(Object.assign({ ch: 'p1', duty: p.duty, f: fz(f), f2: fz(f2), vol: 0.7 }, v(vib, f)));
           if (Math.min(f, f2) / 2 >= 60) add(Object.assign({ ch: 'tri', f: f / 2, f2: f2 / 2, vol: 0.7 }, v(vib, f / 2)));
           else add(Object.assign({ ch: 'tri', f: fz(f * r), f2: fz(f2 * r), vol: 0.7 }, v(vib, f)));
         }
       }
-      // breath through the vowel's formant (louder for growls and buzzes)
-      noise(t0, dur * 0.9, F, F2 * (b / a > 1 ? 1.1 : 0.9), growl || s.buzz ? 0.3 : 0.13, 'pluck');
-      if (growl) noise(t0, dur, 380, 300, 0.25, 'hold');
+      // texture layers
+      if (p.tex === 'rasp' || p.tex === 'screech') {
+        const h = p.tex === 'screech' ? 2 : 1; // screech: a bright saw an octave up; rasp: a buzzy saw on the voice
+        ev.push({ t: t0, dur, ch: 'saw', f: fz(a * h), f2: fz(b * h), vol: (p.tex === 'screech' ? 0.3 : 0.35) * p.rough, env: 'hold', lp: p.tex === 'screech' ? 4200 : 2600,
+          vib: { rate: 41, depth: a * h * 0.04 * p.rough } });
+        // a second saw ~35 Hz off beats against it: the throaty roughness of a real rasp
+        ev.push({ t: t0, dur, ch: 'saw', f: fz(a * h + 35), f2: fz(b * h + 35), vol: 0.25 * p.rough, env: 'hold', lp: 2600 });
+        noise(t0, dur, p.tex === 'screech' ? 3200 : 1800, 2400, 0.45 * p.rough, 'hold');
+      }
+      // breath through the vowel's formant (louder for growls, buzzes and breathy voices)
+      noise(t0, dur * 0.9, F, F2 * (b / a > 1 ? 1.1 : 0.9), growl || s.buzz ? 0.42 : p.tex === 'breathy' ? 0.6 : 0.28, p.tex === 'breathy' ? 'hold' : 'pluck');
+      if (growl) { noise(t0, dur, 380, 300, 0.3, 'hold'); ev.push({ t: t0, dur, ch: 'saw', f: fz(a / 2), f2: fz(b / 2), vol: 0.3, env: 'hold', lp: 1400 }); ev.push({ t: t0, dur, ch: 'saw', f: fz(a / 2 + 28), f2: fz(b / 2 + 28), vol: 0.22, env: 'hold', lp: 1400 }); }
       // coda
       const te = t0 + dur;
       if (/^[nm]/.test(co)) ev.push({ t: te - 0.01, dur: 0.07, ch: 'sin', f: fz(b * 0.94), f2: fz(b * 0.88), vol: 0.55, env: 'decay' });
@@ -693,7 +717,7 @@
       t = t0 + dur + (last ? 0 : 0.018);
     });
     addMotifs(ev, p);
-    for (const e of ev) e.vol = Math.min(1, e.vol * CRY_GAIN);
+    for (const e of ev) { e.vol = Math.min(1, e.vol * CRY_GAIN); if (e.rev === undefined) e.rev = 0.12; }
     return ev;
   }
   // Type motifs: a short accent per type layered into the cry (primary type full, secondary at 0.6), so a Kigu's type can be heard
@@ -718,12 +742,12 @@
     iron: (T, b, k, n, o) => { o({ t: T - 0.02, dur: 0.12, ch: 'tri', f: 880, vol: 0.25 * k, env: 'decay' }); o({ t: T - 0.02, dur: 0.1, ch: 'tri', f: 1245, vol: 0.15 * k, env: 'decay' }); n(0, 0.03, 2200, 1500, 0.2 * k); },
   };
   function addMotifs(ev, p) {
-    const T = Math.min(0.5, Math.max(...ev.map((e) => e.t + e.dur)));
+    const T = Math.min(1.2, Math.max(...ev.map((e) => e.t + e.dur)));
     const fz = (f) => Math.min(2500, Math.max(55, f));
     const n = (t, dur, f, f2, vol, env) => ev.push({ t, dur, ch: 'noi', d: 'n', f: fz(f), f2: fz(f2), vol, env: env || 'decay' });
     const o = (e) => ev.push(e);
     p.types.slice(0, 2).forEach((ty, i) => { if (MOTIFS[ty]) MOTIFS[ty](T, p.base, i ? 0.6 : 1, n, o); });
-    for (const e of ev) if (e.t + e.dur > 0.66) e.dur = Math.max(0.01, 0.66 - e.t); // keep the cry under the length cap
+    for (const e of ev) if (e.t + e.dur > 1.4) e.dur = Math.max(0.01, 1.4 - e.t); // keep the cry under the length cap
   }
   /** Deterministic short "voice" for a species id. Returns { events, seconds, params, fp, gain }. */
   function cryEvents(id) {

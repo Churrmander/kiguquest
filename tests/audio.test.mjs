@@ -93,8 +93,8 @@ const SFX = ['cursor', 'select', 'cancel', 'error', 'menu_open', 'text', 'bump',
   for (let i = 1; i <= 60; i++) {
     const c = A.cryEvents('species_' + i);
     set.add(JSON.stringify(c.events));
-    assert.ok(c.seconds > 0.1 && c.seconds < 0.7, 'cry length');
-    for (const e of c.events) assert.ok(e.f >= 50 && e.f <= 2500 && e.vol <= 1);
+    assert.ok(c.seconds > 0.1 && c.seconds < 1.5, 'cry length');
+    for (const e of c.events) assert.ok(e.f >= 50 && e.f <= 4200 && e.vol <= 1);
   }
   assert.ok(set.size >= 55, 'cries vary by species');
   assert.ok(A.cryEvents(17).events.length && A.cryEvents({ id: 'x' }).events.length);

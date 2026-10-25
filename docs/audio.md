@@ -130,7 +130,8 @@ Ids without species data (numbers, test ids) get a pseudo-word from the hash. Cr
 a string/number id or an object with `.id`. `tools/audio-render.mjs cry:<id>` loads the species table so it renders the real word.
 
 Type motifs: `MOTIFS` in notation.js layers a short accent per type into every species cry (primary type full, secondary at 0.6): Ember crackles,
-Tide bubbles, Volt buzzes, Sprout rustles, Terra rumbles, Iron rings, and so on. The cry stays under 0.66 s.
+Tide bubbles, Volt buzzes, Sprout rustles, Terra rumbles, Iron rings, and so on. Each family also gets a voice texture (clean, rasp, screech, breathy, warble or growl, biased by type), and cries run ~0.3 s for a
+first stage up to ~1.4 s for a final form, like Gen 5 cries (measured: 0.3–1.7 s, only about half clean tone).
 
 ## Content
 DS-style arrangements so far: home_town, route_meadow, town_thimble, battle_wild (the rest are legacy and play through the softened patches).
