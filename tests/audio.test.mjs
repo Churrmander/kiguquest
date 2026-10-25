@@ -131,7 +131,15 @@ const SFX = ['cursor', 'select', 'cancel', 'error', 'menu_open', 'text', 'bump',
   // ---------- DS voice model ----------
   const N = A.notation;
   // legacy songs map onto softer patches; leads that lived in octave 6 drop an octave
-  const ct = A.compile('battle_tailor');
+  // (an inline legacy song registered just for this check: every real song is DS-style now)
+  A.song('test_legacy', {
+    desc: 'test only: a legacy four-channel song with an octave-6 lead', bpm: 160, loop: 0, order: 'A B',
+    sections: {
+      A: { p1: 'd6:4 f6:4 a6:4 f6:4 | e6:4 c#6:4 a5:4 e6:4 |', p2: '^Dm4:16 | ^A4:16 |', tri: 'd2:8 a2:8 | a1:8 e2:8 |', noi: 'k:4 s:4 k:4 s:4 | k:4 s:4 k:4 s:4 |' },
+      B: { p1: 'f6:4 a6:4 bb6:4 a6:4 | c#6:4 e6:4 a6:8 |', p2: '^Dm4:16 | ^A4:16 |', tri: 'd2:8 a2:8 | a1:8 e2:8 |', noi: 'k:4 s:4 k:4 s:4 | k:4 s:4 s:4 s:4 |' },
+    },
+  });
+  const ct = A.compile('test_legacy');
   assert.equal(ct.lift.p1, -12, 'old octave-6 lead drops an octave');
   assert.ok(ct.events.every((e) => e.p === N.LEGACY_PATCH[e.ch]), 'legacy channels use the legacy patches');
   assert.ok(ct.events.filter((e) => e.ch === 'p1').every((e) => e.midi <= 84 + 1), 'no legacy lead above C#6 after the drop');
