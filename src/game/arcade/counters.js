@@ -74,7 +74,12 @@
     }
     *buy(p) {
       const a = AR.st();
-      if (AR.owned(p)) { NP.snd.sfx('error'); this.note = p.kind === 'card' ? 'You already have that design.' : 'That prize has already gone home with you.'; return; }
+      if (AR.owned(p) && p.kind === 'card') {
+        // a design you own: put it back on your card
+        if (a.card === p.id) { NP.snd.sfx('error'); this.note = 'Your card already has that design.'; return; }
+        a.card = p.id; NP.snd.sfx('select'); this.note = 'Your Tailor Card has the ' + AR.CARDS[p.id].name + ' design again.'; return;
+      }
+      if (AR.owned(p)) { NP.snd.sfx('error'); this.note = 'That prize has already gone home with you.'; return; }
       if (a.tickets < p.price) { NP.snd.sfx('error'); this.note = 'You need ' + (p.price - a.tickets) + ' more tickets for that.'; return; }
       if (p.kind === 'kigu' && NP.state.party.length >= 6 && NP.state.box.length >= 300) { NP.snd.sfx('error'); this.note = 'There is no room for her anywhere!'; return; }
       NP.snd.sfx('select');
@@ -103,7 +108,7 @@
         const gone = AR.owned(p);
         if (top + i === cur) ui.cursor(fb, 9, y, 'light');
         ui.text(fb, p.name, 18, y, 'light', { color: gone ? '#a8a8b8' : undefined });
-        const pr = gone ? 'got' : String(p.price);
+        const pr = p.kind === 'card' && gone ? (a.card === p.id ? 'on' : 'use') : gone ? 'got' : String(p.price);
         ui.text(fb, pr, 148 - Font.width(pr), y, 'light', { color: gone ? '#a8a8b8' : a.tickets >= p.price ? '#383848' : '#c06060' });
       }
       // picture + description

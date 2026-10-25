@@ -55,6 +55,20 @@
     multi: { color: '#f8d048', letter: 'M' },
     slow: { color: '#a8f0a8', letter: 'S' },
   };
+  // 5x5 letters for the power-up pills (the UI font is too tall for a 7px pill)
+  const GLYPH = {
+    W: ['k...k', 'k...k', 'k.k.k', 'kk.kk', 'k...k'],
+    M: ['k...k', 'kk.kk', 'k.k.k', 'k...k', 'k...k'],
+    S: ['.kkkk', 'k....', '.kkk.', '....k', 'kkkk.'],
+  };
+  const pill = (kind) => K.memo('bb.pill.' + kind, () => {
+    const P = PWR[kind], b = new Bitmap(11, 9);
+    b.fillRect(0, 0, 11, 9, '#202038'); b.fillRect(1, 1, 9, 7, P.color); b.hline(2, 1, 7, '#ffffff');
+    GLYPH[P.letter].forEach((row, y) => [...row].forEach((ch, x) => { if (ch === 'k') b.set(3 + x, 2 + y, '#202038'); }));
+    return b;
+  });
+  // a go is three quilts; clearing all three pays a bonus and ends the go
+  const QUILTS = 3;
 
   function quiltBacking() {
     return K.memo('bb.quilt', () => {
@@ -91,6 +105,7 @@
     g.stage++;
     g.pic = PICS[(g.stage - 1) % PICS.length];
     g.grid = layout(g.stage - 1);
+    g.mask = g.grid.map((row) => row.map(Boolean)); // where patches started: gaps in the pattern stay covered until the reveal
     g.left = g.grid.reduce((n, r) => n + r.filter(Boolean).length, 0);
     g.total = g.left;
     serve(g);
@@ -106,7 +121,10 @@
     g.t++;
     for (const s of g.sparks) s.t--;
     g.sparks = g.sparks.filter((s) => s.t > 0);
-    if (g.clearT > 0) { if (--g.clearT === 0) nextStage(g); return; }
+    if (g.clearT > 0) {
+      if (--g.clearT === 0) { if (g.stage >= QUILTS) { g.won = true; g.over = true; } else nextStage(g); }
+      return;
+    }
     if (g.wideT > 0) g.wideT--;
     if (g.slowT > 0) g.slowT--;
     g.pw = g.wideT > 0 ? 44 : 28;
@@ -136,7 +154,7 @@
 
     for (const d of g.drops) {
       d.y += 1.1;
-      if (K.hit({ x: d.x - 5, y: d.y, w: 10, h: 7 }, { x: g.px - g.pw / 2, y: PADY, w: g.pw, h: 9 })) {
+      if (K.hit({ x: d.x - 5, y: d.y, w: 11, h: 9 }, { x: g.px - g.pw / 2, y: PADY, w: g.pw, h: 9 })) {
         d.dead = true; g.score += 50; K.sfx('stat_up');
         if (d.kind === 'wide') g.wideT = 900;
         else if (d.kind === 'slow') g.slowT = 600;
@@ -148,7 +166,7 @@
       if (d.y > NP.H) d.dead = true;
     }
     g.drops = g.drops.filter((d) => !d.dead);
-    if (g.left <= 0) { g.score += 500; g.clearT = 120; g.balls = []; g.drops = []; K.sfx('levelup'); }
+    if (g.left <= 0) { g.score += g.stage >= QUILTS ? 2000 : 500; g.clearT = 120; g.balls = []; g.drops = []; K.sfx('levelup'); }
   }
 
   function stepBall(g, b, dx, dy) {
@@ -164,28 +182,44 @@
       const ang = off * 1.05; // radians from straight up
       b.vx = v * Math.sin(ang); b.vy = -v * Math.cos(ang);
       if (Math.abs(b.vy) < 0.8) b.vy = -0.8;
+      if (Math.abs(b.vx) < 0.25) b.vx = b.vx < 0 ? -0.25 : 0.25; // never dead straight, or it can skim a patch seam forever
       b.y = PADY - 3;
       K.sfx('text');
       return;
     }
-    // patches
-    const c = Math.floor((b.x - L) / BW), r = Math.floor((b.y - BY) / BH);
-    if (r < 0 || r >= ROWS || c < 0 || c >= COLS) return;
-    const p = g.grid[r][c];
-    if (!p) return;
-    // bounce off the face we came through
-    const px = b.x - dx, py = b.y - dy;
-    const pc = Math.floor((px - L) / BW), pr = Math.floor((py - BY) / BH);
-    if (pr !== r) b.vy = -b.vy; else if (pc !== c) b.vx = -b.vx; else b.vy = -b.vy;
-    b.x = px; b.y = py;
-    hitPatch(g, r, c);
+    // patches: test the button's leading edges (it is 6px round), not just its centre, so it never sinks into a patch
+    const sx = Math.sign(b.vx), sy = Math.sign(b.vy);
+    for (const [ox, oy, axis] of [[0, sy * 3, 'y'], [sx * 3, 0, 'x'], [0, 0, 'c']]) {
+      const c = Math.floor((b.x + ox - L) / BW), r = Math.floor((b.y + oy - BY) / BH);
+      if (r < 0 || r >= ROWS || c < 0 || c >= COLS || !g.grid[r][c]) continue;
+      if (axis === 'y') b.vy = -b.vy;
+      else if (axis === 'x') b.vx = -b.vx;
+      else {
+        // centre inside: bounce off the face we came through
+        const pc = Math.floor((b.x - dx - L) / BW), pr = Math.floor((b.y - dy - BY) / BH);
+        if (pr !== r) b.vy = -b.vy; else if (pc !== c) b.vx = -b.vx; else b.vy = -b.vy;
+      }
+      b.x -= dx; b.y -= dy;
+      hitPatch(g, r, c);
+      return;
+    }
   }
 
-  /** Wall bounce. If nothing has been hit for a while the button is probably stuck in a loop, so nudge its angle. */
+  /** Wall bounce. If nothing has been hit for a while the button is probably stuck in a loop, so nudge its angle; near the
+   * end of a quilt it waits less and the nudge leans toward one of the last patches, so the final few don't drag on. */
   function wall(g, b) {
     K.sfx('bump');
-    if (g.t - (g.lastHit || 0) < 480) return;
-    const v = Math.hypot(b.vx, b.vy), a = Math.atan2(b.vy, b.vx) + (K.rand(2) ? 0.25 : -0.25);
+    const few = g.left <= 5;
+    if (g.t - (g.lastHit || 0) < (few ? 180 : 480)) return;
+    g.lastHit = g.t;
+    const v = Math.hypot(b.vx, b.vy);
+    let a = Math.atan2(b.vy, b.vx) + (K.rand(2) ? 0.25 : -0.25);
+    if (few && b.vy < 0) {
+      const left = [];
+      for (const row of g.grid) for (const p of row) if (p) left.push(p);
+      const p = left[K.rand(left.length)];
+      if (p) a = Math.atan2(p.y + 4 - b.y, p.x + 8 - b.x);
+    }
     b.vx = v * Math.cos(a); b.vy = v * Math.sin(a);
     if (Math.abs(b.vy) < 0.8) b.vy = b.vy < 0 ? -0.8 : 0.8;
   }
@@ -222,18 +256,17 @@
     // the hidden Kigu, drawn under the patches
     const pic = NP.assets.kiguFront(g.pic, false, 0);
     if (pic) fb.blit(pic, 128 - (pic.w >> 1), BY + ROWS * BH - pic.h + 2);
+    if (!g.clearT) for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (!g.mask[r][c]) fb.blit(K.memo('bb.gap' + (r & 1), () => quiltBacking().crop(0, (r & 1) * BH, BW, BH)), L + c * BW, BY + r * BH);
     for (const row of g.grid) for (const p of row) if (p) fb.blit(patchBmp(p.f, p.hp < (p.f.hp || 1)), p.x, p.y);
     for (const s of g.sparks) { const k = 8 - s.t; fb.set(s.x - k, s.y - k, '#fff8c8'); fb.set(s.x + k, s.y - k, '#fff8c8'); fb.set(s.x - k, s.y + k, '#fff8c8'); fb.set(s.x + k, s.y + k, '#fff8c8'); }
     for (const d of g.drops) {
-      const P = PWR[d.kind];
-      fb.fillRect(d.x - 5, d.y, 10, 7, '#202038'); fb.fillRect(d.x - 4, d.y + 1, 8, 5, P.color);
-      K.text(fb, P.letter, d.x, d.y - 2, '#202038', { align: 'center', outline: null });
+      fb.blit(pill(d.kind), Math.round(d.x) - 5, Math.round(d.y));
     }
     if (!g.over || g.balls.length) fb.blit(thimble(g.pw), Math.round(g.px - g.pw / 2), PADY);
     for (const b of g.balls) fb.blit(BUTTON(), Math.round(b.x - 3), Math.round(b.y - 3));
     if (g.balls.length && g.balls[0].stuck && (t >> 4) & 1) K.center(fb, 'A: launch', 140, '#f8d048');
     if (g.clearT > 0) {
-      K.center(fb, 'QUILT CLEAR!', 132, '#f8d048');
+      K.center(fb, g.stage >= QUILTS ? 'ALL QUILTS CLEAR!' : 'QUILT CLEAR!', 132, '#f8d048');
       K.center(fb, 'It was ' + NP.data.species[g.pic].name + '!', 146, '#f8f8f8');
     }
   }
@@ -258,7 +291,7 @@
   AR.register('cab_2', {
     title: 'Button Breaker', cost: 3, lights: true, create, drawTitle,
     lifeIcon: () => K.memo('bb.life', () => BUTTON().clone()),
-    tickets: (score) => Math.floor(score / 40),
+    tickets: (score) => Math.floor(score / 100),
     bot(g) {
       const keys = [];
       const live = g.balls.filter((b) => !b.stuck);

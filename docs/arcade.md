@@ -19,9 +19,9 @@ Everything inside the arcade lives in `src/game/arcade/` (its own manifest, `src
 |---|---|
 | coins | $20 each at the coin counter (cups of 10, 50 +5 free, 100 +15 free) |
 | a go | 3 coins on the four cabinets, 2 on the claw |
-| tickets | Moth Patrol score/30, Button Breaker score/40, Steam Chase score/80, Rooftop Hop score/50 (+30 for clearing all three stages), claw 2 for a miss, 10 for a plush, 25 for a golden plush. A decent go pays about 30-45 |
+| tickets | Moth Patrol score/60, Button Breaker score/100 (a go is three quilts, +2000 for clearing the third), Steam Chase score/120, Rooftop Hop score/200 (+10 for clearing all three stages), claw 2 for a miss, 10 for a plush, 25 for a golden plush. A decent go pays about 30-45 |
 
-Prizes (`src/game/arcade/prizes.js`, tickets): Plum Treat 60, Wish Candy 250, Snack Bag 300, Quick Claw 450, Expert Belt 700,
+Prizes (`src/game/arcade/prizes.js`, tickets): Plum Treat 150, Wish Candy 250, Snack Bag 300, Quick Claw 450, Expert Belt 700,
 Sturdy Sash 700, Coin Charm 900, any of the 17 type pins 400, Cabbi Lv25 2000 (one only, listed once `NP.data.species.cabbi`
 exists), Tailor Card designs 150-1000 (Gingham, Denim, Patchwork, Neon Night, Starry Sky, Gold Thread).
 

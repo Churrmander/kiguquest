@@ -41,7 +41,7 @@
       boxes: [[6, 4], [40, 1], [70, 0], [99, 1]],
       coins: [[10, 4, 3], [17, 3, 2], [24, 2, 2], [31, 2, 3], [45, 2, 2], [50, 3, 2], [56, 3, 2], [62, 3, 2], [77, 3, 3], [84, 3, 2], [91, 4, 2], [103, 3, 2], [108, 3, 2], [116, 5, 5]],
       pins: [[38, 7, 2], [70, 7, 3], [96, 7, 2]],
-      foes: [['b', 6, 7], ['m', 22, 2], ['b', 38, 7], ['m', 50, 2], ['b', 68, 7], ['b', 74, 7], ['m', 85, 2], ['b', 98, 7], ['m', 108, 2], ['b', 118, 7]],
+      foes: [['b', 8, 7], ['m', 22, 2], ['b', 38, 7], ['m', 50, 2], ['b', 68, 7], ['b', 74, 7], ['m', 85, 2], ['b', 98, 7], ['m', 108, 2], ['b', 118, 7]],
       tanks: [[66, 6], [114, 6]],
     },
   ];
@@ -204,8 +204,11 @@
     g.time = 200;
     g.banner = 120;
   }
-  function respawn(g) {
-    g.p = { x: 24, y: OY + 8 * TS - 18, vx: 0, vy: 0, ground: false, face: 1, hurt: 0, anim: 0 };
+  function respawn(g, died) {
+    // a moment of blinking safety so a bunny patrolling the start can't knock you straight out again
+    g.p = { x: 24, y: OY + 8 * TS - 18, vx: 0, vy: 0, ground: false, face: 1, hurt: died ? 90 : 0, anim: 0 };
+    // after a time-out the clock gets some time back, or every life would drain away one second apart
+    if (died && g.time <= 30) g.time = 100;
     g.cam = 0;
     g.dying = 0;
     g.goalT = 0;
@@ -219,7 +222,7 @@
     const st = g.st, p = g.p;
     if (g.dying > 0) {
       p.vy = Math.min(MAXFALL, p.vy + GRAV); p.y += p.vy;
-      if (--g.dying === 0) { if (g.lives <= 0) g.over = true; else respawn(g); }
+      if (--g.dying === 0) { if (g.lives <= 0) g.over = true; else respawn(g, true); }
       return;
     }
     if (g.goalT > 0) {
@@ -289,7 +292,7 @@
       if (f.kind === 'b') {
         f.x += f.vx;
         const ahead = f.vx < 0 ? f.x : f.x + 16;
-        if (solid(tileAt(st, ahead, f.y + 6)) || !solid(tileAt(st, ahead, f.y + 14)) && tileAt(st, ahead, f.y + 14) !== '-') f.vx = -f.vx;
+        if (solid(tileAt(st, ahead, f.y + 6)) || tileAt(st, ahead, f.y + 6) === '^' || !solid(tileAt(st, ahead, f.y + 14)) && tileAt(st, ahead, f.y + 14) !== '-') f.vx = -f.vx; // pincushions turn bunnies too
       } else {
         f.x -= 0.6;
         f.y = f.y0 + Math.sin(f.t / 18) * 14;
@@ -393,12 +396,15 @@
   AR.register('platformer', {
     title: 'Rooftop Hop', cost: 3, lights: true, create, drawTitle,
     lifeIcon: () => K.memo('rh.life', () => hero('stand').crop(3, 0, 10, 8)),
-    tickets: (score, g) => Math.floor(score / 50) + (g && g.won ? 30 : 0),
+    tickets: (score, g) => Math.floor(score / 200) + (g && g.won ? 10 : 0),
     bot(g, f) {
       // run right, jump at gaps, walls, pins and foes ahead
       const p = g.p, st = g.st;
       if (!p || !st) return [];
-      const keys = ['right', 'b'];
+      // walk (no B) near pincushions: a running hop over them can carry you into the gap behind
+      const nearPin = [16, 32, 48].some((dx) => tileAt(st, p.x + 8 + dx, p.y + 14) === '^');
+      if (p.ground) g.botWalk = nearPin;
+      const keys = g.botWalk ? ['right'] : ['right', 'b'];
       const ahead = (dx, dy) => tileAt(st, p.x + 8 + dx, p.y + 17 + dy);
       const gap = !solid(ahead(14, 2)) && ahead(14, 2) !== '-';
       const wall = solid(ahead(12, -4)) || solid(ahead(12, -14));

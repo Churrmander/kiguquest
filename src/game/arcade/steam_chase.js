@@ -137,7 +137,23 @@
     g.macaron = null;
     reset(g);
   }
+  /** Tile steps to the pen gate for every open tile (irons may use the gate), so bumped irons find the shortest way home. */
+  const homeDist = () => K.memo('sc.home', () => {
+    const d = MAZE.map((r) => r.split('').map(() => 1e9)), q = [[13, 9], [14, 9]];
+    for (const [x, y] of q) d[y][x] = 0;
+    while (q.length) {
+      const [x, y] = q.shift();
+      for (const k of ORDER) {
+        const nx = (x + DIRS[k][0] + W) % W, ny = y + DIRS[k][1];
+        if (ny < 0 || ny >= H || !open(nx, ny, true) || d[ny][nx] <= d[y][x] + 1) continue;
+        d[ny][nx] = d[y][x] + 1; q.push([nx, ny]);
+      }
+    }
+    return d;
+  });
+
   function reset(g) {
+    g.lifeT = 0; g.lifeEaten = 0; // the pen releases its irons one by one again after every life
     g.p = { x: START.x, y: START.y, dir: 'left', want: 'left', prog: 0, mouth: 0 };
     g.irons = IRONS.map((d, i) => ({ i, x: i === 0 ? 13 : 11 + i * 1.5 | 0, y: i === 0 ? 8 : 10, dir: i === 0 ? 'left' : 'up', prog: 0, mode: i === 0 ? 'out' : 'home', release: [0, 90, 300, 520][i], eyes: false }));
     g.cool = 0;
@@ -160,9 +176,10 @@
       return;
     }
     if (g.freeze > 0) { g.freeze--; return; }
+    g.lifeT++;
     // scatter / chase rhythm
     g.modeT++;
-    const span = g.mode === 'scatter' ? 7 * 60 : 20 * 60;
+    const span = g.mode === 'scatter' ? (g.level === 1 ? 10 : 7) * 60 : 20 * 60;
     if (g.modeT > span) { g.mode = g.mode === 'scatter' ? 'chase' : 'scatter'; g.modeT = 0; for (const r of g.irons) if (r.mode === 'run') r.flip = true; }
     if (g.cool > 0 && --g.cool === 0) g.chain = 0;
 
@@ -183,7 +200,8 @@
     for (const r of g.irons) {
       if (r.eyes || r.mode === 'home') continue;
       const [px, py] = pos(g.p), [rx, ry] = pos(r);
-      if (Math.abs(px - rx) < 6 && Math.abs(py - ry) < 6) {
+      const dx = ((px - rx) % (W * T) + W * T + (W * T >> 1)) % (W * T) - (W * T >> 1); // across the side tunnel too
+      if (Math.abs(dx) < 6 && Math.abs(py - ry) < 6) {
         if (g.cool > 0 && r.cooled) {
           g.chain = Math.min(4, g.chain + 1);
           const v = 100 * (1 << g.chain);
@@ -213,16 +231,17 @@
       const [wx, wy] = DIRS[p.want];
       if (open(p.x + wx, p.y + wy)) p.dir = p.want;
       const [dx, dy] = DIRS[p.dir];
-      if (!open(p.x + dx, p.y + dy)) return;
+      if (!open(p.x + dx, p.y + dy)) { p.carry = 0; return; }
+      speed += p.carry || 0; p.carry = 0;
     }
     p.prog += speed;
     p.mouth++;
     if (p.prog >= T) {
       const [dx, dy] = DIRS[p.dir];
-      p.x = (p.x + dx + W) % W; p.y += dy; p.prog = 0;
+      p.x = (p.x + dx + W) % W; p.y += dy; p.carry = p.prog - T; p.prog = 0; // keep the leftover so fractional speeds count
       const b = g.beads[p.y][p.x];
       if (b) {
-        g.beads[p.y][p.x] = 0; g.left--; g.eaten++;
+        g.beads[p.y][p.x] = 0; g.left--; g.eaten++; g.lifeEaten++;
         if (b === 1) { g.score += 10; if ((g.eaten & 1) === 0) K.sfx('text'); }
         else { g.score += 50; g.cool = Math.max(180, 420 - g.level * 40); g.chain = 0; for (const r of g.irons) if (!r.eyes && r.mode !== 'home') { r.cooled = true; r.flip = true; } K.sfx('splash'); }
       }
@@ -242,10 +261,10 @@
 
   function moveIron(g, r) {
     if (r.mode === 'home') {
-      if (g.t > r.release + 90 || g.eaten > r.i * 30) { r.mode = 'out'; r.x = 13; r.y = 10; r.dir = 'up'; r.prog = 0; }
+      if (g.lifeT > r.release + 90 || g.lifeEaten > r.i * 30) { r.mode = 'out'; r.x = 13; r.y = 10; r.dir = 'up'; r.prog = 0; }
       else { r.bob = (r.bob || 0) + 1; return; }
     }
-    let speed = levelSpeed(g) * 0.92;
+    let speed = levelSpeed(g) * (g.level === 1 ? 0.78 : 0.92);
     if (r.eyes) speed = 2;
     else if (r.cooled && g.cool > 0) speed *= 0.55;
     else if (at(r.x, r.y) === 'T' || (r.y === 10 && (r.x < 5 || r.x > 22))) speed *= 0.6;
@@ -253,9 +272,9 @@
     r.prog += speed;
     if (r.prog < T) return;
     const [dx, dy] = DIRS[r.dir];
-    r.x = (r.x + dx + W) % W; r.y += dy; r.prog = 0;
+    r.x = (r.x + dx + W) % W; r.y += dy; r.prog = Math.min(T - 1, r.prog - T);
     if (r.eyes && r.y === 9 && (r.x === 13 || r.x === 14)) { r.y = 10; r.eyes = false; r.mode = 'out'; r.dir = 'up'; return; }
-    if (r.mode === 'out' && r.y <= 8) r.mode = 'run';
+    if (r.mode === 'out' && r.y <= 8) { r.mode = 'run'; r.flip = false; } // a flip now would send it straight back into the gate
     // pick a direction at this tile: never straight back unless told to flip
     if (r.flip) { r.flip = false; r.dir = REV[r.dir]; if (open(r.x + DIRS[r.dir][0], r.y + DIRS[r.dir][1], true)) return; }
     const via = r.mode === 'out' || r.eyes;
@@ -263,6 +282,14 @@
     const legal = opts.filter((d) => via || (at(r.x + DIRS[d][0], r.y + DIRS[d][1]) !== '-' && at(r.x + DIRS[d][0], r.y + DIRS[d][1]) !== 'H'));
     const list = legal.length ? legal : opts.length ? opts : [REV[r.dir]];
     if (r.cooled && g.cool > 0) { r.dir = list[K.rand(list.length)]; return; }
+    if (r.eyes) {
+      // shortest way back to the pen
+      const hd = homeDist();
+      let best = list[0], bd = 1e9;
+      for (const d of list) { const nx = (r.x + DIRS[d][0] + W) % W, ny = r.y + DIRS[d][1], v = ny >= 0 && ny < H ? hd[ny][nx] : 1e9; if (v < bd) { bd = v; best = d; } }
+      r.dir = best;
+      return;
+    }
     const tg = targetOf(g, r);
     let best = list[0], bd = 1e9;
     for (const d of list) {
@@ -321,7 +348,7 @@
   AR.register('cab_3', {
     title: 'Steam Chase', cost: 3, lights: true, create, drawTitle,
     lifeIcon: () => K.memo('sc.life', () => woolly(0).clone()),
-    tickets: (score) => Math.floor(score / 80),
+    tickets: (score) => Math.floor(score / 120),
     bot(g, f) {
       // greedy: walk to the nearest bead, away from close hot irons (BFS on the tile grid)
       const p = g.p;

@@ -70,7 +70,7 @@
 
   function topPlushAt(g, x) {
     let best = null;
-    for (const p of g.pile) if (x >= p.x + 3 && x <= p.x + 29 && (!best || p.y < best.y)) best = p;
+    for (const p of g.pile) if (x >= p.x + 3 && x <= p.x + 29 && (!best || p.y <= best.y)) best = p; // ties: the one drawn in front
     return best;
   }
 
@@ -92,7 +92,7 @@
         if (p) {
           const off = Math.abs(g.cx - (p.x + 16));
           // well centred grabs nearly always hold; the edges of a plush slip
-          const grip = off < 4 ? 0.75 : off < 8 ? 0.5 : off < 12 ? 0.25 : 0.05;
+          const grip = off < 4 ? 0.85 : off < 8 ? 0.5 : off < 12 ? 0.25 : 0.05;
           if (K.chance(grip * (p.gold ? 0.7 : 1))) { g.held = p; g.pile.splice(g.pile.indexOf(p), 1); g.grip = grip; K.sfx('select'); }
         }
         g.phase = 'lift';
@@ -104,7 +104,7 @@
       // a loose grip can still lose it on the way up
       if (g.held && g.cy < 110 && !g.slipChecked) {
         g.slipChecked = true;
-        if (K.chance(0.25 + (1 - g.grip) * 0.4)) { dropHeld(g); K.sfx('cancel'); }
+        if (K.chance(0.1 + (1 - g.grip) * 0.6)) { dropHeld(g); K.sfx('cancel'); }
       }
     } else if (g.phase === 'home') {
       g.cx -= 1.5;
@@ -125,7 +125,7 @@
     g.held = null;
     // it lands back on the pile below the claw
     const under = topPlushAt(g, p.x + 16);
-    p.floor = under ? under.y - 16 : FLOOR - 30;
+    p.floor = Math.max(p.y, under ? under.y - 16 : FLOOR - 30); // never jumps upward
     p.x = Math.max(X0, Math.min(X1 - 32, p.x));
     g.pile.push(p);
     g.falling = [p];
@@ -143,7 +143,12 @@
     g.endTitle = 'WINNER!';
     g.score = p.gold ? 3 : 1;
     K.sfx('levelup');
-    if (g.pile.length < 6) AR.pile = g.pile = g.pile.concat(newPile().slice(0, 8));
+    if (g.pile.length < 8) {
+      // the attendant restocks with a fresh three-row heap, keeping any golden plush still in the machine
+      const golds = g.pile.filter((q) => q.gold).map((q) => q.id), fresh = newPile();
+      golds.forEach((id, i) => { const q = fresh[fresh.length - 1 - i]; if (q) { q.id = id; q.gold = true; } });
+      AR.pile = g.pile = fresh;
+    }
   }
   function finish(g) {
     if (!g.prize) { g.endTitle = 'SO CLOSE!'; g.prizeText = 'The claw came up empty.'; }
@@ -203,7 +208,7 @@
     claw(fb, g.cx, g.cy, g.open);
     // control strip
     fb.fillRect(0, 0, NP.W, 13, '#0c0c1c'); fb.hline(0, 13, NP.W, '#3a3a6a');
-    K.text(fb, 'PLUSH CATCHER', 4, 2, '#f8a8d0');
+    if (g.phase !== 'aim') K.text(fb, 'PLUSH CATCHER', 4, 2, '#f8a8d0');
     if (g.phase === 'aim') {
       K.text(fb, 'Left/Right aim   A drop', NP.W >> 1, 2, '#f8f8f8', { align: 'center' });
       K.text(fb, K.pad(Math.ceil(g.timer / 60), 2), NP.W - 4, 2, g.timer < 300 && (t & 8) ? '#f87878' : '#f8d048', { align: 'right' });

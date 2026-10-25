@@ -88,18 +88,18 @@ assert.equal(AR.st().coins, 10, 'a dark cabinet takes no coins');
 
 // Moth Patrol runs during the brownout: insert coins, play, step away
 useTile(1, 2);
-t.tick(3);
+t.tick(50);
 const cab = G.top();
 assert.ok(cab instanceof AR.CabinetScene && cab.id === 'cab_1', 'Moth Patrol opens');
 t.tap('a');
 assert.equal(cab.phase, 'play', 'playing after a coin');
 assert.equal(AR.st().coins, 7, 'three coins went in');
-cab.game.lives = 0; cab.game.score = 600; cab.game.over = true;
+cab.game.lives = 0; cab.game.score = 1200; cab.game.over = true;
 t.tick(60);
 assert.equal(cab.phase, 'results');
 t.tick(80); t.tap('a');
-assert.equal(AR.st().tickets, 20, 'score 600 pays 20 tickets');
-assert.equal(AR.st().best.cab_1, 600, 'best score saved');
+assert.equal(AR.st().tickets, 20, 'score 1200 pays 20 tickets');
+assert.equal(AR.st().best.cab_1, 1200, 'best score saved');
 t.tap('b');
 t.mash(() => t.idle(), 2000);
 assert.ok(!(G.top() instanceof AR.CabinetScene), 'stepped away');
@@ -107,7 +107,7 @@ assert.ok(!(G.top() instanceof AR.CabinetScene), 'stepped away');
 // not enough coins: the cabinet says so and stays on its title screen
 AR.st().coins = 1;
 useTile(1, 2);
-t.tick(3);
+t.tick(50);
 t.tap('a');
 assert.equal(G.top().phase, 'attract', 'no game without coins');
 assert.ok(/coins/.test(G.top().note), 'tells you to buy coins');
@@ -116,7 +116,7 @@ t.mash(() => t.idle(), 2000);
 
 // the rival's free go (Chapter 5 hook): c.arcade('claw', { free: 1 }) needs no coins
 ow.runScript(function* (c) { yield* c.arcade('claw', { free: 1 }); }, null);
-t.tick(4);
+t.tick(50);
 t.tap('a');
 assert.equal(G.top().phase, 'play', 'free go starts');
 assert.equal(AR.st().coins, 1, 'free go cost nothing');
@@ -154,10 +154,15 @@ assert.equal(st.bag.expert_belt, 1, 'Expert Belt bought');
 assert.equal(AR.st().tickets, 300, '700 tickets spent');
 const cardTab = tabs.findIndex((x) => x.name === 'Card designs');
 for (let i = 0; i < cardTab; i++) t.tap('right');
+t.tap('down'); // past Classic
 t.tap('a'); t.tick(2); t.tap('a'); // gingham, 150
 assert.ok(AR.st().cards.gingham && AR.st().card === 'gingham', 'gingham card bought and worn');
+const left = AR.st().tickets;
 t.tap('a'); t.tick(2);
 assert.match(ps.note, /already/, 'a card design is only sold once');
+assert.equal(AR.st().tickets, left, 'and costs nothing the second time');
+t.tap('up'); t.tap('a'); t.tick(2);
+assert.equal(AR.st().card, 'plain', 'switch back to an owned design (Classic) for free');
 t.tap('b');
 t.mash(() => t.idle(), 3000);
 

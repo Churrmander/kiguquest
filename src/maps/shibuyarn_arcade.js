@@ -50,7 +50,7 @@
         c.set('arcade_owner_lit');
         yield* say(c, n, 'lit1', "Everything's running again, and I hear we have you to thank for it!");
         yield* say(c, n, 'lit2', "Here, have a cup of coins on the house. Go and try Steam Chase, it's the one everybody was missing.");
-        NP.arcade.st().coins += 30;
+        NP.arcade.st().coins = Math.min(9999, NP.arcade.st().coins + 30);
         NP.snd.sfx('pickup');
         yield* c.say('{player} got 30 coins!');
       } else {

@@ -127,9 +127,12 @@
     *attract() {
       this.phase = 'attract';
       this.note = '';
+      // a short beat before A counts again, so mashing through the results screen can't start (and pay for) another go
+      let wait = 45;
       for (;;) {
         yield;
         if (Input.pressed.b) { K.sfx('cancel'); return false; }
+        if (wait > 0) { wait--; if (wait === 0 && Input.held.a) wait = 1; continue; } // and A must be let go first
         if (Input.pressed.a) {
           const a = AR.st(), cost = this.def.cost;
           if (this.free > 0) { this.free--; K.sfx('pickup'); return true; }
@@ -149,13 +152,16 @@
       a.plays[this.id] = (a.plays[this.id] || 0) + 1;
       this.result.plays++;
       let quit = false;
+      yield; // let go of the A press that put the coins in, so it doesn't also act on the game's first frame
       while (!this.game.over && !quit) {
-        if (Input.pressed.start) {
+        if (this.pauseCool > 0) this.pauseCool--;
+        if (Input.pressed.start && !(this.pauseCool > 0)) {
           K.sfx('menu_open');
           this.paused = true;
           const r = yield* this.choose(['Keep playing', 'Stop here'], { x: 88, y: 76, theme: 'dark' });
           this.paused = false;
           if (r === 1) quit = true;
+          this.pauseCool = 30; // no pausing again straight away (no stepping frame by frame through the pause menu)
           yield;
           continue;
         }

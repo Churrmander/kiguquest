@@ -58,7 +58,7 @@
   /** The sections of the prize counter. Each prize: { kind, id, price, name, desc, icon() } */
   AR.catalogue = function () {
     const items = [
-      ['plum_treat', 60], ['wish_candy', 250], ['snack_bag', 300], ['quick_claw', 450],
+      ['plum_treat', 150], ['wish_candy', 250], ['snack_bag', 300], ['quick_claw', 450],
       ['expert_belt', 700], ['sturdy_sash', 700], ['coin_charm', 900],
     ].filter(([id]) => NP.data.items[id]).map(([id, price]) => ({ kind: 'item', id, price, name: NP.data.items[id].name, desc: NP.data.items[id].desc }));
     const pins = Object.keys(NP.data.types).filter((t) => NP.data.items['pin_' + t])
@@ -68,7 +68,7 @@
       kigu.push({ kind: 'kigu', id: AR.CABBI, price: 2000, level: 25, name: NP.data.species[AR.CABBI].name + ' Lv25',
         desc: 'A taxi Kigu who rushes everywhere, very kindly. The arcade only has the one.', once: true });
     }
-    const cards = Object.keys(AR.CARDS).filter((k) => k !== 'plain').map((k) => ({ kind: 'card', id: k, price: AR.CARDS[k].price, name: AR.CARDS[k].name + ' card', desc: AR.CARDS[k].desc, once: true }));
+    const cards = Object.keys(AR.CARDS).map((k) => ({ kind: 'card', id: k, price: AR.CARDS[k].price, name: AR.CARDS[k].name + ' card', desc: AR.CARDS[k].desc, once: true }));
     const out = [{ name: 'Held items', list: items }, { name: 'Type Pins', list: pins }];
     if (kigu.length) out.push({ name: 'Kigu', list: kigu });
     out.push({ name: 'Card designs', list: cards });
@@ -77,7 +77,7 @@
   /** Has this one-off prize already been taken? */
   AR.owned = function (p) {
     const a = AR.st();
-    if (p.kind === 'card') return !!a.cards[p.id];
+    if (p.kind === 'card') return p.id === 'plain' || !!a.cards[p.id];
     if (p.kind === 'kigu') return !!a.bought[p.id];
     return false;
   };

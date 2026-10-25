@@ -102,7 +102,6 @@
   // ------------------------------------------------------------------------------------------- game
   function create() {
     const g = { score: 0, lives: 3, over: false, wave: 0, t: 0, px: 120, shots: [], lint: [], pops: [], bolts: [], bunny: null, dead: 0, clearT: 0 };
-    g.bolts = [28, 82, 150, 204].map((x) => ({ x, y: 136, bmp: boltBmp() }));
     newWave(g);
     g.update = () => update(g);
     g.draw = (fb, t) => draw(g, fb, t);
@@ -111,6 +110,9 @@
 
   function newWave(g) {
     g.wave++;
+    // fresh cloth bolts every wave
+    g.bolts = [28, 82, 150, 204].map((x) => ({ x, y: 136, bmp: boltBmp() }));
+    g.bunny = null;
     g.moths = [];
     const kinds = ['luna', 'tiger', 'tiger', 'dust', 'dust'];
     const drop = Math.min(3, g.wave - 1) * 8;
@@ -123,6 +125,7 @@
   function update(g) {
     g.t++;
     if (g.clearT > 0) { if (--g.clearT === 0) newWave(g); tickFx(g); return; }
+    if (g.wave === 1 && g.t < 60) return; // GET READY!
     // player
     if (g.dead > 0) {
       if (--g.dead === 0) { if (g.lives <= 0) { g.over = true; } else { g.px = 120; g.lint = []; } }
@@ -153,7 +156,7 @@
 
     // formation march: fewer moths = faster
     const alive = g.moths.filter((m) => m.alive);
-    if (!alive.length) { g.score += 100 * g.wave; g.clearT = 70; g.shots = []; g.lint = []; K.sfx('levelup'); return; }
+    if (!alive.length) { g.score += 100 * g.wave; g.clearT = 70; g.shots = []; g.lint = []; g.bunny = null; K.sfx('levelup'); return; }
     const period = Math.max(2, Math.floor(alive.length / 2.2) - (g.wave - 1) * 2);
     if (++g.step >= period) {
       g.step = 0;
@@ -169,13 +172,16 @@
       for (const b of g.bolts) if (K.hit({ x: m.x, y: m.y, w: 12, h: 9 }, { x: b.x, y: b.y, w: 24, h: 14 })) b.bmp.fillRect(m.x - b.x, m.y - b.y, 12, 9, 0);
     }
 
-    // lint drops from the lowest moth of a random column
-    const rate = 0.012 + g.wave * 0.006 + (45 - alive.length) * 0.0006;
-    if (g.lint.length < 3 + g.wave && K.chance(rate * 3)) {
-      const cols = {};
-      for (const m of alive) { const k = Math.round(m.x / 6); if (!cols[k] || cols[k].y < m.y) cols[k] = m; }
-      const keys = Object.keys(cols);
-      const m = cols[keys[K.rand(keys.length)]];
+    // lint drops from the lowest moth of a column. The rate shrinks with the columns left, so the last few moths can't wall
+    // the cart in, moths flying low over the cart hold their lint (too close to dodge), and one drop in three is aimed at
+    // the cart so hiding in a corner doesn't work
+    const cols = {};
+    for (const m of alive) { const k = Math.round(m.x / 6); if (!cols[k] || cols[k].y < m.y) cols[k] = m; }
+    const keys = Object.keys(cols).filter((k) => cols[k].y + 9 <= 140);
+    const rate = (0.012 + g.wave * 0.006 + (45 - alive.length) * 0.0006) * Math.min(1, keys.length / 9);
+    if (keys.length && g.lint.length < Math.min(3 + g.wave, 2 * keys.length) && K.chance(rate * 3)) {
+      let m = cols[keys[K.rand(keys.length)]];
+      if (K.rand(3) === 0) for (const k of keys) if (Math.abs(cols[k].x + 6 - g.px) < Math.abs(m.x + 6 - g.px)) m = cols[k];
       g.lint.push({ x: m.x + 4, y: m.y + 9, v: 1.2 + g.wave * 0.2 });
     }
     for (const l of g.lint) {
@@ -263,7 +269,7 @@
       else fb.blit(POP(), p.x, p.y);
     }
     if (g.clearT > 0) K.center(fb, 'WAVE ' + g.wave + ' CLEAR!', 80, '#f8d048');
-    else if (g.t < 60 && g.wave === 1) K.center(fb, 'GET READY!', 80, '#f8d048');
+    else if (g.t < 60 && g.wave === 1) K.center(fb, 'GET READY!', 100, '#f8d048');
   }
 
   function drawTitle(fb, t) {
@@ -281,7 +287,7 @@
 
   AR.register('cab_1', {
     title: 'Moth Patrol', cost: 3, lights: false, create, drawTitle, lifeIcon,
-    tickets: (score) => Math.floor(score / 30),
+    tickets: (score) => Math.floor(score / 60),
     bot(g, f) {
       // tests and previews: chase the nearest moth column, step out from under falling lint, fire when lined up
       const keys = [];
