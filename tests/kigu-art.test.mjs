@@ -7,7 +7,7 @@ for (const f of files) assert.ok(fs.existsSync(f), 'manifest file missing: ' + f
 const { NP } = loadNP({ files: [...CORE, ...files] });
 const K = NP.art.kigu;
 const ids = K.ids();
-const PHASE1 = 'konko kitsuri kyuubelle ottopi ottelia ottomarine sprubun lapinlily lapinelle mittsy meowvelle nibbi nibblenna peepi larkette larkessa silkie cocoona mothelia buzzlet hunnibloom webbi webelle daisip daisia ribbi ribbelle molli molluna'.split(' ');
+const PHASE1 = 'konko kitsuri kyuubelle ottopi ottelia ottomarine sprubun lapinlily lapinade mittsy meowtrice nibbi nibblenna peepi larkette larkessa silkie cocoona mothelia buzzlet hunnibloom webbi spindra daisip daisia ribbi lilyrana molli molluna'.split(' ');
 for (const id of PHASE1) assert.ok(K.has(id), 'missing phase 1 kigu ' + id);
 assert.ok(ids.length >= 58, 'expected full roster, got ' + ids.length);
 assert.equal(K.has('nope'), false);
