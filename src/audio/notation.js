@@ -613,7 +613,14 @@
     let tex = pool[Math.floor(rf() * pool.length)];
     if (st === 2 && tex === 'clean' && rf() < 0.6) tex = 'rasp'; // final forms get some grit
     if (contour === 4) tex = 'growl';
+    // gesture = the overall shape of the call; palette = the instrument it is sung with (both drive most of the audible variety)
+    const rg = rngOf('crygest:' + (rf() < 0.55 ? family : id));
+    // known species are spread evenly over gestures (by dex number) and families over palettes, so no two neighbours sound alike
+    const fam = sp && NP.data.species[family];
+    const gesture = sp && sp.num ? GESTURES[(sp.num * 5 + 2) % GESTURES.length] : GESTURES[Math.floor(rg() * GESTURES.length)];
+    const palette = fam && fam.num ? PALETTES[(fam.num * 3) % PALETTES.length] : PALETTES[Math.floor(rf() * PALETTES.length)];
     return {
+      gesture, palette, gseed: 'crynotes:' + id, interval: [3, 4, 5, 6, 7, 12][Math.floor(rg() * 6)],
       tex, rough: 0.5 + rf() * 0.5,
       types, word, syl: syllables(word), stage: st + 1, body, duty, det, fshift,
       base, contour,
@@ -621,6 +628,84 @@
       wob: ri() < 0.35,
       bang: /!$/.test(word), ask: /\?$/.test(word), trill: /~$/.test(word),
     };
+  }
+  // ---------- non-spoken cry gestures ----------
+  // Gen 5 cries are not all "words": many are trills, howls with a leap, sirens, two-voice calls, chatter, roars or coos.
+  const GESTURES = ['spoken', 'spoken', 'trill', 'call', 'siren', 'chord', 'chatter', 'roar', 'coo', 'bleat', 'chirp'];
+  const PALETTES = ['pure', 'reedy', 'brassy', 'hollow', 'glassy', 'metal', 'nasal', 'pulse'];
+  /** One sung note in the family's palette: {t, dur, f, f2, vol, env, vib}. */
+  function paletteNote(ev, p, n) {
+    const fz = (f) => Math.min(4000, Math.max(55, f));
+    const base = { t: n.t, dur: n.dur, env: n.env || 'hold', f: fz(n.f), f2: fz(n.f2 || n.f) };
+    const vib = n.vib ? { vib: { rate: n.vib.rate, depth: n.f * n.vib.depth } } : {};
+    const add = (o, k) => ev.push(Object.assign({}, base, vib, o, { vol: Math.min(1, n.vol * k) }));
+    switch (p.palette) {
+      case 'pure': add({ ch: 'sin' }, 0.9); add({ ch: 'tri', f: fz(n.f * 2), f2: fz((n.f2 || n.f) * 2) }, 0.25); break;
+      case 'reedy': add({ ch: 'p1', duty: 0, lp: 3000 }, 0.75); add({ ch: 'tri' }, 0.4); break;
+      case 'brassy': add({ ch: 'saw', lp: 900, lp2: 3200, lpt: Math.min(0.12, n.dur) }, 0.7); add({ ch: 'sin' }, 0.35); break;
+      case 'hollow': add({ ch: 'sq', lp: 1800 }, 0.55); add({ ch: 'sin', f: fz(n.f / 2), f2: fz((n.f2 || n.f) / 2) }, 0.35); break;
+      case 'glassy': add({ ch: 'sin', env: 'decay' }, 0.8); add({ ch: 'sin', f: fz(n.f * 2.76), f2: fz((n.f2 || n.f) * 2.76), env: 'decay' }, 0.3); add({ ch: 'tri' }, 0.3); break;
+      case 'metal': add({ ch: 'sin', vib: { rate: n.f * 1.41, depth: n.f * 0.9 } }, 0.6); add({ ch: 'tri' }, 0.4); break; // FM: inharmonic, bell/metal-like
+      case 'nasal': add({ ch: 'p1', duty: 1, lp: 2200 }, 0.6); ev.push({ t: n.t, dur: n.dur, ch: 'noi', d: 'n', f: 1200, f2: 1100, vol: n.vol * 0.25, env: 'hold' }); break;
+      default: add({ ch: 'p1', duty: 2, lp: 2600 }, 0.65); add({ ch: 'tri', f: fz(n.f * 1.005), f2: fz((n.f2 || n.f) * 1.005) }, 0.45);
+    }
+  }
+  function gestureNotes(p) {
+    const r = rngOf(p.gseed), b = p.base, L = [0.5, 0.8, 1.1][p.stage - 1] * (0.8 + r() * 0.4), up = r() < 0.5 ? 1 : -1;
+    const iv = Math.pow(2, p.interval / 12), N = [];
+    switch (p.gesture) {
+      case 'trill': { // rapid repeats on a moving line
+        const rate = 9 + r() * 9, k = Math.max(4, Math.round(L * rate)), drift = up * (0.2 + r() * 0.4);
+        for (let i = 0; i < k; i++) { const x = i / k; N.push({ t: i / rate, dur: 0.7 / rate, f: b * (1 + drift * x), vol: 0.75, env: 'pluck' }); }
+        break;
+      }
+      case 'call': // a held note, a sliding leap, a held note (a howl / yodel)
+        N.push({ t: 0, dur: L * 0.4, f: b, f2: b * 1.03, vol: 0.8, env: 'swell', vib: { rate: 6, depth: 0.02 } });
+        N.push({ t: L * 0.38, dur: L * 0.62, f: b * 1.03, f2: up > 0 ? b * iv : b / iv, vol: 0.8, env: 'hold', vib: { rate: 6.5, depth: 0.03 } });
+        break;
+      case 'siren': // one continuous sweep there and back
+        N.push({ t: 0, dur: L * 0.5, f: b, f2: up > 0 ? b * iv : b / iv, vol: 0.8, env: 'swell' });
+        N.push({ t: L * 0.48, dur: L * 0.52, f: up > 0 ? b * iv : b / iv, f2: b * 0.9, vol: 0.8, env: 'hold' });
+        break;
+      case 'chord': { // two voices sliding together (a tritone or second for eerie beating)
+        const f2 = up > 0 ? 1.12 : 0.85;
+        N.push({ t: 0, dur: L, f: b, f2: b * f2, vol: 0.6, env: 'swell', vib: { rate: 5, depth: 0.015 } });
+        N.push({ t: 0.03, dur: L - 0.03, f: b * iv, f2: b * iv * f2, vol: 0.5, env: 'swell', vib: { rate: 5.5, depth: 0.015 } });
+        break;
+      }
+      case 'chatter': { // a few staccato blips on random pitches
+        const k = 3 + Math.floor(r() * 3) + (p.stage - 1) * 2; let t = 0;
+        for (let i = 0; i < k; i++) { const d = (0.04 + r() * 0.06) * (1 + (p.stage - 1) * 0.3); N.push({ t, dur: d, f: b * Math.pow(2, (r() * 10 - 3) / 12), vol: 0.75, env: 'pluck' }); t += d + 0.02 + r() * 0.05; }
+        break;
+      }
+      case 'roar': // a low swell under a big band of noise that opens and closes
+        N.push({ t: 0, dur: L, f: b * 0.5, f2: b * 0.42, vol: 0.7, env: 'swell', vib: { rate: 24, depth: 0.04 }, roar: true });
+        break;
+      case 'coo': // soft, slow vibrato, a gentle dip
+        N.push({ t: 0, dur: L * 0.45, f: b, f2: b * 0.9, vol: 0.7, env: 'swell', vib: { rate: 4.5, depth: 0.02 } });
+        N.push({ t: L * 0.5, dur: L * 0.5, f: b * 0.92, f2: b * 0.85, vol: 0.6, env: 'swell', vib: { rate: 4.5, depth: 0.025 } });
+        break;
+      case 'bleat': // a nasal note with a deep fast wobble
+        N.push({ t: 0, dur: L * 0.8, f: b, f2: b * (up > 0 ? 1.1 : 0.9), vol: 0.8, env: 'hold', vib: { rate: 7 + r() * 4, depth: 0.07 } });
+        break;
+      default: { // chirp: fast up-sweeps, repeated
+        const k = 2 + Math.floor(r() * 2) + (p.stage - 1), sp = 0.12 + (p.stage - 1) * 0.05;
+        for (let i = 0; i < k; i++) N.push({ t: i * sp, dur: sp * 0.7, f: b * 0.8, f2: b * (1.4 + r() * 0.5), vol: 0.75, env: 'pluck' });
+      }
+    }
+    return N;
+  }
+  function gestureCry(p) {
+    const ev = [];
+    for (const n of gestureNotes(p)) {
+      paletteNote(ev, p, n);
+      if (n.roar) { ev.push({ t: n.t, dur: n.dur, ch: 'noi', d: 'n', f: 500, f2: 1800, vol: 0.55, env: 'swell' }); ev.push({ t: n.t + n.dur * 0.5, dur: n.dur * 0.5, ch: 'noi', d: 'n', f: 1800, f2: 400, vol: 0.4, env: 'decay' }); }
+    }
+    // the family's voice texture still colours the gesture
+    const T = Math.max(...ev.map((e) => e.t + e.dur));
+    if (p.tex === 'breathy') ev.push({ t: 0, dur: T, ch: 'noi', d: 'n', f: 1600, f2: 1100, vol: 0.35, env: 'swell' });
+    if (p.tex === 'rasp' || p.tex === 'growl') ev.push({ t: 0, dur: T, ch: 'saw', f: Math.max(55, p.base / 2), f2: Math.max(55, p.base / 2.2), vol: 0.22 * p.rough, env: 'hold', lp: 1500, vib: { rate: 31, depth: 4 } });
+    return ev;
   }
   // word-level pitch curves, x in 0..1 across the whole cry
   const CONTOURS = [
@@ -633,9 +718,24 @@
     (x) => (x < 0.22 ? 1.5 - 1.7 * x : 1.13 - 0.3 * (x - 0.22)), // yip-call
     (x) => 1 - 0.24 * Math.sin(Math.PI * x) + 0.1 * x, // coo (dip)
   ];
+  const CRY_PW = 0.13, CRY_PW_SPOKEN = 0.1; // target power estimate for gesture cries (tuned against the render tool's LUFS)
   const CRY_GAIN = 1.35; // cries sit at the top of the SFX loudness ladder (~ -20 LUFS short-term)
+  // rough loudness match: cries differ a lot in how much sound they make, so scale each to a common power estimate (+-3 LU in practice)
+  function levelCry(ev, target) {
+    const W = { p1: MIX.p1, sin: MIX.sin, tri: MIX.tri, saw: MIX.saw, sq: MIX.sq, noi: MIX.nz * 0.6 };
+    const T = Math.max(...ev.map((e) => e.t + e.dur));
+    const pw = ev.reduce((a, e) => a + Math.pow(e.vol * (W[e.ch] || 0.15), 2) * e.dur * (e.env === 'hold' ? 1 : 0.5), 0) / Math.max(0.25, T);
+    const k = Math.max(0.5, Math.min(4, target / Math.sqrt(pw + 1e-9)));
+    for (const e of ev) { e.vol = Math.min(1, e.vol * CRY_GAIN * k); if (e.rev === undefined) e.rev = 0.12; }
+    return ev;
+  }
   /** Build the events of a cry from its parameters. */
   function cryFromParams(p) {
+    if (p.gesture !== 'spoken') {
+      const ge = gestureCry(p);
+      addMotifs(ge, p);
+      return levelCry(ge, CRY_PW);
+    }
     const ev = [];
     const P = CONTOURS[p.contour] || CONTOURS[0];
     const syl = p.syl.length ? p.syl : [{ on: '', v: 'a', co: '' }];
@@ -717,8 +817,7 @@
       t = t0 + dur + (last ? 0 : 0.018);
     });
     addMotifs(ev, p);
-    for (const e of ev) { e.vol = Math.min(1, e.vol * CRY_GAIN); if (e.rev === undefined) e.rev = 0.12; }
-    return ev;
+    return levelCry(ev, CRY_PW_SPOKEN);
   }
   // Type motifs: a short accent per type layered into the cry (primary type full, secondary at 0.6), so a Kigu's type can be heard
   // in its voice, the way Gen 5 cries hint at fire, water or electricity. T = voiced length, b = base pitch, k = level scale.

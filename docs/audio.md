@@ -129,6 +129,10 @@ type's own impact layer `imp_<type>`. `engine.js` gives battle sounds (`hit*`, `
 Ids without species data (numbers, test ids) get a pseudo-word from the hash. Cries are deterministic, 0.2-0.55 s long, at most 2.5 kHz per event. They take
 a string/number id or an object with `.id`. `tools/audio-render.mjs cry:<id>` loads the species table so it renders the real word.
 
+Gestures: each species has a call shape, spread evenly over the dex: `spoken` (the cry word, as above), `trill`, `call` (howl with a leap), `siren`,
+`chord` (two voices), `chatter`, `roar`, `coo`, `bleat` or `chirp`. Families share a palette (`pure`, `reedy`, `brassy`, `hollow`, `glassy`, `metal` FM,
+`nasal`, `pulse`), so evolutions sound related but each call has its own shape. `levelCry` matches loudness (about -21 LUFS, ±3).
+
 Type motifs: `MOTIFS` in notation.js layers a short accent per type into every species cry (primary type full, secondary at 0.6): Ember crackles,
 Tide bubbles, Volt buzzes, Sprout rustles, Terra rumbles, Iron rings, and so on. Each family also gets a voice texture (clean, rasp, screech, breathy, warble or growl, biased by type), and cries run ~0.3 s for a
 first stage up to ~1.4 s for a final form, like Gen 5 cries (measured: 0.3–1.7 s, only about half clean tone).
