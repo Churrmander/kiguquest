@@ -148,7 +148,7 @@ i 1900, o 720, u 520 Hz), the onset shapes the attack (plosive click and scoop, 
 5. Reference listening only: the owner keeps Gen 5 cries in `.preview/reference/` (git-ignored) for comparison; never copy or commit any of it.
 
 ## Content
-DS-style arrangements so far: home_town, route_meadow, town_thimble, battle_wild (the rest are legacy and play through the softened patches).
+DS-style arrangements: every song and jingle (legacy p1/p2/tri/noi songs still compile and play through the softened patches).
 Songs: title, intro, home_town, route_meadow, town_thimble, tea_house, battle_wild, battle_tailor, battle_master, battle_rival, battle_society,
 forest_gingham, city_seamstead, society_theme, cave, sad, credits (all P1), plus P2: battle_legend, battle_admin, battle_needle, battle_grand, league,
 hall_of_fame, ending. Jingles: all 13 in BIBLE §8. SFX: all 39 ids. Not yet written: battle_damask, city_b…city_h, route_b….
