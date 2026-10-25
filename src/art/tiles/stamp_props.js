@@ -70,6 +70,25 @@
     },
   });
 
+  K.stamp('bench_v', {
+    // the same park bench turned side-on (1x2), for a path that runs north-south: seat facing west, backrest on the east
+    w: 1, h: 2,
+    paint: () => {
+      const b = K.B(16, 32);
+      // backrest (east): two rails with a dark gap, joined to the seat by a dark post at each end
+      b.fillRect(12, 2, 3, 26, P.o3); b.hline(12, 2, 3, P.o1); b.vline(13, 3, 24, P.o5); b.vline(14, 3, 24, P.o4);
+      b.set(11, 6, P.o5); b.set(11, 23, P.o5);
+      // seat: two lengthwise slats with a dark gap, plain end caps top and bottom
+      b.fillRect(5, 4, 6, 24, P.o2); b.vline(5, 4, 24, P.o1); b.vline(8, 4, 24, P.o4); b.vline(10, 4, 24, P.o3);
+      for (const y of [3, 26]) { b.fillRect(5, y, 6, 2, P.o3); b.hline(5, y, 6, y === 3 ? P.o1 : P.o2); }
+      // legs poking out under the west edge, near each end
+      for (const y of [6, 22]) { b.fillRect(3, y, 2, 3, P.o4); b.vline(3, y, 3, P.o3); }
+      K.outer(b, WOOD_OUT);
+      K.shadowRect(b, 1, 5, 2, 23, 70);   // its shadow falls along the long west side
+      return b;
+    },
+  });
+
   // ============================================================================================ lamp (1x2)
   K.stamp('lamp', {
     w: 1, h: 2, over: 1, solid: ['.', '#'], // only the base blocks: the lantern head hangs over the walkable tile above it

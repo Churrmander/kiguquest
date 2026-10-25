@@ -98,8 +98,10 @@
   // the sign, and the gate itself when you bump into it; after the Volt Button they mark the end of the playtest build
   M.def.interact.push({ x: 32, y: 13, script: eastGate, note: 'east sign (Ch. 4 opens this)' }, { x: 34, y: 14, script: eastGate, note: 'east gate' }, { x: 34, y: 15, script: eastGate, note: 'east gate' });
   M.sign(19, 10, 'CRISP & CO.\\nEverything flat. Everything fair.\\pStaff only. Ask on the top floor.', 'Crisp & Co. sign');
-  M.stamp('lamp', 11, 11).stamp('lamp', 24, 11).stamp('lamp', 11, 16).stamp('lamp', 24, 16).stamp('lamp', 8, 12).stamp('lamp', 30, 12);
-  M.stamp('bench', 25, 17).stamp('flowerbed', 14, 9).stamp('flowerbed', 20, 9).stamp('well', 17, 14);   // the fountain, dead centre of the plaza where the avenue crosses the Crisp & Co. lane
+  // lamps stand on the corners where two roads meet (each stamp's post is the tile below it)
+  for (const x of [4, 7, 11, 24, 27, 30]) M.stamp('lamp', x, 12);   // north side of the avenue: Tea lane, plaza, Store lane
+  M.stamp('lamp', 11, 15).stamp('lamp', 24, 15);                    // south side, at the plaza corners
+  M.stamp('bench_v', 24, 18).stamp('flowerbed', 14, 9).stamp('flowerbed', 20, 9).stamp('well', 17, 14);   // the fountain, dead centre of the plaza where the avenue crosses the Crisp & Co. lane
   M.trees([[2, 9], [9, 6], [24, 4], [33, 8], [2, 18], [33, 22], [33, 19], [11, 4]]);
   M.stamp('barrel', 26, 10).stamp('crate', 31, 10).stamp('bush', 3, 22).stamp('bush', 32, 25);
   M.spawn('west', 2, 14, 'right').spawn('east', 33, 14, 'left');
