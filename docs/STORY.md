@@ -26,6 +26,42 @@ level designers have not built yet are marked (proposed) — `docs/levels.md` is
 (3) be specific ("a lemon macaron", not "a snack"); (4) one verbal tic per character, used sparingly; (5) people talk about what they
 *do*, not about the plot; (6) don't explain the joke; (7) 2 lines per box, ~75 characters — if it doesn't fit, cut, don't cram.
 
+**Dialogue style requirements (owner, 2026-10-25; these override any "laconic" or "five words" voice note below):**
+
+Write dialogue that sounds like something a real person would spontaneously say, not like stylized prose arranged into dialogue-shaped sentences.
+Natural speech takes priority over brevity, atmosphere, and poetic phrasing.
+
+* Prefer complete, conversational sentences. Use sentence fragments only when they have a clear purpose, such as hesitation, interruption, emphasis, uncertainty, or a character's established manner of speaking.
+* Do not automatically shorten sentences to make dialogue sound gritty, mysterious, dramatic, ancient, or profound.
+* Avoid consecutive short declarative sentences that could naturally be combined into one flowing thought.
+* Use ordinary connective words, contractions, and conversational phrasing where appropriate. Characters should be able to explain themselves without sounding like they are reciting an inscription.
+* Avoid cryptic metaphors, lyrical comparisons, and poetic shorthand unless they suit the individual character, situation, and setting.
+* Do not confuse a character being knowledgeable or reserved with a character speaking unnaturally.
+* Give each character a distinct voice through their vocabulary, temperament, knowledge, priorities, and conversational habits, rather than forcing every character to speak in the same clipped style.
+* Allow dialogue to breathe. People sometimes elaborate, qualify what they mean, repeat a word for emphasis, or add a small clarification without it being unnecessary exposition.
+* Read every line aloud mentally. If it sounds theatrical, artificially profound, or unnatural in ordinary speech, rewrite it.
+* Preserve subtext and avoid overexplaining, but do not sacrifice natural sentence structure merely to make a line shorter.
+
+Revision test: Before finalizing dialogue, identify sentences that feel like isolated fragments or decorative metaphors. Rewrite them into natural speech unless there is a specific character-driven reason to retain them.
+Do not make every character verbose or casual. The goal is believable speech appropriate to the character and setting, not generic modern conversation.
+
+**Metaphor and Simile Quality Control (owner, 2026-10-25; applies to dialogue, narration and signs):**
+
+Do not generate metaphors, similes, or poetic comparisons merely to make prose sound literary.
+Every comparison must communicate a recognizable quality that the reader can understand without inventing an explanation for the author.
+Before using a metaphor or simile, ask:
+
+1. What exact quality am I describing?
+2. What concrete, recognizable property of the comparison illustrates that quality?
+3. Would a reader naturally understand the connection without additional context?
+
+Reject comparisons that connect unrelated qualities, combine sensory details without a clear purpose, or sound evocative while conveying little meaningful information.
+For example, "slow as warm sand" is not acceptable without specific context establishing why warm sand represents slowness. Temperature alone does not establish speed.
+Prefer precise, concrete language over decorative imagery. Do not force a metaphor where an ordinary description communicates the idea more clearly.
+Use figurative language when it reveals something about the character, setting, emotion, or experience. Do not use it simply because a sentence seems too plain.
+A beautiful-sounding sentence that does not make sense is a failed sentence.
+
+
 ## 2. Themes (and where you can see them)
 
 1. **Individuality vs. uniformity.** The land is a *patchwork*; the Starch Society wants a *plain white weave*. Every Kigu costume is
@@ -102,7 +138,7 @@ Each Master is written to the same seven-slot script (`script.<name>.1..7`, see 
 | 7 | **Rue** (Loomhaven, Salon 7) | Spook | 40s, soft voice, lantern-keeper's coat, funny in a deadpan way; "It's not spooky. It's shy." | "Nothing is ever truly lost." | Keeps the **Lost & Found** for everything the Snarl scattered. In a drawer: **Hester's mother's thimble**, lost thirty years ago. She knows why Damask became Damask. | violet mourning-silk / Disc (Spook move) |
 | 8 | **Brocade** (Selvage, Salon 8 — final city, proposed) | Drake | mid-20s, tall, black braid, gold-dragon brocade coat, perfect posture; formal, exacting, secretly kind; collects chipped teacups mended with gold | "Stand tall. Stitch true." | Warden of the Gate and the best argument *for* order: she shows that structure can serve people. Damask's former protégée and the rival's mentor-to-be. After the climax she hangs a broken Press plate in her Salon "as scaffolding, not a wall." | indigo-and-gold brocade / Disc (Drake move) |
 
-**How Masters speak:** Poppy — soft, teasing, mother-hen. Bryn — breathless, lists. Zip — stage patter, then sincerity. Gusset — five words, then a surprise. Dart — short, bold, slang from the airfield.
+**How Masters speak:** Poppy — soft, teasing, mother-hen. Bryn — breathless, lists. Zip — stage patter, then sincerity. Gusset — a man of few words who still speaks in whole sentences, then a surprise. Dart — short, bold, slang from the airfield.
 Purl — slow, exact, knitting words ("cast on", "drop a stitch", "purl"). Rue — whisper-polite, gallows-gentle humour. Brocade — complete sentences, no contractions until she warms up.
 
 ## 6. The Starch Society
@@ -220,9 +256,9 @@ Bobbin finds her tape measure; the rival, at the Atelier door: "Last one in buys
 | Thimble Village | cosy folk; tea, thread, neighbours | "Poppy sews them tiny cardigans. It's unfair how cute they are." | sarcasm |
 | Gingham Woods / Hemline | hushed woodland; then busy craft-town, practical | "Measure twice. Hem once." | flowery speech |
 | Seamstead City | fast, jazzy, branded, people talking over each other | "Darling, the lights! Have you *seen* the lights?" | long sentences |
-| Dust Bowl Desert | dry, laconic, sun-baked | "It's a dry heat. So is the conversation." | exclamation marks |
+| Dust Bowl Desert | dry, unhurried, sun-baked (whole sentences, never clipped) | "It's a dry heat. So is the conversation." | exclamation marks |
 | Bobbin Quarry | gruff, plain, solid | "Good seam. Don't pick at it." | metaphors beyond stone/stitch |
-| Cave | echoey, nervous, short | "Hello? ...hello... (It echoes. I checked.)" | long speeches |
+| Cave | echoey, nervous, rambling a little | "Hello? ...hello... (It echoes. I checked.)" | long speeches |
 | Kite Hill | breezy, excited, airfield slang | "Wind's up! Hold your hat!" | anything slow |
 | Woolen Peak | slow, calm, dry warmth; knitting words | "Cast on a scarf and the day knits itself." | shouting |
 | Loomhaven | grand, old, ceremonial; lantern-lit | "The Loom has watched this harbour longer than the harbour has watched it." | slang |
