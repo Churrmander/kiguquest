@@ -61,12 +61,12 @@ tail / accessories carry it. Distinct silhouette + palette per family. Stage 2 a
 5. `ottelia` Ottelia — Tide — 2/3, →Lv36 `ottomarine` — yellow rain-poncho with sailor collar, bubble hair-clips, otter tail worn like a scarf, swim-ring.
 6. `ottomarine` Ottomarine — Tide/Brawl — 3/3 — captain's coat and cap, twin buns, big paddle tail, life-ring shield.
 7. `sprubun` Sprubun — Sprout — 1/3, →Lv17 `lapinlily` — mint bunny onesie, long floppy ears with a sprout growing between them, clover print, pink cheeks. "Pyu!"
-8. `lapinlily` Lapinlily — Sprout — 2/3, →Lv36 `lapinelle` — lily-petal hood, leaf-tipped ears, apron dress, pale-green braid.
-9. `lapinelle` Lapinelle — Sprout — 3/3 — flower crown, ears flowing like a blossoming cape, petal skirt, watering-can wand, floating petals.
+8. `lapinlily` Lapinlily — Sprout — 2/3, →Lv36 `lapinade` — lily-petal hood, leaf-tipped ears, apron dress, pale-green braid.
+9. `lapinade` Lapinade — Sprout — 3/3 — flower crown, ears flowing like a blossoming cape, petal skirt, watering-can wand, floating petals.
 
 **Meadow Lane / Thimble Village (P1)**
-10. `mittsy` Mittsy — Fluff — 1/2, →Lv18 `meowvelle` — kitten: white-and-grey cat onesie with oversized mitten paws, sleepy eyes, bell on the hood. "Mya"
-11. `meowvelle` Meowvelle — Fluff — 2/2 — dapper tuxedo cat: bow tie, little top hat with ears poking out, cane, ribboned tail.
+10. `mittsy` Mittsy — Fluff — 1/2, →Lv18 `meowtrice` — kitten: white-and-grey cat onesie with oversized mitten paws, sleepy eyes, bell on the hood. "Mya"
+11. `meowtrice` Meowtrice — Fluff — 2/2 — dapper tuxedo cat: bow tie, little top hat with ears poking out, cane, ribboned tail.
 12. `nibbi` Nibbi — Fluff — 1/2, →Lv15 `nibblenna` — hamster in cream-caramel onesie, puffed seed-stuffed cheeks, tiny round ears, rust twin tails. "Nom!"
 13. `nibblenna` Nibblenna — Fluff — 2/2 — baker hamster: apron, chef hat with ears, basket of buns.
 14. `peepi` Peepi — Fluff/Gale — 1/3, →Lv14 `larkette` — sparrow chick: yellow-brown feather onesie, wing-sleeves, feather-tuft hair. "Pip!"
@@ -77,40 +77,40 @@ tail / accessories carry it. Distinct silhouette + palette per family. Stage 2 a
 17. `silkie` Silkie — Buzz — 1/3, →Lv10 `cocoona` — silkworm: white fuzzy segmented onesie, stubby nub antennae hood, pale lavender hair, sleepy.
 18. `cocoona` Cocoona — Buzz — 2/3, →Lv30 `mothelia` — girl curled in a pale-green cocoon sleeping bag (only head + hands out), half-lidded.
 19. `mothelia` Mothelia — Buzz/Gale — 3/3 — moth-wing dress-cape with big patterned wings, feathery antenna headband, sparkle scales.
-20. `buzzlet` Buzzlet — Buzz — 1/2, →Lv20 `honeybelle` — bee: yellow-black striped onesie, tiny antennae, honey pot, blonde bobbles.
-21. `honeybelle` Honeybelle — Buzz/Sprout — 2/2 — honeycomb dress, flower crown, translucent wings, honey-dipper wand.
-22. `webbi` Webbi — Buzz — 1/2, →Lv22 `webelle` — spider: dark-purple hoodie with four extra small sleeve-arms for knitting, eight tiny red eye-spots on the hood, yarn ball; shy.
-23. `webelle` Webelle — Buzz/Spook — 2/2 — weaver: web-lace shawl, knitting needles, long black hair with silver threads.
+20. `buzzlet` Buzzlet — Buzz — 1/2, →Lv20 `hunnibloom` — bee: yellow-black striped onesie, tiny antennae, honey pot, blonde bobbles.
+21. `hunnibloom` Hunnibloom — Buzz/Sprout — 2/2 — honeycomb dress, flower crown, translucent wings, honey-dipper wand.
+22. `webbi` Webbi — Buzz — 1/2, →Lv22 `spindra` — spider: dark-purple hoodie with four extra small sleeve-arms for knitting, eight tiny red eye-spots on the hood, yarn ball; shy.
+23. `spindra` Spindra — Buzz/Spook — 2/2 — weaver: web-lace shawl, knitting needles, long black hair with silver threads.
 24. `daisip` Daisip — Sprout — 1/2, →Lv21 `daisia` — daisy: white petal hood framing her face, yellow onesie.
 25. `daisia` Daisia — Sprout — 2/2 — bouquet dress, petal halo, petal skirt.
-26. `ribbi` Ribbi — Tide — 1/2, →Lv25 `ribbelle` — frog: green raincoat, big round eyes on the hood, lily-pad umbrella.
-27. `ribbelle` Ribbelle — Tide/Terra — 2/2 — overalls + boots, lily-pad skirt, wide rain hat.
+26. `ribbi` Ribbi — Tide — 1/2, →Lv25 `lilyrana` — frog: green raincoat, big round eyes on the hood, lily-pad umbrella.
+27. `lilyrana` Lilyrana — Tide/Terra — 2/2 — overalls + boots, lily-pad skirt, wide rain hat.
 28. `molli` Molli — Terra — 1/2, →Lv24 `molluna` — mole: brown-grey onesie, giant digging mitts, goggles on forehead, squinty.
 29. `molluna` Molluna — Terra/Iron — 2/2 — miner: hard-hat with lamp, steel-toe boots, drill-pick.
 
 **Phase 2 (art after P1)**
 30. `pebbi` Pebbi — Pebble — 1/3, →Lv25 `boulderina` — pebble-patterned grey onesie, rock hair-clips, stoic.
-31. `boulderina` Boulderina — Pebble — 2/3, →Lv40 `craggelle` — boulder shoulder-guards, crystal chips in hair.
-32. `craggelle` Craggelle — Pebble — 3/3 — crystal-crowned gem queen with boulder gauntlets.
+31. `boulderina` Boulderina — Pebble — 2/3, →Lv40 `craggoth` — boulder shoulder-guards, crystal chips in hair.
+32. `craggoth` Craggoth — Pebble — 3/3 — crystal-crowned gem queen with boulder gauntlets.
 33. `sparkin` Sparkin — Volt — 1/2, →Lv26 `voltessa` — squirrel: yellow onesie, zigzag-stripe tail, static-fluffed hair. "Zip!"
 34. `voltessa` Voltessa — Volt — 2/2 — bolt-shaped tail cape, tesla-coil hair buns, goggles, fingerless gloves.
 35. `kumi` Kumi — Brawl — 1/3, →Lv25 `kumara` — bear cub: brown onesie, bandage-wrapped mitt paws, determined pout.
 36. `kumara` Kumara — Brawl — 2/3, →Lv40 `kumazen` — boxing gloves, headband, braid.
 37. `kumazen` Kumazen — Brawl — 3/3 — monk robes over onesie, prayer beads, closed calm eyes, huge mitts.
-38. `hootie` Hootie — Dream/Gale — 1/2, →Lv28 `hootelle` — owl: brown-feather onesie, big round glasses, tiny book.
-39. `hootelle` Hootelle — Dream/Gale — 2/2 — mortarboard with ear tufts, feather shawl, scroll.
-40. `dozey` Dozey — Dream — 1/3, →Lv26 `slumbelle` — koala: grey onesie, clutches a pillow, half-closed eyes, yawning.
-41. `slumbelle` Slumbelle — Dream — 2/3, →Lv44 `somnia` — nightgown + nightcap, dream bubble, teddy.
+38. `hootie` Hootie — Dream/Gale — 1/2, →Lv28 `hootamo` — owl: brown-feather onesie, big round glasses, tiny book.
+39. `hootamo` Hootamo — Dream/Gale — 2/2 — mortarboard with ear tufts, feather shawl, scroll.
+40. `dozey` Dozey — Dream — 1/3, →Lv26 `slumbrio` — koala: grey onesie, clutches a pillow, half-closed eyes, yawning.
+41. `slumbrio` Slumbrio — Dream — 2/3, →Lv44 `somnia` — nightgown + nightcap, dream bubble, teddy.
 42. `somnia` Somnia — Dream — 3/3 — moon queen of dreams: starry robe, star blanket, floating dream orbs.
 43. `sheetie` Sheetie — Spook — 1/2, →Lv30 `spectrina` — bedsheet-ghost costume with big eyes peeking out of the eyeholes; shy.
 44. `spectrina` Spectrina — Spook — 2/2 — lace ghost dress, lantern, long translucent veil.
 45. `yukimi` Yukimi — Frost — 1/2, →Lv30 `yukiara` — snow bunny: white fluffy onesie with pompoms, scarf, pale-blue hair.
 46. `yukiara` Yukiara — Frost — 2/2 — snowflake crown, fur-trim frost cape, icicle wand.
 47. `pinny` Pinny — Sprout/Iron — 1/3, →Lv30 `needlette` — pincushion-tomato hat-hood, pins as hairpins, prickly.
-48. `needlette` Needlette — Sprout/Iron — 2/3, →Lv45 `thimbelle` — sewing-kit knight: thimble helmet, needle lance.
-49. `thimbelle` Thimbelle — Sprout/Iron — 3/3 — full thimble-plate armour dress, long thread cape.
-50. `shroomi` Shroomi — Nettle/Sprout — 1/2, →Lv28 `shroomelle` — mushroom: red-spotted cap hood, brown onesie, spore puffs.
-51. `shroomelle` Shroomelle — Nettle/Sprout — 2/2 — parasol cap, frilly gill skirt.
+48. `needlette` Needlette — Sprout/Iron — 2/3, →Lv45 `thimbrel` — sewing-kit knight: thimble helmet, needle lance.
+49. `thimbrel` Thimbrel — Sprout/Iron — 3/3 — full thimble-plate armour dress, long thread cape.
+50. `shroomi` Shroomi — Nettle/Sprout — 1/2, →Lv28 `shroomkin` — mushroom: red-spotted cap hood, brown onesie, spore puffs.
+51. `shroomkin` Shroomkin — Nettle/Sprout — 2/2 — parasol cap, frilly gill skirt.
 52. `purrlie` Purrlie — Shade — 1/2, →Lv20 `prowlette` — black cat burglar: domino mask, striped socks, stolen scarf; cheeky.
 53. `prowlette` Prowlette — Shade — 2/2 — phantom thief: top hat, cape, ribbon-lock tail.
 54. `draki` Draki — Drake — 1/3, →Lv50 `drakessa` — little dragon onesie (crimson/black), tiny horns hood, stubby tail.

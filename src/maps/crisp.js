@@ -60,7 +60,7 @@
     yield* c.sayT('crisp_b1.serge.1', ['Rows of white Kigu stand in the dark, perfectly still.', 'Their costumes are pressed flat as paper. They are smiling.']);
     yield* c.walk(c.npc('serge'), ['down', 2]);
     yield* c.sayT('crisp_b1.serge.2', ['Serge: Welcome to the Pressing Floor! Quality is consistency.\\pPlease mind your step. We do not walk here. We glide.', 'Serge: You are the Tailor who "rinsed" the shrine. We heard.\\pDo not worry. Nobody is hurt here. They are simply resting.']);
-    const won = yield* c.trainerBattle({ cls: 'Presser', name: 'Serge', look: 'pleat', ai: 2, reward: 20, music: 'battle_admin', team: T([['silkie', 20], ['mittsy', 20], ['sparkin|mittsy', 21], ['webelle|silkie', 21]]) });
+    const won = yield* c.trainerBattle({ cls: 'Presser', name: 'Serge', look: 'pleat', ai: 2, reward: 20, music: 'battle_admin', team: T([['silkie', 20], ['mittsy', 20], ['sparkin|mittsy', 21], ['spindra|silkie', 21]]) });
     if (!won) { yield* c.sayT('crisp_b1.serge.lose', ['Serge: Oh, dear. Please go and rest upstairs.\\pI will keep smiling until you come back.']); return; }
     c.set('crisp_serge_done');
     yield* c.sayT('crisp_b1.serge.win', ['Serge: ...Oh. I seem to have creased.\\pThat is a very strange feeling. I do not like it. I... do not mind it.']);
