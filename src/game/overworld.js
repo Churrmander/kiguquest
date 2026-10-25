@@ -165,6 +165,8 @@
     }
     *heal(text) { NP.State.healAll(); NP.snd.sfx('save'); if (text) yield* this.say(text); this.setHealPoint(); }
     *shop(list) { const s = new NP.ShopScene(list); NP.Game.push(s); yield* this.ow.waitFor(() => s.finished); }
+    /** the Shibuyarn arcade: a cabinet ('cab_1'..), 'coins' or 'prizes' (src/game/arcade/core.js) */
+    *arcade(id, o) { return yield* NP.arcade.run(this, id, o); }
     *pc() { const s = new NP.BoxScene(); NP.Game.push(s); yield* this.ow.waitFor(() => s.finished); }
     *warp(map, x, y, dir) { yield* this.ow.teleport(map, x, y, dir); }
     *trainerBattle(def) { return yield* this.ow.trainerBattle(def); }
@@ -427,7 +429,8 @@
         res = yield* this.runBattle({ wild: false, foe: party, trainer: { name: NP.fmt(def.name), cls: def.cls, look: def.look || 'tailor_f', ai: def.ai === undefined ? 1 : def.ai, reward: def.reward || 5, master: !!def.master, lose: def.lose }, bg: this.map.def.battleBg || 'grass', music: def.music, canLose: !!def.canLose });
       } catch (e) { throw e; }
       if (res.winner === 0) {
-        const money = (def.reward || 5) * Math.max.apply(null, def.team.map((t) => t.lv));
+        let money = (def.reward || 5) * Math.max.apply(null, def.team.map((t) => t.lv));
+        if (NP.arcade && NP.arcade.moneyBonus) money = NP.arcade.moneyBonus(money);
         NP.state.money += money;
         yield* this.say('{player} got $' + money + ' for winning!');
         return true;

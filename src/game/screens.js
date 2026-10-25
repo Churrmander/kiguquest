@@ -206,12 +206,25 @@
 
   // ===================================================================================== Tailor card
   class CardScene extends Scene {
-    constructor() { super('light'); }
-    enter() { this.spawn((function* (s) { yield; while (!Input.pressed.b && !Input.pressed.a) yield; NP.snd.sfx('cancel'); NP.Game.pop(); })(this)); }
-    draw(fb) {
+    constructor() { super('light'); this.page = 0; }
+    enter() {
+      this.spawn((function* (s) {
+        yield;
+        while (!Input.pressed.b && !Input.pressed.a) {
+          // Left/Right turns to the plush shelf won at the Shibuyarn arcade (src/game/arcade/cards.js)
+          const d = Input.menuDir();
+          if (NP.arcade && NP.arcade.drawPlushShelf && (d === 'left' || d === 'right')) { s.page ^= 1; NP.snd.sfx('cursor'); }
+          yield;
+        }
+        NP.snd.sfx('cancel'); NP.Game.pop();
+      })(this));
+    }
+    draw(fb, frame) {
       bgFill(fb, '#e0e8f8', '#d4def2');
       const st = NP.state;
-      ui.frame(fb, 8, 8, NP.W - 16, NP.H - 16, 'light');
+      if (NP.arcade && NP.arcade.drawCardFrame) NP.arcade.drawCardFrame(fb, 8, 8, NP.W - 16, NP.H - 16);
+      else ui.frame(fb, 8, 8, NP.W - 16, NP.H - 16, 'light');
+      if (this.page === 1) { NP.arcade.drawPlushShelf(fb, 8, 8, NP.W - 16, NP.H - 16, frame | 0); return; }
       ui.text(fb, 'TAILOR CARD', 20, 16, 'light', { color: '#d83838' });
       // the approved AutoSprite hero (same art as the battle send-out); the older generated portrait only as a fallback
       const as = NP.art.autosprite && NP.art.autosprite.trainer && NP.art.autosprite.trainer(NP.State.lookId());
