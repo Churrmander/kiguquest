@@ -21,7 +21,7 @@ assert.ok(t.mash(() => t.idle(), 6000), 'starter scene finishes');
 assert.equal(NP.state.party.length, 1);
 assert.equal(NP.state.party[0].species, 'konko');
 assert.equal(NP.state.starter, 'konko');
-assert.equal(NP.state.rivalStarter, 'ottopi');
+assert.equal(NP.state.rivalStarter, 'sprubun', 'the rival takes the starter weak to yours');
 assert.equal(NP.state.bag.bond_spool, 5);
 assert.ok(NP.state.flags.tomo_left_lab);
 

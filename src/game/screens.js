@@ -64,8 +64,8 @@
       const ow = new NP.Overworld();
       NP.Game.reset(ow);
       const p = st.pos;
-      if (isNew) ow.loadMap('lab', 5, 9, 'up');
-      else ow.loadMap(p.map, p.x, p.y, p.dir, { noEnter: true });
+      if (isNew) ow.loadMap('player_house', 6, 3, 'down');   // the first morning: Mom wakes you
+      else ow.loadMap(p.map, p.x, p.y, p.dir);   // run onEnter: it syncs story NPCs (e.g. Seamstead's Salon lane) to the flags
       NP.Game.fadeTo(0, 20);
     }
     draw(fb) {
@@ -213,18 +213,24 @@
       const st = NP.state;
       ui.frame(fb, 8, 8, NP.W - 16, NP.H - 16, 'light');
       ui.text(fb, 'TAILOR CARD', 20, 16, 'light', { color: '#d83838' });
-      const tr = A().humanFront(NP.State.lookId()); // 80x80 trainer sprite, bottom-centre anchor
-      fb.blit(tr, 40 - (tr.w >> 1), 110 - tr.h);
+      // the approved AutoSprite hero (same art as the battle send-out); the older generated portrait only as a fallback
+      const as = NP.art.autosprite && NP.art.autosprite.trainer && NP.art.autosprite.trainer(NP.State.lookId());
+      const tr = as && as.bmp ? as.bmp : A().humanFront(NP.State.lookId()); // bottom-centre anchor
+      fb.blit(tr, 40 - (tr.w >> 1), 112 - tr.h);
       ui.text(fb, 'Name   ' + st.name, 70, 32, 'light');
       ui.text(fb, 'Money  $' + st.money, 70, 46, 'light');
       ui.text(fb, 'Friends ' + Object.keys(st.dex.caught).length + ' (seen ' + Object.keys(st.dex.seen).length + ')', 70, 60, 'light');
       ui.text(fb, 'Time   ' + NP.State.timeString(), 70, 74, 'light');
-      ui.text(fb, 'Buttons', 20, 120, 'light', { color: '#707890' });
+      // Button case: two rows of four 32 px Buttons (NP.art.icons badges.js); an empty stitched slot until the Salon is won
+      ui.text(fb, 'Buttons', 78, 88, 'light', { color: '#707890' });
+      // recessed felt tray: dark lip top-left, light lip bottom-right
+      fb.fillRect(74, 99, 166, 78, '#5a1e3a'); fb.fillRect(75, 100, 164, 76, '#8a3058');
+      fb.fillRect(75, 100, 164, 2, '#6a2244'); fb.fillRect(75, 100, 2, 76, '#6a2244');
+      fb.fillRect(75, 175, 164, 1, '#b85a80'); fb.fillRect(238, 100, 1, 76, '#b85a80');
       for (let i = 0; i < 8; i++) {
-        const x = 24 + i * 28, y = 136;
-        const b = A().badge(st.badges[i] ? i + 1 : 0, false);
-        if (b) fb.blit(b, x, y);
-        else { fb.ellipse(x + 8, y + 8, 8, 8, st.badges[i] ? '#f0c030' : '#c8d0e0', true); fb.ellipse(x + 8, y + 8, 8, 8, '#606880', false); }
+        const x = 80 + (i & 3) * 40, y = 102 + (i >> 2) * 38;
+        const icon = A().badge(st.badges[i] ? i + 1 : 0, true);
+        if (icon) fb.blit(icon, x, y);
       }
     }
   }

@@ -9,7 +9,7 @@ const { NP } = t;
 const ow = NP.quickStart('Ren', 'f');
 const st = NP.state;
 Object.assign(st.flags, { intro_done: true, has_starter: true, tomo_left_lab: true, rival1_done: true, rival2_done: true, badge1: true, presser1_done: true, route2_open: true, route2_insp_done: true, shrine1_done: true, badge2: true });
-st.starter = 'konko'; st.rivalStarter = 'ottopi';
+st.starter = 'konko'; st.rivalStarter = 'sprubun';
 st.badges = [true, true];
 st.party.push(NP.Kigu.create('konko', 55, { ot: 'Ren' }), NP.Kigu.create('ottopi', 55, { ot: 'Ren' }), NP.Kigu.create('sprubun', 55, { ot: 'Ren' }));
 st.bag.bond_spool = 5; st.bag.snack_cake = 5;
@@ -83,16 +83,21 @@ assert.ok(t.ow.find('dark1').hidden && t.ow.find('dark2').hidden, 'Pressers leav
 ow.loadMap('seamstead_salon', 5, 12, 'up', { noEnter: true }); t.tick(5);
 const tm = t.ow.map;
 assert.ok(tm.solid(5, 9) && tm.solid(5, 5), 'both barriers are up at first');
+t.travel(3, 12, 100); t.go('left', 1);          // the panel's only standing tile is in Kit's sight
+assert.ok(t.mash(() => st.flags.tr_seamstead_salon_sal3_t1 && t.idle(), 60000), 'Kit guards lever one; ' + t.pos());
 t.travel(2, 12, 100);
 t.tap('left'); t.tick(6); t.tap('a'); t.mash(() => t.idle(), 4000);
 t.mash(() => t.idle() && st.flags.sal3_g1, 3000);
 assert.ok(st.flags.sal3_g1 && !tm.solid(5, 9), 'lever one opens the first barrier');
 assert.ok(tm.solid(5, 5), 'second barrier still up');
-ow.loadMap('seamstead_salon', 9, 7, 'right', { noEnter: true }); t.tick(5);
-t.tap('right'); t.tick(6); t.tap('a'); t.mash(() => t.idle() && st.flags.sal3_g2, 4000);
+ow.loadMap('seamstead_salon', 9, 8, 'up', { noEnter: true }); t.tick(5);
+t.go('up', 1);                                   // lever two's only standing tile is right under Lux's nose
+assert.ok(t.mash(() => st.flags.tr_seamstead_salon_sal3_t2 && t.idle(), 60000), 'Lux guards lever two; ' + t.pos());
+t.travel(9, 7, 100); t.tap('right'); t.tick(6); t.tap('a'); t.mash(() => t.idle() && st.flags.sal3_g2, 4000);
 assert.ok(st.flags.sal3_g2 && !t.ow.map.solid(5, 5), 'lever two opens the second barrier');
 
-// ---- Zip
+// ---- Zip (the bot's team just fought Kit and Lux, so rest up as a player would at the Tea House)
+NP.State.healAll();
 assert.ok(t.travel(5, 4, 300), 'to Zip; ' + t.pos());
 t.tap('up'); t.tick(6); t.tap('a');
 press('badge3', 120000);

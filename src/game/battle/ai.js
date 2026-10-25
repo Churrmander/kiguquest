@@ -27,6 +27,8 @@
     // finishing blow
     const est = (((2 * mon.level) / 5 + 2) * p * eff * stab) / 50 * (mon.stats.atk / Math.max(1, foe.stats.def));
     if (est >= foe.hp) s *= 1.6;
+    // go-first moves are for beating a faster foe to a knockout, not for every turn
+    if ((mv.priority || 0) > 0) s *= battle.getSpeed(mon) < battle.getSpeed(foe) && est >= foe.hp ? 1.5 : 0.6;
     return s;
   }
 

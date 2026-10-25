@@ -1,4 +1,5 @@
-// A bot plays the whole vertical slice: Button Town -> Route 1 -> Thimble Village -> Salon (Poppy) with real key input.
+// A bot plays the whole vertical slice: Button Town -> Route 1 -> Basting Green -> Ribbon Loop -> Thimble Village -> Salon (Poppy)
+// with real key input.
 import assert from 'node:assert/strict';
 import { boot } from './harness.mjs';
 
@@ -6,8 +7,8 @@ const t = boot(4242);
 const { NP, G } = t;
 const ow = NP.quickStart('Ren', 'f');
 const st = NP.state;
-Object.assign(st.flags, { intro_done: true, has_starter: true, tomo_left_lab: true });
-st.starter = 'konko'; st.rivalStarter = 'ottopi';
+Object.assign(st.flags, { intro_done: true, has_starter: true, tomo_left_lab: true, parcel_got: true, errand_done: true });
+st.starter = 'konko'; st.rivalStarter = 'sprubun';
 const k = NP.Kigu.create('konko', 24, { ot: 'Ren' });
 st.party.push(k);
 st.bag.bond_spool = 5; st.bag.snack_cake = 5;
@@ -21,7 +22,16 @@ assert.equal(t.ow.map.id, 'route1', 'now on route1: ' + t.pos());
 
 // up the lane. trainers & the rival get in the way; bot mashes through battles
 assert.ok(t.travel(12, 0, 900), 'cross route 1; at ' + t.pos());
+assert.equal(t.ow.map.id, 'basting_green', 'arrived in Basting Green: ' + t.pos());
+// Tidy Day: the parade holds the north road, so the way on is east round Ribbon Loop
+assert.ok(t.travel(11, 12, 300), 'up the green; at ' + t.pos());
+assert.ok(st.flags.tidy_seen, 'the Tidy Day scene played on the way through');
+assert.ok(!t.travel(11, 0, 300) && t.ow.map.id === 'basting_green', 'the parade blocks the north road');
+assert.ok(t.travel(23, 11, 600), 'east road; at ' + t.pos());
+assert.equal(t.ow.map.id, 'ribbon_loop', 'on Ribbon Loop: ' + t.pos());
+assert.ok(t.travel(0, 4, 900), 'round the loop; at ' + t.pos());
 assert.equal(t.ow.map.id, 'thimble', 'arrived in Thimble: ' + t.pos());
+assert.ok(st.flags.thimble_reached);
 console.log(JSON.stringify(st.flags), st.party.map(k=>k.species+k.level+':'+k.hp), t.pos());
 assert.ok(st.flags.rival1_done, 'rival scene happened');
 assert.ok(st.flags.tr_route1_lia || st.flags.tr_route1_bo || st.flags.tr_route1_suzu || true);
@@ -64,11 +74,22 @@ assert.ok(t.mash(() => t.idle(), 4000), 'shop closed');
 assert.ok(t.travel(4, 7), 'store exit');
 assert.equal(t.ow.map.id, 'thimble');
 
+// Poppy's yarn basket is in the flowers by the road (the Salon's pre-quest)
+assert.ok(t.travel(10, 16), 'to the yarn basket');
+t.tap('down'); t.tick(6); t.tap('a');
+assert.ok(t.mash(() => t.idle(), 3000) && st.flags.yarn_basket, 'picked up the yarn basket');
+
 // the salon: walking north towards the door triggers Rival #2 (Tomo, fresh from losing to Poppy): a conversation and a gift, no fight
 assert.ok(t.travel(12, 6, 900), 'salon door');
 assert.ok(st.flags.rival2_done, 'rival #2 met us outside the salon');
 assert.ok(!t.ow.map.def.triggers.some((tr) => tr.id === 'rival2' && /trainerBattle/.test(String(tr.script))), 'rival #2 is not a battle');
 assert.equal(t.ow.map.id, 'salon', 'in salon: ' + t.pos());
+// house rules: both apprentices first (walking up the carpet, they spot you)
+assert.ok(t.travel(4, 9, 600)); t.mash(() => t.idle(), 20000);
+assert.ok(t.travel(4, 7, 600)); t.mash(() => t.idle(), 20000);
+if (!st.flags.tr_salon_salon_t2) { t.tap('up'); t.tick(4); t.tap('a'); t.mash(() => t.idle() && st.flags.tr_salon_salon_t2, 30000); }
+if (!st.flags.tr_salon_salon_t1) { assert.ok(t.travel(4, 9, 600)); t.tap('right'); t.tick(4); t.tap('a'); t.mash(() => t.idle() && st.flags.tr_salon_salon_t1, 30000); }
+assert.ok(st.flags.tr_salon_salon_t1 && st.flags.tr_salon_salon_t2, 'beat Ren and Noa');
 assert.ok(t.travel(4, 4, 600), 'walk to poppy, at ' + t.pos());
 t.tap('up'); t.tick(6);
 t.tap('a');
