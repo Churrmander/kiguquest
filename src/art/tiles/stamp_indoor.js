@@ -443,9 +443,22 @@
 
   // ============================================================================================ mannequin, fridge, stove, sink
   K.stamp('mannequin', {
-    w: 1, h: 2,
-    paint: () => {
+    w: 1, h: 2, variants: ['dress', 'uniform'],
+    paint: (variant) => {
       const b = K.B(16, 32);
+      if (variant === 'uniform') {
+        // a Crisp & Co. uniform: boxy starch-white tunic, blue collar and piping, pressed trousers. Every one exactly the same.
+        b.circle(8, 4, 2, P.n2, true); b.set(7, 3, P.n1);
+        b.fillRect(3, 7, 10, 12, P.st0); b.fillRect(3, 7, 1, 12, P.st1); b.fillRect(11, 7, 2, 12, P.st2);
+        b.fillRect(5, 7, 6, 2, P.st4); b.set(8, 9, P.st4); b.set(7, 9, P.st4);
+        b.vline(8, 10, 9, P.st3); for (const y of [11, 14, 17]) b.set(7, y, P.st5);
+        b.hline(3, 18, 10, P.st4);
+        b.fillRect(5, 19, 6, 8, P.st1); b.vline(8, 19, 8, P.st3); b.vline(5, 19, 8, P.st0); b.vline(10, 19, 8, P.st2);
+        b.fillRect(7, 27, 2, 2, P.n3); b.hline(5, 30, 6, P.n4); b.hline(6, 29, 4, P.n3);
+        K.outer(b, S.omap([[[P.st0, P.st1, P.st2, P.st3, P.st4, P.st5], P.st6], [[P.n1, P.n2, P.n3, P.n4], P.n6]], 'st6'));
+        K.shadow(b, 8, 31, 5, 1);
+        return b;
+      }
       const pk = K.ramp('pink');
       b.circle(8, 4, 2, P.o1, true); b.set(7, 3, P.o0);
       // dress: shoulders, nipped waist, flared skirt
@@ -561,6 +574,48 @@
       b.fillRect(2, 27, 12, 4, P.mb2); b.fillRect(2, 27, 12, 1, P.mb0); b.fillRect(2, 30, 12, 1, P.mb4); b.fillRect(3, 26, 10, 1, P.mb3);
       K.outer(b, S.omap([[[P.mb0, P.mb1, P.mb2, P.mb3, P.mb4], P.mb5]], 'mb5'));
       K.shadow(b, 8, 31, 7, 1);
+      return b;
+    },
+  });
+
+  // a pair of steel staff doors set into a partition wall (Crisp & Co.): `closed` carries a STAFF ONLY plate; `open` leaves just the
+  // frame and the leaves folded back against the jambs, so the floor shows through and you walk under the lintel. Not solid: the
+  // map's gate terrain under it decides whether you can pass (see L.keyDoor).
+  const PICO = {
+    S: ['###', '#..', '###', '..#', '###'], T: ['###', '.#.', '.#.', '.#.', '.#.'], A: ['###', '#.#', '###', '#.#', '#.#'],
+    F: ['###', '#..', '##.', '#..', '#..'], O: ['###', '#.#', '#.#', '#.#', '###'], N: ['#.#', '###', '###', '#.#', '#.#'],
+    L: ['#..', '#..', '#..', '#..', '###'], Y: ['#.#', '#.#', '.#.', '.#.', '.#.'], ' ': ['.', '.', '.', '.', '.'],
+  };
+  function pico(b, x, y, str, c) {
+    for (const ch of str) { const g = PICO[ch]; for (let yy = 0; yy < 5; yy++) for (let xx = 0; xx < g[0].length; xx++) if (g[yy][xx] === '#') b.set(x + xx, y + yy, c); x += g[0].length + 1; }
+  }
+  K.stamp('staff_door', {
+    w: 2, h: 2, solid: ['..', '..'], variants: ['closed', 'open'],
+    paint: (variant) => {
+      const b = K.B(32, 32), open = variant === 'open';
+      // steel frame: jambs and a deep lintel
+      b.fillRect(0, 0, 32, 6, P.n4); b.hline(0, 0, 32, P.n2); b.hline(0, 5, 32, P.n5);
+      for (const x of [0, 29]) { b.fillRect(x, 0, 3, 32, P.n4); b.vline(x, 0, 32, P.n2); b.vline(x + 2, 6, 26, P.n5); }
+      if (!open) {
+        for (const x of [3, 16]) {
+          b.fillRect(x, 6, 13, 26, P.st3); b.vline(x, 6, 26, P.st2); b.vline(x + 12, 6, 26, P.st4);
+          b.fillRect(x + 3, 9, 7, 6, P.gl3); b.strokeRect(x + 3, 9, 7, 6, P.n5); b.set(x + 4, 10, P.gl1);   // wired glass
+          b.vline(x + 6, 10, 4, P.n4); b.hline(x + 4, 12, 5, P.n4);
+          b.fillRect(x + (x === 3 ? 9 : 1), 19, 3, 6, P.n1); b.vline(x + (x === 3 ? 9 : 1), 19, 6, P.n0);   // push plates
+          b.hline(x + 1, 30, 11, P.st5);
+        }
+        b.vline(15, 6, 26, P.n5); b.vline(16, 6, 26, P.st2);
+        // STAFF ONLY plate across both leaves
+        b.fillRect(4, 16, 24, 1, P.n5); b.fillRect(5, 17, 22, 1, P.red2);
+      } else {
+        // the leaves folded back flat against the jambs, a strip of light on the floor
+        for (const x of [3, 26]) { b.fillRect(x, 6, 3, 26, P.st3); b.vline(x, 6, 26, x === 3 ? P.st2 : P.st4); }
+        b.fillRect(6, 6, 20, 2, P.n6);
+      }
+      // name plate on the lintel
+      b.fillRect(4, 0, 24, 6, P.red3); b.fillRect(5, 0, 22, 5, P.red2);
+      pico(b, 6, 0, 'STAFF', P.white);
+      K.outer(b, S.omap([[[P.n0, P.n1, P.n2, P.n4], P.n6], [[P.st2, P.st3, P.st4], P.st6]], 'n6'));
       return b;
     },
   });
