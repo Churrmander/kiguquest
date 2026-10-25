@@ -251,7 +251,7 @@ const TRAINER_GAPS = {
   madame_damask: [[471, 321]], // between the arm and the dress
   picnicker: [[555, 333], [573, 531], [663, 609]], // by the backpack strap; between the arm and the skirt; inside the basket handle
   pilot: [[561, 399]], // inside the hip arm
-  pleat: [[471, 201]], // between the raised hand and the neck
+  pleat: [[471, 201], [591, 345]], // between the raised hand and the neck; between the arm and the jacket
   rocker: [[405, 417]], // between the arm and the guitar
   rue: [[555, 369]], // between the arm and the coat
   sailor: [[621, 345]], // inside the hip arm
