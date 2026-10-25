@@ -1,4 +1,5 @@
-/* src/art/tiles/stamp_props.js — outdoor props: sign, mailbox, bench, lamp, well, cloth_line (animated), barrel, crate. */
+/* src/art/tiles/stamp_props.js — outdoor props: sign, mailbox, bench, lamp, well, cloth_line (animated), barrel, crate,
+ * skep (straw beehive), honey_stall, buzzlet_fly (an animated wild Buzzlet buzzing about; not solid). */
 (function (root) {
   'use strict';
   const NP = root.NP;
@@ -198,6 +199,90 @@
       for (const [x, y] of [[3, 7], [12, 7], [3, 12], [12, 12]]) b.set(x, y, P.o0);
       K.outer(b, WOOD_OUT);
       K.shadow(b, 8, 14, 7, 2);
+      return b;
+    },
+  });
+
+  // ============================================================================================ Hemline's bees
+  const STRAW = [P.hy0, P.hy1, P.hy2, P.hy3, P.hy4];
+  /** skep: a coiled-straw beehive dome on a little plank stand */
+  K.stamp('skep', {
+    w: 1, h: 1, rise: 8,
+    paint: () => {
+      const b = K.B(16, 24);
+      // stand: plank on two stubby legs
+      b.fillRect(3, 19, 2, 4, P.o4); b.fillRect(11, 19, 2, 4, P.o4);
+      b.fillRect(1, 17, 14, 2, P.o2); b.hline(1, 17, 14, P.o1); b.hline(1, 18, 14, P.o3);
+      // dome: coils of straw, lit from the top-left
+      for (let y = 3; y <= 16; y++) {
+        const t = (y - 3) / 13, hw = Math.round(2.5 + Math.sqrt(t) * 4.6);
+        for (let x = 8 - hw; x < 8 + hw; x++) {
+          const coil = (y - 3) % 3, u = (x - (8 - hw)) / (2 * hw);
+          let c = coil === 2 ? STRAW[3] : u < 0.3 ? STRAW[1] : u > 0.72 ? STRAW[3] : STRAW[2];
+          if (coil === 0 && u < 0.55) c = STRAW[0 + (u > 0.3 ? 1 : 0)];
+          if (coil === 2 && ((x + y) & 3) === 0) c = STRAW[4];
+          b.set(x, y, c);
+        }
+      }
+      b.fillRect(7, 1, 2, 2, STRAW[2]); b.set(7, 1, STRAW[1]);   // the top knot
+      // entrance: a dark little arch at the foot, a bee on the step
+      b.fillRect(6, 14, 4, 3, P.b4); b.hline(7, 13, 2, P.b4); b.set(6, 14, STRAW[3]); b.set(9, 14, STRAW[3]);
+      b.set(11, 11, P.yl2); b.set(12, 11, P.ink); b.set(11, 10, P.w1);
+      K.outer(b, S.omap([[STRAW, P.b3], [WOOD, P.o6]], 'o6'));
+      K.shadow(b, 8, 23, 7, 1);
+      return b;
+    },
+  });
+
+  /** honey stall: a trestle table of honey jars under a striped yellow awning */
+  K.stamp('honey_stall', {
+    w: 2, h: 1, rise: 16, solid: ['##'],
+    paint: () => {
+      const b = K.B(32, 32);
+      // posts and awning
+      for (const x of [2, 28]) { b.fillRect(x, 6, 2, 22, P.o3); b.vline(x, 6, 22, P.o2); }
+      S.awning(b, 0, 2, 32, 4, P.yl2, P.p0, [P.yl1, P.yl0, P.yl3, P.yl4]);
+      // a hanging honeycomb sign
+      b.vline(15, 7, 1, P.o4); b.vline(17, 7, 1, P.o4);
+      for (const [hx, hy] of [[13, 9], [17, 9], [15, 12]]) {
+        b.fillRect(hx, hy, 3, 3, P.yl2); b.set(hx + 1, hy - 1, P.yl2); b.set(hx + 1, hy + 3, P.yl3); b.set(hx, hy, P.yl1);
+      }
+      // table and legs
+      b.fillRect(1, 22, 30, 3, P.o2); b.hline(1, 22, 30, P.o1); b.hline(1, 24, 30, P.o4);
+      b.fillRect(3, 25, 2, 6, P.o4); b.fillRect(27, 25, 2, 6, P.o4);
+      b.fillRect(2, 25, 28, 4, P.red2); for (let x = 2; x < 30; x += 4) b.fillRect(x, 25, 2, 4, P.p0);   // gingham skirt
+      b.hline(2, 28, 28, P.red3);
+      // jars: golden honey, cloth lids tied with string
+      for (const [jx, h] of [[5, 6], [11, 7], [18, 6], [24, 7]]) {
+        const y0 = 22 - h;
+        b.fillRect(jx, y0, 4, h, P.yl3); b.fillRect(jx + 1, y0 + 1, 2, h - 2, P.yl2); b.vline(jx, y0 + 1, h - 2, P.yl1); b.set(jx + 2, y0 + 1, P.white);
+        b.fillRect(jx - 1, y0 - 2, 6, 2, P.p0); b.hline(jx - 1, y0 - 1, 6, P.red2);
+      }
+      K.outer(b, S.omap([[WOOD, P.o6], [[P.yl0, P.yl1, P.yl2, P.yl3], P.yl4], [[P.red2, P.red3, P.p0], P.red4]], 'o6'));
+      K.shadow(b, 16, 31, 15, 1);
+      return b;
+    },
+  });
+
+  /** a wild Buzzlet (a bee onesie with stripes and tiny antennae) hovering about, wings a blur. 4 frames: bob + flap. */
+  K.stamp('buzzlet_fly', {
+    w: 1, h: 1, rise: 10, solid: ['.'], frames: 4, animSpeed: 6,
+    paint: (variant, f) => {
+      const b = K.B(16, 26);
+      const bob = [0, -1, -2, -1][f], y = 5 + bob;
+      // wings (big on even frames, folded on odd)
+      const wing = f % 2 ? [[3, y + 4, 3, 2], [10, y + 4, 3, 2]] : [[2, y + 1, 4, 4], [10, y + 1, 4, 4]];
+      for (const [wx, wy, ww, wh] of wing) { b.fillRect(wx, wy, ww, wh, P.w1); b.set(wx, wy, P.white); b.set(wx + ww - 1, wy + wh - 1, P.w2); }
+      // striped onesie body
+      b.fillRect(5, y + 5, 6, 6, P.yl2); b.vline(5, y + 5, 6, P.yl1);
+      b.hline(5, y + 7, 6, P.ink); b.hline(5, y + 9, 6, P.ink); b.set(8, y + 11, P.ink);   // stripes and a tiny stinger
+      // hooded head with a face
+      b.fillRect(5, y, 6, 5, P.yl2); b.set(5, y, 0); b.set(10, y, 0);
+      b.fillRect(6, y + 2, 4, 3, P.p1); b.set(7, y + 3, P.ink); b.set(9, y + 3, P.ink); b.set(8, y + 4, P.pk2);
+      // antennae with bobbles
+      b.set(6, y - 1, P.ink); b.set(5, y - 2, P.ink); b.set(9, y - 1, P.ink); b.set(10, y - 2, P.ink);
+      K.outer(b, S.omap([[[P.yl1, P.yl2, P.p1], P.yl4], [[P.w1, P.w2, P.white], P.w4]], 'ink'));
+      b.ellipse(8, 23, 3, 1, P.alpha ? P.g4 : P.g4, true);   // little shadow on the grass far below
       return b;
     },
   });

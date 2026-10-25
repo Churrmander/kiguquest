@@ -1,4 +1,6 @@
-/* Hemline — the busy craft-town of hemmers. Salon #2 (Master Bryn, Buzz) + Tea House, General Store and two houses.
+/* Hemline — the busy craft-town of hemmers and Bryn's honey. Salon #2 (Master Bryn, Buzz) + Tea House, General Store and two houses.
+ * You should read the honey at a glance: straw skeps in an apiary by the back street, wild Buzzlets buzzing over the flowers, a
+ * honey stall on the main street, and Hemline Honey in the General Store.
  * Voice: practical, brisk ("Measure twice. Hem once."). The hemmers' grievance: the Society's ready-made uniforms undercut them. */
 (function (root) {
   'use strict';
@@ -16,12 +18,12 @@
   // ---- ground: trees round the edge, a main street east-west, a back street, and short lanes to every door
   M.rect(0, 0, W, 2, 'T').rect(0, 2, 2, H - 2, 'T').rect(W - 2, 2, 2, H - 2, 'T').rect(0, 22, W, 2, 'T');
   M.rect(0, 11, W, 2, 'c');                       // main street (x0 west to Gingham Woods, x27 east towards Seamstead)
-  M.rect(3, 18, 22, 2, 'c');                      // back street
+  M.rect(5, 18, 18, 2, 'c');                      // back street (door to door)
   M.rect(12, 13, 2, 5, 'c');                      // connector
   M.rect(12, 7, 2, 4, 'c');                       // lane to the Salon door
   M.rect(4, 8, 2, 3, 'c');                        // lane to the Tea House door
   M.rect(21, 8, 2, 3, 'c');                       // lane to the General Store door
-  M.rect(3, 13, 6, 1, 'f').rect(16, 14, 3, 2, 'f').rect(19, 21, 5, 1, 'f').rect(3, 21, 6, 1, 'f');
+  M.rect(3, 13, 6, 1, 'f').rect(16, 14, 3, 2, 'f').rect(13, 21, 7, 1, 'f').rect(3, 21, 6, 1, 'f');
   M.rect(8, 8, 3, 1, 'f').rect(16, 8, 4, 1, 'f');
 
   // ---- buildings (doors face the street below them)
@@ -36,10 +38,18 @@
   M.sign(2, 10, 'HEMLINE\\nWest: Gingham Woods\\nSpindle Shrine', 'west sign');
   M.sign(24, 10, 'EAST: SEAMSTEAD CITY\\nA short walk by seam road.', 'east sign (Route 3 Seam Road)');
   M.stamp('lamp', 9, 9).stamp('lamp', 15, 9).stamp('lamp', 20, 9);
-  M.stamp('well', 9, 13).stamp('cloth_line', 5, 14).stamp('cloth_line', 14, 15).stamp('bench', 17, 10).stamp('barrel', 19, 7).stamp('crate', 25, 7).stamp('haystack', 16, 20);
+  M.stamp('well', 9, 13).stamp('cloth_line', 5, 14).stamp('cloth_line', 9, 16).stamp('bench', 17, 10).stamp('barrel', 19, 7).stamp('crate', 25, 7);
   M.stamp('flowerbed', 8, 3).stamp('flowerbed', 18, 3).stamp('barrel', 8, 7);
-  M.trees([[2, 5], [8, 4], [25, 4], [2, 15], [7, 16], [25, 16], [17, 13], [4, 20], [23, 20], [11, 15]]);
-  M.stamp('bush', 25, 14).stamp('bush', 2, 18).stamp('boulder', 25, 20).stamp('rock', 9, 20);
+  M.trees([[2, 5], [8, 4], [25, 4], [2, 15], [8, 20], [25, 16], [17, 13], [4, 20], [23, 20], [11, 15]]);
+  M.stamp('bush', 25, 14).stamp('bush', 2, 18).stamp('boulder', 25, 20).stamp('rock', 10, 20);
+  // ---- the honey: Bryn's apiary south of the back street, a stall on the main street, and wild Buzzlets about the flowers
+  M.stamp('skep', 14, 20).stamp('skep', 16, 20).stamp('skep', 18, 20);
+  M.stamp('honey_stall', 14, 13);
+  for (const [x, y] of [[15, 20], [17, 21], [9, 2], [18, 2], [16, 14], [6, 13]]) M.stamp('buzzlet_fly', x, y);
+  const STALL = 'HEMLINE HONEY\\nFresh from Bryn\'s hives.\\pJars at the General Store. 250 each.';
+  const SKEP = 'A straw skep, humming happily. Bryn\'s bees live here.\\nThey are very busy and very polite.';
+  M.interact(14, 13, STALL, 'honey stall').interact(15, 13, STALL, 'honey stall');
+  M.interact(14, 20, SKEP, 'skep').interact(16, 20, SKEP, 'skep').interact(18, 20, SKEP, 'skep');
 
   M.spawn('west', 2, 11, 'right').spawn('east', 25, 12, 'left');
   M.edge('w', 11, 12, 'spindle_shrine', 'east').edge('e', 11, 12, 'route3', 'west');
@@ -50,6 +60,7 @@
   } });
 
   // ---- townsfolk: the hemmers' grievance, one line at a time
+  M.npc('beekeeper', 16, 13, 'villager_m2', 'left', ['The bees are Bryn\'s. The jars are mine. The sticky fingers are everybody\'s.\\pThe Society wanted the hives in straight rows.\\pThe bees did not agree.']);
   M.npc('peddler', 17, 5, 'gentleman', 'left', ['Mr. Sharp, humble peddler. Nothing suspicious!\\pThe chef\'s hat? I am not a chef. Keep your eyes sharp, friend!']);
   M.npc('hemmer', 7, 10, 'tailor_m', 'down', ['Measure twice. Hem once.\\pThat was on my shop sign. Then the Society "inspected" it.\\pNow the sign says nothing at all.']);
   M.npc('hemmer2', 14, 9, 'tailor_f', 'down', ['Their ready-made uniforms cost half what mine do.\\pThey are all one size, which they call "Fine".\\pI cannot compete with "Fine".']);
@@ -74,7 +85,7 @@
 
   // ---------------------------------------------------------------------------------- General Store
   L.store({ id: 'hemline_store', exit: { to: 'hemline', door: 'store' },
-    stock: ['bond_spool', 'snack_cake', 'fancy_cake', 'aloe_balm', 'mint_tea', 'wake_bell', 'numb_away', 'scent_spray', 'thread_ball'],
+    stock: ['bond_spool', 'snack_cake', 'honey_jar', 'fancy_cake', 'aloe_balm', 'mint_tea', 'wake_bell', 'numb_away', 'scent_spray', 'thread_ball'],
     gated: [{ badges: 1, items: ['silk_spool'] }],
     guests: [{ id: 'shopper', x: 7, y: 5, look: 'villager_m1', dir: 'left', say: ['Bryn\'s honey is on the second shelf. Do not ask about the third shelf.\\pThe third shelf is Society uniforms.'] }] }).reg();
 
