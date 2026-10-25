@@ -1,18 +1,18 @@
 /* Ribbon Loop — the scenic way from Basting Green round to Thimble Village's east gate while the Tidy Day parade holds the main road
- * (padding beat 4). Four friendly Tailors, a sleepy Silkie napping in the hay, and a few things to find. The loop itself is the
+ * (padding beat 4). Four friendly Tailors, a wild Silkie snacking on leaves by the hay, and a few things to find. The loop itself is the
  * walk: east along the bottom, north up the side, west along the top into Thimble. */
 (function (root) {
   'use strict';
   const NP = root.NP, K = NP.mapkit;
   const team = (list) => list.map(([sp, lv]) => ({ sp, lv }));
 
-  // ---- the napping Silkie: she starts the battle asleep, so a Bond Spool has a good chance (optional, once)
+  // ---- the snacking Silkie: a one-off chance to meet her by the hay (optional, once)
   function* silkie(c) {
-    if (c.flag('rl_silkie')) { yield* c.sayT('ribbon_loop.hay.after', 'A warm, squashed nest in the hay. Someone napped here for a long time.'); return; }
-    yield* c.sayT('ribbon_loop.hay.1', 'A wild Silkie is curled up in the hay, snoring softly.\\pA napping Kigu is much easier to befriend...');
-    if (!(yield* c.ask('Wake the Silkie gently?'))) return;
+    if (c.flag('rl_silkie')) { yield* c.sayT('ribbon_loop.hay.after', 'A few nibbled leaves by the hay. Someone had a lovely lunch here.'); return; }
+    yield* c.sayT('ribbon_loop.hay.1', 'A wild Silkie is happily munching leaves beside the hay.\\pShe hums a little between bites.');
+    if (!(yield* c.ask('Say hello to the Silkie?'))) return;
     c.set('rl_silkie');
-    yield* c.wildBattle('silkie', 5, { status: 'slp' });
+    yield* c.wildBattle('silkie', 5);
   }
 
   const W = 30, H = 26;
@@ -72,7 +72,7 @@
           intro: 'Ahoy! My ship is in Seamstead, but my heart is in this pond.\\pShow me your sea legs!', win: 'Sunk! You sail a fine battle, matey.', after: 'Ribbi loves this pond. She says hello. Ribbit.' } },
       { id: 'rio', x: 14, y: 3, look: 'net_kid', dir: 'down',
         trainer: { cls: 'Net Kid', name: 'Rio', sight: 2, reward: 5, ai: 0, team: team([['silkie', 4], ['mittsy', 5]]),
-          intro: 'I came all this way to befriend the sleepy Silkie.\\pShe is still asleep. Battle me while I wait!', win: 'Even my Mittsy is yawning now.', after: 'The Silkie naps in the hay at the corner. Shh!' } },
+          intro: 'I came all this way to befriend the leaf-munching Silkie.\\pShe will not stop eating. Battle me while I wait!', win: 'Even my Mittsy wants a snack now.', after: 'The Silkie snacks by the hay at the corner. She loves leaves.' } },
       { id: 'rl_gran', x: 23, y: 22, look: 'elder_m', dir: 'left',
         say: ['I walk Ribbon Loop every morning. Round and round.\\pThe parade folds the main road. Nobody can fold a loop!'] },
     ],

@@ -67,11 +67,11 @@
     c.set('presser1_done');
   }
 
-  // ---- Poppy's lost yarn basket: a Mittsy has curled up asleep in it. No battle, just a gentle wake-up.
+  // ---- Poppy's lost yarn basket: a Mittsy is having the time of her life with it. No battle, just a gentle swap.
   function* yarn(c) {
-    yield* c.sayT('thimble.yarn.1', 'A trail of cream yarn leads into the flowers...\\pA Mittsy is curled up asleep in a yarn basket!');
-    if (!(yield* c.ask('Wake the Mittsy gently?'))) return;
-    yield* c.sayT('thimble.yarn.2', 'The Mittsy yawned, stretched, and batted the yarn one last time.\\pThen she padded off for a sunnier nap.');
+    yield* c.sayT('thimble.yarn.1', 'A trail of cream yarn leads into the flowers...\\pA Mittsy is pouncing on a yarn ball and rolling it round a basket!');
+    if (!(yield* c.ask('Roll her a pebble to chase instead?'))) return;
+    yield* c.sayT('thimble.yarn.2', 'The Mittsy batted the yarn one last time... then bounded after the pebble.\\pShe looks very pleased with her new toy.');
     c.hideProp('yarn');
     if (c.flag('poppy_asked')) yield* c.sayT('thimble.yarn.3', "{player} picked up Poppy's yarn basket!");
     else yield* c.sayT('thimble.yarn.3b', "{player} picked up the yarn basket.\\pA tag says: PROPERTY OF THIMBLE SALON. Every stitch counts!");
@@ -134,7 +134,7 @@
         else yield* c.sayT('thimble.sign_r2.closed', 'ROUTE 2  Closed\\nInspection in progress. Please be patient.');
       } },
     ],
-    // Poppy's yarn basket, with a Mittsy asleep in it, in the flowers by the road (the Salon's pre-quest; see S.poppy)
+    // Poppy's yarn basket, with a Mittsy playing in it, in the flowers by the road (the Salon's pre-quest; see S.poppy)
     props: [{ id: 'yarn', x: 10, y: 17, icon: 'item:cream_thread', hideIf: 'yarn_basket', script: yarn }],
     // Rival #2 ambushes anyone who steps up to the Salon door (12,7 is the only tile the door can be entered from; 13,7 is the road beside it)
     triggers: [{ x: 12, y: 7, w: 2, h: 1, id: 'rival2', when: (c) => !c.flag('rival2_done') && !c.flag('badge1'), script: rival2 }],
