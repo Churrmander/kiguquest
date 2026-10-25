@@ -242,7 +242,17 @@
   }
 
   // ---------- SFX notation ----------
-  // 'wave freq[>freq2] dur [vol] [@start] [ex]' segments separated by ';' (sequential unless @start given).
+  // 'wave freq[>freq2] dur [vol] [@start] [e<h|p|d|s>] [v<depth>[/<rate>]] [d<cents>] [o[<vol>]] [~<delay>[x<n>]] [lp<hz>]' segments separated
+  // by ';' (sequential unless @start given). The layer fields expand one segment into several events (all on existing voice kinds):
+  //   d<cents> detuned double: the segment plus a copy `cents` higher, each at 0.65 x vol (chorus / width)
+  //   o[<vol>] sub-octave layer: a triangle (sine for s/t) an octave below, at <vol> x vol (default 0.6); skipped if it would go under 50 Hz
+  //   ~<delay>[x<n>] echo: n (default 2) repeats every `delay` s at 0.38^k x vol (a small "room", DS-style)
+  //   lp<hz>[><hz2>] osc lowpass cutoff (sweeping to hz2), passed on as e.lp / e.lp2
+  //   P<-1..1> pan, R<0..1> reverb send, passed on as e.pan / e.rev
+  // Extra waves: nl / nh = low-/high-pass noise (e.filt; freq = cutoff), w = sawtooth, q = square (ch 'saw' / 'sq').
+  // lp, lp2, pan, rev, filt, saw and sq need the DS engine (voices() passes them on); older engines ignore the fields and play
+  // nl/nh as band-pass noise, so every sound must still work without them. Do not use w/q until that engine is merged.
+  const SFX_WAVES = /^(p[0-3]|t|s|n|nl|nh|w|q)$/;
   function parseSfx(str) {
     const events = [];
     const errors = [];
@@ -254,31 +264,71 @@
       const w = tk[0];
       const fm = /^(\d+(?:\.\d+)?)(?:>(\d+(?:\.\d+)?))?$/.exec(tk[1] || '');
       const dur = parseFloat(tk[2]);
-      if (!/^(p[0-3]|t|s|n)$/.test(w) || !fm || !(dur > 0)) { errors.push('bad segment: ' + seg); continue; }
-      let vol = 0.5, at = cursor, env = w === 'n' ? 'decay' : 'hold', vib = null;
+      if (!SFX_WAVES.test(w) || !fm || !(dur > 0)) { errors.push('bad segment: ' + seg); continue; }
+      const nz = w[0] === 'n';
+      let vol = 0.5, at = cursor, env = nz ? 'decay' : 'hold', vib = null, det = 0, sub = 0, echo = null, lp = 0, lp2 = 0, pan = null, rev = null, bad = false;
       for (const x of tk.slice(3)) {
+        let m;
         if (x[0] === '@') at = parseFloat(x.slice(1));
+        else if ((m = /^lp(\d+)(?:>(\d+))?$/.exec(x))) { lp = +m[1]; lp2 = m[2] ? +m[2] : 0; }
+        else if ((m = /^P(-?\d*\.?\d+)$/.exec(x))) pan = Math.max(-1, Math.min(1, +m[1]));
+        else if ((m = /^R(\d*\.?\d+)$/.exec(x))) rev = Math.min(1, +m[1]);
         else if (x[0] === 'e') env = ENV_CODES[x[1]] || env;
-        else if (x[0] === 'v') vib = { rate: 9, depth: parseFloat(x.slice(1)) || 6 };
-        else if (!isNaN(parseFloat(x))) vol = parseFloat(x);
+        else if ((m = /^v(\d*\.?\d*)(?:\/(\d+\.?\d*))?$/.exec(x))) vib = { rate: m[2] ? +m[2] : 9, depth: parseFloat(m[1]) || 6 };
+        else if ((m = /^d(\d+\.?\d*)$/.exec(x))) det = +m[1];
+        else if ((m = /^o(\d*\.?\d*)$/.exec(x))) sub = m[1] ? +m[1] : 0.6;
+        else if ((m = /^~(\d*\.?\d+)(?:x(\d))?$/.exec(x))) echo = { dt: +m[1], n: m[2] ? +m[2] : 2 };
+        else if (/^\d*\.?\d+$/.test(x)) vol = parseFloat(x);
+        else bad = true;
       }
+      if (bad) errors.push('bad field in: ' + seg);
       const f = +fm[1], f2 = fm[2] ? +fm[2] : f;
-      const ev = { t: at, dur, vol, env };
-      if (w[0] === 'p') Object.assign(ev, { ch: 'p1', duty: +w[1], f, f2 });
-      else if (w === 't') Object.assign(ev, { ch: 'tri', f, f2 });
-      else if (w === 's') Object.assign(ev, { ch: 'sin', f, f2 });
-      else Object.assign(ev, { ch: 'noi', d: 'n', f, f2 });
-      if (vib) ev.vib = vib;
-      events.push(ev);
+      const base = { t: at, dur, vol, env };
+      if (w[0] === 'p') Object.assign(base, { ch: 'p1', duty: +w[1], f, f2 });
+      else if (w === 't') Object.assign(base, { ch: 'tri', f, f2 });
+      else if (w === 's') Object.assign(base, { ch: 'sin', f, f2 });
+      else if (w === 'w') Object.assign(base, { ch: 'saw', f, f2 });
+      else if (w === 'q') Object.assign(base, { ch: 'sq', f, f2 });
+      else Object.assign(base, { ch: 'noi', d: 'n', f, f2 }, w === 'nl' ? { filt: 'lp', q: 0 } : w === 'nh' ? { filt: 'hp', q: 0 } : {});
+      if (vib && !nz) base.vib = vib;
+      if (lp && !nz) { base.lp = lp; if (lp2) base.lp2 = lp2; }
+      if (pan !== null) base.pan = pan;
+      if (rev !== null) base.rev = rev;
+      const layer = [base];
+      if (det && !nz) {
+        const r = Math.pow(2, det / 1200);
+        base.vol = vol * 0.65;
+        layer.push(Object.assign({}, base, { f: f * r, f2: f2 * r }, vib ? { vib: { rate: vib.rate * 1.07, depth: vib.depth } } : {}));
+      }
+      if (sub && !nz && Math.min(f, f2) / 2 >= 50) {
+        layer.push(Object.assign({ t: at, dur, vol: Math.min(1, vol * sub), env, ch: w === 's' ? 'sin' : 'tri', f: f / 2, f2: f2 / 2 }, pan !== null ? { pan } : {}, rev !== null ? { rev } : {}));
+      }
+      let last = at + dur;
+      if (echo) {
+        const n = layer.length;
+        for (let k = 1; k <= echo.n; k++) {
+          for (let i = 0; i < n; i++) {
+            const e = layer[i];
+            layer.push(Object.assign({}, e, { t: e.t + k * echo.dt, vol: e.vol * Math.pow(0.38, k) }));
+          }
+        }
+        last = at + dur + echo.n * echo.dt;
+      }
+      for (const e of layer) events.push(e);
       cursor = at + dur;
-      end = Math.max(end, at + dur);
+      end = Math.max(end, last);
     }
     events.sort((a, b) => a.t - b.t);
     return { events, seconds: end, errors, fp: fingerprint(events, 'sfx'), gain: 1 };
   }
 
   // ---------- species cries ----------
+  // A cry is "spoken" from the species' sound-word (NP.data.species[id].cry, e.g. 'Kon!', 'Piiraa!'): each syllable becomes a voiced
+  // segment whose consonants shape the attack/release and whose vowel sets a formant (breath noise band, lowpass). The evolution family
+  // picks the timbre and pitch region, the stage lowers and lengthens the voice, and the species id picks the melodic contour, so a line
+  // sounds related but every species is distinct. Ids without species data get a pseudo-word from the hash. Deterministic throughout.
   function fnv(s) { return fnvStr(String(s)); }
+  function fmix(h) { h ^= h >>> 16; h = Math.imul(h, 0x85ebca6b); h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35); return (h ^ (h >>> 16)) >>> 0; }
   function mulberry(seed) {
     let s = seed >>> 0 || 1;
     return () => {
@@ -288,45 +338,146 @@
       return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
     };
   }
-  /** All the random choices of a cry, derived from the species id (deterministic). */
+  const rngOf = (s) => mulberry(fmix(fnv(s)));
+  const VOWEL_F = { a: 1050, e: 1500, i: 1900, o: 720, u: 520, z: 1700 }; // breath/formant band per vowel (kept <= 2.5 kHz)
+  const ONSETS = ['k', 'p', 'm', 'n', 'r', 'ky', 'b', 't', 's', 'w', 'g', 'my', 'py', 'l', 'f', 'ch'];
+  const VOWELS = ['a', 'i', 'u', 'o', 'e', 'ii', 'uu', 'aa', 'oo', 'ai'];
+  const CODAS = ['', '', '', 'n', 'k', 'l', 'p', 'm'];
+  /** Split a sound-word into syllables { on, v, co } ('y' counts as a consonant; a word without vowels is one buzz syllable). */
+  function syllables(word) {
+    const w = String(word).toLowerCase().replace(/[^a-z]/g, '');
+    const out = [];
+    const re = /([^aeiou]*)([aeiou]+)/g;
+    let m, last = 0;
+    while ((m = re.exec(w))) { out.push({ on: m[1], v: m[2], co: '' }); last = re.lastIndex; }
+    const tail = w.slice(last);
+    if (!out.length) return [{ on: w.slice(0, 1), v: 'z', co: w.slice(1).replace(/z/g, ''), buzz: true }];
+    out[out.length - 1].co = tail;
+    // a consonant cluster between vowels: all but the last consonant close the previous syllable (lar-kes-sa, nom-nom)
+    for (let i = 1; i < out.length; i++) if (out[i].on.length > 1 && !/^.y$/.test(out[i].on)) { out[i - 1].co += out[i].on.slice(0, -1); out[i].on = out[i].on.slice(-1); }
+    return out.slice(0, 3);
+  }
+  /** All the choices of a cry (deterministic for the id). */
   function cryParams(id) {
     if (id && typeof id === 'object') id = id.id !== undefined ? id.id : JSON.stringify(id);
-    const r = mulberry(fnv('cry:' + id));
+    const sp = NP.data.species && NP.data.species[id];
+    const ri = rngOf('cry:' + id);
+    let word = sp && sp.cry, family = sp ? sp.family || id : id, stage = sp ? sp.stage || 1 : 1;
+    if (!word) {
+      const n = 1 + Math.floor(ri() * 2.6);
+      word = '';
+      for (let i = 0; i < n; i++) word += ONSETS[Math.floor(ri() * ONSETS.length)] + VOWELS[Math.floor(ri() * VOWELS.length)];
+      word += CODAS[Math.floor(ri() * CODAS.length)] + (ri() < 0.5 ? '!' : ri() < 0.3 ? '~' : '');
+      stage = 1 + Math.floor(ri() * 3);
+    }
+    const rf = rngOf('cryfam:' + family);
+    const region = 210 * Math.pow(2, rf() * 1.35); // family pitch region ~210..535 Hz (stage 1)
+    const body = Math.floor(rf() * 3); // 0 pulse + detuned triangle, 1 soft triangle/sine, 2 pulse + sub-octave
+    const duty = [1, 2, 1, 3][Math.floor(rf() * 4)];
+    const det = 7 + rf() * 16; // cents
+    const fshift = 0.85 + rf() * 0.35;
+    const st = Math.max(1, Math.min(3, stage)) - 1;
+    let contour = Math.floor(ri() * 8);
+    const base = region * [1, 0.8, 0.66][st] * (0.93 + ri() * 0.14);
+    if (contour === 4 && st === 0 && base > 300) contour = 3; // small, high voices chirp instead of growling
     return {
-      base: 190 * Math.pow(2, r() * 2.4), // ~190..~1000 Hz
-      contour: Math.floor(r() * 6),
-      duty: Math.floor(r() * 4),
-      dur: 0.2 + r() * 0.22,
-      wob: r() < 0.4,
-      n: 2 + Math.floor(r() * 2),
-      vrate: 10 + r() * 8,
+      word, syl: syllables(word), stage: st + 1, body, duty, det, fshift,
+      base, contour,
+      speed: [1, 1.12, 1.25][st] * (0.9 + ri() * 0.22),
+      wob: ri() < 0.35,
+      bang: /!$/.test(word), ask: /\?$/.test(word), trill: /~$/.test(word),
     };
   }
-  /** Build the events of a cry from its parameters (also used by the tuner to measure each contour/duty). */
+  // word-level pitch curves, x in 0..1 across the whole cry
+  const CONTOURS = [
+    (x) => 1 + 0.32 * x, // rising
+    (x) => 1.28 - 0.45 * x, // falling
+    (x) => 1 + 0.38 * Math.sin(Math.PI * x) - 0.12 * x, // arch
+    (x) => 1 + 0.18 * x, // chirpy (each syllable also flicks up)
+    (x) => 0.62 - 0.08 * x, // growl
+    (x) => 1.05 - 0.12 * x, // warble
+    (x) => (x < 0.22 ? 1.5 - 1.7 * x : 1.13 - 0.3 * (x - 0.22)), // yip-call
+    (x) => 1 - 0.24 * Math.sin(Math.PI * x) + 0.1 * x, // coo (dip)
+  ];
+  const CRY_GAIN = 1.35; // cries sit at the top of the SFX loudness ladder (~ -20 LUFS short-term)
+  /** Build the events of a cry from its parameters. */
   function cryFromParams(p) {
-    const { base, contour, duty, dur, wob, n, vrate } = p;
     const ev = [];
-    const add = (o) => ev.push(Object.assign({ t: 0, vol: 0.9, env: 'hold', ch: 'p1', duty }, o));
-    switch (contour) {
-      case 0: add({ dur, f: base, f2: base * 1.6 }); break; // rising "mew"
-      case 1: add({ dur, f: base * 1.5, f2: base * 0.75 }); break; // falling
-      case 2: add({ dur: dur * 0.5, f: base, f2: base * 1.5 }); add({ t: dur * 0.5, dur: dur * 0.5, f: base * 1.5, f2: base * 0.8 }); break; // arch
-      case 3: { const d = dur / n; for (let i = 0; i < n; i++) add({ t: i * d, dur: d * 0.7, f: base * (1 + 0.25 * (i % 2)), f2: base * (1.1 + 0.2 * (i % 2)) }); break; } // staccato chirps
-      case 4: // growl
-        add({ dur, f: base * 0.6, f2: base * 0.5, ch: 'tri', vol: 1 });
-        add({ dur: dur * 0.9, f: base * 0.3, f2: base * 0.22, duty: 0, vol: 0.55 });
-        ev.push({ t: 0, dur: dur * 0.5, ch: 'noi', d: 'n', f: 900, f2: 400, vol: 0.25, env: 'decay' });
-        break;
-      default: add({ dur, f: base, f2: base, vib: { rate: vrate, depth: base * 0.08 } }); add({ dur: dur * 0.7, f: base * 1.5, f2: base * 1.5, vol: 0.4, ch: 'tri' }); // warble
-    }
-    if (wob && contour < 4) ev.forEach((e) => { if (e.ch === 'p1') e.vib = { rate: 14, depth: e.f * 0.04 }; });
+    const P = CONTOURS[p.contour] || CONTOURS[0];
+    const syl = p.syl.length ? p.syl : [{ on: '', v: 'a', co: '' }];
+    const n = syl.length;
+    // syllable lengths: long vowels and buzzes are longer, the last syllable is drawn out
+    let lens = syl.map((s, i) => (s.buzz ? 0.26 : s.v.length > 1 ? 0.2 : 0.12) * (i === n - 1 ? 1.55 : 1) * p.speed);
+    const total = lens.reduce((a, b) => a + b, 0);
+    if (total > 0.5) lens = lens.map((l) => (l * 0.5) / total);
+    const sum = lens.reduce((a, b) => a + b, 0);
+    const fz = (f) => Math.min(2500, Math.max(55, f));
+    const noise = (t, dur, f, f2, vol, env) => ev.push({ t, dur, ch: 'noi', d: 'n', f: fz(f), f2: fz(f2), vol, env: env || 'decay' });
+    const growl = p.contour === 4;
+    let t = 0, x = 0;
+    syl.forEach((s, i) => {
+      const L = lens[i], x0 = x / sum, x1 = (x + L) / sum;
+      x += L;
+      const on = s.on, co = s.co, last = i === n - 1;
+      const plos = /^[pbtdkgcq]/.test(on), nasal = /^[mn]/.test(on), glide = /^[lrwy]/.test(on) || /^.y/.test(on), fric = /^[sfhzv]|^ch/.test(on);
+      const F = VOWEL_F[s.v[0]] * p.fshift * (1 - 0.08 * (p.stage - 1));
+      const F2 = VOWEL_F[s.v[s.v.length - 1]] * p.fshift * (1 - 0.08 * (p.stage - 1));
+      // consonant onset
+      let t0 = t;
+      if (plos) noise(t, 0.028, /^[pb]/.test(on) ? 800 : /^[td]/.test(on) ? 2300 : 1400, 600, 0.4);
+      if (fric) { noise(t, 0.05, /^s/.test(on) ? 2450 : /^z/.test(on) ? 2000 : 1300, 1500, 0.22, 'swell'); t0 = t + 0.035; }
+      // voiced segments (split at a turn of the curve so arches and yips keep their shape)
+      let a = p.base * P(x0), b = p.base * P(x1);
+      const mid = p.base * P((x0 + x1) / 2);
+      if (p.contour === 3) b *= 1.22;
+      if (last && p.bang) b *= 0.86;
+      if (last && p.ask) b *= 1.25;
+      if (plos) a *= 0.94;
+      if (glide) a *= 0.82;
+      const segs = Math.abs(mid / Math.sqrt(a * b) - 1) > 0.04 && L > 0.08 ? [[a, mid, 0, 0.5], [mid, b, 0.5, 1]] : [[a, b, 0, 1]];
+      const dur = L - (t0 - t);
+      const vib = s.buzz || /z/.test(on) ? { rate: 38, depth: 0.09 } : growl ? { rate: 27, depth: 0.06 } : p.contour === 5 || p.trill ? { rate: 8.5, depth: 0.05 } : p.wob && L > 0.15 ? { rate: 6, depth: 0.025 } : null;
+      const env = nasal ? 'swell' : plos ? 'pluck' : 'hold';
+      for (const [f, f2, u0, u1] of segs) {
+        const st = t0 + dur * u0 - (u0 > 0 ? 0.008 : 0);
+        const d = dur * (u1 - u0) + (u0 > 0 ? 0.008 : 0);
+        const e = u0 > 0 ? 'hold' : env;
+        const lp = Math.round(Math.max(900, F * 1.8));
+        const v = (vb, ff) => (vb ? { vib: { rate: vb.rate, depth: ff * vb.depth } } : {});
+        const add = (o) => ev.push(Object.assign({ t: st, dur: d, env: e, lp }, o));
+        const r = Math.pow(2, p.det / 1200);
+        if (p.body === 0) {
+          add(Object.assign({ ch: 'p1', duty: p.duty, f: fz(f), f2: fz(f2), vol: 0.5 }, v(vib, f)));
+          add(Object.assign({ ch: 'tri', f: fz(f * r), f2: fz(f2 * r), vol: 0.75 }, v(vib, f)));
+        } else if (p.body === 1) {
+          add(Object.assign({ ch: 'tri', f: fz(f), f2: fz(f2), vol: 0.85 }, v(vib, f)));
+          add(Object.assign({ ch: 'sin', f: fz(f * r), f2: fz(f2 * r), vol: 0.6 }, v(vib, f)));
+          add(Object.assign({ ch: 'p1', duty: 1, f: fz(f), f2: fz(f2), vol: 0.22 }, v(vib, f)));
+        } else {
+          add(Object.assign({ ch: 'p1', duty: p.duty, f: fz(f), f2: fz(f2), vol: 0.5 }, v(vib, f)));
+          if (Math.min(f, f2) / 2 >= 60) add(Object.assign({ ch: 'tri', f: f / 2, f2: f2 / 2, vol: 0.7 }, v(vib, f / 2)));
+          else add(Object.assign({ ch: 'tri', f: fz(f * r), f2: fz(f2 * r), vol: 0.7 }, v(vib, f)));
+        }
+      }
+      // breath through the vowel's formant (louder for growls and buzzes)
+      noise(t0, dur * 0.9, F, F2 * (b / a > 1 ? 1.1 : 0.9), growl || s.buzz ? 0.3 : 0.13, 'pluck');
+      if (growl) noise(t0, dur, 380, 300, 0.25, 'hold');
+      // coda
+      const te = t0 + dur;
+      if (/^[nm]/.test(co)) ev.push({ t: te - 0.01, dur: 0.07, ch: 'sin', f: fz(b * 0.94), f2: fz(b * 0.88), vol: 0.55, env: 'decay' });
+      else if (/^[kgtpdbc]/.test(co)) noise(te - 0.005, 0.025, /^[tdc]/.test(co) ? 2200 : /^[pb]/.test(co) ? 750 : 1400, 900, 0.32);
+      else if (/^[fsh]/.test(co)) noise(te - 0.01, 0.06, co[0] === 's' ? 2400 : 1300, 1000, 0.2);
+      else if (/^z/.test(co)) noise(t0, dur, 1800, 1500, 0.2, 'hold');
+      t = t0 + dur + (last ? 0 : 0.018);
+    });
+    for (const e of ev) e.vol = Math.min(1, e.vol * CRY_GAIN);
     return ev;
   }
   /** Deterministic short "voice" for a species id. Returns { events, seconds, params, fp, gain }. */
   function cryEvents(id) {
     const p = cryParams(id);
-    const ev = cryFromParams(p);
-    const g = (A.levels.c || {})[p.contour + '.' + p.duty];
+    const ev = cryFromParams(p).sort((a, b) => a.t - b.t);
+    const g = (A.levels.c || {})[p.contour + '.' + p.body];
     if (g !== undefined) ev.forEach((e) => { e.g = g; });
     return { events: ev, seconds: Math.max(...ev.map((e) => e.t + e.dur)), params: p, gain: g === undefined ? 1 : g };
   }
