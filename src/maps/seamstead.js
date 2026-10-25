@@ -76,7 +76,7 @@
   M.rect(0, 0, W, 2, 'T').rect(0, 26, W, 2, 'T').rect(0, 2, 2, 24, 'T').rect(W - 2, 2, 2, 24, 'T');
   M.rect(0, 14, W, 2, 'c');                                   // avenue: west = Route 3, east = Route 4 (Ch. 4)
   M.rect(12, 11, 12, 7, 'c');                                 // the plaza
-  M.rect(17, 8, 2, 3, 'c').rect(5, 10, 2, 4, 'c').rect(28, 10, 2, 4, 'c');      // lanes to Crisp & Co. / Tea / Store doors
+  M.rect(16, 8, 3, 3, 'c').rect(5, 10, 3, 4, 'c').rect(28, 10, 3, 4, 'c');      // lanes to Crisp & Co. / Tea / Store doors, 3 wide and centred on each door
   M.rect(12, 18, 2, 5, 'c').rect(22, 18, 2, 5, 'c').rect(3, 23, 30, 2, 'c');    // lanes from the plaza to the back street (Salon, houses)
   M.rect(8, 17, 3, 1, 'f').rect(28, 17, 3, 1, 'f').rect(24, 8, 3, 1, 'f');
   M.rect(34, 14, 2, 2, 'F');                                  // east gate: closed until Chapter 4
@@ -88,7 +88,7 @@
   M.building('house_m', 5, 19, 'yellow', 'house1', 'seamstead_house1');
   M.building('house_s', 28, 20, 'pink', 'house2', 'seamstead_house2');
 
-  M.sign(16, 10, 'SEAMSTEAD CITY\\nBursting at the seams!\\pSalon: south of the plaza, on the back street.', 'plaza sign');
+  M.sign(15, 10, 'SEAMSTEAD CITY\\nBursting at the seams!\\pSalon: south of the plaza, on the back street.', 'plaza sign');
   M.sign(3, 13, 'SEAMSTEAD CITY\\nWest: Route 3, Hemline', 'west sign');
   M.stamp('sign', 32, 13);
   function* eastGate(c) {
@@ -99,7 +99,7 @@
   M.def.interact.push({ x: 32, y: 13, script: eastGate, note: 'east sign (Ch. 4 opens this)' }, { x: 34, y: 14, script: eastGate, note: 'east gate' }, { x: 34, y: 15, script: eastGate, note: 'east gate' });
   M.sign(19, 10, 'CRISP & CO.\\nEverything flat. Everything fair.\\pStaff only. Ask on the top floor.', 'Crisp & Co. sign');
   // lamps stand on the corners where two roads meet (each stamp's post is the tile below it)
-  for (const x of [4, 7, 11, 24, 27, 30]) M.stamp('lamp', x, 12);   // north side of the avenue: Tea lane, plaza, Store lane
+  for (const x of [4, 8, 11, 24, 27, 31]) M.stamp('lamp', x, 12);   // north side of the avenue: Tea lane, plaza, Store lane
   M.stamp('lamp', 11, 15).stamp('lamp', 24, 15);                    // south side, at the plaza corners
   M.stamp('bench_v', 24, 18).stamp('flowerbed', 14, 9).stamp('flowerbed', 20, 9).stamp('well', 17, 14);   // the fountain, dead centre of the plaza where the avenue crosses the Crisp & Co. lane
   M.trees([[2, 9], [9, 6], [24, 4], [33, 8], [2, 18], [33, 22], [33, 19], [11, 4]]);

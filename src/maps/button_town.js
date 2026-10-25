@@ -12,7 +12,7 @@
   K.rect(g, 12, 0, 2, 19, 'p');                             // main road
   K.rect(g, 6, 9, 16, 1, 'p');                              // lane past the lab & player house (from the house door, not the trees)
   K.rect(g, 6, 17, 17, 1, 'p');                             // lower lane
-  K.rect(g, 19, 16, 4, 1, 'p');
+  K.rect(g, 20, 16, 3, 1, 'p');                             // the neighbour's front walk, centred on the door
   K.rect(g, 12, 18, 2, 1, 'c');
   K.rect(g, 12, 19, 2, 2, 'B');                             // the pier, where the morning boat drops the post
   K.rect(g, 9, 11, 3, 2, 'f'); K.rect(g, 15, 11, 3, 2, 'f'); K.rect(g, 3, 11, 2, 1, 'f');
