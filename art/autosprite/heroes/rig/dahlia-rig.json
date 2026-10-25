@@ -1,0 +1,132 @@
+{
+ "scale_note": "art pixels; draw at 6x for the 1024 battle frame",
+ "pieces": {
+  "head": {
+   "x": 61,
+   "y": 9,
+   "w": 42,
+   "h": 37
+  },
+  "rupper": {
+   "x": 96,
+   "y": 46,
+   "w": 8,
+   "h": 24
+  },
+  "rfore": {
+   "x": 96,
+   "y": 70,
+   "w": 13,
+   "h": 29
+  },
+  "larm": {
+   "x": 65,
+   "y": 48,
+   "w": 6,
+   "h": 28
+  },
+  "body": {
+   "x": 62,
+   "y": 46,
+   "w": 54,
+   "h": 115
+  },
+  "spool": {
+   "x": 0,
+   "y": 0,
+   "w": 14,
+   "h": 14
+  }
+ },
+ "pivots": {
+  "neck": [
+   85,
+   46
+  ],
+  "right_shoulder": [
+   98,
+   49
+  ],
+  "right_elbow": [
+   101,
+   70
+  ],
+  "left_shoulder": [
+   72,
+   49
+  ]
+ },
+ "draw_order": [
+  "larm",
+  "body",
+  "head",
+  "rupper",
+  "rfore",
+  "spool"
+ ],
+ "frames": [
+  {
+   "torso": "torso2",
+   "right_shoulder_deg": 0,
+   "left_shoulder_deg": 0,
+   "spool": "in hand"
+  },
+  {
+   "torso": "torso1",
+   "right_shoulder_deg": -40,
+   "left_shoulder_deg": 60,
+   "spool": "in hand"
+  },
+  {
+   "torso": "torso2",
+   "right_shoulder_deg": 175,
+   "left_shoulder_deg": 25,
+   "spool": "in hand"
+  },
+  {
+   "torso": "torso3",
+   "right_shoulder_deg": 125,
+   "left_shoulder_deg": -40,
+   "spool": "flying"
+  }
+ ],
+ "note": "Each torso frame is head+body+legs with both arms removed; attach rupper/rfore at the frame right_shoulder and larm at left_shoulder (arm pieces were cut from the upright pose, pivots in pieces[...] are upright-pose coords). Raised-arm frames need ~30 art pixels of headroom.",
+ "torso_frames": {
+  "torso1": {
+   "pose": "windup",
+   "feet_bottom_y": 152,
+   "right_shoulder": [
+    90,
+    55
+   ],
+   "left_shoulder": [
+    72,
+    57
+   ]
+  },
+  "torso2": {
+   "pose": "upright",
+   "feet_bottom_y": 160,
+   "right_shoulder": [
+    98,
+    49
+   ],
+   "left_shoulder": [
+    72,
+    49
+   ]
+  },
+  "torso3": {
+   "pose": "follow",
+   "feet_bottom_y": 158,
+   "right_shoulder": [
+    82,
+    55
+   ],
+   "left_shoulder": [
+    70,
+    58
+   ]
+  }
+ }
+}

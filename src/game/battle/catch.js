@@ -32,6 +32,7 @@
     if (!d || !d.use || !target) { battle.msg('But it had no effect.'); return false; }
     const who = mon.side.isPlayer ? 'You' : mon.side.trainer ? mon.side.trainer.name : 'The foe';
     battle.msg(who + ' used ' + d.name + '!');
+    battle.add({ t: 'use', who: mon, target, item: ch.item }); // the scene pops the item up over the target
     if (battle.cfg.consume) battle.cfg.consume(ch.item);
     const u = d.use;
     if (u.revive) {

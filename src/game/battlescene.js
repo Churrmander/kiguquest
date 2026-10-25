@@ -7,7 +7,6 @@
   const B = NP.Battle;
 
   const FULL = { x: 0, y: NP.BOX_Y, w: NP.W, h: 48 };
-  const FX = { ember: 'flame', tide: 'drop', sprout: 'leaf', volt: 'bolt', frost: 'flake', pebble: 'rock', gale: 'gust', dream: 'star', spook: 'shadow', buzz: 'sparkle', fluff: 'hit_normal', brawl: 'punch', nettle: 'poison', terra: 'dust', shade: 'shadow', iron: 'slash', drake: 'glow' };
   const C = NP.Color;
   const CMD_W = 148; // command buttons on the right of the bottom panel; the prompt sits to their left
   const CMD_COL = { Fight: '#e04848', Bag: '#e8a820', Kigu: '#40a848', Run: '#4878d8' };
@@ -57,6 +56,19 @@
     }
   }
 
+  // ---- the 7x7 thread spool for the send-outs (as in art/autosprite/heroes/throw/v2/anim.py), thread colours per look
+  const SPOOL = { hero_m: { T: '#344880', D: '#1e2854', H: '#6e82b4' }, hero_f: { T: '#c03030', D: '#781c1c', H: '#f08278' }, foe: { T: '#d0a838', D: '#8a6a18', H: '#f8e090' } };
+  const spoolCache = {};
+  function spoolBmp(look) {
+    if (spoolCache[look]) return spoolCache[look];
+    const t = SPOOL[look] || SPOOL.hero_f, rows = ['OOOOOOO', 'OWWWWWO', '.OTHTO.', '.OTTDO.', '.OTTDO.', 'OWWWWWO', 'OOOOOOO'];
+    const b = new NP.Bitmap(7, 7);
+    rows.forEach((r, y) => [...r].forEach((ch, x) => {
+      if (ch !== '.') b.set(x, y, { O: '#060505', W: x < 4 ? '#b0804a' : '#6e4828', T: t.T, H: t.H, D: t.D }[ch]);
+    }));
+    return (spoolCache[look] = b);
+  }
+
   // ---- data boxes (charcoal slabs with a slanted inner end, as in 5th-gen battles)
   const BOX = { body: '#3a3e4c', top: '#5e6476', edge: '#14161e', rim: '#8a90a4' };
   function slab(fb, x, y, w, h, slantLeft) {
@@ -94,8 +106,10 @@
       this.disp = [null, null];
       this.fx = null;
       this.bgInfo = null;
-      this.hero = null;       // hero back sprite state {x}
-      this.foeTrainer = null; // trainer front sprite state {x}
+      this.hero = null;       // hero back sprite state {x, k (throw frame), mix, dx, dy, slide}
+      this.thread = null;     // send-out spool thread {col, pts}
+      this.heroSpool = null;  // send-out spool {x, y, kind: 'foe' or the hero look}
+      this.foeTrainer = null; // trainer front sprite state {x, dy}
       this.thrown = null;     // spool in flight
       this.burst = null;      // send-out sparkle {x, y, t 0..1}
       this.menuInfo = null;
@@ -103,6 +117,9 @@
       this.levelBox = null;
       this.shake = 0;
       this.xpBars = {};
+      this.parts = [];        // particles (battlefx.js)
+      this.quake = null;      // stage shake {n, amp}
+      this.scrFlash = null;   // stage flash {col, a}
     }
 
     enter() {
@@ -134,6 +151,7 @@
     update() {
       super.update();
       this.clock++;
+      this.stepFx();
       for (const d of this.disp) if (d && d.vis && d.boxT < 1) d.boxT = Math.min(1, d.boxT + 0.1); // data boxes slide in
     }
 
@@ -142,7 +160,7 @@
       const a = this.anchor(mon.side.index);
       this.disp[mon.side.index] = {
         mon, k, hp: mon.hp, maxhp: mon.maxhp, name: mon.name, level: mon.level, status: mon.status, species: k.species, alt: k.alt,
-        x: a.x, y: a.y, offx: 0, offy: 0, alpha: 0, flash: 0, vis: true, exp: NP.Kigu.expProgress(k), blink: 0, boxT: 0, sink: false,
+        x: a.x, y: a.y, offx: 0, offy: 0, sx: 1, sy: 1, pose: false, tint: null, white: 0, alpha: 0, flash: 0, vis: true, exp: NP.Kigu.expProgress(k), blink: 0, boxT: 0, sink: false,
       };
       NP.State.seen(k.species);
     }
@@ -217,21 +235,12 @@
           if (d && d.mon === e.who) { const y0 = d.offy; d.sink = true; for (let i = 1; i <= 18; i++) { d.offy = y0 + i * 5; d.alpha = Math.min(1, 1.6 - i / 12); yield; } d.vis = false; }
           break;
         }
-        case 'boost': {
-          const d = this.dsp(e.who);
-          NP.snd.sfx(e.amt > 0 ? 'stat_up' : 'stat_down');
-          yield* this.playFx(e.amt > 0 ? 'stat_up' : 'stat_down', d);
-          break;
-        }
-        case 'status': {
-          const d = this.dsp(e.who);
-          if (d && d.mon === e.who) d.status = e.status;
-          if (e.status) { NP.snd.sfx('status'); yield* this.wait(8); }
-          break;
-        }
+        case 'boost': yield* this.evBoost(e); break;
+        case 'status': yield* this.evStatus(e); break;
+        case 'use': case 'item': yield* this.evUse(e); break;
         case 'exp': yield* this.evExp(e); break;
         case 'spool': yield* this.evSpool(e); break;
-        case 'miss': yield* this.wait(6); break;
+        case 'miss': yield* this.evMiss(e); break;
         default: break;
       }
     }
@@ -252,22 +261,32 @@
             this.disp[1].vis = false;
             yield* this.msgWait(tr.cls + ' ' + tr.name + ' would like to battle!', { auto: 40 });
             yield* this.msgWait(tr.cls + ' ' + tr.name + ' sent out ' + mon.name + '!', { auto: 22 });
+            const tf = this.foeTrainer && NP.Game.opts.battleAnim !== false && A().trainerFront(tr.look);
+            const land = tf && tf.hand ? yield* this.foeThrow(tf) : null;
             if (this.foeTrainer) { const f = this.foeTrainer; for (let i = 0; i < 16; i++) { f.x += 6; yield; } this.foeTrainer = null; }
             const d = this.disp[1];
             d.vis = true; d.alpha = 0;
-            NP.snd.cry(mon.kigu.species);
-            for (let i = 1; i <= 14; i++) { d.alpha = i / 14; d.offy = -8 * (1 - i / 14); yield; }
-            d.offy = 0;
+            if (land) yield* this.popOut(d, land);
+            else {
+              NP.snd.cry(mon.kigu.species);
+              for (let i = 1; i <= 14; i++) { d.alpha = i / 14; d.offy = -8 * (1 - i / 14); yield; }
+              d.offy = 0;
+            }
           }
         } else {
           yield* this.msgWait('Go! ' + mon.name + '!', { auto: 14 });
-          if (this.hero && NP.Game.opts.battleAnim !== false) yield* this.heroThrow();
+          const bw = this.hero && NP.Game.opts.battleAnim !== false && A().heroThrow(NP.State.lookId());
+          const land = bw ? yield* this.heroThrowBW(bw) : null;
+          if (!bw && this.hero && NP.Game.opts.battleAnim !== false) yield* this.heroThrow();
           if (this.hero) { const h = this.hero; for (let i = 0; i < 18; i++) { h.x -= 7; yield; } this.hero = null; }
           this.setDisp(mon);
           const d = this.disp[0];
-          NP.snd.cry(mon.kigu.species);
-          for (let i = 1; i <= 14; i++) { d.alpha = i / 14; d.offy = -10 * (1 - i / 14); yield; }
-          d.offy = 0;
+          if (land) yield* this.popOut(d, land);
+          else {
+            NP.snd.cry(mon.kigu.species);
+            for (let i = 1; i <= 14; i++) { d.alpha = i / 14; d.offy = -10 * (1 - i / 14); yield; }
+            d.offy = 0;
+          }
         }
         return;
       }
@@ -299,75 +318,102 @@
       h.pose = 'ready'; h.lean = 0;
     }
 
-    *evMove(e) {
-      const d = this.dsp(e.who);
-      const mv = NP.data.moves[e.move];
-      if (!d || !mv) return;
-      const dir = e.who.side.index === 0 ? 1 : -1;
-      if (NP.Game.opts.battleAnim === false) { yield* this.wait(4); return; }
-      if (mv.category === 'physical') {
-        for (let i = 0; i < 6; i++) { d.offx = dir * i * 3; yield; }
-        d.offx = dir * 18;
-        yield* this.wait(1);
-        this.pendingLunge = d;
-      } else if (mv.category === 'special' || mv.category === 'status') {
-        for (let i = 0; i < 6; i++) { d.offy = -i; yield; }
-        this.pendingLunge = d;
-        const tgtSide = mv.target === 'self' ? e.who.side.index : 1 - e.who.side.index;
-        const t = this.disp[tgtSide];
-        if (mv.category === 'special') yield* this.playFx(FX[mv.type] || 'star', t);
-        else if (mv.boosts || mv.heal) { /* boost event plays its own fx */ } else yield* this.playFx('sparkle', t);
-      }
-    }
-
-    *unlunge() {
-      const d = this.pendingLunge;
-      if (!d) return;
-      this.pendingLunge = null;
-      const ox = d.offx, oy = d.offy;
-      for (let i = 1; i <= 6; i++) { d.offx = ox * (1 - i / 6); d.offy = oy * (1 - i / 6); yield; }
-      d.offx = 0; d.offy = 0;
-    }
-
-    *evHit(e) {
-      const d = this.dsp(e.who);
-      if (!d || d.mon !== e.who) return;
-      NP.snd.sfx(e.eff > 1 ? 'hit_super' : e.eff < 1 && e.eff > 0 ? 'hit_weak' : 'hit');
-      const mv = NP.data.moves[e.move];
-      if (mv && mv.category === 'physical') yield* this.playFx(e.eff > 1 ? 'hit_super' : e.eff < 1 ? 'hit_weak' : 'hit_normal', d);
-      if (NP.Game.opts.battleAnim !== false) {
-        for (let i = 0; i < 12; i++) { d.blink = i % 4 < 2 ? 1 : 0; d.offx = (i % 2 ? 2 : -2) * (e.eff > 1 ? 1.5 : 1); yield; }
-        d.blink = 0; d.offx = 0;
-      }
-      yield* this.unlunge();
-    }
-
-    *playFx(name, d) {
-      if (!d || NP.Game.opts.battleAnim === false) return;
-      const n = A().fxFrames(name);
-      const f0 = A().fx(name, 0);
-      if (!f0) { yield* this.wait(6); return; }
-      for (let f = 0; f < n * 3; f++) {
-        const c = this.mid(d);
-        this.fx = { bmp: A().fx(name, Math.floor(f / 3) % n), x: c.x, y: c.y };
+    /** The send-out with the hero's approved throw frames (art/autosprite/heroes/throw/v2, timed like its anim.py preview): a
+     *  settle, a dithered blend into the wind-up, a smear into the follow-through. She already slides left as she winds up (BW
+     *  style), so at the release her hand is just behind the Kigu's spot: the spool is tossed high, forward, with its thread
+     *  trailing, and comes down on the player's platform right where her Kigu will appear while she slides out of frame.
+     *  Returns the landing point; the caller brings the Kigu out of the spool there. */
+    *heroThrowBW(fr) {
+      const h = this.hero, look = NP.State.lookId(), f = fr.follow;
+      const land = { x: this.bgInfo.playerBase.x, y: NP.BOX_Y - 7 };
+      // how far she has slid by the release: her open hand 16px behind the landing spot (never to the right of where she stood)
+      const R = Math.min(0, land.x - 16 - (h.x - f.cap + 3 + f.hand.x)), T = 31;
+      let tick = 0;
+      const hold = function* (n) { for (let i = 0; i < n; i++) { tick++; const k = Math.min(1, tick / T); h.slide = R * k * k; yield; } };
+      const step = (k, dx, dy, n) => { h.k = k; h.mix = null; h.dx = dx; h.dy = dy; return hold(n); };
+      const blend = (a, b, d1, d2, n) => { h.mix = { a, b }; h.dx = (d1[0] + d2[0]) / 2; h.dy = (d1[1] + d2[1]) / 2; return hold(n); };
+      yield* step('idle', 0, 1, 6);                          // small settle before the wind-up
+      yield* blend('idle', 'wind', [0, 1], [-2, 1], 4);
+      yield* step('wind', -2, 1, 5);
+      yield* step('wind', 0, 0, 9);
+      NP.snd.sfx('throw');
+      yield* blend('wind', 'follow', [0, 0], [3, 0], 3);     // one smear frame into the release
+      yield* step('follow', 3, 0, 4);
+      // a high toss from the open hand, forward onto the Kigu's spot (her feet line, just above the command panel)
+      const hand = () => ({ x: h.x + h.slide - f.cap + h.dx + f.hand.x, y: NP.BOX_Y - f.bmp.h + h.dy + f.hand.y });
+      const p0 = hand(), top = 18, N = 40, path = [];
+      this.thread = { col: SPOOL[look] ? SPOOL[look].T : '#c03030', pts: [p0] };
+      for (let i = 1; i <= N; i++) {
+        const t = i / N, x = p0.x + (land.x - p0.x) * t, y = p0.y + (land.y - p0.y) * t - 4 * (Math.min(p0.y, land.y) - top) * t * (1 - t);
+        path.push({ x, y });
+        if (i > 4) h.slide = R - (170 + R) * Math.min(1, (i - 4) / 20); // she slides on, out of frame, while it is in the air
+        // the thread leaves her hand with the spool, then trails behind it
+        this.thread.pts = i <= 6 ? [hand()].concat(path) : path.slice(-12);
+        this.heroSpool = { x, y };
         yield;
       }
-      this.fx = null;
+      this.hero = null;
+      this.thread = null;
+      NP.snd.sfx('bump');
+      for (const dy of [-3, -4, -3, -1, 0, -1, 0]) { this.heroSpool = { x: land.x, y: land.y + dy }; yield; } // a little bounce
+      return land;
     }
 
-    *evHp(e) {
-      const d = this.dsp(e.who);
-      if (!d || d.mon !== e.who) return;
-      if (e.cause === 'heal' || e.cause === 'item' || e.cause === 'drain') NP.snd.sfx('heal_tick');
-      const steps = Math.max(6, Math.min(40, Math.abs(e.to - e.from) / e.max * 60));
-      d.maxhp = e.max;
-      for (let i = 1; i <= steps; i++) {
-        d.hp = e.from + (e.to - e.from) * (i / steps);
-        yield;
-      }
-      d.hp = e.to;
-      if (e.who.side.index === 0 && e.to > 0 && e.to / e.max < 0.2) NP.snd.sfx('low_hp');
+    /** The landed spool pops open and her Kigu grows out of it as a white silhouette, then takes her colours. */
+    *popOut(d, land) {
+      this.heroSpool = null;
+      this.ring(land.x, land.y, '#ffffff', { dr: 2.4, life: 12 });
+      this.burstAt(land.x, land.y, 14, { cols: ['#ffffff', '#fff4b0'], speed: 2.4, life: 16, up: 1 });
+      NP.snd.sfx('save');
+      d.alpha = 1;
+      for (let i = 1; i <= 10; i++) { const k = 0.25 + 0.75 * (i / 10); d.sx = k; d.sy = k; d.white = 2; yield; }
+      d.sx = 1; d.sy = 1;
+      NP.snd.cry(d.species);
       yield* this.wait(4);
+    }
+
+    /** A foe trainer's send-out (no throw frames): a small dip as she tosses, then her spool leaves her hand, arcs high and falls
+     *  on the foe platform where her Kigu will appear, while she slides off to the right. Returns the landing point. */
+    *foeThrow(tf) {
+      const f = this.foeTrainer, by = this.bgInfo.enemyBase.y, land = { x: this.bgInfo.enemyBase.x, y: by - 4 };
+      const hand = () => ({ x: f.x - (tf.bmp.w >> 1) + tf.hand.x, y: by - (tf.bmp.h - 2) + tf.hand.y + (f.dy || 0) });
+      for (const dy of [1, 2, 2, 1, 0]) { f.dy = dy; yield* this.wait(2); }
+      NP.snd.sfx('throw');
+      const p0 = hand(), top = 8, N = 34, x0 = f.x, path = [];
+      this.thread = { col: SPOOL.foe.T, pts: [p0] };
+      for (let i = 1; i <= N; i++) {
+        const t = i / N, x = p0.x + (land.x - p0.x) * t, y = p0.y + (land.y - p0.y) * t - 4 * (Math.min(p0.y, land.y) - top) * t * (1 - t);
+        path.push({ x, y });
+        if (i > 4) f.x = x0 + 110 * Math.min(1, (i - 4) / 18); // she slides off to the right while it is in the air
+        this.thread.pts = i <= 6 ? [hand()].concat(path) : path.slice(-12);
+        this.heroSpool = { x, y, kind: 'foe' };
+        yield;
+      }
+      this.foeTrainer = null;
+      this.thread = null;
+      NP.snd.sfx('bump');
+      for (const dy of [-3, -4, -3, -1, 0, -1, 0]) { this.heroSpool = { x: land.x, y: land.y + dy, kind: 'foe' }; yield; } // a little bounce
+      return land;
+    }
+
+    drawHero(fb) {
+      const h = this.hero, look = NP.State.lookId(), fr = A().heroThrow(look);
+      if (!fr) {
+        const t = A().humanThrow(look, h.pose || 'ready', h.lean || 0);
+        fb.blit(t, Math.round(h.x - (t.w >> 1)), this.bgInfo.playerBase.y - (t.h - 2));
+        return;
+      }
+      const at = (k) => ({ b: fr[k].bmp, x: Math.round(h.x + (h.slide || 0) - fr[k].cap + (h.dx || 0)), y: Math.round(NP.BOX_Y - fr[k].bmp.h + (h.dy || 0)) });
+      if (h.mix) { // two poses mixed on a checkerboard: the pixel-art smear between key frames
+        const a = at(h.mix.a), b = at(h.mix.b);
+        const x0 = Math.max(0, Math.min(a.x, b.x)), x1 = Math.min(fb.w, Math.max(a.x + a.b.w, b.x + b.b.w));
+        const y0 = Math.max(0, Math.min(a.y, b.y)), y1 = Math.min(NP.BOX_Y, Math.max(a.y + a.b.h, b.y + b.b.h));
+        const px = (o, x, y) => { const u = x - o.x, v = y - o.y; return u < 0 || v < 0 || u >= o.b.w || v >= o.b.h ? 0 : o.b.u32[v * o.b.w + u]; };
+        for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+          const ca = px(a, x, y), cb = px(b, x, y), c = (x + y) & 1 ? (cb >>> 24 ? cb : ca) : ca >>> 24 ? ca : cb;
+          if (c >>> 24) fb.u32[y * fb.w + x] = c;
+        }
+      } else { const p = at(h.k || 'idle'); fb.blit(p.b, p.x, p.y); }
     }
 
     *evExp(e) {
@@ -616,10 +662,9 @@
       const d = this.disp[side];
       if (!d || !d.vis || d.alpha <= 0 || d.blink) return;
       const f = this.idleFrame(d, side);
-      const spr = side === 0 ? A().kiguBack(d.species, d.alt, f) : A().kiguFront(d.species, d.alt, f);
+      const [spr, o] = this.kiguSprite(d, side, f);
       const an = A().anchorOf(spr);
       const x = Math.round(d.x + d.offx - an.x), y = Math.round(d.y + d.offy - an.y);
-      const o = { alpha: d.alpha };
       if (d.sink) o.sh = Math.max(0, Math.min(spr.h, d.y + 2 - y)); // fainting: she sinks below the platform's edge
       if (o.sh === 0) return;
       fb.blit(spr, x, y, o);
@@ -658,14 +703,13 @@
       fb.clear('#101828');
       fb.blit(bg.bg, 0, 0);
       if (this.foeTrainer) {
-        const f = this.foeTrainer, t = A().humanFront(this.cfg.trainer.look);
-        fb.blit(t, Math.round(f.x - (t.w >> 1)), bg.enemyBase.y - (t.h - 2));
+        const f = this.foeTrainer, t = A().trainerFront(this.cfg.trainer.look).bmp;
+        fb.blit(t, Math.round(f.x - (t.w >> 1)), bg.enemyBase.y - (t.h - 2) + (f.dy || 0));
       }
       this.drawKigu(fb, 1);
-      if (this.hero) {
-        const t = A().humanThrow(NP.State.lookId(), this.hero.pose || 'ready', this.hero.lean || 0);
-        fb.blit(t, Math.round(this.hero.x - (t.w >> 1)), bg.playerBase.y - (t.h - 2));
-      }
+      if (this.hero) this.drawHero(fb);
+      if (this.thread) { const p = this.thread.pts; for (let i = 1; i < p.length; i++) fb.line(Math.round(p[i - 1].x), Math.round(p[i - 1].y), Math.round(p[i].x), Math.round(p[i].y), this.thread.col); }
+      if (this.heroSpool) fb.blit(spoolBmp(this.heroSpool.kind || NP.State.lookId()), Math.round(this.heroSpool.x - 3), Math.round(this.heroSpool.y - 3));
       if (this.burst) { // sparkle burst: eight rays that grow then fade out
         const f = this.burst, r = 3 + f.t * 20, r0 = f.t * 8;
         for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4 + f.t * 0.8; fb.line(Math.round(f.x + Math.cos(a) * r0), Math.round(f.y + Math.sin(a) * r0), Math.round(f.x + Math.cos(a) * r), Math.round(f.y + Math.sin(a) * r), k & 1 ? '#fff4b0' : '#ffffff'); }
@@ -685,6 +729,9 @@
           fb.fillRect(Math.round(c.x + Math.cos(a) * r), Math.round(c.y - 8 + Math.sin(a) * r), 2, 2, '#fff0a0');
         }
       }
+      this.drawParts(fb);
+      this.drawScreenFlash(fb);
+      this.applyQuake(fb);
       this.drawBox(fb, 1);
       this.drawBox(fb, 0);
       // bottom panel (the player's Kigu stands partly behind it, as on the DS)

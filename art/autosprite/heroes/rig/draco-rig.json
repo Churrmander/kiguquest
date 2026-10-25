@@ -1,0 +1,132 @@
+{
+ "scale_note": "art pixels; draw at 6x for the 1024 battle frame",
+ "pieces": {
+  "head": {
+   "x": 73,
+   "y": 9,
+   "w": 33,
+   "h": 29
+  },
+  "rupper": {
+   "x": 96,
+   "y": 44,
+   "w": 7,
+   "h": 20
+  },
+  "rfore": {
+   "x": 96,
+   "y": 64,
+   "w": 13,
+   "h": 34
+  },
+  "larm": {
+   "x": 64,
+   "y": 43,
+   "w": 10,
+   "h": 36
+  },
+  "body": {
+   "x": 51,
+   "y": 38,
+   "w": 73,
+   "h": 123
+  },
+  "spool": {
+   "x": 0,
+   "y": 0,
+   "w": 14,
+   "h": 14
+  }
+ },
+ "pivots": {
+  "neck": [
+   88,
+   38
+  ],
+  "right_shoulder": [
+   98,
+   46
+  ],
+  "right_elbow": [
+   103,
+   64
+  ],
+  "left_shoulder": [
+   74,
+   46
+  ]
+ },
+ "draw_order": [
+  "larm",
+  "body",
+  "head",
+  "rupper",
+  "rfore",
+  "spool"
+ ],
+ "frames": [
+  {
+   "torso": "torso2",
+   "right_shoulder_deg": 0,
+   "left_shoulder_deg": 0,
+   "spool": "in hand"
+  },
+  {
+   "torso": "torso1",
+   "right_shoulder_deg": -40,
+   "left_shoulder_deg": 60,
+   "spool": "in hand"
+  },
+  {
+   "torso": "torso2",
+   "right_shoulder_deg": 175,
+   "left_shoulder_deg": 25,
+   "spool": "in hand"
+  },
+  {
+   "torso": "torso3",
+   "right_shoulder_deg": 125,
+   "left_shoulder_deg": -40,
+   "spool": "flying"
+  }
+ ],
+ "note": "Each torso frame is head+body+legs with both arms removed; attach rupper/rfore at the frame right_shoulder and larm at left_shoulder (arm pieces were cut from the upright pose, pivots in pieces[...] are upright-pose coords). Raised-arm frames need ~30 art pixels of headroom.",
+ "torso_frames": {
+  "torso1": {
+   "pose": "windup",
+   "feet_bottom_y": 150,
+   "right_shoulder": [
+    92,
+    60
+   ],
+   "left_shoulder": [
+    78,
+    60
+   ]
+  },
+  "torso2": {
+   "pose": "upright",
+   "feet_bottom_y": 160,
+   "right_shoulder": [
+    98,
+    46
+   ],
+   "left_shoulder": [
+    74,
+    46
+   ]
+  },
+  "torso3": {
+   "pose": "follow",
+   "feet_bottom_y": 157,
+   "right_shoulder": [
+    80,
+    50
+   ],
+   "left_shoulder": [
+    66,
+    56
+   ]
+  }
+ }
+}
