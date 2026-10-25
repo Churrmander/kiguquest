@@ -110,6 +110,11 @@ SFX style (DS era): put the body on triangle or sine (with `d` for width), and u
 under 1.5 s and vol <= 1. Loudness ladder (render-tool LUFS): text ~-45, cursor ~-39, menu ~-31, chimes ~-27, hits -32 (weak) / -26 / -23 (super),
 cries ~-20.
 
+## Attack sounds
+`src/game/battlefx.js` picks sounds by move type: physical moves swing with `SWING_SFX[type]` (`punch`, `slash`, `whip`, `heavy`, else `swing`), special moves cast
+with `CAST_SFX[type]` (every type has one; `cast_<type>` for the ones without an older elemental sfx), and every hit plays `hit`/`hit_super`/`hit_weak` plus the
+type's own impact layer `imp_<type>`. `engine.js` gives battle sounds (`hit*`, `imp_*`, `cast_*`, swings, `shake`) a random ±4 % pitch wobble per play.
+
 ## Cries
 `cry(id)` "speaks" the species' sound-word (`NP.data.species[id].cry`, e.g. `Kon!`, `Piiraa!`) split into up to 3 syllables:
 * The vowel sets a formant band, used for the breath noise and the `lp` cutoff (a 1050, e 1500, i 1900, o 720, u 520 Hz).

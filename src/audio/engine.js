@@ -8,6 +8,7 @@
   const LOOK = 0.2;    // seconds scheduled ahead
   const TICK = 25;     // ms between scheduler runs
   const PRE = 0.05;    // start latency of a (re)started song
+  const VARY = /^(hit|imp_|cast_|swing|punch|slash|whip|heavy|shake)/;
 
   const st = {
     ctx: null, master: null, musicGain: null, sfxGain: null, noiseBuf: null, waves: {},
@@ -335,7 +336,10 @@
     const t = st.ctx.currentTime;
     if (st.last[id] !== undefined && t - st.last[id] < 0.035) return;
     st.last[id] = t;
-    playEvents(c.events, st.sfxGain, t + 0.005);
+    // battle sounds get a small random pitch wobble (about +-4%) so repeated hits don't sound copy-pasted
+    let ev = c.events;
+    if (VARY.test(id)) { const k = 0.96 + Math.random() * 0.08; ev = ev.map((e) => Object.assign({}, e, { f: e.f && e.f * k, f2: e.f2 && e.f2 * k })); }
+    playEvents(ev, st.sfxGain, t + 0.005);
   };
 
   A.cry = function (speciesId) {

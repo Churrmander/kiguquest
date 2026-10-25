@@ -24,6 +24,16 @@ const SFX = ['cursor', 'select', 'cancel', 'error', 'menu_open', 'text', 'bump',
   for (const id of P1_SONGS) assert.ok(NP.data.songs[id], 'song exists: ' + id);
   for (const id of JINGLES) assert.ok(NP.data.songs[id], 'jingle exists: ' + id);
   for (const id of SFX) assert.ok(NP.data.sfx[id] !== undefined, 'sfx exists: ' + id);
+  // every move type has its own impact layer, and battlefx's swing/cast tables only name sfx that exist
+  const types = ['fluff', 'ember', 'tide', 'volt', 'sprout', 'frost', 'brawl', 'nettle', 'terra', 'gale', 'dream', 'buzz', 'pebble', 'spook', 'drake', 'shade', 'iron'];
+  for (const t of types) assert.ok(NP.data.sfx['imp_' + t] !== undefined, 'impact sfx for ' + t);
+  const fxSrc = fs.readFileSync(path.join(ROOT, 'src/game/battlefx.js'), 'utf8');
+  for (const m of fxSrc.matchAll(/(?:CAST|SWING)_SFX = \{([^}]*)\}/g)) {
+    const named = [...m[1].matchAll(/'([a-z_]+)'/g)].map((x) => x[1]);
+    assert.ok(named.length >= 9);
+    for (const id of named) assert.ok(NP.data.sfx[id] !== undefined, 'battlefx sfx exists: ' + id);
+  }
+  for (const t of types) assert.ok(new RegExp('CAST_SFX = \\{[^}]*\\b' + t + ':').test(fxSrc), 'cast sfx for ' + t);
   for (const id of [...A.songs(), ...A.jingles()]) {
     const p = A.validate(id);
     assert.deepEqual(Array.from(p), [], p.join('\n'));
