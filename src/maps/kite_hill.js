@@ -125,15 +125,22 @@
 
   // ---- 6.9: over the pass (after the Gale Button). There's no Woolen Peak map yet, so the chapter ends on the hill.
   function* overThePass(c) {
-    c.set('over_pass');
     yield* c.sayT('kite_hill.pass.1', 'Dart: Everyone in! {rival}, Mimi, hold on to something. {player}, you\'re on the flag.');
     yield* c.ow.fadeOut(20);
+    // the balloon (and everyone in it) is gone from the airfield; the flight is told over the empty field, so the text stays readable
+    c.set('over_pass');
+    L.hideStamps(c);
+    c.player.hidden = true;
+    yield* c.wait(10);
+    yield* c.ow.fadeIn(20);
     yield* c.sayT('kite_hill.pass.2', 'The ropes come off, the burner roars, and the balloon lifts. Kite Hill drops away under you,\\pthen the ridge, then the whole green country you\'ve walked across.');
     yield* c.sayT('kite_hill.pass.3', 'Over the pass, the snow begins. Far below, a line of white carts crawls up the road north,\\peach one loaded with pale stone slabs.');
     yield* c.sayT('kite_hill.pass.4', 'Beyond them, in the valley, there\'s a huge mill. Every single window is lit,\\pand a tall chimney breathes white steam into the snow.');
     yield* c.sayT('kite_hill.pass.5', '{rival} doesn\'t say anything. They just hold the edge of the basket and watch the mill until it\'s out of sight.');
     yield* c.sayT('kite_hill.pass.6', 'Dart: Hold tight, everyone. Landing in the snow is mostly like landing on a pillow.\\pMostly.');
     yield* c.sayT('kite_hill.pass.7', 'END OF CHAPTER 6\\pThis is as far as the playtest goes for now. Woolen Peak is waiting in the next update.');
+    yield* c.ow.fadeOut(20);
+    c.player.hidden = false;
     yield* c.ow.fadeIn(20);
   }
 
@@ -170,7 +177,7 @@
   M.rect(7, 9, 3, 2, 'd').rect(28, 9, 3, 2, 'd');
   // the tied-down balloons (Dart's is the torn one by the hangar until it's patched)
   M.stamp('balloon', 14, 3, 'red').stamp('balloon', 18, 2, 'yellow').stamp('balloon', 34, 9, 'blue');
-  M.def.stamps.push(L.variantByFlag({ id: 'balloon', x: 21, y: 3 }, 'balloon_fixed', 'down', 'patched'));
+  M.def.stamps.push(L.variantByFlag({ id: 'balloon', x: 21, y: 3, goneIf: 'over_pass' }, 'balloon_fixed', 'down', 'patched'));
   M.stamp('windsock', 13, 11).stamp('windsock', 24, 11).stamp('windsock', 33, 3);
   M.rect(2, 10, 4, 3, ',');
   // the town: the road in from the west, the Tea House, the store, the post office and two houses
