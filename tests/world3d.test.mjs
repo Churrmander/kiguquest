@@ -191,7 +191,7 @@ V.hero.on = false;
     for (const p of tm.objs.filter((q) => tiles.hasVolume(q.id))) {
       const spots = [[p.x + (p.w >> 1), p.y + p.h], [p.x + (p.w >> 1), p.y + p.h - 1], [p.x + (p.w >> 1), p.y - 1], [p.x - 1, p.y + 1], [p.x + p.w, p.y + 1]];
       for (const [x, y] of spots) {
-        if (tm.solid(x, y)) continue;
+        if (tm.solid(x, y) || (tm.def.npcs || []).some((n) => n.x === x && n.y === y && !n.hidden)) continue;   // (a guard stands there)
         for (const q of [0, 1, 2, 3]) {
           ow.loadMap(id, x, y, 'up', { noEnter: true });
           tm.def.camera = q; V.yaw = null;

@@ -122,7 +122,7 @@
   const PALE = ['#ffffff', '#eef2f8', '#d4dcea', '#aab6cc', '#8492ac', '#4c5470'].map(col);
   const EXTRA = {
     gate_house: () => ({
-      w: 5, h: 3, W: 80, H: 48, ramp: K.ramp('brown'), wall: { base: 'c2', hi: 'c1', sh: 'c3', dk: 'c4' }, wl: 2, wr: 77, roofL: 1, roofR: 78,
+      w: 6, h: 3, W: 96, H: 48, ramp: K.ramp('brown'), wall: { base: 'c2', hi: 'c1', sh: 'c3', dk: 'c4' }, wl: 2, wr: 93, roofL: 1, roofR: 94,
       rt: 6, rb: 18, inset: 18, Hw: 29, Ztop: 42, windows: null, awnings: [], backFlip: true, sideFn: gateSide,
     }),
     shrine: (variant) => {

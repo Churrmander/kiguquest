@@ -37,7 +37,7 @@
       { id: 'sign', x: 4, y: 22 }, { id: 'sign', x: 8, y: 3 }, { id: 'haystack', x: 5, y: 2 },
       { id: 'tree', x: 12, y: 16 }, { id: 'tree', x: 8, y: 13 }, { id: 'tree', x: 27, y: 7 }, { id: 'tree', x: 13, y: 22 },
       { id: 'bench', x: 21, y: 23 }, { id: 'stump', x: 27, y: 18 }, { id: 'rock', x: 14, y: 9 }, { id: 'bush', x: 4, y: 12 },
-      { id: 'flowerbed', x: 19, y: 3 },
+      { id: 'bush', x: 19, y: 3 },
     ],
     interact: [
       { x: 4, y: 22, say: 'RIBBON LOOP\\nThe long way round to Thimble Village.' },

@@ -114,8 +114,8 @@
       ['belly', { kind: 'apron', mat: 'lily' }],
     ],
   });
-  D('lapinelle', {
-    name: 'Lapinelle', stage: 3, size: 87, rise: 14, pal: Object.assign({}, BUN, { main: '#7ed490' }),
+  D('lapinade', {
+    name: 'Lapinade', stage: 3, size: 87, rise: 14, pal: Object.assign({}, BUN, { main: '#7ed490' }),
     hood: { type: 'none', ears: { kind: 'floppy', h: 14, w: 3.6, lean: 3, droop: 2, dx: 0, over: true, mat: 'lily', inner: 'flowerP' } },
     hair: { style: 'long', bangs: 'part', drop: 3 },
     arms: { mittMat: 'mitt' }, footMat: 'foot',

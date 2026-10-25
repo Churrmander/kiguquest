@@ -46,8 +46,8 @@
       ['shapes', { stage: 'front', at: 'handR', g: 'pot', list: [['e', 1, 1, 3.5, 3, 'honey'], ['r', -2, -3, 6, 2, 'honey', 1]] }],
     ],
   });
-  D('honeybelle', {
-    name: 'Honeybelle', stage: 2, size: 78, rise: 10, pal: BEE,
+  D('hunnibloom', {
+    name: 'Hunnibloom', stage: 2, size: 78, rise: 10, pal: BEE,
     hood: { type: 'none' }, hair: { style: 'twin', bangs: 'part', len: 13 },
     arms: { mittMat: 'mitt' }, footMat: 'foot',
     parts: [
@@ -70,8 +70,8 @@
       ['shapes', { stage: 'front', at: 'feet', g: 'yarn', list: [['e', 13, -3, 3.2, 3.2, 'yarn'], ['l', 11, -4, 15, -2, 'yarn', -1], ['l', 11, -2, 14, -5, 'yarn', -1]] }],
     ],
   });
-  D('webelle', {
-    name: 'Webelle', stage: 2, size: 77, rise: 3, pal: Object.assign({}, SPI, { hair: '#2a2236' }),
+  D('spindra', {
+    name: 'Spindra', stage: 2, size: 77, rise: 3, pal: Object.assign({}, SPI, { hair: '#2a2236' }),
     hood: { type: 'none' }, hair: { style: 'long', bangs: 'part', drop: 4 }, eyes: { style: 'sleepy' }, mouth: 'flat',
     arms: { mittMat: 'mitt', extraArms: true }, footMat: 'foot',
     parts: [
@@ -111,8 +111,8 @@
       ['shapes', { stage: 'front', at: 'handR', g: 'brolly', list: [['c', 1, -4, 1, 10, 0.7, 0.7, 'metal'], ['e', 1, -8, 8, 3, 'pad']] }],
     ],
   });
-  D('ribbelle', {
-    name: 'Ribbelle', stage: 2, size: 77, rise: 9, pal: FROG,
+  D('lilyrana', {
+    name: 'Lilyrana', stage: 2, size: 77, rise: 9, pal: FROG,
     hood: { type: 'none' }, hair: { style: 'twin', bangs: 'part', len: 10 }, mouth: 'o',
     arms: { mittMat: 'mitt' }, footMat: 'boot',
     parts: [

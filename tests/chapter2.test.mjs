@@ -23,11 +23,11 @@ const faceUp = () => { t.tap('up'); t.tick(6); };
 const t0 = Date.now();
 
 // ---- Thimble: the Presser guards stand down once, then the road to Route 2 is open
-assert.ok(t.travel(22, 4), 'walk up to the guards; at ' + t.pos());
+assert.ok(t.travel(17, 4), 'walk up to the guards; at ' + t.pos());
 faceUp(); t.tap('a');
 assert.ok(t.mash(() => t.idle() && st.flags.route2_open, 6000), 'guards stand down');
 assert.ok(t.ow.find('guard1').hidden && t.ow.find('guard2').hidden, 'guards are gone from the road');
-assert.ok(t.travel(22, 0, 200), 'walk the road north');
+assert.ok(t.travel(17, 0, 200), 'walk the road north');
 at('route2');
 
 // ---- Route 2: south bank, then the inspectors on the bridge
@@ -97,6 +97,6 @@ assert.ok(back.badges[0] && back.badges[1]);
 assert.ok(back.flags.route2_open && back.flags.shrine1_done && back.flags.route2_insp_done && back.flags.badge2);
 assert.equal(back.bag.everspool_silk, 1);
 // the way back: Thimble keeps its guards gone and the road to Route 2 stays open
-t.ow.loadMap('thimble', 22, 1, 'down'); t.tick(40);
+t.ow.loadMap('thimble', 17, 1, 'down'); t.tick(40);
 assert.ok(!t.ow.find('guard1').visible && !t.ow.find('guard2').visible, 'the bridge guards stay gone');
 console.log('chapter2 ok in', Date.now() - t0, 'ms; badges', st.badges, 'party', st.party.map((k) => k.species + k.level).join(' '), 'money', st.money);

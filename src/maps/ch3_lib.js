@@ -30,6 +30,7 @@
     yield* c.sayT(id + '.yes', o.yes || ['{player} swiped the Staff Pass. The door slid open!']);
     NP.snd.sfx('door');
     L.setGate(c, key, true);
+    L.syncStamps(c);   // a door stamp whose look follows the gate flag swings open
   };
 
   /** stairs: one terrain cell ('stairs_up'|'stairs_down' via legend chars u/d) plus the warp. */

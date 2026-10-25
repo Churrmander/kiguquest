@@ -55,7 +55,7 @@ assert.equal(NP.state.healPoint.map, 'tea_house');
 // leave the tea house, visit the store and buy spools
 assert.ok(t.travel(4, 8), 'tea house exit');
 assert.equal(t.ow.map.id, 'thimble', 'back out: ' + t.pos());
-assert.ok(t.travel(19, 6), 'to the store door');
+assert.ok(t.travel(23, 6), 'to the store door');
 assert.equal(t.ow.map.id, 'general_store', 'store: ' + t.pos());
 assert.ok(t.travel(4, 4));
 t.tap('up'); t.tick(6);

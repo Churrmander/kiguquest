@@ -1,5 +1,7 @@
 /* Seamstead City — big, bright, jazzy. Salon 3 (Zip, Volt), Tea House, General Store, Crisp & Co. department store, two houses.
- * Story: Rival #3 on the plaza; the Salon is dark until the Crisp & Co. raid is over (crisp_done). East gate (Route 4) comes in Ch. 4. */
+ * Story: Rival #3 on the plaza; the Salon is dark until the Crisp & Co. raid is over (crisp_done). East gate (Route 4) comes in Ch. 4.
+ * Layout: Crisp & Co. (three storeys, `dept_store`) looms over the north side of the plaza, square in front of you as you walk in, so
+ * the city's story is the first thing you see. Zip's dark Salon faces the back street south of the plaza, its door held by Pressers. */
 (function (root) {
   'use strict';
   const NP = root.NP, L = NP.levels;
@@ -29,7 +31,7 @@
     const px = c.player.x, py = c.player.y;
     const r = c.npc('rival_s'), s = c.npc('serge_s'), m = c.npc('mimi_s');
     yield* c.wait(12);
-    c.placeNpc(r, px - 4, py + 1, 'right');   // along the back street from the west
+    c.placeNpc(r, px - 4, py + 1, 'right');   // along the front of the store from the west
     c.showNpc('rival_s');
     yield* c.walk(r, ['right', 4]);
     yield* c.face(r, 'up');
@@ -54,7 +56,7 @@
     yield* c.sayT('seamstead.after.9', '{rival} took a cake. A very small smile.');
     yield* c.sayT('seamstead.after.10', 'Mimi: And those pressed Kigu downstairs? Leave them to me and my Soft Rinse.\\pMy first big job! I will sketch them a costume each while they dry.');
     yield* c.sayT('seamstead.after.11', '{rival}: You do not have to stay, {player}. I am okay. ...Okay enough to walk.\\pZip\'s Salon should be open now. Go on. I want to see the lights come on.');
-    yield* c.walk(r, ['left', 5, 'up', 4]);
+    yield* c.walk(r, ['down', 4, 'left', 6]);
     c.hideNpc('rival_s');
     c.placeNpc(m, 19, 17, 'down');
   }
@@ -65,7 +67,7 @@
     legend: { '.': 'grass', T: 'treeline', c: 'cobble', f: 'flowers', F: 'fence', p: 'path' },
     onEnter: function* (c) {
       if (c.flag('crisp_done')) { c.hideNpc('dark1'); c.hideNpc('dark2'); }
-      if (c.flag('crisp_done') && !c.flag('crisp_after') && !c.flag('badge3') && c.player.y > 20) yield* aftermath(c);   // just out of Crisp & Co.
+      if (c.flag('crisp_done') && !c.flag('crisp_after') && !c.flag('badge3') && c.player.y < 10) yield* aftermath(c);   // just out of Crisp & Co.
     },
   });
   M.trigger({ x: 10, y: 2, w: 1, h: 24, id: 'rival3',   // the whole column, so the rival can't be walked round on the grass
@@ -73,21 +75,20 @@
   M.def.cameraZones = [{ x: 26, y: 0, w: 10, h: H, camera: 1 }];   // 3D view swings east as you approach the Route 4 gate
   M.rect(0, 0, W, 2, 'T').rect(0, 26, W, 2, 'T').rect(0, 2, 2, 24, 'T').rect(W - 2, 2, 2, 24, 'T');
   M.rect(0, 14, W, 2, 'c');                                   // avenue: west = Route 3, east = Route 4 (Ch. 4)
-  M.rect(13, 11, 10, 8, 'c');                                 // the plaza
-  M.rect(16, 7, 2, 4, 'c').rect(5, 10, 2, 4, 'c').rect(28, 10, 2, 4, 'c');      // lanes to Salon / Tea / Store doors
-  M.rect(11, 19, 2, 5, 'c').rect(24, 19, 2, 5, 'c').rect(3, 23, 30, 2, 'c');    // south lanes + back street
-  M.rect(14, 4, 1, 1, 'f').rect(21, 8, 3, 1, 'f').rect(8, 17, 3, 1, 'f').rect(26, 17, 4, 1, 'f');
+  M.rect(12, 11, 12, 7, 'c');                                 // the plaza
+  M.rect(16, 8, 3, 3, 'c').rect(5, 10, 3, 4, 'c').rect(28, 10, 3, 4, 'c');      // lanes to Crisp & Co. / Tea / Store doors, 3 wide and centred on each door
+  M.rect(12, 18, 2, 5, 'c').rect(22, 18, 2, 5, 'c').rect(3, 23, 30, 2, 'c');    // lanes from the plaza to the back street (Salon, houses)
+  M.rect(8, 17, 3, 1, 'f').rect(28, 17, 3, 1, 'f').rect(24, 8, 3, 1, 'f');
   M.rect(34, 14, 2, 2, 'F');                                  // east gate: closed until Chapter 4
-  M.rect(15, 7, 1, 2, 'F').rect(18, 7, 1, 2, 'F');            // railings beside the Salon lane, so the two Pressers really do block it
 
-  M.building('salon', 14, 2, 'volt', 'salon', 'seamstead_salon');
+  M.building('dept_store', 13, 2, null, 'crisp', 'crisp_1', { note: 'Crisp & Co. (department store)' });
+  M.building('salon', 14, 18, 'volt', 'salon', 'seamstead_salon');
   M.building('tea_house', 4, 6, null, 'tea', 'seamstead_tea');
   M.building('general_store', 27, 6, null, 'store', 'seamstead_store');
-  M.building('house_l', 15, 19, 'gray', 'crisp', 'crisp_1', { note: 'Crisp & Co. (department store)' });
   M.building('house_m', 5, 19, 'yellow', 'house1', 'seamstead_house1');
   M.building('house_s', 28, 20, 'pink', 'house2', 'seamstead_house2');
 
-  M.sign(15, 10, 'SEAMSTEAD CITY\\nBursting at the seams!\\pSalon: north of the plaza.', 'plaza sign');
+  M.sign(15, 10, 'SEAMSTEAD CITY\\nBursting at the seams!\\pSalon: south of the plaza, on the back street.', 'plaza sign');
   M.sign(3, 13, 'SEAMSTEAD CITY\\nWest: Route 3, Hemline', 'west sign');
   M.stamp('sign', 32, 13);
   function* eastGate(c) {
@@ -96,24 +97,26 @@
   }
   // the sign, and the gate itself when you bump into it; after the Volt Button they mark the end of the playtest build
   M.def.interact.push({ x: 32, y: 13, script: eastGate, note: 'east sign (Ch. 4 opens this)' }, { x: 34, y: 14, script: eastGate, note: 'east gate' }, { x: 34, y: 15, script: eastGate, note: 'east gate' });
-  M.sign(21, 22, 'CRISP & CO.\\nEverything flat. Everything fair.\\pStaff only. Ask on the top floor.', 'Crisp & Co. sign');
-  M.stamp('lamp', 12, 12).stamp('lamp', 23, 12).stamp('lamp', 12, 17).stamp('lamp', 23, 17).stamp('lamp', 8, 12).stamp('lamp', 30, 12);
-  M.stamp('bench', 14, 17).stamp('bench', 21, 17).stamp('flowerbed', 16, 12).stamp('flowerbed', 19, 12).stamp('well', 17, 15);
-  M.trees([[2, 9], [9, 6], [24, 4], [33, 8], [2, 18], [10, 22], [33, 19], [21, 5]]);
-  M.stamp('barrel', 26, 10).stamp('crate', 31, 10).stamp('bush', 3, 22).stamp('bush', 32, 22);
+  M.sign(19, 10, 'CRISP & CO.\\nEverything flat. Everything fair.\\pStaff only. Ask on the top floor.', 'Crisp & Co. sign');
+  // lamps stand on the corners where two roads meet (each stamp's post is the tile below it)
+  for (const x of [4, 8, 11, 24, 27, 31]) M.stamp('lamp', x, 12);   // north side of the avenue: Tea lane, plaza, Store lane
+  M.stamp('lamp', 11, 15).stamp('lamp', 24, 15);                    // south side, at the plaza corners
+  M.stamp('bench_v', 24, 18).stamp('flowerbed', 14, 9).stamp('flowerbed', 20, 9).stamp('well', 17, 14);   // the fountain, dead centre of the plaza where the avenue crosses the Crisp & Co. lane
+  M.trees([[2, 9], [9, 6], [24, 4], [33, 8], [2, 18], [33, 22], [33, 19], [11, 4]]);
+  M.stamp('barrel', 26, 10).stamp('crate', 31, 10).stamp('bush', 3, 22).stamp('bush', 32, 25);
   M.spawn('west', 2, 14, 'right').spawn('east', 33, 14, 'left');
   M.edge('w', 14, 15, 'route3', 'east');
 
-  // the Salon is dark: two Presser "electricians" in white collars stand on the lane until the raid is done
+  // the Salon is dark: two Presser "electricians" in white collars stand at its door until the raid is done
   // round 4: they say plainly where the switch is, so the player knows Crisp & Co. is the way to the Salon (gatekeeping rule)
-  M.npc('dark1', 16, 8, 'grunt_m', 'down', ['Salon closed. The power is "being balanced".\\pBy the Society. For your benefit.',
+  M.npc('dark1', 17, 23, 'grunt_m', 'up', ['Salon closed. The power is "being balanced".\\pBy the Society. For your benefit.',
     'The switch? It is in the Crisp & Co. basement, Tailor.\\pStaff only. Customers never go down there.\\pSo the lights stay off. Flat is fair!']);
-  M.npc('dark2', 17, 8, 'grunt_f', 'down', ['Zip has been very loud lately. Noise is a crease in the air.\\pWe are smoothing it out.',
+  M.npc('dark2', 16, 23, 'grunt_f', 'up', ['Zip has been very loud lately. Noise is a crease in the air.\\pWe are smoothing it out.',
     'You want to see Zip? You will not get past us.\\pNot unless head office at Crisp & Co. says so.\\pAnd head office never says so.']);
   M.npc('jazz', 20, 13, 'rocker', 'left', ['Zip plays the main stage every night at seven!\\pAt least, she did. Last week the stage lights went out.\\pThe same night Crisp & Co. ran a big white cable\\pfrom its basement to the Salon. Nobody thinks that is odd.'], { move: 'turn' });
-  M.npc('shopper', 9, 16, 'lady', 'down', ['Crisp & Co. has a sale on everything that is flat.\\pIt is a very big sale.']);
+  M.npc('shopper', 14, 13, 'lady', 'up', ['Crisp & Co. has a sale on everything that is flat.\\pIt is a very big sale.']);
   M.npc('kid', 26, 15, 'child_f', 'up', ['I went in with my mom. The Linens floor is so quiet.\\pThey said I could not run. I did not even want to run!\\p...I wanted to. A little.'], { move: 'wander', range: 1 });
-  M.npc('old', 22, 21, 'elder_m', 'right', ['I used to sew in the basement of that store.\\pBack when it was the Seamstead Thimble Hall.\\pNow it is "storage". Nobody I know has come up sounding like themselves.']);
+  M.npc('old', 22, 9, 'elder_m', 'left', ['I used to sew in the basement of that store.\\pBack when it was the Seamstead Thimble Hall.\\pNow it is "storage". Nobody I know has come up sounding like themselves.']);
   M.npc('peddler', 6, 16, 'gentleman', 'right', ['Ahoy! Mr. Sharp, humble peddler. Nothing suspicious at all.\\pThis cap? A sailor gave it to me. Or I gave it to a sailor.\\pKeep your eyes sharp, friend!']);
   M.npc('mimi_s', 19, 17, 'mimi', 'down', null, { hidden: false, script: function* (c) {
     if (c.flag('crisp_done')) { yield* c.sayT('seamstead.mimi_s.after', 'Mimi: The lights are back! Zip will be warming up.\\pGo on, {player}. I will cheer from the plaza.'); return; }

@@ -121,8 +121,8 @@ assert.deepEqual(Array.from(NP.stamps.shrine.variants), ['default', 'pressed']);
 assert.deepEqual([NP.stamps.shrine.w, NP.stamps.shrine.h, NP.stamps.shrine.over], [5, 4, 1]);
 assert.deepEqual(Array.from(NP.stamps.shrine.solid), ['#####', '#####', '#####', '..D..']);
 assert.deepEqual(Array.from(NP.stamps.gate_house.variants), ['default', 'pressed']);
-assert.deepEqual([NP.stamps.gate_house.w, NP.stamps.gate_house.h, NP.stamps.gate_house.over], [5, 3, 2]);
-assert.deepEqual(Array.from(NP.stamps.gate_house.solid), ['##.##', '##.##', '##.##']);
+assert.deepEqual([NP.stamps.gate_house.w, NP.stamps.gate_house.h, NP.stamps.gate_house.over], [6, 3, 2]);   // a 2-tile arch, as wide as the roads
+assert.deepEqual(Array.from(NP.stamps.gate_house.solid), ['##..##', '##..##', '##..##']);
 
 // ------------------------------------------------------------------------------------------------ map coverage
 const mapIds = Object.keys(NP.maps);

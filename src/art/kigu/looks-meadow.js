@@ -16,8 +16,8 @@
       ['bell', { at: 'head', dy: 7, dx: 6, r: 2 }],
     ],
   });
-  D('meowvelle', {
-    name: 'Meowvelle', stage: 2, size: 80, rise: 11, pal: Object.assign({}, CAT, { main: '#33334a', sub: '#ffffff', hair: '#55556e', mitt: '#ffffff', foot: '#ffffff', acc: '#d8405a', eye: '#f0c030' }),
+  D('meowtrice', {
+    name: 'Meowtrice', stage: 2, size: 80, rise: 11, pal: Object.assign({}, CAT, { main: '#33334a', sub: '#ffffff', hair: '#55556e', mitt: '#ffffff', foot: '#ffffff', acc: '#d8405a', eye: '#f0c030' }),
     hood: { type: 'up', ears: { kind: 'tri', h: 8, w: 4.5, lean: 2, over: true } },
     hair: { style: 'short', bangs: 'part' }, mouth: 'cat', face: ['whiskers'],
     arms: { mittMat: 'mitt' }, footMat: 'foot',

@@ -10,14 +10,14 @@
   K.rect(g, 0, 19, W, 3, 'w');                              // the sea to the south
   K.rect(g, 12, 0, 2, 2, 'p');                              // gap north to Route 1
   K.rect(g, 12, 0, 2, 19, 'p');                             // main road
-  K.rect(g, 4, 9, 18, 1, 'p');                              // lane past the lab & player house
-  K.rect(g, 4, 17, 19, 1, 'p');                             // lower lane
-  K.rect(g, 19, 16, 4, 1, 'p');
+  K.rect(g, 6, 9, 16, 1, 'p');                              // lane past the lab & player house (from the house door, not the trees)
+  K.rect(g, 6, 17, 17, 1, 'p');                             // lower lane
+  K.rect(g, 20, 16, 3, 1, 'p');                             // the neighbour's front walk, centred on the door
   K.rect(g, 12, 18, 2, 1, 'c');
+  K.rect(g, 12, 19, 2, 2, 'B');                             // the pier, where the morning boat drops the post
   K.rect(g, 9, 11, 3, 2, 'f'); K.rect(g, 15, 11, 3, 2, 'f'); K.rect(g, 3, 11, 2, 1, 'f');
   K.rect(g, 2, 2, 2, 17, 'T');                             // western wood
   K.rect(g, 22, 2, 2, 7, 'T');
-  K.rect(g, 10, 14, 1, 3, 'F'); K.rect(g, 15, 14, 1, 3, 'F');
 
   // ---- the first morning (padding beat 1): Mom asks you to peg out the sheets; {rival}'s kite is tangled in the washing line out back.
   //      Untangling it brings back the tree house promise, then the race to the lab. Nothing is locked: the lab just "is not open yet".
@@ -84,7 +84,7 @@
   K.reg({
     id: 'button_town', name: 'Button Town', music: 'home_town', battleBg: 'grass', border: 'treeline',
     view: 'street',   // 3D camera preset (street | town | flat-ish), see src/engine/persp.js
-    legend: { '.': 'grass', T: 'treeline', p: 'path', c: 'cobble', w: 'water', f: 'flowers', F: 'fence' },
+    legend: { '.': 'grass', T: 'treeline', p: 'path', c: 'cobble', w: 'water', f: 'flowers', F: 'fence', B: 'bridge_v' },
     rows: K.rows(g),
     stamps: [
       { id: 'house_m', x: 4, y: 5, variant: 'red', name: 'home', to: 'player_house' },
@@ -94,13 +94,13 @@
       { id: 'tree', x: 10, y: 3 }, { id: 'tree', x: 15, y: 2 }, { id: 'tree', x: 21, y: 10 }, { id: 'tree', x: 8, y: 17 }, { id: 'tree', x: 17, y: 14 },
       { id: 'sign', x: 11, y: 10, name: 'sign_town' }, { id: 'sign', x: 21, y: 8, name: 'sign_lab' },
       { id: 'mailbox', x: 9, y: 8 }, { id: 'flowerbed', x: 6, y: 11 }, { id: 'bench', x: 16, y: 10 }, { id: 'lamp', x: 14, y: 10 },
-      { id: 'cloth_line', x: 5, y: 3 }, { id: 'crate', x: 15, y: 18 },
+      { id: 'cloth_line', x: 5, y: 3 }, { id: 'crate', x: 13, y: 20 }, { id: 'barrel', x: 11, y: 18 },
     ],
     interact: [
       { x: 11, y: 10, say: 'BUTTON TOWN\\nA town stitched with new beginnings.' },
       { x: 21, y: 8, say: "PROF. BOBBIN'S LAB\\nKigu research and tailoring." },
       { x: 5, y: 3, script: morning }, { x: 6, y: 3, script: morning },
-      { x: 15, y: 18, script: parcel },
+      { x: 13, y: 20, script: parcel },
     ],
     spawns: { south: { x: 12, y: 17, dir: 'up' }, north: { x: 12, y: 2, dir: 'down' } },
     warps: [{ xs: [12, 13], y: 0, to: 'route1', spawn: 'south', sound: 'none' }],
