@@ -44,7 +44,8 @@
   K.rect(g, 11, 0, 2, H, 'p');                                  // north road (Thimble) to south road (Meadow Lane)
   K.rect(g, 13, 11, 11, 2, 'p');                                // east road to Ribbon Loop
   K.rect(g, 4, 13, 6, 1, 'f'); K.rect(g, 15, 15, 5, 2, 'f'); K.rect(g, 3, 18, 3, 1, 'f');
-  K.rect(g, 14, 17, 1, 3, 'F'); K.rect(g, 20, 14, 1, 4, 'F');
+  K.rect(g, 6, 10, 5, 1, 'p');                                  // Gran's front path out to the road
+  K.rect(g, 17, 10, 1, 1, 'p');                                 // the yellow house's doorstep to the east road
 
   K.reg({
     id: 'basting_green', name: 'Basting Green', music: 'town_thimble', battleBg: 'grass', border: 'treeline',
@@ -55,9 +56,9 @@
       { id: 'house_s', x: 4, y: 7, variant: 'green', name: 'gran', to: 'basting_house' },
       { id: 'house_m', x: 15, y: 6, variant: 'yellow' },
       { id: 'cloth_line', x: 7, y: 15 }, { id: 'cloth_line', x: 16, y: 13 },
-      { id: 'well', x: 8, y: 11 }, { id: 'bench', x: 4, y: 15 }, { id: 'lamp', x: 10, y: 10 }, { id: 'lamp', x: 13, y: 14 },
+      { id: 'well', x: 8, y: 11 }, { id: 'bench', x: 4, y: 15 }, { id: 'lamp', x: 10, y: 12 }, { id: 'lamp', x: 13, y: 14 },
       { id: 'tree', x: 3, y: 12 }, { id: 'tree', x: 19, y: 18 }, { id: 'tree', x: 8, y: 18 }, { id: 'sign', x: 10, y: 17 }, { id: 'sign', x: 20, y: 10 },
-      { id: 'flowerbed', x: 8, y: 8 }, { id: 'barrel', x: 3, y: 10 },
+      { id: 'flowerbed', x: 8, y: 8 }, { id: 'barrel', x: 3, y: 9 },
     ],
     interact: [
       { x: 10, y: 17, say: 'BASTING GREEN\\nLoose stitches hold the best memories.' },

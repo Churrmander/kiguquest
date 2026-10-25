@@ -41,33 +41,34 @@ assert.ok(!t.ow.find('dark1').hidden && !t.ow.find('dark2').hidden, 'salon lane 
 
 // ---- Crisp & Co.: Linens -> Uniforms -> Hats
 const press = (key, ms) => assert.ok(t.mash(() => t.idle() && (typeof key === 'function' ? key() : st.flags[key]), ms || 60000), 'timeout ' + key + ' at ' + t.pos());
-assert.ok(t.travel(18, 23, 600), 'to the Crisp & Co. door; ' + t.pos());
+assert.ok(t.travel(17, 8, 600), 'to the Crisp & Co. door; ' + t.pos());
 t.go('up'); t.mash(() => t.idle(), 3000); at('crisp_1');
-assert.ok(t.travel(10, 3, 300), 'cross Linens; ' + t.pos());
+assert.ok(t.travel(14, 3, 300), 'cross Linens; ' + t.pos());
 t.mash(() => t.idle(), 5000);
 t.go('up'); t.mash(() => t.idle(), 3000);
 at('crisp_2');
-assert.ok(t.travel(12, 3, 300), 'cross Uniforms; ' + t.pos());
+assert.ok(t.travel(14, 3, 300), 'cross Uniforms; ' + t.pos());
 t.mash(() => t.idle(), 5000);
 t.go('up'); t.mash(() => t.idle(), 3000);
 at('crisp_3');
 
 // the lock holds until the Staff Pass is in the bag
 assert.ok(!st.bag.staff_pass);
-assert.ok(t.travel(11, 6, 300), 'to the locked door; ' + t.pos());
+assert.ok(t.travel(6, 6, 300), 'to the locked door; ' + t.pos());
 t.mash(() => t.idle(), 5000);
 t.tap('down'); t.tick(6); t.tap('a'); t.mash(() => t.idle(), 2000);
 assert.ok(!st.flags.crisp_lock_open, 'the door stays shut without a pass');
-assert.ok(t.ow.map.solid(11, 7), 'the lock is solid');
+assert.ok(t.ow.map.solid(6, 7), 'the lock is solid');
 // the manager hands over the pass
-assert.ok(t.travel(4, 6, 300), 'to the manager; ' + t.pos());
-t.tap('left'); t.tick(6); t.tap('a');
+assert.ok(t.travel(12, 6, 300), 'to the manager; ' + t.pos());
+t.tap('right'); t.tick(6); t.tap('a');
 t.mash(() => t.idle() && st.bag.staff_pass, 4000);
 assert.ok(st.bag.staff_pass, 'got the Staff Pass');
-assert.ok(t.travel(11, 6, 300), 'back to the door; ' + t.pos());
+assert.ok(t.travel(6, 6, 300), 'back to the door; ' + t.pos());
 t.tap('down'); t.tick(6); t.tap('a'); t.mash(() => t.idle() && st.flags.crisp_lock_open, 3000);
-assert.ok(st.flags.crisp_lock_open && !t.ow.map.solid(11, 7), 'the Staff Pass opens the door');
-assert.ok(t.travel(11, 8, 100), 'through the door; ' + t.pos());
+assert.ok(st.flags.crisp_lock_open && !t.ow.map.solid(6, 7), 'the Staff Pass opens the door');
+assert.ok(t.ow.map.placements.some((p) => p.id === 'staff_door' && p.variant === 'open'), 'the Staff door swings open');
+assert.ok(t.travel(13, 10, 100), 'through the door; ' + t.pos());
 t.go('right'); t.mash(() => t.idle(), 3000);
 at('crisp_b1');
 
@@ -78,8 +79,11 @@ press('crisp_done', 120000);
 assert.ok(st.flags.crisp_serge_done && st.flags.damask_tea && st.flags.crisp_done);
 
 // ---- the Volt Salon: the lane opens, the switch puzzle gates the stage
-ow.loadMap('seamstead', 17, 9, 'up', { noEnter: false }); t.tick(10);
-assert.ok(t.ow.find('dark1').hidden && t.ow.find('dark2').hidden, 'Pressers leave the Salon lane');
+// (the bot only ever picks its first move, and Crisp & Co. now forces every Presser fight, so it has run that move's PP dry:
+//  rest up as a player would at the Tea House across the avenue)
+NP.State.healAll();
+ow.loadMap('seamstead', 17, 24, 'up', { noEnter: false }); t.tick(10);
+assert.ok(t.ow.find('dark1').hidden && t.ow.find('dark2').hidden, 'Pressers leave the Salon door');
 ow.loadMap('seamstead_salon', 5, 12, 'up', { noEnter: true }); t.tick(5);
 const tm = t.ow.map;
 assert.ok(tm.solid(5, 9) && tm.solid(5, 5), 'both barriers are up at first');

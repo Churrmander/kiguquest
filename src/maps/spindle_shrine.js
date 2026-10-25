@@ -116,7 +116,7 @@
   M.sign(11, 12, 'SPINDLE SHRINE\\nPlease do not pull the thread.', 'shrine sign');
   M.trees([[3, 3], [4, 5], [15, 3], [14, 5], [3, 10], [15, 10]]);
   M.trees([[5, 2], [13, 2]], 'pine');
-  M.stamp('bench', 13, 7).stamp('flowerbed', 5, 6).stamp('bush', 3, 7).stamp('bush', 16, 7).stamp('boulder', 3, 12).stamp('boulder', 16, 12);
+  M.stamp('bench', 14, 7).stamp('flowerbed', 5, 6).stamp('bush', 3, 7).stamp('bush', 16, 7).stamp('boulder', 3, 12).stamp('boulder', 16, 12);
 
   M.spawn('south', 9, 16, 'up').spawn('east', 18, 9, 'left');
   M.edge('s', 9, 10, 'gingham_woods', 'north').edge('e', 9, 10, 'hemline', 'west');

@@ -1,4 +1,4 @@
-/* src/art/tiles/stamp_buildings.js — outdoor buildings: house_s / house_m / house_l, lab, tea_house, general_store, salon, windmill.
+/* src/art/tiles/stamp_buildings.js — outdoor buildings: house_s / house_m / house_l, lab, tea_house, general_store, salon, dept_store, windmill.
  * Every building is a patchwork-roofed cottage (K.roof) with a 'D' door tile in the bottom row; all other tiles are solid. */
 (function (root) {
   'use strict';
@@ -251,6 +251,129 @@
     w: 7, h: 5, rise: 12, solid: solidRows(7, 5, 3), variants: SALON_TYPES,
     paint: (variant) => S.house(OPT_SALON(variant)),
     vol: (variant) => S.houseVol(OPT_SALON(variant)),
+  });
+
+  // ============================================================================================ dept_store (Crisp & Co.)
+  // The Society's department store: three tall storeys of starch-white stone that loom over the plaza. A rooftop sign spells the name,
+  // a Society banner hangs down the middle, and the display windows hold rows of identical white uniforms. Glass double doors.
+  const LETTERS = {
+    C: ['.###', '#...', '#...', '#...', '#...', '#...', '.###'],
+    R: ['###.', '#..#', '#..#', '###.', '#.#.', '#..#', '#..#'],
+    I: ['###', '.#.', '.#.', '.#.', '.#.', '.#.', '###'],
+    S: ['.###', '#...', '#...', '.##.', '...#', '...#', '###.'],
+    P: ['###.', '#..#', '#..#', '###.', '#...', '#...', '#...'],
+    O: ['.##.', '#..#', '#..#', '#..#', '#..#', '#..#', '.##.'],
+    '&': ['.#..', '#.#.', '#.#.', '.#..', '#.##', '#..#', '.##.'],
+    '.': ['.', '.', '.', '.', '.', '.', '#'],
+    ' ': ['..', '..', '..', '..', '..', '..', '..'],
+  };
+  const textW = (str) => str.split('').reduce((n, ch) => n + LETTERS[ch][0].length + 1, -1);
+  /** k = pixel scale (2 = 2 px strokes, for signs that must survive the 3D view's resampling) */
+  function letters(b, x, y, str, c, sh, k) {
+    k = k || 1;
+    for (const ch of str) {
+      const g = LETTERS[ch];
+      for (let yy = 0; yy < g.length; yy++) for (let xx = 0; xx < g[yy].length; xx++) if (g[yy][xx] === '#') {
+        if (sh) b.fillRect(x + (xx + 1) * k - (k - 1), y + (yy + 1) * k - (k - 1), k, k, sh);
+        b.fillRect(x + xx * k, y + yy * k, k, k, c);
+      }
+      x += (g[0].length + 1) * k;
+    }
+  }
+  const STORE_MARK = ['..xxxxxxxx..', '.xxxxxxxxxx.', 'xxx..xx..xxx', 'xxx..xx..xxx', 'xxxxxxxxxxxx', 'xxx..xx..xxx', 'xxx..xx..xxx', '.xxxxxxxxxx.', '..xxxxxxxx..'];   // a four-hole button
+  /** a uniform on a stand in a display window: identical white tunic, blue collar */
+  function uniform(b, cx, y) {
+    b.fillRect(cx - 3, y + 2, 7, 9, P.st0); b.fillRect(cx - 3, y + 2, 1, 9, P.st2); b.fillRect(cx + 3, y + 2, 1, 9, P.st3);
+    b.fillRect(cx - 2, y + 2, 5, 1, P.st4); b.set(cx, y + 3, P.st4);
+    b.fillRect(cx - 1, y, 3, 2, P.n2); b.set(cx, y - 1, P.n3);
+    b.vline(cx, y + 11, 4, P.n4); b.hline(cx - 2, y + 15, 5, P.n4);
+  }
+  const OPT_DEPT = (mode) => {
+    const n = K.ramp('navy'), r = [n[1], n[2], n[3], n[4], n[5], P.ink];   // slate one step darker than the navy roofs
+    return {
+      w: 9, h: 6, rise: 56, ramp: r, roofTop: 18, roofBottom: 32, inset: 6, doorCol: 4, doorW: 30, doorH: 38,
+      wall: { base: 'st1', hi: 'st0', sh: 'st2', dk: 'st3' }, trimBand: 'st4',
+      doorFn: (b, x, y, w, h) => {
+        // steel-framed glass double doors with push bars
+        b.fillRect(x - 2, y - 2, w + 4, h + 2, P.n5);
+        b.fillRect(x - 1, y - 1, w + 2, h + 1, P.n2);
+        for (const hx of [x, x + (w >> 1) + 1]) {
+          const hw = (w >> 1) - 1;
+          b.fillRect(hx, y, hw, h, P.gl3);
+          for (let yy = 0; yy < h; yy++) for (let xx = 0; xx < hw; xx++) { const d = xx - (yy >> 1); if (d === 1 || d === 2) b.set(hx + xx, y + yy, P.gl2); }
+          b.fillRect(hx, y, hw, 1, P.gl1); b.fillRect(hx, y, 1, h, P.gl2);
+          b.fillRect(hx + 1, y + 20, hw - 2, 2, P.n1); b.hline(hx + 1, y + 22, hw - 2, P.n4);
+        }
+        b.fillRect(x + (w >> 1) - 1, y, 2, h, P.n3);
+      },
+      windows: [],
+      extras: (b, ctx) => {
+        const { W, H, rb } = ctx;
+        // ---- clean flat stone: repaint the wall (the cottage builder speckles it) everywhere but the doorway
+        b.fillRect(3, rb + 1, W - 6, 93 - rb, P.st1);
+        b.fillRect(3, 94, 52, H - 97, P.st1); b.fillRect(89, 94, W - 92, H - 97, P.st1);
+        // ---- storey cornices (with a shadow line under each) and steel-blue pilasters
+        for (const cy of [rb + 1, 64]) { b.fillRect(3, cy, W - 6, 3, P.st2); b.hline(3, cy, W - 6, P.st0); b.hline(3, cy + 3, W - 6, P.st4); }
+        for (const px of [3, 33, 107, 137]) {
+          const y1 = px === 3 || px === 137 ? H - 4 : 92;   // the corner piers run to the plinth (no cottage timber posts on this one)
+          b.fillRect(px, rb + 1, 4, y1 - rb, P.st3); b.vline(px, rb + 1, y1 - rb, P.st2); b.vline(px + 3, rb + 1, y1 - rb, P.st4);
+        }
+        // ---- upper floors: two rows of steel-framed windows either side of the banner, blinds drawn to regulation heights
+        let k = 0;
+        for (const wy of [42, 70]) for (const wx of [12, 40, 92, 120]) {
+          b.fillRect(wx - 1, wy - 1, 15, 18, P.n4); b.fillRect(wx, wy, 13, 16, P.gl3);
+          for (let yy = 0; yy < 16; yy++) { const xx = 9 - yy; if (xx >= 0 && xx < 13) { b.set(wx + xx, wy + yy, P.gl2); if (xx + 1 < 13) b.set(wx + xx + 1, wy + yy, P.gl2); } }
+          b.vline(wx + 6, wy, 16, P.n3); b.hline(wx, wy + 8, 13, P.n3);
+          const blind = k++ % 2 ? 7 : 4;
+          b.fillRect(wx, wy, 13, blind, P.st0); b.hline(wx, wy + blind, 13, P.st3);
+          b.fillRect(wx - 2, wy + 17, 17, 1, P.n2); b.hline(wx - 2, wy + 18, 17, P.st4);   // sill + its shadow
+        }
+        // ---- the Society banner down the middle (white, flat blue stripes, a plain two-tone button crest that holds up in 3D)
+        b.fillRect(56, rb + 2, 32, 2, P.n4); b.hline(56, rb + 2, 32, P.n2);
+        b.fillRect(59, rb + 4, 26, 52, P.st5);
+        b.fillRect(60, rb + 4, 24, 51, P.st0);
+        for (let x = 62; x <= 82; x += 4) b.vline(x, rb + 4, 51, P.st2);
+        b.fillRect(63, rb + 12, 18, 16, P.st0); b.strokeRect(63, rb + 12, 18, 16, P.st5);
+        b.blit(K.spr(STORE_MARK, { x: P.st5 }), 65, rb + 15);
+        for (let yy = 0; yy < 6; yy++) for (let xx = 0; xx < 6 - yy; xx++) { b.set(71 - xx, rb + 54 - yy, P.st1); b.set(72 + xx, rb + 54 - yy, P.st1); }   // swallow-tail hem
+        b.hline(60, rb + 50, 24, P.st4);
+        // ---- name band over the ground floor: near-navy with a light rim, the name in 2 px strokes so it reads in the 3D view
+        b.fillRect(6, 92, W - 12, 20, P.st0); b.fillRect(7, 93, W - 14, 18, P.st6); b.hline(7, 93, W - 14, P.st5);
+        const name = 'CRISP & CO.', tw = textW(name);
+        letters(b, (W - tw * 2) >> 1, 95, name, P.st0, P.st4, 2);
+        // ---- ground floor: display windows with rows of identical uniforms under starch-blue awnings
+        if (mode !== '3d') {
+          S.awning(b, 8, 112, 42, 3, P.st0, P.st4, [P.st0, P.st6, P.st5, P.st3]);
+          S.awning(b, 94, 112, 42, 3, P.st0, P.st4, [P.st0, P.st6, P.st5, P.st3]);
+        }
+        for (const wx of [10, 96]) {
+          b.fillRect(wx - 1, 118, 40, 29, P.n5);
+          b.fillRect(wx, 119, 38, 27, P.gl3);
+          b.fillRect(wx, 119, 38, 2, P.gl1);
+          for (let q = 0; q < 4; q++) uniform(b, wx + 6 + q * 9, 126);
+          for (let yy = 0; yy < 27; yy++) { const xx = 30 - yy; if (xx >= 0) b.set(wx + xx, 119 + yy, P.gl2); }
+          b.fillRect(wx - 2, 146, 42, 2, P.n2);
+        }
+        // ---- rooftop sign on steel legs, and stiff pennants on the corners
+        const sw = tw + 14, sx = (W - sw) >> 1;
+        for (const lx of [sx + 4, sx + sw - 6]) { b.fillRect(lx, 12, 2, 8, P.n4); b.set(lx, 12, P.n2); }
+        b.hline(sx + 4, 15, sw - 8, P.n4);
+        b.fillRect(sx, 0, sw, 13, P.st6); b.fillRect(sx + 1, 1, sw - 2, 11, P.st0); b.hline(sx + 1, 11, sw - 2, P.st2);
+        letters(b, sx + 7, 3, name, P.st5, P.st2);
+        for (const fx of [8, W - 10]) {
+          b.vline(fx, 4, 15, P.n4); b.set(fx, 4, P.n1);
+          for (let i = 0; i < 5; i++) b.hline(fx + 1, 5 + i, 8 - i, i % 2 ? P.st4 : P.st0);
+        }
+      },
+      outlineExtra: [[[P.st0, P.st1, P.st2, P.st3, P.st4], P.st6], [[P.n1, P.n2, P.n3, P.n4], P.n6], [[P.gl1, P.gl2, P.gl3], P.gl5]],
+    };
+  };
+  K.stamp('dept_store', {
+    w: 9, h: 6, rise: 56, solid: solidRows(9, 6, 4),
+    paint: (variant, f, mode) => S.house(OPT_DEPT(mode)),
+    vol: () => Object.assign(S.houseVol(OPT_DEPT('3d')), {
+      awnings: [8, 94].map((x0) => ({ x0, x1: x0 + 42, y: 112, h: 3, c1: P.st0, c2: P.st4, edge: [P.st0, P.st6, P.st5, P.st3] })),
+    }),
   });
 
   // ============================================================================================ windmill (animated)

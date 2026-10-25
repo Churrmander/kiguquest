@@ -54,7 +54,6 @@
   M.path([[10, 17], [10, 12], [14, 12], [14, 6], [10, 6], [10, 0]], 2, 'p');
   M.rect(2, 18, 20, 9, 'w');
   M.rect(10, 18, 2, 9, 'B');
-  M.rect(10, 38, 1, 4, '.');   // the road narrows to the gatehouse's one-tile arch, so the gate sits centred on it
   // one-way ledges (hop down, never climb) funnel the walk north through each trainer's line of sight (owner's rule: no skipping)
   M.rect(2, 36, 8, 1, 'd').rect(12, 36, 10, 1, 'd');    // Reed: only the road at x10-11
   M.rect(2, 33, 4, 1, 'd').rect(8, 33, 14, 1, 'd');     // Mina: only the road at x6-7
@@ -65,12 +64,12 @@
   M.sign(9, 43, 'ROUTE 2  Plankwater\\nNorth: Gingham Woods\\nSouth: Thimble Village', 'south signpost');
   M.sign(9, 28, 'PLANKWATER BRIDGE\\nMind the third plank from the end.', 'bridge sign (south bank)');
   M.sign(12, 4, 'GINGHAM WOODS ahead.\\nQuiet, please. The trees are listening.', 'north signpost');
-  M.stamp('gate_house', 9, 39, 'pressed');
+  M.stamp('gate_house', 8, 39, 'pressed');   // its 2-wide arch (x10-11) sits square on the road
   L.variantByFlag(M.def.stamps[M.def.stamps.length - 1], GATE_FLAG, 'pressed', 'default');
   // trees are 1x2 (top y, base y+1)
-  M.trees([[3, 35], [8, 40], [20, 42], [19, 33], [4, 27], [20, 28], [18, 11], [8, 7], [20, 7], [12, 14], [3, 10], [16, 3]]);
+  M.trees([[3, 35], [6, 40], [20, 42], [19, 33], [4, 27], [20, 28], [18, 11], [8, 7], [20, 7], [12, 14], [3, 10], [16, 3]]);
   M.trees([[14, 32], [20, 36]], 'pine');
-  M.stamp('bush', 4, 36).stamp('bush', 18, 41).stamp('boulder', 17, 28).stamp('rock', 5, 42).stamp('stump', 3, 17).stamp('flowerbed', 20, 11).stamp('bench', 17, 16);
+  M.stamp('bush', 4, 36).stamp('bush', 18, 41).stamp('boulder', 17, 28).stamp('rock', 5, 42).stamp('stump', 3, 17).stamp('bush', 20, 11).stamp('bench', 17, 16);
 
   // ---- people and pickups
   M.spawn('south', 10, 43, 'up').spawn('north', 10, 2, 'down');

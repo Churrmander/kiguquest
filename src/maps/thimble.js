@@ -94,20 +94,22 @@
     c.set('route2_open');
   }
 
-  const W = 26, H = 22;
+  // The Route 2 road leaves straight north off the main street, right beside the Salon, through a gap in the treeline with a lamp
+  // on each side: you can see it (and the two Pressers holding it) from the plaza, rather than hunting for it behind the shop.
+  const W = 30, H = 22;
   const g = K.grid(W, H, '.');
-  K.rect(g, 0, 0, 2, H, 'T'); K.rect(g, W - 2, 0, 2, H, 'T'); K.rect(g, 0, 0, W, 2, 'T');
-  K.rect(g, 0, 20, 10, 2, 'T'); K.rect(g, 16, 20, 10, 2, 'T');
-  K.rect(g, 12, 6, 2, 16, 'c');                      // main road
-  K.rect(g, 3, 7, 21, 2, 'c');                       // cross street
-  K.rect(g, 22, 0, 2, 9, 'p');                       // road to Route 2 (closed until `route2_open`)
-  K.rect(g, 21, 2, 1, 1, 'T');                       // seals the road beside the guards (the General Store walls the rest)
-  K.rect(g, 3, 15, 6, 1, 'c'); K.rect(g, 17, 16, 7, 1, 'c');
-  K.rect(g, 24, 16, 2, 2, 'c');                      // east gate to Ribbon Loop
+  K.rect(g, 0, 0, 2, H, 'T'); K.rect(g, W - 2, 0, 2, H, 'T'); K.rect(g, 0, 0, 17, 2, 'T'); K.rect(g, 19, 0, 11, 2, 'T');
+  K.rect(g, 0, 20, 12, 2, 'T'); K.rect(g, 14, 20, 16, 2, 'T');
+  K.rect(g, 12, 6, 2, 16, 'c');                      // main road (south to Basting Green)
+  K.rect(g, 3, 7, 25, 2, 'c');                       // main street
+  K.rect(g, 17, 2, 2, 5, 'c');                       // road to Route 2 (closed until `route2_open`), paved to the treeline...
+  K.rect(g, 17, 0, 2, 2, 'p');                       // ...and dirt beyond it
+  K.rect(g, 3, 15, 9, 1, 'c');                       // House 1's walk, out to the main road
+  K.rect(g, 14, 16, 16, 2, 'c');                     // back street: main road -> House 2 -> east gate to Ribbon Loop
   K.rect(g, 10, 10, 2, 2, 'c'); K.rect(g, 14, 10, 2, 2, 'c');
-  K.rect(g, 3, 17, 4, 2, 'f'); K.rect(g, 19, 18, 4, 2, 'f'); K.rect(g, 8, 13, 3, 1, 'f');
-  K.rect(g, 15, 13, 1, 4, 'F');
-  K.rect(g, 9, 15, 3, 4, 'f');                       // a flower patch beside the road (towns have no tall grass: no wild Kigu in town)
+  K.rect(g, 3, 17, 4, 2, 'f'); K.rect(g, 21, 18, 4, 2, 'f'); K.rect(g, 8, 13, 3, 1, 'f');
+  K.rect(g, 15, 12, 1, 4, 'F');
+  K.rect(g, 9, 16, 3, 3, 'f');                       // a flower patch beside the road (towns have no tall grass: no wild Kigu in town)
 
   K.reg({
     id: 'thimble', name: 'Thimble Village', music: 'town_thimble', battleBg: 'grass', border: 'treeline',
@@ -117,18 +119,19 @@
     stamps: [
       { id: 'tea_house', x: 3, y: 3, name: 'tea', to: 'tea_house' },
       { id: 'salon', x: 9, y: 2, variant: 'fluff', name: 'salon', to: 'salon' },
-      { id: 'general_store', x: 17, y: 3, name: 'store', to: 'general_store' },
+      { id: 'general_store', x: 21, y: 3, name: 'store', to: 'general_store' },
       { id: 'house_s', x: 3, y: 12, variant: 'yellow', name: 'house1', to: 'thimble_house1' },
-      { id: 'house_m', x: 18, y: 12, variant: 'pink', name: 'house2', to: 'thimble_house2' },
-      { id: 'sign', x: 11, y: 9, name: 'sign_v' }, { id: 'sign', x: 22, y: 5 }, { id: 'sign', x: 23, y: 15 },
-      { id: 'lamp', x: 10, y: 8 }, { id: 'lamp', x: 15, y: 8 }, { id: 'well', x: 6, y: 9 }, { id: 'bench', x: 17, y: 9 },
-      { id: 'cloth_line', x: 7, y: 13 }, { id: 'tree', x: 2, y: 10 }, { id: 'tree', x: 8, y: 18 }, { id: 'tree', x: 16, y: 18 }, { id: 'tree', x: 23, y: 10 },
-      { id: 'flowerbed', x: 20, y: 9 }, { id: 'barrel', x: 8, y: 6 }, { id: 'crate', x: 16, y: 6 }, { id: 'windmill', x: 2, y: 16 },
+      { id: 'house_m', x: 22, y: 12, variant: 'pink', name: 'house2', to: 'thimble_house2' },
+      { id: 'sign', x: 14, y: 9, name: 'sign_v' }, { id: 'sign', x: 19, y: 6 }, { id: 'sign', x: 27, y: 15 },
+      { id: 'lamp', x: 16, y: 2 }, { id: 'lamp', x: 19, y: 2 },   // the Route 2 gateway
+      { id: 'lamp', x: 10, y: 8 }, { id: 'lamp', x: 15, y: 8 }, { id: 'well', x: 6, y: 9 }, { id: 'bench', x: 20, y: 9 },
+      { id: 'cloth_line', x: 7, y: 13 }, { id: 'tree', x: 2, y: 10 }, { id: 'tree', x: 8, y: 18 }, { id: 'tree', x: 17, y: 18 }, { id: 'tree', x: 27, y: 10 },
+      { id: 'flowerbed', x: 23, y: 9 }, { id: 'barrel', x: 8, y: 6 }, { id: 'crate', x: 26, y: 6 }, { id: 'windmill', x: 2, y: 16 },
     ],
     interact: [
-      { x: 11, y: 9, say: 'THIMBLE VILLAGE\\nWhere every stitch counts.' },
-      { x: 23, y: 15, say: 'EAST: RIBBON LOOP\\nThe long way round to Basting Green.' },
-      { x: 22, y: 5, script: function* (c) {
+      { x: 14, y: 9, say: 'THIMBLE VILLAGE\\nWhere every stitch counts.' },
+      { x: 27, y: 15, say: 'EAST: RIBBON LOOP\\nThe long way round to Basting Green.' },
+      { x: 19, y: 6, script: function* (c) {
         if (c.flag('route2_open')) yield* c.sayT('thimble.sign_r2.open', 'ROUTE 2  Licensed Tailors only.\\nPlanks uneven. Cross at your own risk.');
         else if (c.flag('presser1_done')) yield* c.sayT('thimble.sign_r2.ask', 'ROUTE 2  Closed\\nInspection in progress.\\pLicensed Tailors with a Button may ask the guards.');
         else yield* c.sayT('thimble.sign_r2.closed', 'ROUTE 2  Closed\\nInspection in progress. Please be patient.');
@@ -144,23 +147,23 @@
       if (c.flag('route2_open')) { c.hideNpc('guard1'); c.hideNpc('guard2'); }
       if (c.flag('badge1') && !c.flag('presser1_done')) yield* inspection(c);
     },
-    spawns: { south: { x: 12, y: 19, dir: 'up' }, north: { x: 22, y: 1, dir: 'down' }, east: { x: 24, y: 16, dir: 'left' } },
+    spawns: { south: { x: 12, y: 19, dir: 'up' }, north: { x: 17, y: 1, dir: 'down' }, east: { x: 28, y: 16, dir: 'left' } },
     // towns are safe: no wild encounters (owner's rule)
     warps: [
       { xs: [12, 13], y: 21, to: 'basting_green', spawn: 'north', sound: 'none' },
-      { x: 25, ys: [16, 17], to: 'ribbon_loop', spawn: 'north', sound: 'none' },
-      { xs: [22, 23], y: 0, to: 'route2', spawn: 'south', sound: 'none' },
+      { x: 29, ys: [16, 17], to: 'ribbon_loop', spawn: 'north', sound: 'none' },
+      { xs: [17, 18], y: 0, to: 'route2', spawn: 'south', sound: 'none' },
     ],
     npcs: [
-      { id: 'guard1', x: 22, y: 3, look: 'grunt_m', dir: 'down', hideIf: 'route2_open', script: guards },
-      { id: 'guard2', x: 23, y: 3, look: 'grunt_f', dir: 'down', hideIf: 'route2_open', script: guards },
+      { id: 'guard1', x: 17, y: 3, look: 'grunt_m', dir: 'down', hideIf: 'route2_open', script: guards },
+      { id: 'guard2', x: 18, y: 3, look: 'grunt_f', dir: 'down', hideIf: 'route2_open', script: guards },
 
       // cast for the Rival #2 and first-inspection scenes (hidden until their scripts place them)
       { id: 'tomo_t', x: 12, y: 6, look: 'rival', dir: 'down', hidden: true, say: ['{rival}: ...'] },
       { id: 'presser_s1', x: 12, y: 14, look: 'grunt_m', dir: 'up', hidden: true, say: ['Flat is fair!'] },
       { id: 'presser_s2', x: 13, y: 14, look: 'grunt_f', dir: 'up', hidden: true, say: ['Stay in line, please.'] },
       { id: 'poppy_out', x: 12, y: 6, look: 'poppy', dir: 'down', hidden: true, say: ['Poppy: Every stitch counts!'] },
-      { id: 'peddler', x: 22, y: 8, look: 'gentleman', dir: 'left', say: ['Good day! Mr. Sharp, humble peddler. Nothing suspicious at all.\\pThis moustache? Oh, it is a very ordinary moustache.\\pKeep your eyes sharp, friend!'] },
+      { id: 'peddler', x: 25, y: 9, look: 'gentleman', dir: 'left', say: ['Good day! Mr. Sharp, humble peddler. Nothing suspicious at all.\\pThis moustache? Oh, it is a very ordinary moustache.\\pKeep your eyes sharp, friend!'] },
       { id: 'vf', x: 9, y: 11, look: 'villager_f2', dir: 'down', move: 'wander', range: 2, say: ['Master Poppy sews her Fluff Kigu tiny cardigans.\\pIt is too cute to battle against!'] },
       { id: 'kidf', x: 14, y: 12, look: 'child_f', dir: 'left', move: 'turn', say: ['If your Kigu is sleepy, the Tea House will fix her right up!'] },
       { id: 'eldm', x: 7, y: 11, look: 'elder_m', dir: 'right', say: ['This well has been here since the first seam was sewn.\\pThe water tastes like tea already.'] },
