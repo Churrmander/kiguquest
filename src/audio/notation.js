@@ -617,8 +617,10 @@
     const rg = rngOf('crygest:' + (rf() < 0.55 ? family : id));
     // known species are spread evenly over gestures (by dex number) and families over palettes, so no two neighbours sound alike
     const fam = sp && NP.data.species[family];
-    const gesture = sp && sp.num ? GESTURES[(sp.num * 5 + 2) % GESTURES.length] : GESTURES[Math.floor(rg() * GESTURES.length)];
-    const palette = fam && fam.num ? PALETTES[(fam.num * 3) % PALETTES.length] : PALETTES[Math.floor(rf() * PALETTES.length)];
+    const cv = (sp && sp.cryVoice) || {}; // optional hand-picked overrides: { gesture, palette, tex }
+    const gesture = cv.gesture || (sp && sp.num ? GESTURES[(sp.num * 5 + 2) % GESTURES.length] : GESTURES[Math.floor(rg() * GESTURES.length)]);
+    const palette = cv.palette || (fam && fam.num ? PALETTES[(fam.num * 3) % PALETTES.length] : PALETTES[Math.floor(rf() * PALETTES.length)]);
+    if (cv.tex) tex = cv.tex;
     return {
       gesture, palette, gseed: 'crynotes:' + id, interval: [3, 4, 5, 6, 7, 12][Math.floor(rg() * 6)],
       tex, rough: 0.5 + rf() * 0.5,

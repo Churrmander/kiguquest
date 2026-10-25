@@ -116,26 +116,36 @@ with `CAST_SFX[type]` (every type has one; `cast_<type>` for the ones without an
 type's own impact layer `imp_<type>`. `engine.js` gives battle sounds (`hit*`, `imp_*`, `cast_*`, swings, `shake`) a random ±4 % pitch wobble per play.
 
 ## Cries
-`cry(id)` "speaks" the species' sound-word (`NP.data.species[id].cry`, e.g. `Kon!`, `Piiraa!`) split into up to 3 syllables:
-* The vowel sets a formant band, used for the breath noise and the `lp` cutoff (a 1050, e 1500, i 1900, o 720, u 520 Hz).
-* The onset shapes the attack: a plosive adds a noise click and a pitch scoop, m/n add a swell, l/r/w/y add a glide in, s/f/h/z add a hiss, and z adds a buzz.
-* The coda shapes the release: n/m end in a hum tail, k/t/p in a click, s/f in a hiss.
-* Long vowels (`ii`) and the last syllable are drawn out. A word without vowels (`Bzz`) is a buzz.
-* The evolution `family` hash picks the timbre (pulse plus detuned triangle, soft triangle/sine, or pulse plus sub-octave), duty, detune, formant shift and
-  pitch region (~210-535 Hz). `stage` lowers the pitch (x0.8, x0.66), lowers the formants and slows the voice. So an evolution line sounds related.
-* The species id hash picks one of 8 word-level contours (rising, falling, arch, chirpy, growl, warble, yip-call, coo) and a small pitch/speed jitter.
-  A trailing `!` falls at the end, `?` rises and `~` warbles.
+`cry(id)` builds a deterministic cry for a species from its data (`NP.data.species[id]`): no recording, no hand-made sound file. Owner sign-off
+(2026-10-25): "so varied and full of character". The layers, from the biggest audible difference to the smallest:
 
-Ids without species data (numbers, test ids) get a pseudo-word from the hash. Cries are deterministic, 0.2-0.55 s long, at most 2.5 kHz per event. They take
-a string/number id or an object with `.id`. `tools/audio-render.mjs cry:<id>` loads the species table so it renders the real word.
+| layer | picked by | options |
+|---|---|---|
+| **Gesture** (call shape) | dex number `num` (`(num*5+2) % 11`, so neighbours differ) | `spoken` (x2 weight), `trill`, `call` (howl with a leap), `siren`, `chord` (two voices), `chatter`, `roar`, `coo`, `bleat`, `chirp` |
+| **Palette** (instrument) | the evolution family's first stage `num` (`(num*3) % 8`) | `pure`, `reedy`, `brassy`, `hollow`, `glassy` (bell), `metal` (FM), `nasal`, `pulse` |
+| **Type motif** | `types` (primary full, secondary at 0.6) | Ember crackle, Tide bubbles, Volt buzz, Sprout rustle, Frost chimes, Fluff cushion, Brawl punch, Nettle squelch, Terra rumble, Gale whistle, Dream shimmer, Buzz wing-hum, Pebble clacks, Spook echo, Drake growl, Shade undertone, Iron ring (`MOTIFS`) |
+| **Texture** | family hash, biased by primary type (`TYPE_TEX`) | `clean`, `rasp`, `screech`, `breathy`, `warble`, `growl` |
+| **Stage** | `stage` 1-3 | later stages are lower, slower and longer (~0.3-0.7 s first stage, up to ~1.4 s final form); chatter/chirp add notes |
+| **Pitch region** | family hash | ~250-930 Hz for a first stage |
 
-Gestures: each species has a call shape, spread evenly over the dex: `spoken` (the cry word, as above), `trill`, `call` (howl with a leap), `siren`,
-`chord` (two voices), `chatter`, `roar`, `coo`, `bleat` or `chirp`. Families share a palette (`pure`, `reedy`, `brassy`, `hollow`, `glassy`, `metal` FM,
-`nasal`, `pulse`), so evolutions sound related but each call has its own shape. `levelCry` matches loudness (about -21 LUFS, ±3).
+So a family shares its instrument, texture and type motif (it sounds related) but every member has its own call shape.
 
-Type motifs: `MOTIFS` in notation.js layers a short accent per type into every species cry (primary type full, secondary at 0.6): Ember crackles,
-Tide bubbles, Volt buzzes, Sprout rustles, Terra rumbles, Iron rings, and so on. Each family also gets a voice texture (clean, rasp, screech, breathy, warble or growl, biased by type), and cries run ~0.3 s for a
-first stage up to ~1.4 s for a final form, like Gen 5 cries (measured: 0.3–1.7 s, only about half clean tone).
+**The `spoken` gesture** sings the species' sound-word (`cry: 'Kon!'`), split into up to 3 syllables: the vowel sets a formant band (a 1050, e 1500,
+i 1900, o 720, u 520 Hz), the onset shapes the attack (plosive click and scoop, m/n swell, l/r/w/y glide, s/f/h/z hiss, z buzz), the coda the release
+(n/m hum, k/t/p click, s/f hiss). Long vowels and the last syllable are drawn out; a word without vowels (`Bzz`) is a buzz. A trailing `!` falls,
+`?` rises, `~` warbles. One of 8 word contours comes from the species id hash. (Spoken cries use the older pulse/triangle bodies, not the palettes.)
+
+`levelCry` scales every cry to a common power estimate (about -21 LUFS short-term, +-3) and gives it a small reverb send. Cries stay under 1.4 s and
+4.2 kHz. Ids without species data (numbers, test ids) get a hash-made word and gesture. Render one with `node tools/audio-render.mjs cry:<id>`.
+
+### Adding a new Kigu
+1. Give the species entry a `cry` word (it is used whenever the gesture is `spoken`, and in text), `types`, `family` (the first stage's id) and `stage`.
+   Gesture and palette then follow from `num` and the family automatically.
+2. Render it and its family: `node tools/audio-render.mjs cry:<id> cry:<other members>`, and listen next to a few neighbours in the dex.
+3. If it sounds too close to another Kigu or wrong for the character, override in the species entry: `cryVoice: { gesture: 'roar', palette: 'brassy', tex: 'growl' }`
+   (any field can be left out). Prefer changing the gesture first: it is the biggest audible difference.
+4. A new type needs an entry in `MOTIFS` and `TYPE_TEX` (src/audio/notation.js), plus `imp_<type>` and a `CAST_SFX` entry for its attacks (see Attack sounds).
+5. Reference listening only: the owner keeps Gen 5 cries in `.preview/reference/` (git-ignored) for comparison; never copy or commit any of it.
 
 ## Content
 DS-style arrangements so far: home_town, route_meadow, town_thimble, battle_wild (the rest are legacy and play through the softened patches).

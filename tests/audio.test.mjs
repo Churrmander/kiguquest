@@ -98,6 +98,16 @@ const SFX = ['cursor', 'select', 'cancel', 'error', 'menu_open', 'text', 'bump',
   }
   assert.ok(set.size >= 55, 'cries vary by species');
   assert.ok(A.cryEvents(17).events.length && A.cryEvents({ id: 'x' }).events.length);
+  { // species data drives gesture/palette, and cryVoice overrides them
+    NP.data.species = { fx_a: { num: 1, cry: 'Ka!', types: ['ember'], family: 'fx_a' }, fx_b: { num: 2, cry: 'Ko', types: ['tide'], family: 'fx_a', stage: 2 } };
+    const pa = A.cryEvents('fx_a').params, pb = A.cryEvents('fx_b').params;
+    assert.notEqual(pa.gesture, pb.gesture, 'neighbours get different call shapes');
+    assert.equal(pa.palette, pb.palette, 'a family shares its palette');
+    NP.data.species.fx_a.cryVoice = { gesture: 'roar', palette: 'glassy', tex: 'breathy' };
+    const po = A.cryEvents('fx_a').params;
+    assert.ok(po.gesture === 'roar' && po.palette === 'glassy' && po.tex === 'breathy', 'cryVoice override');
+    delete NP.data.species;
+  }
   // sfx layer fields: d (detuned double), o (sub-octave), ~ (echo), lp/P/R pass-through, nl/nh noise filters
   {
     const ps = A.notation.parseSfx;
