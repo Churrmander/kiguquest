@@ -47,7 +47,7 @@ function readPNG(file) {
 /** Sample the centre of every grid cell, drop the white background (flood fill from the border, plus from `gaps`: seed points in
  *  source pixels inside enclosed background, such as the space between the legs), crop to the bounding box.
  *  -> { w, h, cx (frame centre x inside the crop), pal: ['rrggbb', ...], idx: Uint8Array (0 = transparent, else pal index + 1) } */
-function convert(file, grid = GRID, gaps = []) {
+function convert(file, grid = GRID, gaps = [], clear = []) {
   const im = readPNG(file);
   if (im.w !== im.h || im.w < 1000) throw new Error(file + ': expected a square ~1024px sheet');
   const N = Math.floor(im.w / grid), rgb = new Array(N * N);
@@ -65,6 +65,11 @@ function convert(file, grid = GRID, gaps = []) {
     bg[i] = 1;
     const x = i % N, y = (i / N) | 0;
     if (x > 0) stack.push(i - 1); if (x < N - 1) stack.push(i + 1); if (y > 0) stack.push(i - N); if (y < N - 1) stack.push(i + N);
+  }
+  // clear boxes [x0, y0, x1, y1] in source px: light anti-aliased cells (every channel >= 120) inside are background too, for slivers
+  // too thin and grey for the white flood
+  for (const [bx0, by0, bx1, by1] of clear) for (let y = Math.floor(by0 / grid); y <= Math.floor(by1 / grid); y++) {
+    for (let x = Math.floor(bx0 / grid); x <= Math.floor(bx1 / grid); x++) if (rgb[y * N + x].every((v) => v >= 120)) bg[y * N + x] = 1;
   }
   let x0 = N, y0 = N, x1 = -1, y1 = -1;
   for (let i = 0; i < N * N; i++) if (!bg[i]) { const x = i % N, y = (i / N) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
@@ -256,6 +261,7 @@ const TRAINER_GAPS = {
 const trainerFiles = fs.readdirSync(path.join(ROOT, 'art/autosprite/npc/battle')).filter((f) => f.endsWith('.png'))
   .map((f) => [f.slice(0, -4), path.join(ROOT, 'art/autosprite/npc/battle', f)])
   .concat(Object.entries(HEROES).map(([look, hero]) => [look, path.join(ROOT, 'art/autosprite/heroes', hero + '-ready.png')]));
+const TRAINER_CLEAR = { gentleman: [[498, 612, 534, 880]] }; // the thin grey sliver between the legs
 // drawn facing screen-right; mirrored so they face the player like the other foe trainers
 const TRAINER_FLIP = new Set(['schoolgirl']);
 /** Mirror a converted sprite left to right. */
@@ -266,7 +272,7 @@ function flipX(s) {
 }
 for (const [look, f] of trainerFiles) {
   if (!fs.existsSync(f)) continue;
-  let n = convert(f, 6, TRAINER_GAPS[look]);
+  let n = convert(f, 6, TRAINER_GAPS[look], TRAINER_CLEAR[look]);
   if (TRAINER_FLIP.has(look)) n = flipX(n);
   const s = downscale(n, TRAINER_H / n.h);
   let hx = -1, hy = 0;
