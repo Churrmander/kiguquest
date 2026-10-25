@@ -199,10 +199,10 @@
     // lip: grass edge (y9), earth face (y10..13), ground shadow (y14..15)
     for (let x = 0; x < T; x++) {
       const wob = (x % 8 === 3 || x % 8 === 4) ? 1 : 0;
-      b.set(x, 8 + wob, col('g3'));
-      b.set(x, 9 + wob, col('g4'));
-      if (wob) b.set(x, 8, col('g2'));
-      b.set(x, 10, col('b0')); b.set(x, 11, col('b1'));
+      b.set(x, 6 + wob, col('g1')); b.set(x, 7 + wob, col('g3'));         // a lit grass lip over a deep earthen face
+      b.set(x, 8 + wob, col('g4'));
+      if (wob) { b.set(x, 6, col('g2')); b.set(x, 7, col('g1')); }
+      b.set(x, 9, col('b0')); b.set(x, 10, col('b1')); b.set(x, 11, col('b1'));
       b.set(x, 12, col('b2')); b.set(x, 13, col('b3'));
       b.set(x, 14, col('g4')); b.set(x, 15, col('g3'));
       if (x % 8 === 1) { b.set(x, 11, col('b2')); b.set(x, 12, col('b3')); }
@@ -227,14 +227,14 @@
       if (dir === 'l') cols = [[0, 'g3'], [1, 'b2'], [2, 'b1'], [3, 'b0'], [4, 'g4'], [5, 'g3']];
       else cols = [[10, 'g3'], [11, 'g4'], [12, 'b0'], [13, 'b1'], [14, 'b2'], [15, 'g3']];
       // darker on the right-hand side for shading
-      if (dir === 'l') cols = [[0, 'g3'], [1, 'b4'], [2, 'b3'], [3, 'b2'], [4, 'g4'], [5, 'g3']];
+      if (dir === 'l') cols = [[0, 'g3'], [1, 'b4'], [2, 'b3'], [3, 'b2'], [4, 'b1'], [5, 'b0'], [6, 'g4'], [7, 'g3'], [8, 'g1']];
       else cols = [[10, 'g3'], [11, 'g4'], [12, 'b0'], [13, 'b1'], [14, 'b3'], [15, 'g3']];
       for (const [x, c] of cols) b.set(x + (dir === 'l' ? wob : -wob), y, col(c));
       if (dir === 'l' && y % 8 === 2) b.set(2, y, col('b4'));
       if (dir === 'r' && y % 8 === 2) b.set(13, y, col('b3'));
     }
-    if (!N) { const xs = dir === 'l' ? [1, 2, 3] : [12, 13, 14]; for (const x of xs) b.set(x, 0, col('g2')); }
-    if (!S) { const xs = dir === 'l' ? [1, 2, 3] : [12, 13, 14]; for (const x of xs) b.set(x, 15, col('g3')); }
+    if (!N) { const xs = dir === 'l' ? [1, 2, 3, 4, 5] : [12, 13, 14]; for (const x of xs) b.set(x, 0, col('g2')); }
+    if (!S) { const xs = dir === 'l' ? [1, 2, 3, 4, 5] : [12, 13, 14]; for (const x of xs) b.set(x, 15, col('g3')); }
     return b;
   }
   K.terrain('ledge_l', { ledge: 'left', autotile: true, maskMode: 'ortho', variants: 1, step: 'grass', paint: (m) => ledgeSide(m, 'l') });

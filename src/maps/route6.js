@@ -23,47 +23,52 @@
   M.rect(2, 11, W - 4, 3, 'd');
   // gusts: a band blowing south across the open top (step in from the north, and it carries you down to the road),
   // and another blowing north on the lower slope (it lifts you back up); a cross-wind blowing east at the far end
-  M.rect(16, 5, 10, 4, 's').rect(28, 15, 8, 3, 'n').rect(38, 6, 6, 4, 'e');
+  M.rect(15, 5, 10, 4, 's').rect(28, 15, 8, 3, 'n').rect(41, 6, 4, 4, 'e');
   // grass for encounters
-  M.rect(4, 6, 8, 4, ',').rect(24, 16, 4, 3, ',').rect(38, 15, 6, 3, ',').rect(17, 15, 5, 3, ',').rect(30, 5, 6, 4, ',');
-  M.rect(8, 15, 3, 1, 'f').rect(44, 6, 3, 1, 'f');
+  M.rect(3, 6, 6, 4, ',').rect(31, 18, 3, 1, ',').rect(42, 15, 4, 3, ',').rect(15, 15, 6, 3, ',').rect(30, 5, 6, 3, ',');
+  M.rect(5, 15, 3, 1, 'f').rect(45, 6, 3, 1, 'f');
   // the hidden cave mouth on the north shoulder, tucked behind boulders
   M.building('cave_mouth', 6, 2, null, 'cave', 'ridge_cave', { toDoor: null, note: 'hidden cave (Nocti)' });
   M.rect(6, 2, 3, 2, '.').rect(7, 4, 1, 2, 'd');
-  M.stamp('boulder', 5, 5).stamp('boulder', 9, 5);
+  M.stamp('boulder', 5, 5).stamp('boulder', 8, 6);
   M.stamp('windsock', 14, 10).stamp('windsock', 36, 10).stamp('windsock', 46, 14);
-  M.trees([[3, 16], [13, 17], [26, 4], [45, 17]]);
+  M.trees([[3, 16], [14, 17], [21, 15], [45, 17], [17, 2]]);
+  M.stamp('rock', 13, 8).stamp('boulder', 19, 9);
   // a lookout halfway along: a bench, a bed of flowers and a wind-bent tree
-  M.rect(26, 9, 5, 1, 'f').stamp('bench', 28, 10);
-  M.trees([[31, 9]]);
+  M.rect(29, 9, 5, 1, 'f').stamp('bench', 31, 10);
+  M.trees([[34, 9]]);
   M.stamp('rock', 23, 10).stamp('bush', 32, 14).stamp('bush', 12, 14);
   M.sign(4, 10, 'ROUTE 6  Windy Ridge\\nWest: Shibuyarn\\nEast: Kite Hill', 'west sign');
   M.sign(45, 10, 'KITE HILL\\nHold on to your hat.', 'east sign');
   M.spawn('west', 2, 12, 'right').spawn('east', 47, 12, 'left').spawn('cave', 7, 5, 'down');
   M.edge('w', 11, 13, 'shibuyarn', 'east').edge('e', 11, 13, 'kite_hill', 'west');
 
-  // the ridge road is fenced on both sides, so the walk east passes every trainer (owner's rule: route trainers can't be skipped).
-  // One gate into each side: the open top at x13, and the lower slope at x31, where the north-blowing gust lifts you back through it
-  L.fenceRoad(M, { h: true, lines: [10, 14], from: 2, to: W - 3, open: [[13, 10], [31, 14]] });
+  // The road is never fenced. Three natural pinches put a Tailor across it (owner's rule: route trainers can't be skipped):
+  //  1. rocky spurs run down from both shoulders and nearly meet; Gale and Ren wait in the gap
+  M.rect(9, 5, 3, 2, 'C').rect(10, 7, 2, 3, 'C').rect(9, 14, 2, 3, 'C').rect(8, 17, 4, 2, 'C');
+  //  2. a wind-bent copse crosses the ridge, with Suzu and Kip at the clearing where the road goes through
+  M.rect(24, 2, 4, 3, 'T').rect(26, 5, 3, 2, 'T').rect(25, 7, 3, 3, 'T').rect(25, 14, 2, 2, 'T').rect(25, 16, 4, 2, 'T').rect(26, 18, 5, 4, 'T');
+  //  3. a last rocky spine before Kite Hill, with Batten at its foot
+  M.rect(38, 4, 4, 3, 'C').rect(38, 7, 3, 2, 'C').rect(39, 9, 2, 2, 'C').rect(39, 15, 3, 3, 'C');
 
   M.enc('grass', [['kamipi', 30, 32, 26], ['propi', 30, 32, 24], ['peepi', 30, 31, 16], ['larkette|peepi', 31, 33, 8], ['glowli', 30, 31, 10], ['cloudli', 31, 33, 16]]);
   // Cloudli only drift in on the rain: without it, her slot goes to Kamipi
   M.def.encFilter = (list) => (NP.Weather.now === 'rain' ? list : list.map((e) => (e.sp === 'cloudli' ? Object.assign({}, e, { sp: L.sp('kamipi') }) : e)));
 
-  M.trainer('r6_t1', 10, 11, 'hiker', 'down', { cls: 'Hiker', name: 'Gale', sight: 2, reward: 15, ai: 2, team: [['chippona|chippi', 30], ['propi', 31]],
+  M.trainer('r6_t1', 10, 10, 'hiker', 'down', { cls: 'Hiker', name: 'Gale', sight: 3, reward: 15, ai: 2, team: [['chippona|chippi', 30], ['propi', 31]],
     intro: 'I\'ve lost two hats on this ridge already! I\'m not losing a battle too!', win: 'And there goes my third hat. Wait, no, that\'s my pride.', after: 'Tie your hat on with string. That\'s my top tip for the ridge.' });
-  M.trainer('r6_t2', 20, 13, 'pilot', 'up', { cls: 'Pilot', name: 'Ren', sight: 3, reward: 16, ai: 2, team: [['kamipi', 31], ['propi', 31], ['peepi', 30]],
+  M.trainer('r6_t2', 11, 14, 'pilot', 'up', { cls: 'Pilot', name: 'Ren', sight: 3, reward: 16, ai: 2, team: [['kamipi', 31], ['propi', 31], ['peepi', 30]],
     intro: 'My balloon\'s grounded, so I walk the ridge to feel the wind. Want to feel a battle?', win: 'You\'ve got a pilot\'s nerve. Have you ever flown?', after: 'Dart can read the wind just by licking her finger. I tried it, and now my finger\'s cold.' });
-  M.trainer('r6_t3', 27, 11, 'schoolgirl', 'down', { cls: 'Kite Flyer', name: 'Suzu', sight: 3, reward: 13, ai: 1, team: [['kamipi', 31], ['kamipi', 31]],
+  M.trainer('r6_t3', 26, 10, 'schoolgirl', 'down', { cls: 'Kite Flyer', name: 'Suzu', sight: 3, reward: 13, ai: 1, team: [['kamipi', 31], ['kamipi', 31]],
     intro: 'My kite and I have been up here all day! Let\'s battle while the wind\'s good.', win: 'My kite lost too. It\'s in a tree now.', after: 'Kamipi fold themselves up like paper kites. I\'ve seen one take off on her own!' });
-  M.trainer('r6_t4', 34, 13, 'courier', 'up', { cls: 'Courier', name: 'Kip', sight: 3, reward: 15, ai: 2, team: [['jerbix|jerbi', 31], ['propi', 32]],
+  M.trainer('r6_t4', 27, 14, 'courier', 'up', { cls: 'Courier', name: 'Kip', sight: 3, reward: 15, ai: 2, team: [['jerbix|jerbi', 31], ['propi', 32]],
     intro: 'Balloon post is down, so I run the letters over the ridge! I\'ve got legs of steel. Battle me!', win: 'Legs of steel, and I\'m the one out of breath. Fair enough.', after: 'The post office on Kite Hill is drowning in letters. Somebody should help them.' });
-  M.trainer('r6_t5', 42, 11, 'grunt_f', 'down', { cls: 'Presser', name: 'Batten', sight: 3, reward: 16, ai: 2, music: 'battle_society', team: [['propi', 31], ['coili', 31], ['silkie', 32]],
+  M.trainer('r6_t5', 40, 14, 'grunt_f', 'up', { cls: 'Presser', name: 'Batten', sight: 3, reward: 16, ai: 2, music: 'battle_society', team: [['propi', 31], ['coili', 31], ['silkie', 32]],
     intro: 'Kite Hill\'s balloons are grounded for safety, because unscheduled flight is untidy. So is unscheduled walking, frankly.', win: 'Fine. Walk, then. But tidily.', after: 'The notice came straight from the Works. They don\'t want anyone flying over the pass and looking down.' });
   M.npc('flyer', 20, 3, 'child_m', 'down', ['Whoa! The wind up here blows you right back down to the road!\\pI\'ve been trying to get to the top of the ridge for an hour. It\'s the best ride ever.']);
   M.rect(20, 2, 5, 3, '.');
   M.pickup('top', 22, 2, 'gold_spool', 1, 'on the windy top (come in from the west and the gust carries you down)');
-  M.pickup('slope', 31, 17, 'thread_ball', 2);
+  M.pickup('slope', 32, 20, 'thread_ball', 2);
   M.hidden('bush', 32, 14, 'wish_candy', 1, 'a Wish Candy in the wind-bent bush');
   M.reg();
 

@@ -18,26 +18,23 @@
   M.rect(12, 0, 3, 2, '.').rect(12, H - 1, 3, 1, 'u');                        // the road in from the Dust Bowl and out to the city
   // the road: one dirt track up the middle, with a bend round the pond
   M.rect(12, 2, 3, 14, 'd').rect(8, 15, 7, 3, 'd').rect(8, 17, 3, 14, 'd').rect(8, 30, 7, 3, 'd').rect(12, 32, 3, 17, 'd');
-  // a pond on the east side of the bend, and a ledge run that drops you back to the road from the west meadow
-  M.blob(18, 23, 3.5, 2.5, 'w');
-  M.rect(2, 12, 6, 1, 'l');
   // grass for encounters: dry grass in the scrub, tallgrass in the meadow
-  M.rect(3, 40, 6, 5, ';').rect(17, 39, 5, 6, ';').rect(16, 33, 5, 3, ';');
-  M.rect(3, 19, 4, 9, ',').rect(15, 8, 7, 5, ',').rect(2, 4, 6, 7, ',').rect(15, 27, 6, 3, ',');
+  M.rect(3, 40, 6, 5, ';').rect(17, 39, 5, 6, ';').rect(18, 33, 4, 3, ';');
+  M.rect(3, 15, 4, 6, ',').rect(2, 23, 5, 3, ',').rect(16, 6, 6, 3, ',').rect(2, 4, 6, 5, ',').rect(17, 12, 5, 4, ',').rect(15, 30, 4, 2, ',');
   M.rect(19, 3, 3, 1, 'f').rect(3, 30, 2, 1, 'f');
   // feather the meadow into the sand: a wavy edge (grass, a sand fringe, then dune) instead of one straight seam
   for (let x = 2; x < W - 2; x++) {
     if (x >= 12 && x <= 14) continue;                                       // the road keeps its own surface
-    const g = 36 + Math.round(1.1 * Math.sin(x * 0.7) + 0.6 * Math.sin(x * 1.9 + 1));   // first sand row
-    const d = g + 2 + Math.round(0.8 * Math.sin(x * 1.3 + 2));                        // first dune row
+    const g = 36 + Math.round(1.3 * Math.sin(x * 0.45) + 0.5 * Math.sin(x * 1.1 + 1));   // first sand row
+    const d = g + 2 + Math.round(0.7 * Math.sin(x * 0.8 + 2));                        // first dune row
     for (let y = 33; y < 41; y++) {
       if (!'.us'.includes(M.at(x, y))) continue;
       M.set(x, y, y < g ? '.' : y < d ? 's' : 'u');
     }
   }
   // the pylons: a line up the east side of the road, every eight rows or so
-  for (const [x, y] of [[16, 44], [16, 36], [22, 30], [15, 19], [16, 5]]) M.stamp('pylon', x, y);
-  M.trees([[22, 16], [2, 33], [21, 6], [5, 14], [21, 17]]);
+  for (const [x, y] of [[16, 44], [16, 34], [16, 17], [16, 4]]) M.stamp('pylon', x, y);
+  M.trees([[22, 16], [2, 33], [21, 4], [5, 12], [19, 17]]);
   M.trees([[6, 46], [20, 47], [3, 37]], 'cactus');
   M.stamp('rock', 9, 42).stamp('boulder', 22, 36).stamp('bush', 6, 29).stamp('bush', 21, 13);
   M.stamp('cable_reel', 11, 26);
@@ -51,7 +48,7 @@
   // ---- the five Tailors
   M.trainer('r5_t1', 11, 40, 'scientist', 'right', { cls: 'Scientist', name: 'Volta', sight: 3, reward: 15, ai: 2, team: [['coili', 27], ['sparkin|mittsy', 28]],
     intro: 'The pylons are humming in B flat today. Usually it\'s C. Something is pulling on the line, and I want to know what!', win: 'You\'re a lot more charged up than the pylons.', after: 'The hum drops every time the city browns out. I\'ve written it all down. Nobody has asked to read it.' });
-  M.trainer('r5_t2', 15, 36, 'courier', 'left', { cls: 'Courier', name: 'Zed', sight: 4, reward: 14, ai: 1, team: [['jerbix|nibbi', 28], ['peepi', 27]],
+  M.trainer('r5_t2', 15, 39, 'courier', 'left', { cls: 'Courier', name: 'Zed', sight: 3, reward: 14, ai: 1, team: [['jerbix|nibbi', 28], ['peepi', 27]],
     intro: 'I deliver parcels to Shibuyarn faster than anyone! I also battle faster than anyone. Ready? Too slow!', win: 'Okay, you were faster. Please don\'t tell my boss.', after: 'The city\'s lifts stop when the lights go out. I\'ve carried a fridge up nine floors. Twice.' });
   M.trainer('r5_t3', 7, 22, 'twins_a', 'right', { cls: 'Twins', name: 'Ami', sight: 3, reward: 12, ai: 1, team: [['glowli', 27], ['peepi', 27]],
     intro: 'Ami: We\'re twins! I\'m the one who battles first, and Yumi battles second. That\'s the rule.', win: 'Ami: Yumi, it\'s your turn! Get them!', after: 'Ami: We tried battling at the same time once. It got very confusing.' });
@@ -63,17 +60,23 @@
     intro: 'This cable is for maintenance. It\'s very boring maintenance, so there\'s nothing to see here. Please stop looking at it.', win: 'Fine, look at the cable all you like. It\'s just a cable.', after: 'It runs to the city, then down under the station. Why does it go under the station? That\'s classified. Also I don\'t know.' });
 
   M.npc('lineman', 20, 31, 'hiker', 'left', ['These pylons carry the power to Shibuyarn, and the city uses every bit of it.\\pLately, someone has been tapping into the line before it gets there.']);
-  M.pickup('volt', 21, 27, 'thread_ball', 1);
+  M.pickup('volt', 21, 24, 'thread_ball', 1);
   M.pickup('cake', 3, 5, 'fancy_cake', 1);
-  M.pickup('spool', 18, 41, 'silk_spool', 3);
+  M.pickup('spool', 19, 44, 'silk_spool', 3);
   M.hidden('bush', 21, 13, 'wish_candy', 1, 'a Wish Candy in the bush by the meadow');
-  // the Pylon Road is fenced on both sides, so the walk north passes every trainer (owner's rule: route trainers can't be skipped).
-  // Each trainer stands in the fence line looking across the road. One gate into each side: the west meadow at (11,8), the east
-  // fields at (15,44)
-  const gates = [[11, 8], [15, 44]];
-  for (const [h, lines, from, to] of [[false, [11, 15], 2, 14], [true, [14], 8, 11], [false, [15], 15, 17], [true, [18], 11, 15],
-    [false, [7], 15, 33], [false, [11], 18, 29], [true, [29], 12, 15], [false, [15], 30, 32], [true, [33], 7, 11], [false, [11, 15], 33, 48]]) {
-    L.fenceRoad(M, { h, lines, from, to, open: gates });
-  }
+  // The road is never fenced. Four natural pinches put a Tailor across it (owner's rule: route trainers can't be skipped). Ledges
+  // only drop you south, so the side meadows can't be used to climb round a Tailor:
+  //  1. a sandstone ridge crosses the dunes; the road climbs through a notch in it, past Volta and Zed
+  M.rect(2, 40, 5, 3, 'C').rect(7, 40, 4, 2, 'C').rect(15, 40, 4, 2, 'C').rect(19, 40, 5, 3, 'C');
+  //  2. a pond fills the east side of the bend, and a ledge runs from the west edge to the road, where Spool minds his cable
+  M.rect(15, 25, 7, 5, 'w').rect(12, 26, 3, 3, 'T').rect(22, 25, 2, 4, 'T');   // the water autotile rounds its corners
+  M.rect(2, 27, 6, 1, 'l');
+  //  3. the twins stand either side of the road at the top of a long ledge, with a copse filling the gap to the east
+  M.rect(2, 22, 5, 1, 'l').rect(12, 20, 3, 3, 'T').rect(13, 19, 3, 1, 'T').rect(15, 20, 1, 2, 'T').rect(15, 22, 9, 1, 'l');
+  //  4. Hana's lookout: a ledge and a copse on each side of the road below the city
+  M.rect(2, 10, 7, 1, 'l').rect(9, 9, 3, 2, 'T').rect(8, 8, 3, 1, 'T').rect(16, 10, 5, 1, 'l').rect(21, 9, 3, 2, 'T').rect(20, 8, 4, 1, 'T');
+  // rocks and bushes sit in the long ledges so they don't run on like rails
+  for (const [x, y] of [[5, 10], [4, 27], [19, 22]]) M.set(x, y, '.');
+  M.stamp('rock', 5, 10).stamp('bush', 4, 27).stamp('rock', 19, 22);
   M.reg();
 })(typeof globalThis !== 'undefined' ? globalThis : window);

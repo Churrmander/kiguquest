@@ -32,9 +32,13 @@ function reach(id, from, goals, avoidSight, only) {
   while (q.length) {
     const [x, y] = q.shift();
     if (goal.has(x + ',' + y)) return true;
-    for (const [dx, dy] of Object.values(DIRV)) {
-      const nx = x + dx, ny = y + dy, k = nx + ',' + ny;
-      if (vis.has(k) || nx < 0 || ny < 0 || nx >= tm.w || ny >= tm.h) continue;
+    for (const [d, [dx, dy]] of Object.entries(DIRV)) {
+      let nx = x + dx, ny = y + dy;
+      if (nx < 0 || ny < 0 || nx >= tm.w || ny >= tm.h) continue;
+      const ledge = tm.ledge(nx, ny);   // a one-way ledge: you only cross it in its own direction, hopping over it
+      if (ledge) { if (ledge !== d) continue; nx += dx; ny += dy; }
+      const k = nx + ',' + ny;
+      if (vis.has(k)) continue;
       if (tm.solid(nx, ny) || people.has(k) || (avoidSight && seen.has(k))) continue;
       vis.add(k); q.push([nx, ny]);
     }
@@ -56,9 +60,9 @@ forced('crisp_3', [1, 3], [[6, 6], [7, 6], [12, 6]], 'the Staff door and the man
 
 // Chapters 4-6 (owner's rule: route trainers can't be skipped; a trainer in an optional side nook may be)
 NP.state.flags = { badge4: true };
-forced('route4', [2, 10], [[43, 10], [43, 11]], 'Canvas Rest (the Slab Road, fenced)');
-forced('route5', [13, 48], [[13, 2], [12, 2], [14, 2]], 'Shibuyarn (the Pylon Road, fenced)');
-forced('route6', [2, 12], [[47, 11], [47, 12], [47, 13]], 'Kite Hill (the ridge road, fenced)');
+forced('route4', [2, 10], [[43, 10], [43, 11]], 'Canvas Rest (the Slab Road)');
+forced('route5', [13, 48], [[13, 2], [12, 2], [14, 2]], 'Shibuyarn (the Pylon Road)');
+forced('route6', [2, 12], [[47, 11], [47, 12], [47, 13]], 'Kite Hill (the ridge road)');
 forced('quarry_tunnels', [3, 18], [[4, 5]], 'the way down (past Rivet and Twill)', ['qt_t1', 'qt_t2']);
 forced('quarry_tunnels_2', [4, 4], [[19, 6], [20, 7], [21, 7]], 'the herd');
 NP.state.flags = { badge4: true, cellar_arc1: true, cellar_arc2: true };
