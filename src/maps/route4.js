@@ -44,8 +44,8 @@
   M.sign(41, 9, 'CANVAS REST\\nTents, tea, and shade. Mostly shade.', 'east sign');
   M.sign(17, 9, 'NOTICE: Slab deliveries in progress.\\nPlease keep to the side. Please stay flat.\\p...Someone has added "and have a nice day" in pencil.', 'Society notice');
   M.trees([[2, 3], [12, 7], [14, 15], [3, 18], [10, 2]]);
-  M.trees([[22, 9], [27, 8], [35, 12], [40, 6], [19, 15], [42, 13]], 'cactus');
-  M.stamp('cactus', 36, 8, 'plain').stamp('rock', 28, 13).stamp('boulder', 37, 12).stamp('rock', 24, 4).stamp('boulder', 15, 8);
+  M.trees([[22, 6], [29, 7], [35, 14], [40, 6], [19, 15], [42, 13]], 'cactus');
+  M.stamp('cactus', 36, 8, 'plain').stamp('rock', 28, 13).stamp('boulder', 38, 14).stamp('rock', 24, 4).stamp('boulder', 15, 8);
   // the slab line: three Pressers resting by a stack of slabs, north of the road, with the cart they push
   M.stamp('slab_stack', 24, 8).stamp('slab_stack', 25, 8).stamp('slab_cart', 32, 8);
   M.spawn('west', 2, 10, 'right').spawn('east', 43, 10, 'left');
@@ -77,6 +77,8 @@
   M.hidden('boulder', 15, 8, 'sugar_cube', 1, 'hidden sugar cube in the boulder by the road');
   // the Slab Road is fenced on both sides, so the walk east passes every Tailor (owner's rule: route trainers can't be skipped).
   // One gate into each side: the north meadow at x10, the south meadow at x8 (the ledge gap)
+  for (const y of [9, 12]) for (let x = 17; x < W - 2; x++) if (M.at(x, y) === 's') M.set(x, y, 'u');   // dune (not the pale fringe) under the desert fence
+  M.set(16, 12, '.');                                                        // the grass fence runs to the meadow's edge
   L.fenceRoad(M, { h: true, lines: [9, 12], from: 2, to: W - 3, open: [[10, 9], [8, 12]] });
   M.reg();
 })(typeof globalThis !== 'undefined' ? globalThis : window);
