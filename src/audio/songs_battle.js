@@ -2,33 +2,48 @@
 (function (root) {
   'use strict';
   const NP = (root.NP = root.NP || {});
-  const { arp, bass } = NP.audio.dsl;
+  const { arp, bass, weave, block, stab } = NP.audio.dsl;
   const song = NP.audio.song;
   const d = (pat, n) => (pat + ' ').repeat(n).trim();
 
-  // ---------------------------------------------------------------- battle_wild (Em, scrappy and quick)
+  // ---------------------------------------------------------------- battle_wild (Em, scrappy and quick) — DS-style arrangement
   {
     const cA = ['Em', 'Em', 'C', 'D', 'Em', 'Em', 'C', 'B'];
     const cB = ['Am', 'G', 'C', 'B', 'Am', 'G', 'B', 'B'];
-    const A = {
-      p1: `e5:2 e5:2 g5:2 e5:2 b5:4 g5:2 e5:2 | e5:2 e5:2 g5:2 b5:2 e6:4 d6:2 b5:2 | c6:2 c6:2 b5:2 g5:2 e5:4 g5:2 c6:2 | d6:2 d6:2 c6:2 a5:2 f#5:4 a5:4 |
-           e5:2 e5:2 g5:2 e5:2 b5:4 g5:2 e5:2 | g5:2 b5:2 e6:2 g6:2 e6:4 b5:4 | c6:4 e6:4 g6:4 e6:4 | d#6:2 f#6:2 b5:2 d#6:2 b5:8 |`,
-      p2: arp(cA, 4),
-      tri: bass(cA, '1:2 1:2 8:2 1:2 1:2 1:2 8:2 5:2', 2),
-      noi: d('k:2 h:2 s:2 h:2 k:2 k:2 s:2 h:2 |', 8),
+    const cC = ['Em', 'C', 'Am', 'B', 'Em', 'C', 'Am', 'B'];
+    // the original melodies (sounding an octave lower through inst.mel.tr)
+    const mA = `e5:2 e5:2 g5:2 e5:2 b5:4 g5:2 e5:2 | e5:2 e5:2 g5:2 b5:2 e6:4 d6:2 b5:2 | c6:2 c6:2 b5:2 g5:2 e5:4 g5:2 c6:2 | d6:2 d6:2 c6:2 a5:2 f#5:4 a5:4 |
+           e5:2 e5:2 g5:2 e5:2 b5:4 g5:2 e5:2 | g5:2 b5:2 e6:2 g6:2 e6:4 b5:4 | c6:4 e6:4 g6:4 e6:4 | d#6:2 f#6:2 b5:2 d#6:2 b5:8 |`;
+    const mB = `a5:4 c6:4 e6:4 c6:4 | b5:4 d6:4 g6:4 d6:4 | c6:4 e6:4 g6:4 e6:4 | f#6:4 d#6:4 b5:4 d#6:4 |
+           a5:2 a5:2 c6:2 a5:2 e6:4 c6:2 a5:2 | b5:2 b5:2 d6:2 b5:2 g6:4 d6:2 b5:2 | b5:2 d#6:2 f#6:2 b6:2 f#6:2 d#6:2 b5:4 | f#6:2 d#6:2 b5:2 d#6:2 b5:8 |`;
+    // breakdown: a low reed figure over timpani (written at pitch)
+    const rdC = 'e4:8 g4:4 f#4:4 | e4:8 c4:8 | a3:8 c4:4 e4:4 | d#4:12 r:4 | e4:8 g4:4 b4:4 | c5:8 g4:8 | a4:8 c5:4 e4:4 | f#4:8 d#4:4 b3:4 |';
+    const drive = '1:2 1:2 8:2 1:2 1:2 1:2 8:2 5:2';
+    const beat = 'k:2 h:2 s:2 h:2 k:2 k:2 s:2 h:2 |';
+    const I = {
+      br: '=Em3:2 r:2 =Em3:2 r:2 =Em3:4 r:4 | =C3:2 r:2 =D3:2 r:2 =B2:8 |',
+      st: '[ e3:1 e3:1 b3:1 e3:1 ]x4 | [ c3:1 c3:1 g3:1 c3:1 ]x2 [ b2:1 b2:1 f#3:1 b2:1 ]x2 |',
+      bass: 'e2:2 r:2 e2:2 r:2 e2:4 r:4 | c2:2 r:2 d2:2 r:2 b1:8 |',
+      drm: 'm:2 r:2 m:2 r:2 p:2 p:2 p:2 p:2 | k:2 r:2 k:2 r:2 p:2 p:2 s:2 x:2 |',
     };
+    const A = { mel: mA, st: weave(cA, 3, [0, 2, 3, 2], 16, 2), bass: bass(cA, drive, 2), drm: d(beat, 7) + ' k:2 h:2 s:2 s:2 t:2 t:2 m:2 s:2 |' };
     const B = {
-      p1: `a5:4 c6:4 e6:4 c6:4 | b5:4 d6:4 g6:4 d6:4 | c6:4 e6:4 g6:4 e6:4 | f#6:4 d#6:4 b5:4 d#6:4 |
-           a5:2 a5:2 c6:2 a5:2 e6:4 c6:2 a5:2 | b5:2 b5:2 d6:2 b5:2 g6:4 d6:2 b5:2 | b5:2 d#6:2 f#6:2 b6:2 f#6:2 d#6:2 b5:4 | f#6:2 d#6:2 b5:2 d#6:2 b5:8 |`,
-      p2: arp(cB, 4),
-      tri: bass(cB, '1:2 1:2 8:2 1:2 1:2 1:2 8:2 5:2', 2),
-      noi: d('k:2 h:2 s:2 h:2 k:2 h:2 s:2 s:2 |', 8),
+      mel: mB, br: stab(cB, 'r:2 X:2 r:4 r:2 X:2 r:4', 3), pad: block(cB, 3), bass: bass(cB, drive, 2),
+      drm: 'x:2 h:2 s:2 h:2 k:2 k:2 s:2 h:2 | ' + d(beat, 6) + ' k:2 s:2 s:2 s:2 t:2 t:2 m:2 x:2 |',
+    };
+    const C = {
+      rd: rdC, pad: '%v4 ' + block(cC, 3), bass: '%v8 ' + bass(cC, '1:2 r:2 1:2 r:2 1:2 r:2 5:2 1:2', 2),
+      drm: '%v8 ' + d('p:4 r:4 m:4 r:2 m:2 |', 7) + ' %v10 t:2 t:2 t:2 t:2 s:2 s:2 s:2 s:2 |',
     };
     song('battle_wild', {
-      desc: 'Wild Kigu encounters: quick, bouncy and driving.',
-      bpm: 160, loop: 0, order: 'A B A B',
-      inst: { p1: { duty: 1, vol: 11 }, p2: { duty: 0, vol: 6 }, noi: { vol: 9 } },
-      sections: { A, B },
+      desc: 'Wild Kigu encounters: quick, bouncy and driving (brass lead, staccato strings, timpani breakdown).',
+      bpm: 160, loop: 1, order: 'I A B C A/w B/w', gain: 0.89,
+      inst: {
+        mel: { patch: 'brass', vol: 11, tr: -12 }, br: { patch: 'brass', vol: 4, pan: 0.3 }, st: { patch: 'stac', vol: 7, pan: -0.2 },
+        rd: { patch: 'reed', vol: 10 }, pad: { patch: 'strings', vol: 5 }, bass: { patch: 'synbass', vol: 12 }, drm: { patch: 'kit', vol: 11 },
+      },
+      vars: { w: { mel: { patch: 'warm' }, br: { vol: 5 } } },
+      sections: { I, A, B, C },
     });
   }
 

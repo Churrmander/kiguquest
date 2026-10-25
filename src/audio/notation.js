@@ -21,30 +21,87 @@
     noi: { vol: 9 },
   };
   const CHORDS = { '': [0, 4, 7, 12], m: [0, 3, 7, 12], 7: [0, 4, 7, 10], m7: [0, 3, 7, 10], maj7: [0, 4, 7, 11], sus: [0, 5, 7, 12], dim: [0, 3, 6, 12], add9: [0, 4, 7, 14] };
-  // Drum kit, shared by the browser synth and the Node renderer. tone: pitch-dropping sine; noise: filtered noise burst.
+  // Drum kit (DS-style, softer hats, deeper kick), shared by the browser synth and the Node renderer.
+  // tone: pitch-dropping sine; noise: filtered noise burst. Optional per-part env, kit-wide pan / rev per drum.
   const DRUMS = {
-    k: { tone: { f: 160, f2: 42, dur: 0.13, vol: 1 }, noise: { filt: 'lp', fc: 500, dur: 0.02, vol: 0.25 } }, // kick
-    s: { tone: { f: 210, f2: 150, dur: 0.06, vol: 0.35 }, noise: { filt: 'bp', fc: 2600, dur: 0.13, vol: 0.85 } }, // snare
-    h: { noise: { filt: 'hp', fc: 7500, dur: 0.035, vol: 0.5 } }, // closed hat
-    o: { noise: { filt: 'hp', fc: 6500, dur: 0.16, vol: 0.5 } }, // open hat
-    x: { noise: { filt: 'hp', fc: 4000, dur: 0.7, vol: 0.6 } }, // crash
-    t: { tone: { f: 240, f2: 90, dur: 0.16, vol: 0.8 } }, // tom
-    m: { tone: { f: 120, f2: 66, dur: 0.24, vol: 0.95 } }, // low tom / timpani
-    w: { tone: { f: 950, f2: 720, dur: 0.05, vol: 0.6 } }, // wood block
-    a: { tone: { f: 1850, f2: 1750, dur: 0.16, vol: 0.3 }, noise: { filt: 'bp', fc: 4300, dur: 0.05, vol: 0.4 } }, // anvil / metal clink
-    g: { noise: { filt: 'hp', fc: 5200, dur: 0.07, vol: 0.28 } }, // shaker
-    c: { noise: { filt: 'bp', fc: 1600, dur: 0.1, vol: 0.85 } }, // clap
+    k: { tone: { f: 115, f2: 40, dur: 0.22, vol: 1 }, noise: { filt: 'lp', fc: 320, dur: 0.018, vol: 0.22 }, rev: 0.03 }, // kick
+    s: { tone: { f: 190, f2: 150, dur: 0.07, vol: 0.38 }, noise: { filt: 'bp', fc: 1900, dur: 0.14, vol: 0.62 }, rev: 0.2 }, // snare
+    h: { noise: { filt: 'hp', fc: 8000, dur: 0.03, vol: 0.32 }, pan: 0.25 }, // closed hat
+    o: { noise: { filt: 'hp', fc: 7000, dur: 0.15, vol: 0.3 }, pan: 0.25 }, // open hat
+    x: { noise: { filt: 'hp', fc: 5000, dur: 0.9, vol: 0.34 }, pan: -0.3, rev: 0.3 }, // crash
+    t: { tone: { f: 200, f2: 100, dur: 0.18, vol: 0.75 }, rev: 0.15 }, // tom
+    m: { tone: { f: 98, f2: 87, dur: 0.5, vol: 0.9 }, noise: { filt: 'lp', fc: 420, dur: 0.05, vol: 0.18 }, rev: 0.3 }, // timpani (G2)
+    p: { tone: { f: 73, f2: 65, dur: 0.6, vol: 0.95 }, noise: { filt: 'lp', fc: 360, dur: 0.05, vol: 0.18 }, rev: 0.3 }, // low timpani (D2)
+    w: { tone: { f: 900, f2: 760, dur: 0.04, vol: 0.45 }, pan: -0.2 }, // wood block
+    a: { tone: { f: 1850, f2: 1750, dur: 0.14, vol: 0.22 }, noise: { filt: 'bp', fc: 4300, dur: 0.04, vol: 0.3 } }, // anvil / metal clink
+    g: { noise: { filt: 'hp', fc: 5200, dur: 0.06, vol: 0.2 }, pan: -0.35 }, // shaker
+    c: { noise: { filt: 'bp', fc: 1500, dur: 0.1, vol: 0.6 }, rev: 0.2 }, // clap
+    i: { tone: { f: 1700, f2: 1600, dur: 0.02, vol: 0.22 }, noise: { filt: 'bp', fc: 3200, dur: 0.02, vol: 0.28 }, pan: -0.15 }, // rim click
+    y: { noise: { filt: 'hp', fc: 4500, dur: 1.2, vol: 0.26, env: 'swell' }, pan: 0.3, rev: 0.35 }, // suspended cymbal swell
+    j: { noise: { filt: 'bp', fc: 7000, dur: 0.09, vol: 0.26 }, pan: 0.35 }, // tambourine
+    e: { tone: { f: 3150, f2: 3150, dur: 0.5, vol: 0.08 }, pan: 0.4, rev: 0.3 }, // orchestral triangle "ting" (quiet)
   };
   const DRUM_KEYS = Object.keys(DRUMS).join('');
-  // Per-voice-type mix constants (amplitude per unit `vol`), calibrated with tools/audio-tune.mjs. Pulse duties are loudness-compensated.
-  const MIX = { p1: 0.13, p2: 0.11, tri: 0.2, sin: 0.18, nz: 0.28, dt: 0.2, dn: 0.32 };
+  // Per-voice-type mix constants (amplitude per unit `vol`) for the legacy voice path (SFX, cries). Pulse duties are loudness-compensated.
+  const MIX = { p1: 0.13, p2: 0.11, tri: 0.2, sin: 0.18, saw: 0.11, sq: 0.11, nz: 0.28, dt: 0.2, dn: 0.32 };
   const PULSE_EXP = 0.9;
-  const ENV_VERSION = 1;
+  const ENV_VERSION = 2;
   const pulseComp = (i) => {
     const d = DUTY[i === undefined ? 2 : i];
     return Math.pow(Math.max(d, 1 - d) / Math.sqrt(d * (1 - d)), PULSE_EXP);
   };
   const ENV_CODES = { h: 'hold', p: 'pluck', d: 'decay', s: 'swell' };
+
+  // ---------- instrument patches (DS-era palette, all synthesised) ----------
+  // A patch = layers of primitive voices. Layer: w wave (pulse|square|sawtooth|triangle|sine|noise), m freq multiple, det cents, a level,
+  // lp abs cutoff Hz or lpk key-tracked cutoff (f*lpk clamped to lp0..lpx), lp2r cutoff ratio reached after lpt s, pan offset, env override.
+  // Noise layer: filt, fm (centre = f*fm), q. Patch: env {a,d,s,s2,r} (s = level after decay, s2 = level at note end, r = release s),
+  // vib {rate, depth (fraction of f), delay s, min note s}, gain (amp per unit vol, calibrated), pan, rev (reverb send), lo..hi midi range.
+  const PATCHES = {
+    // legacy channel defaults (old p1/p2/tri/noi songs): softer, filtered versions of the NES voices
+    lead: { layers: [{ w: 'pulse', lpk: 4.5, lp0: 1300, lpx: 4500, lp2r: 0.75, lpt: 0.4 }], env: { a: 0.012, d: 0.2, s: 0.8, s2: 0.55, r: 0.07 }, vib: { rate: 5.2, depth: 0.006, delay: 0.22, min: 0.3 }, gain: 0.18, rev: 0.18, lo: 36, hi: 100 },
+    ep: { layers: [{ w: 'pulse', lpk: 4, lp0: 1000, lpx: 3500, a: 0.8 }, { w: 'sine', a: 0.5 }], env: { a: 0.004, d: 0.25, s: 0.55, s2: 0.3, r: 0.08 }, gain: 0.145, pan: -0.3, rev: 0.22, lo: 36, hi: 100 },
+    bass: { layers: [{ w: 'triangle', a: 0.8 }, { w: 'sawtooth', lpk: 5, lp0: 250, lpx: 1000, a: 0.3 }], env: { a: 0.004, d: 0.3, s: 0.85, s2: 0.65, r: 0.04 }, gain: 0.3, rev: 0.04, lo: 24, hi: 72 },
+    kit: { drums: true, gain: 1 },
+    // melodic leads
+    flute: { layers: [{ w: 'sine' }, { w: 'triangle', a: 0.3 }, { w: 'sine', m: 2, a: 0.16 }, { w: 'sine', m: 3, a: 0.06 }, { w: 'noise', filt: 'bp', fm: 2, q: 2.5, a: 0.1, env: { a: 0.015, d: 0.12, s: 0.25, s2: 0.12, r: 0.05 } }],
+      env: { a: 0.045, d: 0.2, s: 0.85, s2: 0.7, r: 0.12 }, vib: { rate: 5, depth: 0.007, delay: 0.25, min: 0.35 }, gain: 0.185, rev: 0.28, lo: 55, hi: 91 },
+    warm: { layers: [{ w: 'sawtooth', lpk: 3.2, lp0: 800, lpx: 3200, det: -4, a: 0.6 }, { w: 'square', lpk: 2.4, lp0: 700, lpx: 2600, det: 4, a: 0.4 }],
+      env: { a: 0.02, d: 0.25, s: 0.75, s2: 0.55, r: 0.09 }, vib: { rate: 5.2, depth: 0.006, delay: 0.25, min: 0.35 }, gain: 0.33, rev: 0.22, lo: 48, hi: 91 },
+    reed: { layers: [{ w: 'pulse', duty: 1, lpk: 4, lp0: 1000, lpx: 3400 }, { w: 'sine', a: 0.4 }], env: { a: 0.03, d: 0.2, s: 0.85, s2: 0.7, r: 0.08 },
+      vib: { rate: 5.5, depth: 0.006, delay: 0.2, min: 0.35 }, gain: 0.13, rev: 0.22, lo: 52, hi: 91 },
+    brass: { layers: [{ w: 'sawtooth', lpk: 1.6, lp0: 350, lpx: 1200, lp2r: 2.4, lpt: 0.07 }, { w: 'sawtooth', det: 7, lpk: 1.6, lp0: 350, lpx: 1200, lp2r: 2, lpt: 0.09, a: 0.5 }],
+      env: { a: 0.025, d: 0.2, s: 0.72, s2: 0.55, r: 0.08 }, vib: { rate: 5, depth: 0.004, delay: 0.3, min: 0.45 }, gain: 0.29, rev: 0.22, lo: 40, hi: 86 },
+    // sustained beds
+    strings: { layers: [{ w: 'sawtooth', det: -7, pan: -0.25, lp: 2800 }, { w: 'sawtooth', det: 7, pan: 0.25, lp: 2800 }], env: { a: 0.16, d: 0.4, s: 0.9, s2: 0.8, r: 0.35 },
+      vib: { rate: 4.8, depth: 0.003, delay: 0.3, min: 0.5 }, gain: 0.15, rev: 0.35, lo: 40, hi: 88 },
+    stac: { layers: [{ w: 'sawtooth', det: -6, pan: -0.2, lp: 2000 }, { w: 'sawtooth', det: 6, pan: 0.2, lp: 2000 }], env: { a: 0.01, d: 0.1, s: 0.6, s2: 0.4, r: 0.06 },
+      gain: 0.25, rev: 0.25, lo: 36, hi: 88 },
+    pad: { layers: [{ w: 'sawtooth', det: -5, lp: 1000, a: 0.5, pan: -0.3 }, { w: 'triangle', det: 5, a: 0.8, pan: 0.3 }], env: { a: 0.35, d: 0.5, s: 0.9, s2: 0.85, r: 0.5 },
+      gain: 0.18, rev: 0.4, lo: 40, hi: 84 },
+    // keys and mallets (decaying)
+    piano: { layers: [{ w: 'triangle', lpk: 8, lp0: 1400, lpx: 4000, lp2r: 0.4, lpt: 0.8 }, { w: 'sine', m: 2, a: 0.3, env: { a: 0.002, d: 0.25, s: 0.2, s2: 0.02, r: 0.1 } }],
+      env: { a: 0.003, d: 0.6, s: 0.35, s2: 0.08, r: 0.15 }, gain: 0.24, rev: 0.25, lo: 36, hi: 91 },
+    epiano: { layers: [{ w: 'sine' }, { w: 'triangle', a: 0.25 }, { w: 'sine', m: 3, a: 0.12, env: { a: 0.002, d: 0.12, s: 0.15, s2: 0, r: 0.05 } }],
+      env: { a: 0.004, d: 0.7, s: 0.45, s2: 0.12, r: 0.18 }, gain: 0.17, rev: 0.25, lo: 40, hi: 91 },
+    marimba: { layers: [{ w: 'sine' }, { w: 'sine', m: 4, a: 0.22, env: { a: 0.001, d: 0.05, s: 0.1, s2: 0, r: 0.03 } }],
+      env: { a: 0.002, d: 0.3, s: 0.25, s2: 0.02, r: 0.08 }, gain: 0.3, rev: 0.25, lo: 48, hi: 91 },
+    glock: { layers: [{ w: 'sine' }, { w: 'sine', m: 2.76, a: 0.18, env: { a: 0.001, d: 0.12, s: 0.15, s2: 0, r: 0.05 } }],
+      env: { a: 0.001, d: 0.6, s: 0.3, s2: 0.02, r: 0.2 }, gain: 0.16, rev: 0.35, lo: 60, hi: 96 },
+    // plucked
+    harp: { layers: [{ w: 'triangle', lpk: 6, lp0: 1200, lpx: 3600, lp2r: 0.5, lpt: 0.4 }, { w: 'sine', a: 0.4 }], env: { a: 0.002, d: 0.4, s: 0.35, s2: 0.06, r: 0.25 },
+      gain: 0.27, pan: 0.3, rev: 0.32, lo: 36, hi: 91 },
+    guitar: { layers: [{ w: 'sawtooth', lpk: 5, lp0: 600, lpx: 3400, lp2r: 0.35, lpt: 0.25, a: 0.7 }, { w: 'triangle', a: 0.5 }], env: { a: 0.002, d: 0.25, s: 0.45, s2: 0.1, r: 0.08 },
+      gain: 0.55, rev: 0.2, lo: 40, hi: 84 },
+    pizz: { layers: [{ w: 'sawtooth', lpk: 3, lp0: 400, lpx: 2000, lp2r: 0.4, lpt: 0.15 }], env: { a: 0.002, d: 0.15, s: 0.2, s2: 0.02, r: 0.1 }, gain: 0.6, rev: 0.3, lo: 36, hi: 88 },
+    // basses
+    ebass: { layers: [{ w: 'sine' }, { w: 'sawtooth', lpk: 4, lp0: 180, lpx: 800, lp2r: 0.6, lpt: 0.2, a: 0.35 }], env: { a: 0.004, d: 0.35, s: 0.75, s2: 0.5, r: 0.05 },
+      gain: 0.25, rev: 0.04, lo: 24, hi: 60 },
+    synbass: { layers: [{ w: 'square', lpk: 3, lp0: 200, lpx: 900, lp2r: 0.5, lpt: 0.15, a: 0.5 }, { w: 'sine', a: 0.7 }], env: { a: 0.003, d: 0.2, s: 0.7, s2: 0.5, r: 0.04 },
+      gain: 0.2, rev: 0.04, lo: 24, hi: 60 },
+  };
+  const LEGACY_PATCH = { p1: 'lead', p2: 'ep', tri: 'bass', noi: 'kit' };
+  const SQRT2 = Math.SQRT2;
 
   function midiOf(name) {
     const m = /^([a-g])([#b]?)(-?\d)$/.exec(name);
@@ -63,11 +120,35 @@
   }
 
   // ---------- amplitude envelopes / voice model (shared by engine.js and the Node renderer) ----------
-  /** Piecewise-linear envelope [[t, v], ...] for a note of `dur` seconds and peak `amp`. */
+  const EXPK = 3, EXPN = 4, EXPE = Math.exp(-EXPK);
+  // exponential-looking fall from v0 to v1 over [t0,t1], as EXPN linear pieces
+  function expSeg(pts, t0, t1, v0, v1) {
+    for (let i = 1; i <= EXPN; i++) {
+      const u = i / EXPN;
+      pts.push([t0 + (t1 - t0) * u, v1 + (v0 - v1) * ((Math.exp(-EXPK * u) - EXPE) / (1 - EXPE))]);
+    }
+  }
+  function lerpPts(pts, t) {
+    if (t <= pts[0][0]) return pts[0][1];
+    for (let i = 1; i < pts.length; i++) {
+      if (t <= pts[i][0]) { const [t0, a] = pts[i - 1], [t1, b] = pts[i]; return t1 > t0 ? a + (b - a) * (t - t0) / (t1 - t0) : b; }
+    }
+    return pts[pts.length - 1][1];
+  }
+  /** Piecewise-linear envelope [[t, v], ...] for a voice of `dur` seconds and peak `amp`. env: 'hold'|'pluck'|'decay'|'swell' or
+   *  {a,d,s,s2,r}: attack, decay to s*amp, glide to s2*amp at note end, release r (included in dur). */
   function envPoints(env, dur, amp) {
     const z = 0.0001;
     let pts;
-    if (env === 'swell') pts = [[0, z], [dur * 0.45, amp], [dur * 0.9, amp], [dur, z]];
+    if (env && typeof env === 'object') {
+      const r = Math.min(env.r || 0.02, dur * 0.5), hold = dur - r;
+      const a = env.a || 0.002, d = env.d || 0.1, s = env.s === undefined ? 1 : env.s, s2 = env.s2 === undefined ? s : env.s2;
+      const full = [[0, z], [a, amp]];
+      expSeg(full, a, a + d, amp, amp * s);
+      if (hold > a + d) expSeg(full, a + d, hold, amp * s, amp * s2);
+      pts = full.filter((p) => p[0] < hold);
+      pts.push([hold, lerpPts(full, hold)], [dur, z]);
+    } else if (env === 'swell') pts = [[0, z], [dur * 0.45, amp], [dur * 0.9, amp], [dur, z]];
     else if (env === 'pluck') pts = [[0, z], [0.004, amp], [Math.max(0.02, dur * 0.85), amp * 0.45], [dur, z]];
     else if (env === 'decay') pts = [[0, z], [0.003, amp], [dur * 0.92, amp * 0.12], [dur, z]];
     else pts = [[0, z], [0.004, amp], [Math.max(0.006, dur - 0.012), amp], [dur, z]];
@@ -76,25 +157,112 @@
     return pts;
   }
 
-  /** Turn one compiled event into primitive voices: {k:'osc',wave,duty,f,f2,vib,dur,amp,env} / {k:'noise',filt,fc,fc2,q,dur,amp,env}. */
+  // a legacy %e code on a patch note bends the patch envelope
+  function bendEnv(env, code, dur) {
+    if (!code || code === 'hold') return env;
+    const e = Object.assign({}, env);
+    if (code === 'pluck') { e.s = Math.min(e.s, 0.6); e.s2 = Math.min(e.s2, 0.3); e.d = Math.max(e.d, 0.12); }
+    else if (code === 'decay') { e.s = Math.min(e.s, 0.35); e.s2 = 0.05; }
+    else if (code === 'swell') e.a = Math.max(e.a, dur * 0.4);
+    return e;
+  }
+  const clampPan = (p) => Math.max(-1, Math.min(1, p));
+
+  function patchVoices(e, P, vol) {
+    const out = [];
+    const pan0 = e.pan !== undefined ? e.pan : P.pan || 0;
+    const rev0 = e.rev !== undefined ? e.rev : P.rev || 0;
+    if (P.drums) {
+      const k = DRUMS[e.d];
+      if (!k) return out;
+      const pan = clampPan(pan0 + (k.pan || 0)), rev = Math.min(1, rev0 + (k.rev || 0));
+      const base = vol * (P.gain || 1) * SQRT2;
+      if (k.tone) out.push({ k: 'osc', wave: 'sine', f: k.tone.f, f2: k.tone.f2, dur: k.tone.dur, amp: base * k.tone.vol * MIX.dt, env: k.tone.env || 'decay', pan, rev });
+      if (k.noise) out.push({ k: 'noise', filt: k.noise.filt, fc: k.noise.fc, fc2: k.noise.fc, q: k.noise.filt === 'bp' ? 1.2 : 1, dur: k.noise.dur, amp: base * k.noise.vol * MIX.dn, env: k.noise.env || 'decay', pan, rev });
+      return out;
+    }
+    const env0 = bendEnv(P.env || { a: 0.005, d: 0.1, s: 1, s2: 1, r: 0.03 }, e.env, e.dur);
+    const vb = P.vib && !e.arp && e.dur >= (P.vib.min || 0.3) ? P.vib : null;
+    for (const L of P.layers) {
+      const env = L.env ? bendEnv(L.env, e.env, e.dur) : env0;
+      const dur = e.dur + (env.r || 0.02);
+      const f = e.f * (L.m || 1) * (L.det ? Math.pow(2, L.det / 1200) : 1);
+      const f2 = e.f2 ? e.f2 * (f / e.f) : f;
+      const pan = clampPan(pan0 + (L.pan || 0));
+      const amp = vol * P.gain * (L.a === undefined ? 1 : L.a) * SQRT2;
+      if (L.w === 'noise') {
+        out.push({ k: 'noise', filt: L.filt || 'bp', fc: f * (L.fm || 1), fc2: f2 * (L.fm || 1), q: L.q || 1.2, dur, amp: amp * MIX.dn, env, pan, rev: rev0 });
+        continue;
+      }
+      const v = { k: 'osc', wave: L.w, f, f2, dur, amp, env, pan, rev: rev0 };
+      if (L.w === 'pulse') { v.duty = L.duty !== undefined ? L.duty : e.duty === undefined ? 2 : e.duty; v.amp *= pulseComp(v.duty); }
+      if (L.lp || L.lpk) {
+        v.lp = L.lp || Math.max(L.lp0 || 60, Math.min(L.lpx || 12000, e.f * L.lpk));
+        if (L.lp2r) { v.lp2 = v.lp * L.lp2r; v.lpt = Math.min(L.lpt || dur, dur); }
+      }
+      if (vb) v.vib = { rate: vb.rate, depth: f * vb.depth, delay: vb.delay };
+      else if (e.vib) v.vib = { rate: e.vib.rate, depth: e.vib.depth * (f / e.f), delay: e.vib.delay };
+      out.push(v);
+    }
+    return out;
+  }
+
+  /** Turn one compiled event into primitive voices:
+   *  {k:'osc', wave:'pulse'|'square'|'sawtooth'|'triangle'|'sine', duty, f, f2, vib, dur, amp, env, lp?, lp2?, lpt?, q?, pan?, rev?}
+   *  {k:'noise', filt, fc, fc2, q, dur, amp, env, pan?, rev?}
+   *  Events with `p` (patch name; every compiled music note has one) go through PATCHES; others (SFX, cries) use the legacy channel voices. */
   function voices(e) {
     const g = e.g === undefined ? 1 : e.g;
     const vol = e.vol * g;
+    if (e.p && PATCHES[e.p]) return patchVoices(e, PATCHES[e.p], vol);
     const out = [];
+    const opt = (v) => {
+      if (e.lp) { v.lp = e.lp; if (e.lp2) { v.lp2 = e.lp2; v.lpt = e.lpt || e.dur; } if (e.q !== undefined) v.q = e.q; }
+      if (e.pan !== undefined) { v.pan = e.pan; v.amp *= SQRT2; }
+      if (e.rev) v.rev = e.rev;
+      out.push(v);
+    };
+    const W = { tri: 'triangle', sin: 'sine', saw: 'sawtooth', sq: 'square' };
     if (e.ch === 'p1' || e.ch === 'p2') {
-      out.push({ k: 'osc', wave: 'pulse', duty: e.duty === undefined ? 2 : e.duty, f: e.f, f2: e.f2 || e.f, vib: e.vib, dur: e.dur, amp: vol * MIX[e.ch] * pulseComp(e.duty), env: e.env || 'hold' });
-    } else if (e.ch === 'tri') {
-      out.push({ k: 'osc', wave: 'triangle', f: e.f, f2: e.f2 || e.f, vib: e.vib, dur: e.dur, amp: vol * MIX.tri, env: e.env || 'hold' });
-    } else if (e.ch === 'sin') {
-      out.push({ k: 'osc', wave: 'sine', f: e.f, f2: e.f2 || e.f, vib: e.vib, dur: e.dur, amp: vol * MIX.sin, env: e.env || 'hold' });
+      opt({ k: 'osc', wave: 'pulse', duty: e.duty === undefined ? 2 : e.duty, f: e.f, f2: e.f2 || e.f, vib: e.vib, dur: e.dur, amp: vol * MIX[e.ch] * pulseComp(e.duty), env: e.env || 'hold' });
+    } else if (W[e.ch]) {
+      opt({ k: 'osc', wave: W[e.ch], f: e.f, f2: e.f2 || e.f, vib: e.vib, dur: e.dur, amp: vol * MIX[e.ch], env: e.env || 'hold' });
     } else if (e.ch === 'noi') {
       if (e.d === 'n') {
-        out.push({ k: 'noise', filt: 'bp', fc: e.f, fc2: e.f2 || e.f, q: 1.2, dur: e.dur, amp: vol * MIX.nz, env: e.env || 'decay' });
+        const v = { k: 'noise', filt: e.filt || 'bp', fc: e.f, fc2: e.f2 || e.f, q: e.q !== undefined ? e.q : 1.2, dur: e.dur, amp: vol * MIX.nz, env: e.env || 'decay' };
+        if (e.pan !== undefined) { v.pan = e.pan; v.amp *= SQRT2; }
+        if (e.rev) v.rev = e.rev;
+        out.push(v);
       } else {
         const k = DRUMS[e.d];
         if (k && k.tone) out.push({ k: 'osc', wave: 'sine', f: k.tone.f, f2: k.tone.f2, dur: k.tone.dur, amp: vol * k.tone.vol * MIX.dt, env: 'decay' });
         if (k && k.noise) out.push({ k: 'noise', filt: k.noise.filt, fc: k.noise.fc, fc2: k.noise.fc, q: k.noise.filt === 'bp' ? 1.2 : 1, dur: k.noise.dur, amp: vol * k.noise.vol * MIX.dn, env: 'decay' });
       }
+    }
+    return out;
+  }
+
+  // ---------- shared reverb impulse (ConvolverNode in the browser, FFT convolution in tools/audio-synth.mjs) ----------
+  const REVERB = { seconds: 1.7, rt60: 1.5, pre: 0.012, hi: 5500, lo: 1400 };
+  /** Deterministic stereo impulse response [L, R] (Float32Array) at `rate`: decaying noise that darkens over time, unit energy per channel. */
+  function reverbIR(rate) {
+    const n = Math.round(REVERB.seconds * rate), pre = Math.round(REVERB.pre * rate);
+    const out = [];
+    for (let c = 0; c < 2; c++) {
+      const buf = new Float32Array(n);
+      const r = mulberry(0x5eed + c * 7919);
+      let y = 0, e = 0;
+      for (let i = pre; i < n; i++) {
+        const t = (i - pre) / rate;
+        const fc = REVERB.lo + (REVERB.hi - REVERB.lo) * Math.exp(-t / 0.35);
+        const al = 1 - Math.exp((-2 * Math.PI * fc) / rate);
+        y += al * ((r() * 2 - 1) - y);
+        buf[i] = y * Math.exp((-6.9078 * t) / REVERB.rt60) * Math.min(1, t / 0.008 + 0.15);
+        e += buf[i] * buf[i];
+      }
+      const k = 1 / Math.sqrt(e || 1);
+      for (let i = 0; i < n; i++) buf[i] *= k;
+      out.push(buf);
     }
     return out;
   }
@@ -124,14 +292,14 @@
     return { tokens: stack[0], errs };
   }
 
-  /** Parse one track. kind: 'p1'|'p2'|'tri'|'noi'. Returns {items, steps, bars, errors}. */
+  /** Parse one track. kind: 'noi' for drum tracks, anything else for notes. Returns {items, steps, bars, errors}. */
   function parseTrack(str, kind, inst) {
     const { tokens, errs } = expand(str);
     const errors = errs.slice();
     const items = [];
     const bars = [];
     const drumRe = new RegExp('^[' + DRUM_KEYS + ']+$');
-    let step = 0, len = 2, vol = inst.vol, duty = inst.duty, env = inst.env;
+    let step = 0, len = 2, vol = inst.vol, duty = inst.duty, env = inst.env, patch;
     for (const tok of tokens) {
       if (tok === '|') { bars.push(step); continue; }
       if (tok[0] === '%') {
@@ -139,6 +307,7 @@
         if (c === 'd' && /^[0-3]$/.test(v)) duty = +v;
         else if (c === 'v' && /^\d{1,2}$/.test(v) && +v <= 15) vol = +v;
         else if (c === 'e' && /^[hpds]$/.test(v)) env = ENV_CODES[v];
+        else if (c === 'i' && PATCHES[v] && !PATCHES[v].drums && kind !== 'noi') patch = v;
         else errors.push('bad control ' + tok);
         continue;
       }
@@ -153,26 +322,61 @@
         else errors.push('bad drum ' + tok);
         continue;
       }
-      if (head[0] === '^') {
+      if (head[0] === '^' || head[0] === '=') {
         const ch = chord(head.slice(1));
         if (!ch) { errors.push('bad chord ' + tok); continue; }
-        const rate = inst.arp || 1;
-        for (let i = 0, k = 0; i < len; i += rate, k++) {
-          items.push({ s: step + i, l: Math.min(rate, len - i), midi: ch.tones[k % 4], v: vol, duty, env, arp: true });
+        if (head[0] === '=') { // block chord: all tones at once (triads without the octave doubling)
+          const tones = ch.tones[3] - ch.root === 12 ? ch.tones.slice(0, 3) : ch.tones;
+          for (const m of tones) items.push({ s: step, l: len, midi: m, v: vol, duty, env, p: patch });
+        } else {
+          const rate = inst.arp || 1;
+          for (let i = 0, k = 0; i < len; i += rate, k++) {
+            items.push({ s: step + i, l: Math.min(rate, len - i), midi: ch.tones[k % 4], v: vol, duty, env, arp: true, p: patch });
+          }
         }
         step += len;
         continue;
       }
-      const midi = midiOf(head);
-      if (isNaN(midi)) { errors.push('bad token ' + tok); continue; }
-      items.push({ s: step, l: len, midi, v: vol, duty, env });
+      const ms = head.split('+').map(midiOf); // 'c4+e4' = notes struck together
+      if (ms.some(isNaN)) { errors.push('bad token ' + tok); continue; }
+      for (const midi of ms) items.push({ s: step, l: len, midi, v: vol, duty, env, p: patch });
       step += len;
     }
     return { items, steps: step, bars, errors };
   }
 
-  function instOf(def, ch) {
-    return Object.assign({}, DEFAULT_INST[ch], (def.inst && def.inst[ch]) || {});
+  // ---------- channels ----------
+  // Legacy songs use p1/p2/tri/noi (mapped onto LEGACY_PATCH). Modern songs name any channels in `inst`, each with a `patch`.
+  const isModern = (def) => !!def.inst && Object.keys(def.inst).some((k) => def.inst[k] && def.inst[k].patch);
+  function songChannels(def) {
+    const out = CHANNELS.slice();
+    for (const k of Object.keys(def.inst || {})) if (!out.includes(k)) out.push(k);
+    return out;
+  }
+  function instOf(def, ch, over) {
+    const legacy = DEFAULT_INST[ch] && !(def.inst && def.inst[ch] && def.inst[ch].patch);
+    return Object.assign({}, legacy ? DEFAULT_INST[ch] : { vol: 10, gate: 0.92 }, (def.inst && def.inst[ch]) || {}, over || {});
+  }
+  const patchName = (inst, ch) => inst.patch || LEGACY_PATCH[ch];
+  const isDrumCh = (inst, ch) => { const P = PATCHES[patchName(inst, ch)]; return !!(P && P.drums); };
+  const median = (a) => { a = a.slice().sort((x, y) => x - y); return a.length ? a[a.length >> 1] : 0; };
+  /** Legacy songs only: the old leads sat in octave 6 on bare pulses. When p1 mostly lives at/above G#5 it drops an octave (and p2
+   *  follows when it would otherwise sit on top of the lead). Returns {p1, p2} semitone shifts; inst.p1.tr / inst.p2.tr override. */
+  function legacyLift(def) {
+    if (isModern(def)) return { p1: 0, p2: 0 };
+    const pitches = (ch) => {
+      const out = [];
+      for (const name of Object.keys(def.sections || {})) {
+        const t = def.sections[name][ch];
+        if (!t) continue;
+        for (const it of parseTrack(t, ch, instOf(def, ch)).items) for (let k = 0; k < it.l; k++) out.push(it.midi);
+      }
+      return out;
+    };
+    const p1 = median(pitches('p1')) >= 80 ? -12 : 0;
+    const p2 = p1 && median(pitches('p2')) >= 62 ? -12 : 0;
+    const t = (ch, auto) => (def.inst && def.inst[ch] && def.inst[ch].tr !== undefined ? def.inst[ch].tr : auto);
+    return { p1: t('p1', p1), p2: t('p2', p2) };
   }
 
   // ---------- fingerprints (levels.js is only valid for the data it was measured on) ----------
@@ -181,64 +385,82 @@
     for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); }
     return h >>> 0;
   }
-  const synthSig = () => JSON.stringify([MIX, DRUMS, PULSE_EXP, ENV_VERSION]);
+  const synthSig = () => JSON.stringify([MIX, DRUMS, PULSE_EXP, ENV_VERSION, PATCHES, REVERB]);
   function fingerprint(events, extra) {
     let h = fnvStr(synthSig());
     if (extra) h = fnvStr(String(extra), h);
     for (const e of events) {
-      h = fnvStr([e.t.toFixed(4), e.ch, e.f ? e.f.toFixed(2) : '', e.f2 ? e.f2.toFixed(2) : '', e.d || '', e.dur.toFixed(4), e.vol.toFixed(3),
-        e.duty === undefined ? '' : e.duty, e.env || '', e.vib ? e.vib.rate.toFixed(2) + ',' + e.vib.depth.toFixed(3) + ',' + (e.vib.delay || 0) : ''].join('|') + ';', h);
+      h = fnvStr([e.t.toFixed(4), e.ch, e.p || '', e.f ? e.f.toFixed(2) : '', e.f2 ? e.f2.toFixed(2) : '', e.d || '', e.dur.toFixed(4), e.vol.toFixed(3),
+        e.duty === undefined ? '' : e.duty, e.env || '', e.pan === undefined ? '' : e.pan, e.rev === undefined ? '' : e.rev,
+        e.vib ? e.vib.rate.toFixed(2) + ',' + e.vib.depth.toFixed(3) + ',' + (e.vib.delay || 0) : ''].join('|') + ';', h);
     }
     return h.toString(16).padStart(8, '0');
   }
 
+  /** 'A' or 'A/x' (section A played with variation x = def.vars.x, a map of per-channel inst overrides) */
+  function orderOf(def) {
+    return def.order.trim().split(/\s+/).map((tok) => { const [sec, v] = tok.split('/'); return { tok, sec, v }; });
+  }
+
   const cache = {};
   /** Compile a song definition into { events, total, loopStart, seconds, loops, sections, maxDur, fp }. Times in seconds.
-   *  lv: optional measured level record { g, p1, p2, tri, noi } (see A.levels) that scales each event via e.g. */
+   *  lv: optional measured level record { g, <channel>: gain } (see A.levels) that scales each event via e.g. */
   function compileDef(def, lv) {
     const stepSec = 60 / def.bpm / 4;
     const swing = def.swing || 0;
-    const order = def.order.trim().split(/\s+/);
+    const order = orderOf(def);
+    const chans = songChannels(def);
+    const lift = legacyLift(def);
     const events = [];
     const loopIdx = def.loop === undefined ? 0 : def.loop;
     let t0 = 0, loopStart = 0;
     const sections = [];
-    order.forEach((name, oi) => {
-      const sec = def.sections[name];
+    order.forEach((o, oi) => {
+      const sec = def.sections[o.sec];
+      const vars = (o.v && def.vars && def.vars[o.v]) || {};
       if (oi === loopIdx) loopStart = t0;
       let steps = 0;
-      for (const ch of CHANNELS) {
+      for (const ch of chans) {
         if (!sec[ch]) continue;
-        const inst = instOf(def, ch);
-        const pt = parseTrack(sec[ch], ch, inst);
+        const inst = instOf(def, ch, vars[ch]);
+        const drums = isDrumCh(inst, ch);
+        const pt = parseTrack(sec[ch], drums ? 'noi' : ch, inst);
         steps = Math.max(steps, pt.steps);
+        if (inst.mute) continue;
+        const pn = patchName(inst, ch);
+        const tr = inst.tr !== undefined ? inst.tr : lift[ch] || 0;
         for (const it of pt.items) {
           const off = (it.s % 2 === 1 ? swing * stepSec : 0);
           const t = t0 + it.s * stepSec + off;
-          if (ch === 'noi') {
-            events.push({ t, dur: it.l * stepSec, ch, d: it.drum, vol: it.v / 15 });
+          const ev = { t, ch, p: it.p || pn };
+          if (inst.pan !== undefined) ev.pan = inst.pan;
+          if (inst.rev !== undefined) ev.rev = inst.rev;
+          if (drums) {
+            Object.assign(ev, { dur: it.l * stepSec, d: it.drum, vol: it.v / 15 });
           } else {
             const gate = it.arp ? 0.9 : inst.gate;
-            const dur = Math.max(0.03, it.l * stepSec * gate);
-            const ev = { t, dur, ch, f: hz(it.midi), midi: it.midi, vol: it.v / 15, duty: it.duty, env: it.env };
+            const midi = it.midi + tr;
+            Object.assign(ev, { dur: Math.max(0.03, it.l * stepSec * gate), f: hz(midi), midi, vol: it.v / 15, duty: it.duty, env: it.env });
+            if (it.arp) ev.arp = true;
             const vb = inst.vib;
             if (vb && it.l >= (vb.min || 4) && !it.arp) {
               ev.vib = { rate: vb.rate || 5.5, depth: ev.f * (vb.depth || 0.007), delay: vb.delay === undefined ? 0.14 : vb.delay };
             }
-            events.push(ev);
           }
+          events.push(ev);
         }
       }
-      sections.push({ name, start: t0, steps });
+      sections.push({ name: o.tok, start: t0, steps });
       t0 += steps * stepSec;
     });
-    events.sort((a, b) => a.t - b.t || CHANNELS.indexOf(a.ch) - CHANNELS.indexOf(b.ch));
+    events.sort((a, b) => a.t - b.t || chans.indexOf(a.ch) - chans.indexOf(b.ch));
     const fp = fingerprint(events, def.bpm + ':' + (def.kind || ''));
-    if (lv) for (const e of events) e.g = (lv.g === undefined ? 1 : lv.g) * (lv[e.ch] === undefined ? 1 : lv[e.ch]);
+    const sg = def.gain === undefined ? 1 : def.gain; // optional song-level trim
+    if (lv || sg !== 1) for (const e of events) e.g = sg * (lv ? (lv.g === undefined ? 1 : lv.g) * (lv[e.ch] === undefined ? 1 : lv[e.ch]) : 1);
     const loops = loopIdx >= 0;
     let maxDur = 0;
     for (const e of events) if (e.dur > maxDur) maxDur = e.dur;
-    return { events, total: t0, loopStart: loops ? loopStart : 0, seconds: t0, loops, sections, stepSec, maxDur, fp, gain: lv ? lv.g : 1, resume: def.resume !== false };
+    return { events, total: t0, loopStart: loops ? loopStart : 0, seconds: t0, loops, sections, stepSec, maxDur, fp, gain: lv ? lv.g : 1, resume: def.resume !== false, channels: chans, lift };
   }
 
   // ---------- SFX notation ----------
@@ -390,34 +612,54 @@
     if (!(def.bpm >= 40 && def.bpm <= 240)) bad('bpm out of range');
     const bar = def.bar || 16;
     if (![4, 8, 12, 16, 24].includes(bar)) bad('unusual bar length ' + bar);
+    if (def.gain !== undefined && !(def.gain > 0 && def.gain <= 2)) bad('gain out of range');
     if (!def.order || !def.sections) { bad('no order/sections'); return out; }
-    const order = def.order.trim().split(/\s+/);
+    const order = orderOf(def);
     if (jingle ? def.loop !== -1 : !(Number.isInteger(def.loop) && def.loop >= 0 && def.loop < order.length)) bad('bad loop index');
-    if (def.inst) {
-      for (const ch of Object.keys(def.inst)) {
-        if (!CHANNELS.includes(ch)) { bad('unknown inst channel ' + ch); continue; }
-        const v = def.inst[ch];
-        if (v.vol !== undefined && !(v.vol >= 0 && v.vol <= 15)) bad(`inst.${ch}.vol out of range`);
-        if (v.duty !== undefined && ![0, 1, 2, 3].includes(v.duty)) bad(`inst.${ch}.duty out of range`);
-        if (v.env !== undefined && !Object.values(ENV_CODES).includes(v.env)) bad(`inst.${ch}.env unknown`);
-      }
-    }
-    for (const name of order) {
-      const sec = def.sections[name];
-      if (!sec) { bad('unknown section ' + name); continue; }
+    const modern = isModern(def);
+    const chans = songChannels(def);
+    const checkInst = (where, ch, v) => {
+      if (!chans.includes(ch)) { bad(`unknown ${where} channel ${ch}`); return; }
+      if (!CHANNELS.includes(ch) && where === 'inst' && !v.patch) bad(`inst.${ch} needs a patch`);
+      if (v.patch !== undefined && !PATCHES[v.patch]) bad(`${where}.${ch}.patch unknown: ${v.patch}`);
+      if (v.vol !== undefined && !(v.vol >= 0 && v.vol <= 15)) bad(`${where}.${ch}.vol out of range`);
+      if (v.duty !== undefined && ![0, 1, 2, 3].includes(v.duty)) bad(`${where}.${ch}.duty out of range`);
+      if (v.env !== undefined && !Object.values(ENV_CODES).includes(v.env)) bad(`${where}.${ch}.env unknown`);
+      if (v.pan !== undefined && !(v.pan >= -1 && v.pan <= 1)) bad(`${where}.${ch}.pan out of range`);
+      if (v.rev !== undefined && !(v.rev >= 0 && v.rev <= 1)) bad(`${where}.${ch}.rev out of range`);
+    };
+    if (def.inst) for (const ch of Object.keys(def.inst)) checkInst('inst', ch, def.inst[ch]);
+    for (const vn of Object.keys(def.vars || {})) for (const ch of Object.keys(def.vars[vn])) checkInst('vars.' + vn, ch, def.vars[vn][ch]);
+    const lift = legacyLift(def);
+    for (const o of order) {
+      const name = o.tok;
+      const sec = def.sections[o.sec];
+      if (!sec) { bad('unknown section ' + o.sec); continue; }
+      if (o.v && !(def.vars && def.vars[o.v])) bad('unknown variation ' + o.v);
+      const vars = (o.v && def.vars && def.vars[o.v]) || {};
+      for (const k of Object.keys(sec)) if (!chans.includes(k)) bad(`section ${o.sec} has unknown channel ${k}`);
       let steps = -1;
-      for (const ch of CHANNELS) {
-        if (!sec[ch]) { if (!jingle || ch === 'p1') bad(`section ${name} lacks ${ch}`); continue; }
-        const pt = parseTrack(sec[ch], ch, instOf(def, ch));
+      for (const ch of chans) {
+        if (!sec[ch]) { if (!modern && CHANNELS.includes(ch) && (!jingle || ch === 'p1')) bad(`section ${name} lacks ${ch}`); continue; }
+        const inst = instOf(def, ch, vars[ch]);
+        const P = PATCHES[patchName(inst, ch)];
+        if (!P) continue;
+        const pt = parseTrack(sec[ch], P.drums ? 'noi' : ch, inst);
         for (const e of pt.errors) bad(`${name}.${ch}: ${e}`);
         if (pt.steps % bar) bad(`${name}.${ch}: ${pt.steps} steps is not a multiple of bar=${bar}`);
         pt.bars.forEach((b, i) => { if (b % bar) bad(`${name}.${ch}: bar ${i + 1} ends at step ${b} (bar=${bar})`); });
         if (steps < 0) steps = pt.steps;
         else if (pt.steps !== steps) bad(`${name}.${ch}: ${pt.steps} steps, expected ${steps}`);
+        const tr = inst.tr !== undefined ? inst.tr : lift[ch] || 0;
+        const custom = !CHANNELS.includes(ch) || (def.inst && def.inst[ch] && def.inst[ch].patch);
         for (const it of pt.items) {
           if (it.midi === undefined) continue;
-          const lo = ch === 'tri' ? 24 : 36, hi = ch === 'tri' ? 72 : 100;
-          if (it.midi < lo || it.midi > hi) bad(`${name}.${ch}: note ${nameOf(it.midi)} out of range`);
+          const m = it.midi + tr;
+          const IP = PATCHES[it.p] || P;
+          const lo = custom ? IP.lo : ch === 'tri' ? 24 : 36, hi = custom ? IP.hi : ch === 'tri' ? 72 : 100;
+          if (m < lo || m > hi) bad(`${name}.${ch}: note ${nameOf(m)} out of range`);
+          // DS-style songs keep the top end gentle: nothing above E6, and no held notes above C6
+          if (custom && (m > 88 || (m > 84 && it.l >= 4 && IP.env && IP.env.s2 > 0.2))) bad(`${name}.${ch}: shrill note ${nameOf(m)}:${it.l}`);
         }
       }
     }
@@ -484,6 +726,13 @@
       }).join(' ')).join(' ');
     }).join(' | ') + ' |';
   }
+  // block(['C','Am','F,G'], 3) -> '=C3:16 | =Am3:16 | =F3:8 =G3:8 |'  (held block chords, e.g. for strings / pad)
+  // stab(['C','G'], 'X:2 r:2 X:4 r:8', 3) -> chord hits: every X becomes the bar's block chord (=Chord)
+  function dslBlock(chords, oct, bar) {
+    bar = bar || 16;
+    return chords.map((c) => { const p = split(c); return p.map((x) => '=' + x + oct + ':' + bar / p.length).join(' '); }).join(' | ') + ' |';
+  }
+  function dslStab(chords, pat, oct, bar) { return dslComp(chords, pat, oct, bar).replace(/\^/g, '='); }
   // weave(['Bb','Gm'], 4, [0,1,2,1], 16, 1) -> explicit broken-chord notes using chord-tone indexes (0 root,1 third,2 fifth,3 octave/7th)
   function dslWeave(chords, oct, pat, bar, len) {
     bar = bar || 16; pat = pat || [0, 1, 2, 1]; len = len || 1;
@@ -532,7 +781,7 @@
     });
   }
   A.dsl = {
-    arp: dslArp, bass: dslBass, comp: dslComp, weave: dslWeave, tr: dslTr, dtr: dslDtr,
+    arp: dslArp, bass: dslBass, comp: dslComp, weave: dslWeave, tr: dslTr, dtr: dslDtr, block: dslBlock, stab: dslStab,
     rep: (s, n) => '[ ' + s + ' ]x' + n,
     x: (s, n) => (s + ' ').repeat(n).trim(), // plain repetition (keeps '|' bar markers visible to the validator)
   };
@@ -553,6 +802,6 @@
   A.MIX = MIX;
   A.notation = {
     midiOf, nameOf, hz, chord, parseTrack, expand, compileDef, parseSfx, cryParams, cryFromParams, voices, envPoints, pulseComp, fingerprint,
-    DUTY, CHANNELS, DRUMS, DEFAULT_INST, MIX, ENV_CODES,
+    songChannels, orderOf, legacyLift, reverbIR, DUTY, CHANNELS, DRUMS, DEFAULT_INST, MIX, ENV_CODES, PATCHES, LEGACY_PATCH, REVERB,
   };
 })(typeof globalThis !== 'undefined' ? globalThis : window);
