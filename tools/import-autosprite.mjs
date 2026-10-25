@@ -239,18 +239,36 @@ const TRAINER_H = 84, trainers = {};
 const TRAINER_GAPS = {
   hero_f: [[507, 549], [579, 351]], // Dahlia: between the legs, inside the hip arm
   hero_m: [[363, 213]], // Draco: inside the raised arm
+  cook: [[603, 435]], // inside the hip arm
+  gentleman: [[453, 171]], // between the raised hand and the face
   grunt_f: [[417, 195]], // between the ponytail and the neck
   lady: [[399, 231]], // between the raised hand and the hat brim
+  madame_damask: [[471, 321]], // between the arm and the dress
+  picnicker: [[555, 333], [573, 531], [663, 609]], // by the backpack strap; between the arm and the skirt; inside the basket handle
+  pilot: [[561, 399]], // inside the hip arm
   pleat: [[471, 201]], // between the raised hand and the neck
+  rocker: [[405, 417]], // between the arm and the guitar
+  rue: [[555, 369]], // between the arm and the coat
+  sailor: [[621, 345]], // inside the hip arm
   tailor_f: [[453, 393]], // inside the hip arm
   tailor_m: [[585, 387]], // inside the hip arm
 };
 const trainerFiles = fs.readdirSync(path.join(ROOT, 'art/autosprite/npc/battle')).filter((f) => f.endsWith('.png'))
   .map((f) => [f.slice(0, -4), path.join(ROOT, 'art/autosprite/npc/battle', f)])
   .concat(Object.entries(HEROES).map(([look, hero]) => [look, path.join(ROOT, 'art/autosprite/heroes', hero + '-ready.png')]));
+// drawn facing screen-right; mirrored so they face the player like the other foe trainers
+const TRAINER_FLIP = new Set(['schoolgirl']);
+/** Mirror a converted sprite left to right. */
+function flipX(s) {
+  const idx = new Uint8Array(s.w * s.h);
+  for (let y = 0; y < s.h; y++) for (let x = 0; x < s.w; x++) idx[y * s.w + x] = s.idx[y * s.w + s.w - 1 - x];
+  return Object.assign({}, s, { idx, cx: s.w - s.cx });
+}
 for (const [look, f] of trainerFiles) {
   if (!fs.existsSync(f)) continue;
-  const n = convert(f, 6, TRAINER_GAPS[look]), s = downscale(n, TRAINER_H / n.h);
+  let n = convert(f, 6, TRAINER_GAPS[look]);
+  if (TRAINER_FLIP.has(look)) n = flipX(n);
+  const s = downscale(n, TRAINER_H / n.h);
   let hx = -1, hy = 0;
   for (let y = Math.round(s.h * 0.4); y < s.h * 0.75; y++) for (let x = 0; x < s.w; x++) if (s.idx[y * s.w + x] && x > hx) { hx = x; hy = y; }
   trainers[look] = Object.assign(encode(s), { hand: { x: hx, y: hy } });
