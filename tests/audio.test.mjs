@@ -88,6 +88,20 @@ const SFX = ['cursor', 'select', 'cancel', 'error', 'menu_open', 'text', 'bump',
   }
   assert.ok(set.size >= 55, 'cries vary by species');
   assert.ok(A.cryEvents(17).events.length && A.cryEvents({ id: 'x' }).events.length);
+  // sfx layer fields: d (detuned double), o (sub-octave), ~ (echo), lp/P/R pass-through, nl/nh noise filters
+  {
+    const ps = A.notation.parseSfx;
+    const d = ps('t 440 0.1 0.5 d12').events;
+    assert.equal(d.length, 2); assert.ok(d[1].f > d[0].f && Math.abs(d[0].vol - 0.325) < 1e-9);
+    const o = ps('p2 400 0.1 0.5 o').events;
+    assert.equal(o.length, 2); assert.equal(o[1].ch, 'tri'); assert.equal(o[1].f, 200);
+    assert.equal(ps('p2 80 0.1 0.5 o').events.length, 1, 'no sub-octave under 50 Hz');
+    const ec = ps('s 800 0.1 0.5 ~0.05x2; s 900 0.1');
+    assert.equal(ec.events.length, 4); assert.ok(Math.abs(ec.seconds - 0.2) < 1e-9); assert.ok(Math.abs(ec.events.find((e) => e.f === 900).t - 0.1) < 1e-9, 'echo does not move the cursor');
+    const f = ps('t 300 0.1 lp900>400 P-0.5 R0.3; nl 500 0.1').events;
+    assert.equal(f[0].lp, 900); assert.equal(f[0].lp2, 400); assert.equal(f[0].pan, -0.5); assert.equal(f[0].rev, 0.3); assert.equal(f[1].filt, 'lp');
+    assert.ok(ps('t 300 0.1 zz').errors.length, 'unknown field is an error');
+  }
   // notation negatives
   assert.ok(A.notation.parseTrack('c5:2 zz', 'p1', A.notation.DEFAULT_INST.p1).errors.length);
   assert.equal(A.notation.parseTrack('[ c5:1 d5:1 ]x3 r:2', 'p1', A.notation.DEFAULT_INST.p1).steps, 8);

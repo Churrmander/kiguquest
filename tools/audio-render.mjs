@@ -4,7 +4,7 @@
 // Loudness is mono-equivalent BS.1770 (channel powers averaged), comparable with the older mono renders.
 // --raw renders without the stored level gains (src/audio/levels.js). Output goes through the same soft limiter as the game.
 import path from 'node:path';
-import { ROOT } from './load.mjs';
+import { ROOT, loadNP } from './load.mjs';
 import { loadAudio, renderEvents, renderLufs, renderPeak, writeWav, RATE } from './audio-synth.mjs';
 
 const args = process.argv.slice(2);
@@ -18,6 +18,8 @@ for (let i = 0; i < args.length; i++) {
 }
 const NP = loadAudio();
 const A = NP.audio;
+// cries are spoken from the species' sound-word (NP.data.species[id].cry), so load the species table when a cry is asked for
+if (ids.some((id) => id.startsWith('cry:'))) NP.data.species = loadNP({ files: ['src/core/ns.js', 'src/data/species.js', 'src/data/species_p2.js'], quiet: true }).NP.data.species;
 const all = ids.length ? ids : [...A.songs(), ...A.jingles(), ...A.sfxs()];
 for (const id of all) {
   let events, seconds, short = false;

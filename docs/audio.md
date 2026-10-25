@@ -86,12 +86,43 @@ seconds, Q in dB, default -3); `pan` -1..1 (equal-power, +3 dB so a centred voic
 (pulse), `tri`, `sin`, `saw`, `sq`, `noi` (`d:'n'` noise, optional `filt`, `q`), and may carry `lp`/`lp2`/`lpt`/`q`, `pan`, `rev`.
 
 ## SFX format
-`NP.data.sfx[id] = 'wave freq[>freq2] dur [vol] [@start] [e<h|p|d|s>] [v<depth>]; …'`. Waves: `p0..p3` pulse, `t` triangle, `s` sine, `n` noise
-(freq = band-pass centre, sweeps to freq2). Segments play one after another unless given `@seconds`. `v` adds vibrato. Example: `'p2 988 0.045 0.4; p2 1480 0.08 0.4 ed'`.
+`NP.data.sfx[id] = 'wave freq[>freq2] dur [vol] [@start] [fields…]; …'`. Segments play one after another unless given `@seconds`.
+Waves: `t` triangle, `s` sine, `p0..p3` pulse (12.5/25/50/75 %), `n` band-pass noise (freq = centre, sweeps to freq2), `nl` / `nh` low-/high-pass
+noise (freq = cutoff), `w` sawtooth, `q` square. Fields:
+| field | meaning |
+|---|---|
+| `0.4` | volume 0..1 (default 0.5) |
+| `@0.12` | start time in seconds (default: right after the previous segment) |
+| `ep` `ed` `es` `eh` | envelope pluck / decay / swell / hold (noise defaults to decay) |
+| `v6` `v6/14` | vibrato depth in Hz, optional rate (default 9 Hz) |
+| `d8` | detuned double: adds a copy 8 cents higher, both at 0.65 x vol (width, chorus) |
+| `o` `o0.4` | sub-octave layer: triangle (sine for `s`) an octave down at 0.6 (or the given) x vol; skipped below 50 Hz |
+| `~0.07` `~0.07x3` | echo: 2 (or n) repeats every 0.07 s at 0.38^k x vol; does not move the next segment's start |
+| `lp1500` `lp2000>600` | osc lowpass cutoff (sweeping), event fields `lp` / `lp2` |
+| `P-0.4` `R0.3` | pan -1..1, reverb send 0..1 (event fields `pan` / `rev`) |
+
+`lp`, `pan`, `rev`, `nl`/`nh` (event `filt`) and `w`/`q` (channels `saw`/`sq`) are passed on to `voices()` and need the DS engine. Older engines ignore
+the extra fields and play `nl`/`nh` as band-pass noise, so every SFX must sound right without them; don't use `w`/`q` until the engine has them.
+Unknown fields are reported by `parseSfx(...).errors`. Example: `'t 784 0.04 0.4 ep d8; t 1175 0.1 0.4 ed d8 ~0.07x1'`.
+
+SFX style (DS era): put the body on triangle or sine (with `d` for width), and use pulse only as a quiet 50 % edge with `lp`. Make thumps from falling sines
+(`s 150>50 … ed`) plus a mid-range noise crack. Keep noise mostly under ~2.5 kHz, use a short `~` echo on chimes, and keep everything 50 Hz to 12 kHz,
+under 1.5 s and vol <= 1. Loudness ladder (render-tool LUFS): text ~-45, cursor ~-39, menu ~-31, chimes ~-27, hits -32 (weak) / -26 / -23 (super),
+cries ~-20.
 
 ## Cries
-`cry(id)` hashes the species id (FNV) to choose base pitch (~190-1000 Hz), one of six contours (rising, falling, arch, chirps, growl, warble), duty and length
-(0.2-0.42 s). Deterministic; accepts a string/number id or an object with `.id`.
+`cry(id)` "speaks" the species' sound-word (`NP.data.species[id].cry`, e.g. `Kon!`, `Piiraa!`) split into up to 3 syllables:
+* The vowel sets a formant band, used for the breath noise and the `lp` cutoff (a 1050, e 1500, i 1900, o 720, u 520 Hz).
+* The onset shapes the attack: a plosive adds a noise click and a pitch scoop, m/n add a swell, l/r/w/y add a glide in, s/f/h/z add a hiss, and z adds a buzz.
+* The coda shapes the release: n/m end in a hum tail, k/t/p in a click, s/f in a hiss.
+* Long vowels (`ii`) and the last syllable are drawn out. A word without vowels (`Bzz`) is a buzz.
+* The evolution `family` hash picks the timbre (pulse plus detuned triangle, soft triangle/sine, or pulse plus sub-octave), duty, detune, formant shift and
+  pitch region (~210-535 Hz). `stage` lowers the pitch (x0.8, x0.66), lowers the formants and slows the voice. So an evolution line sounds related.
+* The species id hash picks one of 8 word-level contours (rising, falling, arch, chirpy, growl, warble, yip-call, coo) and a small pitch/speed jitter.
+  A trailing `!` falls at the end, `?` rises and `~` warbles.
+
+Ids without species data (numbers, test ids) get a pseudo-word from the hash. Cries are deterministic, 0.2-0.55 s long, at most 2.5 kHz per event. They take
+a string/number id or an object with `.id`. `tools/audio-render.mjs cry:<id>` loads the species table so it renders the real word.
 
 ## Content
 DS-style arrangements so far: home_town, route_meadow, town_thimble, battle_wild (the rest are legacy and play through the softened patches).
