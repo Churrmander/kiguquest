@@ -118,7 +118,7 @@
     begin(text, opts) {
       this.opts = opts || {};
       if (this.opts.box) this.box = this.opts.box;
-      this.screens = Message.paginate(text, this.box.w - 24);
+      this.screens = Message.paginate(text, this.box.w - 32);   // 8px short of the text area, so a full line never runs into the ▼
       this.si = 0;
       this.chars = 0;
       this.waiting = false;

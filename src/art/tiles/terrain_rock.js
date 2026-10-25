@@ -22,15 +22,18 @@
   });
   const { P } = K;
   const ROCK = {
-    desert: { top: [P.ss0, P.ss1, P.ss2, P.ss3], face: [P.ss2, P.ss3, P.ss4, P.ss5], ink: P.ss6 },
+    // desert tops sit a step darker than the dune floor, so the walls read against the sand
+    desert: { top: [P.ss1, P.ss2, P.ss2, P.ss3], face: [P.ss2, P.ss3, P.ss4, P.ss5], ink: P.ss6 },
     cave: { top: [P.cv0, P.cv1, P.cv2, P.cv3], face: [P.cv2, P.cv3, P.cv4, P.cv5], ink: P.cv6 },
+    // grassy shelves (Kite Hill, Route 6): turf a step darker than the field, over an earth face
+    grass: { top: [P.g1, P.g2, P.g3, P.g4], face: [P.ss2, P.ss3, P.ss4, P.ss5], ink: P.ss6, lip: P.g0, faceH: 10 },
   };
   const hf = K.hf;
 
   // rough top: soft light-to-dark blotches plus a few cracks, tiling seamlessly (hash on world-ish coords inside the tile)
   function topPx(x, y, v, pal) {
-    const n = hf(x >> 1, y >> 1, 31 + v) * 0.6 + hf(x, y, 17 + v) * 0.4;
-    let c = n > 0.78 ? pal.top[0] : n > 0.34 ? pal.top[1] : n > 0.12 ? pal.top[2] : pal.top[3];
+    const n = hf(x >> 2, y >> 2, 31 + v) * 0.75 + hf(x >> 1, y >> 1, 17 + v) * 0.25;   // broad blotches, not per-pixel grain
+    let c = n > 0.45 ? pal.top[1] : pal.top[2];                                   // two tones only; cracks and rims add the rest
     // a crack: a short diagonal line per variant
     const cx = v ? 10 : 4, cy = v ? 4 : 9;
     if ((x - cx === y - cy && x >= cx && x < cx + 4) || (x - cx - 4 === cy + 3 - y && x >= cx + 4 && x < cx + 6)) c = pal.top[3];
@@ -53,7 +56,7 @@
     return (mask, f, v) => {
       const fl = K.field(mask, 4);
       const b = K.B(T, T);
-      const FACE = 6;
+      const FACE = pal.faceH || 6;
       for (let i = 0; i < 256; i++) {
         const x = i & 15, y = i >> 4;
         const d = fl.d[i], nx = fl.nx[i], ny = fl.ny[i];
@@ -62,7 +65,7 @@
           // south edge: the face drops away, with an ink line at the foot
           const fy = FACE - d;                                     // 0 at the lip .. FACE at the foot
           c = d < 1 ? pal.ink : facePx(x, fy, FACE, pal);
-          if (fy < 1.2) c = pal.top[0];                            // sunlit lip
+          if (fy < 1.2) c = pal.lip || pal.top[0];                 // sunlit lip
         } else if (d < 1) c = pal.ink;                             // outline on the other sides
         else if (d < 2 && (nx < -0.35 || ny < -0.35)) c = pal.top[0]; // lit rim on the north and west
         else if (d < 2) c = pal.top[3];                            // shaded rim on the east
@@ -75,6 +78,7 @@
 
   K.terrain('cliff', { solid: true, autotile: true, variants: 2, step: 'stone', cliff3d: 'desert', paint: rockTile('desert') });
   K.terrain('cave_wall', { solid: true, autotile: true, variants: 2, step: 'stone', cliff3d: 'cave', paint: rockTile('cave') });
+  K.terrain('cliff_grass', { solid: true, autotile: true, variants: 2, step: 'step', cliff3d: 'grass', paint: rockTile('grass') });
 
   // ---- cave floor: packed earth with pebbles and the odd glint
   K.terrain('cave_floor', {

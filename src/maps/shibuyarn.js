@@ -31,7 +31,6 @@
 
   // ---- 5.6: the rival at the claw machine (no battle)
   function* rivalClaw(c) {
-    c.set('rival_claw_done');
     const r = c.npc('rival_s');
     yield* c.face('player', 'right');
     yield* c.sayT('shibuyarn.claw.1', '{rival} is pressed right up against the claw machine, glaring at a plush Kigu in the corner.');
@@ -53,6 +52,7 @@
     yield* c.sayT('shibuyarn.claw.7', '{rival}: You know what, Mum would say I spent too much on this thing, and she\'d be right.\\pThanks for having a go with me. I needed a laugh today.');
     yield* c.sayT('shibuyarn.claw.8', '{rival}: The station master keeps grumbling about the power. He might know what\'s going on with the lights.\\pI\'ll see you around, okay?');
     yield* c.walk(r, ['left', 1, 'down', 2, 'left', 8]);
+    c.set('rival_claw_done');   // set at the end, so the NPC (hideIf this flag) stays on screen for the whole scene
     c.hideNpc('rival_s');
   }
 
@@ -103,12 +103,13 @@
   M.rect(34, 17, 3, 3, 'r').rect(34, 17, 1, 3, 'p').rect(36, 17, 1, 3, 'p');
   M.gate('crossing', { flag: LIT, cells: [[34, 17], [34, 18], [34, 19]], closed: 'B', open: 'p', note: 'level crossing gates: down until the lights come back on' });
   // the main road under the station plaza, with a zebra crossing to the station
-  M.rect(2, 10, 32, 2, 'a').rect(17, 10, 3, 2, 'z');
+  M.rect(2, 8, 32, 2, 'a').rect(17, 8, 3, 2, 'z');                         // rows 8-9, clear of the shop roofs
   // the station and its plaza (north)
   M.building('station', 14, 2, null, 'station', 'shibuyarn_station');
   M.rect(2, 2, 10, 3, 'g').rect(25, 2, 9, 3, 'g').rect(3, 3, 3, 1, 'f').rect(28, 3, 3, 1, 'f');
   M.trees([[2, 2], [10, 2], [25, 2], [32, 2]]);
-  M.stamp('bench', 6, 7).stamp('bench', 26, 7).stamp('lamp', 16, 8).stamp('lamp', 20, 8);
+  M.stamp('bench', 6, 6).stamp('bench', 26, 6).stamp('lamp', 16, 7).stamp('lamp', 20, 7);
+  M.stamp('bush', 3, 6).stamp('bush', 11, 6).stamp('bush', 24, 6).stamp('bush', 32, 6);   // planters along the plaza
   // the shotengai: five shops along the south side of the road (signs dark until the lights come back)
   const shop = (variant, x, name, to, note) => {
     const s = { id: 'city_shop', x, y: 13, name };
@@ -135,9 +136,10 @@
   M.rect(2, 21, 8, 7, 'g').rect(3, 26, 6, 1, 'f');
   M.stamp('shrine', 3, 21).stamp('tree', 2, 26).stamp('tree', 8, 21);
   // the vending alley: wild Vendi live among the machines
-  M.rect(10, 28, 8, 4, 'A');
+  M.rect(10, 28, 6, 4, 'A');
   for (let x = 10; x < 18; x += 2) M.def.stamps.push(L.variantByFlag({ id: 'vending', x, y: 26 }, LIT, ['white', 'red', 'blue', 'white'][(x - 10) / 2] + '_off', ['white', 'red', 'blue', 'white'][(x - 10) / 2]));
   M.rect(22, 29, 11, 4, ',');                                               // a scrap of park by the south road (Capsi and Bentobi)
+  M.rect(21, 28, 1, 5, 'F').rect(33, 28, 1, 5, 'F').rect(23, 28, 3, 1, 'F').rect(29, 28, 3, 1, 'F');   // a fenced park bed, open in the middle of the top
   M.trees([[22, 28], [32, 28], [27, 32]]);
   M.stamp('lamp', 16, 31).stamp('lamp', 20, 31);
   M.sign(16, 20, 'SHIBUYARN SHOTENGAI\\nEverything you need, and lots you don\'t!', 'street sign');
@@ -158,7 +160,7 @@
     yield* c.sayT('shibuyarn.fortune.1', 'Fortune teller: Ah, a traveller! Let me read your threads.\\p...I see a long road north, a very windy hill, and a cup of cocoa you\'ll forget to drink.');
     if (c.flag(LIT)) yield* c.sayT('shibuyarn.fortune.2', 'Fortune teller: I also see that the lights are on, so the stall makes money again. That one wasn\'t magic.');
   } });
-  M.npc('salary', 23, 8, 'gentleman', 'left', ['When the power goes, the lifts stop, the trains slow down, and everyone takes the stairs.\\pI\'ve never been so fit. I hate it.']);
+  M.npc('salary', 23, 7, 'gentleman', 'left', ['When the power goes, the lifts stop, the trains slow down, and everyone takes the stairs.\\pI\'ve never been so fit. I hate it.']);
   M.npc('girl', 12, 18, 'schoolgirl', 'up', null, { script: function* (c) {
     if (c.flag(LIT)) yield* c.sayT('shibuyarn.girl.lit', 'The signs are back! I missed the pink one over the arcade most. It looks like a big heart.');
     else yield* c.sayT('shibuyarn.girl.dark', 'The capsule machines still work in a brownout, because they\'re wind-up. Nothing stops a capsule machine!');
@@ -169,8 +171,8 @@
     else yield* c.sayT('shibuyarn.rail.dark', 'Crossing keeper: Sorry, the gates are stuck down. They need power to lift, and the power keeps vanishing.\\pThe station master says it\'s something to do with the old cellar under the station.');
   } });
   M.npc('monk', 6, 25, 'elder_m', 'down', ['This little shrine has been here since before the station. The city grew up all round it.\\pPeople come here to sit quietly. Nobody has ever told me to tidy it.']);
-  M.pickup('alley', 16, 31, 'onigiri', 2);
-  M.pickup('shrine', 9, 27, 'wish_candy', 1);
+  M.pickup('alley', 14, 30, 'onigiri', 2);
+  M.pickup('shrine', 7, 27, 'wish_candy', 1);
   M.hidden('vend', 31, 15, 'mint_tea', 1, 'a drink stuck in the vending machine tray');
   M.reg();
 

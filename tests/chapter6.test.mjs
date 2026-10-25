@@ -73,7 +73,7 @@ leave(6, 8);
 heal();
 assert.ok(use(15, 12), 'battle Skye; ' + t.pos());
 press(() => NP.levels.done({ flag: (k) => !!st.flags[k] }, 'kite_hill', 'kh_pilot'), 60000);
-assert.ok(use(15, 13), 'the co-pilot hands over the patch; ' + t.pos());
+assert.ok(use(16, 13), 'the co-pilot hands over the patch; ' + t.pos());
 press('patch_pilot', 30000);
 assert.ok(use(3, 11), 'find the goggles in the grass; ' + t.pos());
 press('found_goggles', 20000);

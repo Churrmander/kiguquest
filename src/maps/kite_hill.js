@@ -76,13 +76,13 @@
     const counter = { konko: 'ottelia|ribbi', ottopi: 'voltessa|sparkin', sprubun: 'larkette|peepi' }[c.state.starter] || 'sparkin|peepi';
     const team = L.team([[L.evoStarter(c.state.rivalStarter), 35], [counter, 33], ['propera|propi', 33], ['slatina|slatli', 34], ['kumara|silkie', 33]]);
     const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'rival', ai: 2, reward: 30, canLose: true, team });
-    c.set('rival5_done');
     c.music(c.map.def.music);
     if (won) yield* c.sayT('kite_hangar.rival5.win', '{rival}: Ha! You\'re still ahead. Somehow that makes me feel better, like things are how they should be.');
     else yield* c.sayT('kite_hangar.rival5.lose', '{rival}: I won! I\'m going to remember this the next time you beat me, which will be soon.');
     yield* c.sayT('kite_hangar.rival5.8', 'Dart: Right, you two. My balloon is torn in four places, and I\'ve no patches left.\\pThe folks around the hill have scraps. Bring me four, and I\'ll sew her up.');
     yield* c.sayT('kite_hangar.rival5.9', '{rival}: Race you to the Salon after! Don\'t think I won\'t.');
     yield* c.walk(r, ['down', 3]);
+    c.set('rival5_done');   // set at the end, so the NPC (hideIf this flag) stays on screen for the whole scene
     c.hideNpc('rival_h');
   }
 
@@ -162,7 +162,7 @@
 
   const M = L.map({
     id: 'kite_hill', name: 'Kite Hill', music: 'town_kite', battleBg: 'grass', border: 'treeline', w: W, h: H, view: 'town',
-    legend: { '.': 'grass', T: 'treeline', d: 'path', C: 'cliff', f: 'flowers', F: 'fence', r: 'track', ',': 'tallgrass' },
+    legend: { '.': 'grass', T: 'treeline', d: 'path', C: 'cliff_grass', f: 'flowers', F: 'fence', r: 'track', ',': 'tallgrass' },
     onEnter: function* (c) { L.syncStamps(c); },
   });
   M.rect(0, 0, W, 2, 'T').rect(0, H - 2, W, 2, 'T').rect(0, 0, 2, H, 'T').rect(W - 2, 0, 2, H, 'T');
@@ -170,11 +170,10 @@
   // the slope: a cliff band splits the airfield (top) from the town (below), with a path ramp up the middle
   M.rect(2, 14, 36, 2, 'C').rect(18, 14, 3, 2, 'd');
   // the airfield: a long grass field with a sand-coloured runway strip
-  M.rect(10, 9, 22, 2, 'r');
+  M.rect(7, 9, 25, 2, 'r');                                                  // it runs from the hangar to the Salon
   M.building('hangar', 4, 3, null, 'hangar', 'kite_hangar');
   M.building('salon', 26, 3, 'gale', 'salon', 'kite_salon');
   M.rect(7, 8, 3, 1, 'd').rect(28, 8, 3, 1, 'd').rect(18, 11, 3, 3, 'd');
-  M.rect(7, 9, 3, 2, 'd').rect(28, 9, 3, 2, 'd');
   // the tied-down balloons (Dart's is the torn one by the hangar until it's patched)
   M.stamp('balloon', 14, 3, 'red').stamp('balloon', 18, 2, 'yellow').stamp('balloon', 34, 9, 'blue');
   M.def.stamps.push(L.variantByFlag({ id: 'balloon', x: 21, y: 3, goneIf: 'over_pass' }, 'balloon_fixed', 'down', 'patched'));
@@ -200,7 +199,7 @@
   M.enc('grass', [['kamipi', 31, 33, 40], ['propi', 31, 33, 34], ['peepi', 31, 33, 26]]);
 
   // 6.2: Mr. Sharp at the airfield gate, in a leather flying helmet
-  M.npc('sharp', 22, 12, 'gentleman', 'left', null, { script: L.giver('sharp_kite', 'snack_cake', 1, {
+  M.npc('sharp', 27, 27, 'gentleman', 'left', null, { script: L.giver('sharp_kite', 'snack_cake', 1, {
     give: ['Mr. Sharp: Pilot? No, no. Just a humble map-seller, selling humble maps of the sky.\\pThis one shows where the clouds will be. Roughly. Clouds move, you see.', 'Mr. Sharp: No sale? Then have a Snack Cake. A pilot needs a snack. I mean a map-seller does.'],
     got: ['Mr. Sharp: Off you go. And if anyone asks, you never saw a man in goggles. You saw a humble map.'],
     again: ['Mr. Sharp: Humble maps! Get your humble maps! ...Nobody ever wants the humble maps.'],
@@ -214,7 +213,7 @@
   // the patch quest (6.5): four favours
   M.trainer('kh_pilot', 15, 12, 'pilot', 'down', { cls: 'Pilot', name: 'Skye', sight: 0, reward: 16, ai: 2, team: [['kamipi', 33], ['propi', 33], ['cloudli', 34]],
     intro: 'A patch? Sure, if you can beat me. Grounded pilots get very bored, you know.', win: 'Okay, okay! The patch is yours.', after: 'Tell Dart I want a go in her balloon when it flies.' });
-  M.npc('pilot_patch', 15, 13, 'pilot', 'up', null, { hideIf: 'patch_pilot', note: 'gives the sky-blue patch once Skye is beaten', script: function* (c) {
+  M.npc('pilot_patch', 16, 13, 'skier', 'up', null, { hideIf: 'patch_pilot', note: 'gives the sky-blue patch once Skye is beaten', script: function* (c) {
     if (!c.flag('rival5_done')) { yield* c.sayT('kite_hill.skye.wait', 'Skye\'s co-pilot: We\'re just standing about until the balloons fly again.'); return; }
     if (!L.done(c, 'kite_hill', 'kh_pilot')) { yield* c.sayT('kite_hill.skye.first', 'Skye\'s co-pilot: Skye has a spare patch. Battle her and she\'ll hand it over. She loves a battle.'); return; }
     yield* c.sayT('kite_hill.skye.give', 'Skye\'s co-pilot: Skye said you won it fair and square. Here\'s the patch.');
@@ -250,7 +249,7 @@
     yield* c.sayT('kite_hill.cocoa.2', 'The kid wraps both hands round the cocoa and closes their eyes. Then they hand you the patch.');
     yield* gotPatch(c, 'patch_cocoa');
   } });
-  M.npc('racer', 33, 7, 'pilot', 'down', null, { script: racer, note: 'Kite Tail Race (3 battles, float_balloon)' });
+  M.npc('racer', 33, 7, 'rocker', 'down', null, { script: racer, note: 'Kite Tail Race (3 battles, float_balloon)' });
   M.npc('salon_guard', 29, 8, 'pilot', 'down', ['Sorry, the Salon\'s shut while Dart\'s balloon is grounded. She says she can\'t think straight without it.'], { hideIf: 'balloon_fixed', note: 'blocks the Salon door until balloon_fixed' });
   M.npc('dart_field', 22, 7, 'dart', 'down', null, { hideIf: 'over_pass', script: dartBalloon, note: 'Dart by her balloon (after badge5: over the pass)' });
   M.npc('elder', 28, 25, 'elder_f', 'up', ['When I was young, the whole sky over this hill was full of balloons every evening.\\pIt\'s been very quiet since the notice went up. Too quiet for a windy place.']);

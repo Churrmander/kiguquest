@@ -21,15 +21,19 @@
 
   // ============================================================================================ wind terrains
   // A streak is a short pale line with a brighter head, drawn along the wind; four frames move it 4px a frame, so it loops.
-  const STREAKS = [[1, 3, 7], [9, 9, 6], [4, 13, 5]];   // [start along, across, length]
-  function streaks(b, dir, f, light, mid) {
+  // Two long streaks a tile, each with a gentle kink, in pale greens (white ticks read as rain)
+  const STREAKS = [[2, 4, 10], [10, 11, 8]];   // [start along, across, length]
+  function streaks(b, dir, f, light, mid, v) {
     const [dx, dy] = DIRS[dir];
-    for (const [a0, across, len] of STREAKS) {
+    // the second variant shifts its streak sideways and drops one, so a field of gusts doesn't fall into a grid
+    for (const [a0, across0, len] of v ? STREAKS.slice(0, 1) : STREAKS) {
+      const across = v ? (across0 + 6) & 15 : across0;
       for (let i = 0; i < len; i++) {
         const along = (a0 + f * 4 + i) & 15;
         // "along" runs with the wind: for e/s it grows, for w/n it shrinks
         const a = dx + dy > 0 ? along : 15 - along;
-        const x = dx ? a : across, y = dx ? across : a;
+        const ac = across + (i >= (len >> 1) ? 1 : 0);   // the kink: the back half sits a pixel over
+        const x = dx ? a : ac, y = dx ? ac : a;
         b.set(x, y, i >= len - 2 ? light : mid);
       }
     }
@@ -37,7 +41,7 @@
   for (const dir of Object.keys(DIRS)) {
     K.terrain('gust_' + dir, {
       variants: 2, frames: 4, animSpeed: 8, step: 'step', gust: { e: 'right', w: 'left', n: 'up', s: 'down' }[dir],
-      paint: (m, f, v) => { const b = K.grassTile(v); streaks(b, dir, f, col('#f4fff0'), col('#c8eab0')); return b; },
+      paint: (m, f, v) => { const b = K.grassTile(v); streaks(b, dir, f, col('#e8fad0'), col('#b4e094'), v); return b; },
     });
   }
 

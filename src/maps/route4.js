@@ -29,6 +29,16 @@
   // a ledge run below the road in the meadow: you can hop down to the grass, not climb back, so the road walk passes Lia and Odo
   M.rect(3, 13, 12, 1, 'l');
   M.rect(8, 13, 1, 1, '.');                                                // a gap in the ledge to walk back up
+  // feather the meadow into the desert: a wavy edge (grass, a sand fringe, then dune) instead of one straight seam
+  for (let y = 2; y < 20; y++) {
+    if (y >= 10 && y <= 11) continue;                                       // the road keeps its own surfaces
+    const g = 16 + Math.round(1.1 * Math.sin(y * 0.8) + 0.6 * Math.sin(y * 2.1 + 1));   // first sand column
+    const d = g + 2 + Math.round(0.8 * Math.sin(y * 1.3 + 2));                        // first dune column
+    for (let x = 13; x < 21; x++) {
+      if (!'.us'.includes(M.at(x, y))) continue;
+      M.set(x, y, x < g ? '.' : x < d ? 's' : 'u');
+    }
+  }
 
   M.sign(3, 9, 'ROUTE 4  Slab Road\\nWest: Seamstead City\\nEast: Canvas Rest', 'west sign');
   M.sign(41, 9, 'CANVAS REST\\nTents, tea, and shade. Mostly shade.', 'east sign');
@@ -56,9 +66,9 @@
     intro: 'Those slabs are for the Works, and the Works needs them flat. You look a little lumpy.', win: 'Lumpy, and strong. That\'s not in the handbook.', after: 'The slabs go north to the Works. I don\'t know what they press up there, and I\'m told not to wonder.' });
 
   // the resting slab carriers: three lines of a running gag, each a little more tired
-  M.npc('slab1', 23, 9, 'grunt_m', 'down', ['We carry the slabs to Canvas Rest, then they go on by cart.\\pI\'ve carried slabs for three weeks now, and my arms are going flat. The Society would probably call that progress.']);
+  M.npc('slab1', 22, 8, 'villager_m2', 'down', ['We carry the slabs to Canvas Rest, then they go on by cart.\\pI\'ve carried slabs for three weeks now, and my arms are going flat. The Society would probably call that progress.']);
   M.npc('slab2', 26, 9, 'grunt_f', 'down', ['Each slab weighs as much as a Kigu. A big one.\\pI asked what they\'re for, and they said "pressing". I asked what we\'re pressing,\\pand they said "please lift with your knees".']);
-  M.npc('slab3', 31, 9, 'grunt_m', 'down', ['Our cart\'s wheel keeps getting stuck. The desert doesn\'t like carts.\\pHonestly, the desert doesn\'t seem to like anything.']);
+  M.npc('slab3', 31, 7, 'camper', 'down', ['Our cart\'s wheel keeps getting stuck. The desert doesn\'t like carts.\\pHonestly, the desert doesn\'t seem to like anything.']);
   M.npc('mimi_r4', 39, 11, 'mimi', 'left', null, { hideIf: 'mimi_camp_done', script: function* (c) {
     yield* c.sayT('route4.mimi.1', 'Mimi: {player}! You came through the gate too!\\pI\'m heading for the tent camp. Everyone there sews their own tents,\\pand I want to see how they keep the sand out of the seams. Come find me!');
   } });

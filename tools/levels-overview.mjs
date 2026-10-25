@@ -54,8 +54,9 @@ function makeActors(def) {
     if (!visible(n)) continue;
     list.push({ sortY: n.y * T + T, draw(fb, cx, cy) {
       const spr = A.human(n.look), set = spr.frames[n.dir || 'down'] || spr.frames.down;
-      fb.blendRect(n.x * T - cx + 3, n.y * T - cy + 12, 10, 3, '#000000', 0.22);
-      fb.blit(set[0], n.x * T - cx, n.y * T - 8 - cy);
+      const f = set[0], fx = n.x * T - cx + ((T - f.w) >> 1), fy = n.y * T - cy + T - f.h - 1;   // centred on the tile, feet on its bottom edge
+      fb.blendRect(n.x * T - cx + 3, n.y * T - cy + 13, 10, 3, '#000000', 0.22);
+      fb.blit(f, fx, fy);
     } });
   }
   for (const p of def.props || []) {

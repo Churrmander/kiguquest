@@ -11,13 +11,15 @@
   const M = L.map({
     id: 'route6', name: 'Route 6  Windy Ridge', music: 'route_meadow', battleBg: 'grass', border: 'treeline', w: W, h: H, view: 'street', camera: 1,
     weather: { rain: 25 },
-    legend: { '.': 'grass', T: 'treeline', ',': 'tallgrass', d: 'path', C: 'cliff', l: 'ledge_d', f: 'flowers', n: 'gust_n', s: 'gust_s', e: 'gust_e', w: 'gust_w' },
+    legend: { '.': 'grass', T: 'treeline', ',': 'tallgrass', d: 'path', C: 'cliff_grass', l: 'ledge_d', f: 'flowers', n: 'gust_n', s: 'gust_s', e: 'gust_e', w: 'gust_w' },
   });
   M.rect(0, 0, W, 2, 'T').rect(0, H - 2, W, 2, 'T').rect(0, 0, 2, H, 'T').rect(W - 2, 0, 2, H, 'T');
   M.rect(0, 11, 2, 3, 'd').rect(W - 2, 11, 2, 3, '.');                        // the road in from the city and out to Kite Hill
   // cliffs along the ridge's north and south shoulders
   M.rect(2, 2, 12, 3, 'C').rect(30, 2, 18, 2, 'C').rect(2, 19, 20, 3, 'C').rect(34, 19, 14, 3, 'C');
   // the road: a dirt track along the spine of the ridge
+  // break up the shoulders' straight edges: a few bulges and bites
+  M.rect(33, 4, 4, 1, 'C').rect(41, 3, 3, 1, '.').rect(6, 18, 5, 1, 'C').rect(16, 19, 3, 1, '.').rect(40, 18, 4, 1, 'C');
   M.rect(2, 11, W - 4, 3, 'd');
   // gusts: a band blowing south across the open top (step in from the north, and it carries you down to the road),
   // and another blowing north on the lower slope (it lifts you back up); a cross-wind blowing east at the far end
@@ -31,6 +33,9 @@
   M.stamp('boulder', 5, 5).stamp('boulder', 9, 5);
   M.stamp('windsock', 14, 10).stamp('windsock', 36, 10).stamp('windsock', 46, 14);
   M.trees([[3, 16], [13, 17], [26, 4], [45, 17]]);
+  // a lookout halfway along: a bench, a bed of flowers and a wind-bent tree
+  M.rect(26, 9, 5, 1, 'f').stamp('bench', 28, 10);
+  M.trees([[31, 9]]);
   M.stamp('rock', 23, 10).stamp('bush', 32, 14).stamp('bush', 12, 14);
   M.sign(4, 10, 'ROUTE 6  Windy Ridge\\nWest: Shibuyarn\\nEast: Kite Hill', 'west sign');
   M.sign(45, 10, 'KITE HILL\\nHold on to your hat.', 'east sign');
@@ -51,7 +56,7 @@
     intro: 'Balloon post is down, so I run the letters over the ridge! I\'ve got legs of steel. Battle me!', win: 'Legs of steel, and I\'m the one out of breath. Fair enough.', after: 'The post office on Kite Hill is drowning in letters. Somebody should help them.' });
   M.trainer('r6_t5', 42, 11, 'grunt_f', 'down', { cls: 'Presser', name: 'Batten', sight: 3, reward: 16, ai: 2, music: 'battle_society', team: [['propi', 31], ['coili', 31], ['silkie', 32]],
     intro: 'Kite Hill\'s balloons are grounded for safety, because unscheduled flight is untidy. So is unscheduled walking, frankly.', win: 'Fine. Walk, then. But tidily.', after: 'The notice came straight from the Works. They don\'t want anyone flying over the pass and looking down.' });
-  M.npc('flyer', 22, 3, 'child_m', 'down', ['Whoa! The wind up here blows you right back down to the road!\\pI\'ve been trying to get to the top of the ridge for an hour. It\'s the best ride ever.']);
+  M.npc('flyer', 20, 3, 'child_m', 'down', ['Whoa! The wind up here blows you right back down to the road!\\pI\'ve been trying to get to the top of the ridge for an hour. It\'s the best ride ever.']);
   M.rect(20, 2, 5, 3, '.');
   M.pickup('top', 22, 2, 'gold_spool', 1, 'on the windy top (come in from the west and the gust carries you down)');
   M.pickup('slope', 31, 17, 'thread_ball', 2);

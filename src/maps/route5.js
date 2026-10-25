@@ -25,6 +25,16 @@
   M.rect(3, 40, 6, 5, ';').rect(17, 39, 5, 6, ';').rect(16, 33, 5, 3, ';');
   M.rect(3, 19, 4, 9, ',').rect(15, 8, 7, 5, ',').rect(2, 4, 6, 7, ',').rect(15, 27, 6, 3, ',');
   M.rect(19, 3, 3, 1, 'f').rect(3, 30, 2, 1, 'f');
+  // feather the meadow into the sand: a wavy edge (grass, a sand fringe, then dune) instead of one straight seam
+  for (let x = 2; x < W - 2; x++) {
+    if (x >= 12 && x <= 14) continue;                                       // the road keeps its own surface
+    const g = 36 + Math.round(1.1 * Math.sin(x * 0.7) + 0.6 * Math.sin(x * 1.9 + 1));   // first sand row
+    const d = g + 2 + Math.round(0.8 * Math.sin(x * 1.3 + 2));                        // first dune row
+    for (let y = 33; y < 41; y++) {
+      if (!'.us'.includes(M.at(x, y))) continue;
+      M.set(x, y, y < g ? '.' : y < d ? 's' : 'u');
+    }
+  }
   // the pylons: a line up the east side of the road, every eight rows or so
   for (const [x, y] of [[16, 44], [16, 36], [22, 30], [15, 19], [16, 5]]) M.stamp('pylon', x, y);
   M.trees([[22, 16], [2, 33], [21, 6], [5, 14], [21, 17]]);
@@ -52,7 +62,7 @@
   M.trainer('r5_t6', 14, 26, 'grunt_m', 'up', { cls: 'Presser', name: 'Spool', sight: 3, reward: 15, ai: 2, music: 'battle_society', team: [['coili', 28], ['silkie', 28], ['chippi|nibbi', 29]],
     intro: 'This cable is for maintenance. It\'s very boring maintenance, so there\'s nothing to see here. Please stop looking at it.', win: 'Fine, look at the cable all you like. It\'s just a cable.', after: 'It runs to the city, then down under the station. Why does it go under the station? That\'s classified. Also I don\'t know.' });
 
-  M.npc('lineman', 21, 31, 'hiker', 'left', ['These pylons carry the power to Shibuyarn, and the city uses every bit of it.\\pLately, someone has been tapping into the line before it gets there.']);
+  M.npc('lineman', 20, 31, 'hiker', 'left', ['These pylons carry the power to Shibuyarn, and the city uses every bit of it.\\pLately, someone has been tapping into the line before it gets there.']);
   M.pickup('volt', 21, 27, 'thread_ball', 1);
   M.pickup('cake', 3, 5, 'fancy_cake', 1);
   M.pickup('spool', 18, 41, 'silk_spool', 3);

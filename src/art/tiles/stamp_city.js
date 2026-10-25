@@ -54,11 +54,12 @@
   };
 
   /** glass shop window with a diagonal glint and a dark frame */
-  function glass(b, x, y, w, h) {
+  function glass(b, x, y, w, h, off) {
+    const [g1, g2, g3] = off ? [col('#5a6478'), col('#46506a'), col('#2e3446')] : [P.gl1, P.gl2, P.gl3];   // off: a shop with its power cut
     b.fillRect(x - 1, y - 1, w + 2, h + 2, P.n5);
-    b.fillRect(x, y, w, h, P.gl3);
-    b.fillRect(x, y, w, 1, P.gl1);
-    for (let yy = 0; yy < h; yy++) { const xx = w - 6 - yy; if (xx >= 0) { b.set(x + xx, y + yy, P.gl2); if (xx + 1 < w) b.set(x + xx + 1, y + yy, P.gl2); } }
+    b.fillRect(x, y, w, h, g3);
+    b.fillRect(x, y, w, 1, g1);
+    for (let yy = 0; yy < h; yy++) { const xx = w - 6 - yy; if (xx >= 0) { b.set(x + xx, y + yy, g2); if (xx + 1 < w) b.set(x + xx + 1, y + yy, g2); } }
   }
   /** a sign band across the wall: dark band, rim, letters (lit or unlit), a soft glow line under it when lit */
   function signBand(b, x, y, w, h, s, lit, on) {
@@ -76,16 +77,17 @@
     const name = String(variant || 'konbini').replace(/_off$/, '');
     const on = !/_off$/.test(variant || '');
     const s = SHOPS[name] || SHOPS.konbini;
+    /** sliding glass doors (dark when the power is off) */
+    const shopDoor = (b, x, y, w, h) => {
+      b.fillRect(x - 2, y - 2, w + 4, h + 2, P.n5);
+      glass(b, x, y, w, h, !on);
+      b.vline(x + (w >> 1), y, h, P.n4); b.vline(x + (w >> 1) + 1, y, h, P.n5);
+      b.fillRect(x + (w >> 1) - 3, y + (h >> 1), 2, 4, P.n3); b.fillRect(x + (w >> 1) + 3, y + (h >> 1), 2, 4, P.n3);   // handles
+    };
     return {
       w: 5, h: 4, rise: 40, ramp: K.ramp('gray'), roofTop: 6, roofBottom: 11, inset: 1, doorCol: 2, doorW: 22, doorH: 34,
       wall: { base: s.wall[0], hi: s.wall[1], sh: s.wall[2], dk: s.wall[3] },
-      doorFn: (b, x, y, w, h) => {
-        b.fillRect(x - 2, y - 2, w + 4, h + 2, P.n5);
-        b.fillRect(x, y, w, h, P.gl3);
-        b.vline(x + (w >> 1), y, h, P.n4);
-        b.fillRect(x, y, w, 1, P.gl1);
-        for (let yy = 0; yy < h; yy++) { const xx = 8 - (yy >> 1); if (xx >= 0) b.set(x + xx, y + yy, P.gl2); }
-      },
+      doorFn: shopDoor,
       windows: [],
       extras: (b, ctx) => {
         const { W, H, rb } = ctx;
@@ -101,7 +103,7 @@
         const wins = name === 'flats' ? [8, 32, 56] : [10, 52];
         for (const wx of wins) {
           const ww = name === 'flats' ? 16 : 18;
-          glass(b, wx, rb + 9, ww, 15);
+          glass(b, wx, rb + 9, ww, 15, !on);
           b.fillRect(wx - 2, rb + 25, ww + 4, 2, col(s.wall[3]));
           if (name === 'flats') { for (let x = wx - 1; x < wx + ww + 1; x += 3) b.vline(x, rb + 20, 6, P.n3); b.hline(wx - 2, rb + 20, ww + 4, P.n2); }
         }
@@ -113,15 +115,19 @@
         // the sign band over the ground floor, then the awning and the shopfront
         signBand(b, 5, 52, W - 10, 14, s, s.glow, on);
         if (mode !== '3d') S.awning(b, 6, 67, W - 12, 3, col(s.awn[0]), col(s.awn[1]), [col(s.awn[0]), col(s.awn[1]), col(s.awn[1]), col(s.awn[0])]);
-        glass(b, 6, 74, 22, 24); glass(b, W - 28, 74, 22, 24);
+        glass(b, 6, 74, 22, 24, !on); glass(b, W - 28, 74, 22, 24, !on);
         // what's in the windows
         const goods = { konbini: ['#f06a5a', '#5ab4e8', '#f4d84a'], arcade: ['#ff7ae0', '#6af0ff', '#f4d84a'], fabric: ['#e05450', '#f4c8d8', '#5ab4e8'],
           ramen: ['#f4e4c8', '#c8784a', '#f4e4c8'], toys: ['#f4a8c8', '#8ad8e8', '#f4d84a'], flats: ['#dcdce4', '#c4c8d4', '#dcdce4'] }[name];
         for (const gx of [8, W - 26]) for (let q = 0; q < 3; q++) {
-          const c = col(goods[q]);
-          b.fillRect(gx + 1 + q * 6, 88, 5, 9, c); b.hline(gx + 1 + q * 6, 88, 5, P.p0); b.vline(gx + 5 + q * 6, 89, 8, wsh);
+          const c = on ? col(goods[q]) : col('#4c5266');
+          b.fillRect(gx + 1 + q * 6, 88, 5, 9, c); b.hline(gx + 1 + q * 6, 88, 5, on ? P.p0 : col('#6a7088')); b.vline(gx + 5 + q * 6, 89, 8, wsh);
         }
         b.fillRect(4, 98, W - 8, 2, col(s.wall[3]));
+        // the flat wall above covers the door S.house drew, so put the doors back on top (with the doorstep)
+        const { dx, doorW, doorH } = ctx;
+        shopDoor(b, dx, H - doorH, doorW, doorH);
+        b.fillRect(dx - 2, H - 3, doorW + 4, 3, P.c1); b.fillRect(dx - 2, H - 3, doorW + 4, 1, P.c0); b.fillRect(dx - 2, H - 1, doorW + 4, 1, P.c4);
       },
       outlineExtra: [[[P.gl1, P.gl2, P.gl3], P.gl5], [[P.n1, P.n2, P.n3, P.n4], P.n6]],
     };
@@ -386,7 +392,8 @@
     variants: 3, step: 'stone', encounter: 'grass',
     paint: (m, f, v) => {
       const b = K.B(T, T);
-      for (let i = 0; i < 256; i++) { const x = i & 15, y = i >> 4, n = K.hf(x, y, 911 + v); b.u32[i] = n > 0.88 ? AS[2] : n < 0.3 ? AS[3] : col('#3c3e48'); }
+      // worn grey back-street paving: big square slabs, a few stains (lighter than the road, so it doesn't read as a hole)
+      for (let i = 0; i < 256; i++) { const x = i & 15, y = i >> 4, n = K.hf(x, y, 911 + v); b.u32[i] = (x & 7) === 7 || (y & 7) === 7 ? col('#5c5e68') : (x & 7) === 0 || (y & 7) === 0 ? col('#8a8c96') : n < 0.12 ? col('#62646e') : col('#74767f'); }
       if (v === 0) { b.fillRect(3, 4, 7, 5, col('#b08a5a')); b.hline(3, 4, 7, col('#d0aa78')); b.vline(9, 4, 5, col('#80603c')); b.hline(4, 6, 5, col('#80603c')); }
       if (v === 1) { b.fillRect(9, 9, 3, 4, col('#e05450')); b.hline(9, 9, 3, col('#ff8a70')); b.set(4, 12, col('#f4d84a')); b.set(5, 12, col('#f4d84a')); }
       if (v === 2) { for (let x = 2; x < 14; x++) b.set(x, 7 + ((x >> 2) & 1), col('#2a6a8a')); }

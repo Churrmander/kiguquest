@@ -27,7 +27,6 @@
     c.follow(n);
   }
   function* tuckOut(c) {
-    c.set('tuck_out');
     const n = c.npc('tuck');
     c.unfollow();
     yield* c.face(n, 'up');
@@ -36,6 +35,7 @@
     yield* c.sayT('spark_cellar.tuckout.3', 'Tuck: Pleat Calender is running it, the engineer from the Works. He\'s right at the bottom, with the big machine.\\pHe checks his watch every thirty seconds. I timed it.');
     yield* c.sayT('spark_cellar.tuckout.4', 'Tuck: I\'m going to go home and iron something to calm down. Thank you. Really.');
     yield* c.walk(n, ['left', 1]);
+    c.set('tuck_out');   // set at the end, so the NPC (hideIf this flag) stays on screen for the whole scene
     c.hideNpc('tuck');
   }
   // the echo jokes, once each, while Tuck is following
@@ -145,7 +145,6 @@
     const team = L.team([['coilika|coili', 31], ['glowmira|glowli', 31], ['vendox|vendi', 32], ['silkie', 30]]);
     const won = yield* c.trainerBattle({ cls: 'Pleat', name: 'Calender', look: 'pleat_calender', ai: 3, reward: 40, music: 'battle_admin', team });
     if (!won) { yield* c.sayT('spark_cellar_3.cal.lose', 'Pleat Calender: That took eleven seconds, which is very efficient. Now go and rest, and stay out of my timetable.'); return; }
-    c.set('calender_done');
     yield* c.sayT('spark_cellar_3.cal.5', 'Pleat Calender: ...Nine minutes. That took nine minutes, and that was not in the schedule.');
     yield* c.sayT('spark_cellar_3.cal.6', 'Pleat Calender: Very well. A good engineer knows when a line has failed. I\'m shutting the siphon down.\\pThe Works has other sources. Slower ones, but it will manage.');
     NP.snd.sfx('door');
@@ -154,6 +153,7 @@
     yield* c.sayT('spark_cellar_3.cal.7', 'He pulls a lever on the side of the machine. The hum winds down, the red lamp goes dark,\\pand one by one the jars pop open. Little Glowli tumble out, blinking, and drift away into the tunnels.');
     yield* c.sayT('spark_cellar_3.cal.8', 'Pleat Calender: Someone once told me I\'d miss the important things if I kept looking at my watch.\\p...The ferry was late that day. It doesn\'t matter. Good day to you.');
     yield* c.walk(p, ['right', 3]);
+    c.set('calender_done');   // set at the end, so the NPC (hideIf this flag) stays on screen for the whole scene
     c.hideNpc('calender');
     yield* c.sayT('spark_cellar_3.cal.9', 'Behind the siphon there\'s an old service lift. It creaks, but it still goes up to the station.');
   }
