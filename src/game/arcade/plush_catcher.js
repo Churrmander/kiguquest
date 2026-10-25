@@ -12,14 +12,34 @@
   AR.PLUSHES = ['konko', 'ottopi', 'sprubun', 'mittsy', 'nibbi', 'peepi', 'buzzlet', 'sparkin', 'kumi', 'molli', 'lapinlily', 'daisip', 'silkie', 'ribbi'];
   const plushIds = () => AR.PLUSHES.filter((id) => NP.data.species[id]);
 
-  /** A plush: the Kigu's party icon with a sewn-on tag (and a gold ribbon for the rare golden ones). */
+  // the golden plush ramp: dark outline and eyes stay, everything else is re-dyed by how light it was
+  const GOLD = [0xff10508a, 0xff1878b0, 0xff30a8d8, 0xff70e0f8]; // packed 0xAABBGGRR: #8a5010 #b07818 #d8a830 #f8e070
+  const goldDye = (c) => {
+    if ((c >>> 24) < 128) return c;
+    const l = (c & 255) * 0.3 + ((c >> 8) & 255) * 0.59 + ((c >> 16) & 255) * 0.11;
+    return l < 48 ? c : GOLD[Math.min(3, Math.floor((l - 48) / 40) + (l > 70 ? 1 : 0))];
+  };
+
+  /** A plush: the Kigu's party icon with a sewn-on tag (and a gold dye job and a bow for the rare golden ones). */
   AR.plushBmp = (id, gold) => K.memo('pc.plush.' + id + (gold ? 'g' : ''), () => {
     const ic = K.kiguIcon(id, 0);
     const b = new Bitmap(32, 32);
-    if (ic) b.blit(ic, 0, 0, gold ? { tint: '#f8d048', tintAmt: 0.35 } : undefined);
+    if (ic) b.blit(ic, 0, 0);
+    if (gold) b.mapPixels(goldDye);
     // tag
     b.fillRect(24, 22, 6, 5, '#fff8f0'); b.strokeRect(24, 22, 6, 5, '#a04868'); b.set(26, 24, '#e85888'); b.set(27, 24, '#e85888');
-    if (gold) { b.fillRect(2, 24, 6, 3, '#f8d048'); b.set(4, 27, '#c89020'); b.set(6, 27, '#c89020'); }
+    if (gold) {
+      // a little red hair bow up on the right: two loops and a gold knot
+      const bow = ['kk...kk', 'krkkkrk', 'krRyRrk', 'krkkkrk', 'kk...kk'];
+      const pal = { k: '#581020', r: '#e83848', R: '#a02030', y: '#f8e070' };
+      // pinned where the head starts, so it sits on the hair whatever the icon's height
+      const bb = b.bbox() || { x: 0, y: 0, w: 32 };
+      const bx = Math.min(24, bb.x + bb.w - 10);
+      let top = 0;
+      while (top < 31 && !(b.get(bx + 3, top) >>> 24)) top++;
+      const by = Math.max(0, top - 1);
+      bow.forEach((row, y) => [...row].forEach((ch, x) => { if (ch !== '.') b.set(bx + x, by + y, pal[ch]); }));
+    }
     return b;
   });
 
@@ -27,9 +47,10 @@
     const ids = plushIds();
     const pile = [];
     const spots = [];
-    for (let x = X0 + 2; x < X1 - 28; x += 20) spots.push([x, FLOOR - 30]);
-    for (let x = X0 + 12; x < X1 - 38; x += 22) spots.push([x, FLOOR - 46]);
-    for (let x = X0 + 30; x < X1 - 60; x += 26) spots.push([x, FLOOR - 61]);
+    // loosely stacked so most faces show: about a third of each plush tucks behind its neighbours
+    for (let x = X0 + 2; x < X1 - 28; x += 24) spots.push([x, FLOOR - 30]);
+    for (let x = X0 + 14; x < X1 - 40; x += 26) spots.push([x, FLOOR - 50]);
+    for (let x = X0 + 34; x < X1 - 62; x += 30) spots.push([x, FLOOR - 69]);
     for (const [x, y] of spots) {
       const id = ids[K.rand(ids.length)];
       pile.push({ id, x: x + K.rand(5) - 2, y, gold: K.chance(0.06) });
@@ -131,12 +152,13 @@
 
   // ------------------------------------------------------------------------------------------- drawing
   function cabinet(fb, t) {
-    // the glass case: pink frame, starry back panel, a light strip that chases round the top
+    // the glass case: pink frame, a soft lavender back panel with light glancing off the glass, a light strip that chases round the top
     fb.clear('#2a1838');
     fb.fillRect(6, 14, NP.W - 12, NP.H - 14, '#f088b8');
-    fb.fillRect(10, 18, NP.W - 20, NP.H - 18, '#3a2858');
-    for (let y = 18; y < FLOOR; y += 2) fb.hline(10, y, NP.W - 20, y < 90 ? '#3a2858' : '#42305e');
-    K.speckle(fb, 3, 50, ['#f8d8f0', '#c8a8e8'], 20, 120, 0);
+    fb.fillRect(10, 18, NP.W - 20, NP.H - 18, '#b8a0d8');
+    fb.fillRect(10, 18, NP.W - 20, 6, '#a088c8');
+    for (let y = 120; y < FLOOR; y++) if (y & 1) fb.hline(10, y, NP.W - 20, '#a890d0');
+    for (const [gx, gw] of [[150, 6], [160, 3], [190, 4]]) for (let i = 0; i < 70; i++) fb.hline(gx + i, 30 + i, Math.min(gw, NP.W - 10 - gx - i), '#d0c0e8');
     for (let i = 0; i < 30; i++) { const x = 12 + i * 8; fb.fillRect(x, 15, 4, 2, ((i + (t >> 3)) % 4) === 0 ? '#fff8a0' : '#c05888'); }
     // the top rail
     fb.fillRect(10, RAIL - 4, NP.W - 20, 3, '#a8b0c8'); fb.hline(10, RAIL - 4, NP.W - 20, '#e8ecf8');
@@ -153,20 +175,24 @@
 
   function claw(fb, x, y, open) {
     x = Math.round(x); y = Math.round(y);
-    fb.vline(x, RAIL - 1, y - RAIL - 4, '#d0d4e0'); fb.vline(x + 1, RAIL - 1, y - RAIL - 4, '#8890a8');
-    fb.fillRect(x - 8, RAIL - 2, 18, 5, '#707890'); fb.hline(x - 8, RAIL - 2, 18, '#b0b8c8');
-    // hub
-    fb.fillRect(x - 7, y - 6, 16, 8, '#505868'); fb.fillRect(x - 6, y - 5, 14, 6, '#c8ccd8'); fb.hline(x - 5, y - 4, 12, '#f0f4ff');
-    fb.fillRect(x - 1, y - 3, 4, 3, '#e85888');
-    // three prongs: two outer arms that open and close, a short middle one
-    const spread = Math.round(4 + open * 8);
+    fb.vline(x, RAIL - 1, y - RAIL - 6, '#d0d4e0'); fb.vline(x + 1, RAIL - 1, y - RAIL - 6, '#8890a8');
+    fb.fillRect(x - 9, RAIL - 2, 20, 5, '#707890'); fb.hline(x - 9, RAIL - 2, 20, '#b0b8c8');
+    // hub, 20 wide
+    fb.fillRect(x - 9, y - 8, 20, 10, '#383c48'); fb.fillRect(x - 8, y - 7, 18, 8, '#c8ccd8'); fb.hline(x - 7, y - 6, 16, '#f0f4ff');
+    fb.hline(x - 8, y, 18, '#8890a8');
+    fb.fillRect(x - 1, y - 5, 4, 3, '#e85888'); fb.set(x - 1, y - 5, '#f8a8c8');
+    // three prongs: two outer arms that open and close (two joints, 8px segments), a short middle one
+    const spread = Math.round(5 + open * 10);
     for (const s of [-1, 1]) {
-      const bx = x + (s < 0 ? -5 : 6), kx = x + (s < 0 ? -spread : spread + 1), ky = y + 9, tx = x + (s < 0 ? -Math.max(2, spread - 6) : Math.max(3, spread - 5)), ty = y + 17;
-      for (const [ax, ay, cx, cy, col] of [[bx, y + 2, kx, ky, '#383c48'], [kx, ky, tx, ty, '#383c48']]) { fb.line(ax, ay, cx, cy, col); fb.line(ax + 1, ay, cx + 1, cy, col); }
+      const bx = x + (s < 0 ? -6 : 7), kx = x + (s < 0 ? -spread : spread + 1), ky = y + 10;
+      const tx = x + (s < 0 ? -Math.max(2, spread - 8) : Math.max(3, spread - 7)), ty = y + 20;
+      for (const [ax, ay, cx, cy] of [[bx, y + 2, kx, ky], [kx, ky, tx, ty]]) { fb.line(ax, ay, cx, cy, '#383c48'); fb.line(ax + 1, ay, cx + 1, cy, '#383c48'); fb.line(ax - s, ay, cx - s, cy, '#383c48'); }
       fb.line(bx, y + 1, kx, ky - 1, '#e0e4f0'); fb.line(kx, ky - 1, tx, ty - 1, '#b8c0d0');
-      fb.fillRect(kx - 1, ky - 1, 3, 3, '#808898');
+      fb.fillRect(kx - 1, ky - 1, 3, 3, '#808898'); fb.set(kx, ky - 1, '#c8ccd8');
+      // a little hooked tip
+      fb.set(tx + (s < 0 ? 1 : 0), ty + 1, '#383c48'); fb.set(tx + (s < 0 ? 2 : -1), ty + 1, '#383c48');
     }
-    fb.fillRect(x, y + 2, 2, 6, '#808898');
+    fb.fillRect(x, y + 2, 2, 8, '#808898'); fb.vline(x, y + 2, 8, '#c8ccd8');
   }
 
   function draw(g, fb, t) {
@@ -190,7 +216,7 @@
     if (!AR.pile || !AR.pile.length) AR.pile = newPile();
     cabinet(fb, t);
     for (const p of AR.pile.slice().sort((a, b) => a.y - b.y)) fb.blit(AR.plushBmp(p.id, p.gold), Math.round(p.x), Math.round(p.y));
-    claw(fb, 64 + Math.sin(t / 40) * 40, RAIL + 20, 1);
+    claw(fb, X1 - 22, RAIL + 14, 1);
     fb.blendRect(40, 40, 176, 50, '#100820', 0.75);
     K.center(fb, 'PLUSH CATCHER', 46, '#f8a8d0');
     K.center(fb, 'Win a plush for your Tailor Card shelf!', 62, '#f8f8f8');

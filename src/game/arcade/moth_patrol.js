@@ -15,9 +15,9 @@
     '..k..........k..',
     '.kok........kok.',
     '.kOok.kkkk.kooOk',
-    '.kOoookooookoook',
-    '..kooooooooooook',
-    '..kowssssssswok.',
+    '.kOoookooookoOOk',
+    '..kooooooooooOOk',
+    '..kowssssssswOk.',
     '..kossesssesosk.',
     '..kosshsssheosk.',
     '...kspssssspsk..',
@@ -219,12 +219,16 @@
   }
 
   // ------------------------------------------------------------------------------------------- drawing
-  function backdrop(fb, t) {
+  function backdrop(fb, t, title) {
     fb.clear('#100c28');
     for (let y = 13; y < 120; y += 2) fb.hline(0, y, NP.W, y < 60 ? '#120e2c' : y < 90 ? '#18123a' : '#22164a');
     K.speckle(fb, 7, 60, ['#f8f8ff', '#a0a8e0', '#6870b0'], 14, 110, 0);
     // moon with a stitched seam across it
-    fb.circle(214, 34, 11, '#f8f0c8', true); fb.circle(218, 31, 9, '#100c28', true);
+    // (a crescent drawn pixel by pixel so the sky stripes show through the cut, up in the corner clear of the moths)
+    for (let y = -8; y <= 8; y++) for (let x = -8; x <= 8; x++) {
+      if (x * x + y * y > 64 || (x - 4) * (x - 4) + (y + 3) * (y + 3) <= 44) continue;
+      fb.set(240 + x, 24 + y, x * x + y * y > 49 ? '#d8c890' : '#f8f0c8');
+    }
     // Shibuyarn rooftops
     const roofs = [[0, 132, 30], [28, 120, 22], [48, 128, 34], [80, 112, 18], [96, 124, 30], [124, 116, 26], [148, 130, 30], [176, 108, 20], [194, 122, 32], [224, 114, 32]];
     for (const [x, y, w] of roofs) {
@@ -232,10 +236,14 @@
       fb.hline(x, y, w, '#2c2850');
       for (let wy = y + 5; wy < GROUND - 6; wy += 8) for (let wx = x + 3; wx < x + w - 4; wx += 6) if (((wx * 7 + wy * 3) % 5) < 2) fb.fillRect(wx, wy, 2, 3, ((wx + wy + (t >> 6)) % 7) ? '#f8d070' : '#584870');
     }
-    // neon sign on a roof
-    const on = ((t >> 4) % 9) !== 0;
-    fb.strokeRect(174, 92, 30, 13, on ? '#f878c8' : '#583050');
-    K.text(fb, 'YARN', 189, 94, on ? '#78f0f8' : '#285060', { align: 'center' });
+    // neon sign standing on the low roof, under the moths' lanes (hidden behind the title text)
+    if (!title) {
+      const on = ((t >> 4) % 9) !== 0;
+      fb.vline(153, 128, 2, '#2c2850'); fb.vline(172, 128, 2, '#2c2850');
+      fb.fillRect(149, 116, 28, 12, '#1a1030');
+      fb.strokeRect(149, 116, 28, 12, on ? '#f878c8' : '#583050');
+      K.text(fb, 'YARN', 163, 118, on ? '#78f0f8' : '#285060', { align: 'center' });
+    }
     // ground: the wardrobe shelf
     fb.fillRect(0, GROUND, NP.W, NP.H - GROUND, '#5a3820');
     fb.hline(0, GROUND, NP.W, '#a87040');
@@ -243,7 +251,7 @@
   }
 
   function draw(g, fb, t) {
-    backdrop(fb, t);
+    backdrop(fb, t, g.over);
     for (const b of g.bolts) fb.blit(b.bmp, b.x, b.y);
     for (const m of g.moths) if (m.alive) fb.blit(moth(m.kind, g.frame), m.x, m.y);
     if (g.bunny) fb.blit(BUNNY(), Math.round(g.bunny.x), 16 + (((t >> 4) & 1) ? 1 : 0));
@@ -259,15 +267,16 @@
   }
 
   function drawTitle(fb, t) {
-    backdrop(fb, t);
+    backdrop(fb, t, true);
     fb.blendRect(0, 0, NP.W, NP.H, '#000010', 0.25);
     K.center(fb, 'MOTH PATROL', 26, '#a8f0c8');
     K.center(fb, 'Keep the moths out of the wardrobe!', 44, '#f8f8f8');
     const kinds = ['luna', 'tiger', 'dust'];
     kinds.forEach((k, i) => { fb.blit(moth(k, (t >> 4) & 1), 88, 64 + i * 15); K.text(fb, '= ' + MOTHS[k].pts + ' pts', 106, 65 + i * 15, '#f8f8f8'); });
     fb.blit(BUNNY(), 84, 108); K.text(fb, '= ???', 106, 110, '#f8f8f8');
-    K.center(fb, 'Left/Right move   A fire   Start pause', 132, '#a8a0c8');
-    fb.blit(kigu(), 120, PY - 12 + (((t >> 3) & 1) ? 0 : 1));
+    fb.blendRect(0, 122, NP.W, 11, '#08061a', 0.7);
+    K.center(fb, 'Left/Right move   A fire   Start pause', 124, '#a8a0c8');
+    fb.blit(kigu(), 120, 138 + (((t >> 3) & 1) ? 0 : 1));
   }
 
   AR.register('cab_1', {

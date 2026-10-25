@@ -19,7 +19,7 @@
   const CABS = [['cab_1', 'moth', 1, 1, false], ['cab_2', 'button', 2, 1, true], ['cab_3', 'steam', 3, 1, true], ['platformer', 'hop', 4, 1, true],
     ['cab_1', 'moth', 3, 5, false], ['platformer', 'hop', 4, 5, true]];
   for (const [id, art, x, y, needsPower] of CABS) {
-    if (needsPower) M.def.stamps.push(L.variantByFlag({ id: 'arcade_cab', x, y }, LIGHTS, 'off', art));
+    if (needsPower) M.def.stamps.push(L.variantByFlag({ id: 'arcade_cab', x, y }, LIGHTS, art + '_off', art));
     else M.stamp('arcade_cab', x, y, art);
     M.interact(x, y + 1, function* (c) { yield* c.arcade(id); }, 'cabinet: ' + id);
   }

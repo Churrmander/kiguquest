@@ -28,8 +28,17 @@
       if ((h & 511) === 300) return '#ffffff';
       return '#1c2858';
     },
-    gold: (x, y) => ((x + y) % 6 === 0 || (x - y + 600) % 6 === 0 ? '#d8a830' : '#fff4dc'),
+    gold: (x, y, w, h) => {
+      // a solid gold rim (dark line outside, bright line catching the light) round a fine gold lattice
+      const edge = Math.min(x, y, w - 1 - x, h - 1 - y);
+      if (edge === 0) return '#8a5a10';
+      if (edge === 1) return '#f8e070';
+      if (edge === 2) return '#d8a830';
+      return (x + y) % 6 === 0 || (x - y + 600) % 6 === 0 ? '#d8a830' : '#fff4dc';
+    },
   };
+  /** Each design also tints the card's body a shade, so the whole card looks different, not only its edge. */
+  const TINTS = { gingham: '#fff0f0', denim: '#eaf0fa', patchwork: '#fdf6e6', neon: '#f3ecfb', starry: '#e9edf8', gold: '#fff6dc' };
 
   /** Fill a rectangle with a card design (used for the swatch at the prize counter and the card border). */
   AR.drawCardSwatch = function (fb, id, x, y, w, h) {
@@ -46,6 +55,7 @@
     if (id === 'plain' || !PATTERNS[id]) return { x, y, w, h };
     const band = 4, f = PATTERNS[id];
     const bx = x + 3, by = y + 3, bw = w - 6, bh = h - 6;
+    if (TINTS[id]) fb.fillRect(bx + band, by + band, bw - band * 2, bh - band * 2, TINTS[id]);
     const bmp = K.memo('card.' + id + bw + 'x' + bh, () => {
       const b = new Bitmap(bw, bh);
       for (let j = 0; j < bh; j++) for (let i = 0; i < bw; i++) {

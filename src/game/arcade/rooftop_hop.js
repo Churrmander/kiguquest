@@ -72,56 +72,56 @@
   const solid = (c) => c === '#' || c === '=' || c === 'T' || c === '?' || c === 'x';
 
   // ------------------------------------------------------------------------------------------- sprites
-  const HERO_PAL = { k: '#2a1810', o: '#f08838', O: '#c05818', w: '#fff4e0', s: '#f8d0b0', e: '#302040', p: '#f8a0b0', h: '#ffffff', y: '#f8d048' };
+  const HERO_PAL = { k: '#2a1810', o: '#f08838', O: '#c05818', h: '#5a3020', w: '#fff4e0', s: '#f8d0b0', e: '#302040', p: '#f8a0b0', y: '#f8d048' };
   const HEAD = [
-    '...k..........k.',
-    '..kok........kok',
-    '..kOok.kkkk.kooO',
-    '..kOoookooookoook',
-    '...kooooooooooook',
-    '...kowssssssswok',
-    '...kossesssesosk',
-    '...kosshsssheosk',
-    '....kspssssspsk.',
-  ].map((r) => r.slice(0, 16));
+    '...k........k...',
+    '..kok......kok..',
+    '..kOok.kk.koOk..',
+    '..kOooooooooOk..',
+    '..koohhhhhhoOk..',
+    '..kohsssssshOk..',
+    '..kosesssesoOk..',
+    '..kosesssesoOk..',
+    '...kpssssssspk..',
+  ];
   const BODIES = {
     stand: [
-      '....kkooooookk..',
-      '...kooowwwwoook.',
+      '....kkoooooOkk..',
+      '...kooowwwwooOk.',
       '.kkksoowwwwoosk.',
-      'kooOkkoowwwookk.',
-      'kooook.oooook...',
-      '.kkk..koooook...',
+      'kooOkkoowwwoOkk.',
+      'kooook.ooooOk...',
+      '.kkk..kooooOk...',
       '......kOk.kOk...',
       '.....kOOk.kOOk..',
       '.....kkk..kkkk..'],
     run1: [
-      '....kkooooookk..',
-      '...kooowwwwoook.',
+      '....kkoooooOkk..',
+      '...kooowwwwooOk.',
       '.kkksoowwwwoosk.',
-      'kooOkkoowwwookk.',
-      'kooook.ooooook..',
-      '.kkk..kooookOk..',
+      'kooOkkoowwwoOkk.',
+      'kooook.oooooOk..',
+      '.kkk..koooOkOk..',
       '.....kOOk..kOOk.',
       '....kOOk....kk..',
       '....kkk.........'],
     run2: [
-      '....kkooooookk..',
-      '...kooowwwwoook.',
+      '....kkoooooOkk..',
+      '...kooowwwwooOk.',
       '.kkksoowwwwoosk.',
-      'kooOkkoowwwookk.',
-      'kooook.oooook...',
+      'kooOkkoowwwoOkk.',
+      'kooook.ooooOk...',
       '.kkk...kOooOk...',
       '.......kOkOk....',
       '......kOOkOOk...',
       '......kkk.kkk...'],
     jump: [
-      '..s.kkooooookk.s',
-      '..kkooowwwwoookk',
-      '....koowwwwook..',
-      '.kkkkkoowwwook..',
-      'kooOk.ooooook...',
-      'kooookkOk.kOk...',
+      '..kkkkoooooOkkk.',
+      '.ksoooowwwwooOsk',
+      '.kk.koowwwwoOkk.',
+      '.kkkkkoowwwoOk..',
+      'kooOk.oooooOk...',
+      'koooOkkOk.kOk...',
       '.kkk..kOOkkOOk..',
       '.......kk..kk...',
       '................'],
@@ -144,7 +144,7 @@
         b.fillRect(0, 0, TS, TS, wall[0]);
         for (let y = 3; y < TS; y += 5) b.hline(0, y, TS, wall[1]);
         for (let y = 0; y < TS; y += 5) b.vline(((y / 5) & 1) ? 4 : 11, y, 3, wall[1]);
-        if (variant % 3 === 1) { b.fillRect(4, 4, 8, 7, night ? '#f8d070' : '#78a0c8'); b.strokeRect(3, 3, 10, 9, night ? '#584070' : '#706050'); b.vline(8, 4, 7, night ? '#c89850' : '#5880a8'); }
+        if (c === '#' && variant % 3 === 1) { b.fillRect(4, 4, 8, 7, night ? '#f8d070' : '#78a0c8'); b.strokeRect(3, 3, 10, 9, night ? '#584070' : '#706050'); b.vline(8, 4, 7, night ? '#c89850' : '#5880a8'); }
         if (c === '=') {
           b.fillRect(0, 0, TS, 4, night ? '#68609a' : '#f0e8d8');
           b.hline(0, 0, TS, night ? '#9890c8' : '#ffffff');
@@ -155,8 +155,15 @@
         b.vline(4, 0, TS, '#7898b0'); b.hline(1, (variant & 1) ? 12 : 4, 14, '#30485a');
       } else if (c === '?' || c === 'x') {
         b.fillRect(0, 0, TS, TS, '#6a3a18'); b.fillRect(1, 1, 14, 14, c === 'x' ? '#8a6a48' : '#c88848');
-        b.hline(1, 1, 14, c === 'x' ? '#a08060' : '#f0b870');
-        if (c === '?') { b.fillRect(5, 4, 6, 8, '#f8f0d8'); b.fillRect(4, 4, 8, 2, '#a85020'); b.fillRect(4, 10, 8, 2, '#a85020'); b.fillRect(5, 6, 6, 4, '#e84860'); }
+        b.hline(1, 1, 14, c === 'x' ? '#a08060' : '#f0b870'); b.vline(1, 1, 14, c === 'x' ? '#a08060' : '#f0b870');
+        b.hline(1, 14, 14, c === 'x' ? '#6a4a30' : '#a86830'); b.vline(14, 1, 14, c === 'x' ? '#6a4a30' : '#a86830');
+        if (c === '?') {
+          // a big sewing button stitched onto the crate: four holes and a cream thread cross
+          b.circle(8, 8, 5, '#802030', true); b.circle(8, 8, 4, '#e84860', true);
+          b.set(6, 5, '#f8a0b0'); b.set(5, 6, '#f8a0b0'); b.set(7, 5, '#f8a0b0');
+          for (const [hx, hy] of [[6, 6], [9, 6], [6, 9], [9, 9]]) b.fillRect(hx, hy, 2, 2, '#501020');
+          b.line(7, 7, 9, 9, '#fff4dc'); b.line(9, 7, 7, 9, '#fff4dc');
+        }
       } else if (c === '-') {
         // shop awning: red and cream stripes with a scalloped hem
         for (let x = 0; x < TS; x++) b.vline(x, 0, 5, ((x >> 2) & 1) ? '#f8f0e0' : '#d83848');
@@ -317,6 +324,9 @@
     for (let i = -1; i < 22; i++) {
       const bx = farX % 40 + i * 20, h = 30 + ((i * 37 + 11) % 5) * 9 + (((i - Math.floor(farX / 40) * 2) * 13) % 3) * 4;
       fb.fillRect(bx, 150 - h, 18, h + 50, def.far);
+      // a lighter roof cap and a sparse grid of windows one shade darker
+      fb.blendRect(bx, 150 - h, 18, 1, '#ffffff', 0.25);
+      for (let wy = 154 - h; wy < 150; wy += 6) for (let wx = bx + 3; wx < bx + 16; wx += 4) if (((wx - farX + wy * 5) % 3) !== 0) fb.blendRect(wx, wy, 1, 2, '#101030', 0.16);
     }
     for (let i = -1; i < 14; i++) {
       const k = i - Math.floor(nearX / 52) * 2;
@@ -332,9 +342,17 @@
     const c0 = Math.floor(g.cam / TS), night = !!st.def.night;
     for (let r = 0; r < ROWS; r++) for (let c = c0; c <= c0 + 17 && c < st.w; c++) {
       const ch = st.grid[r][c];
-      if (ch !== ' ') fb.blit(tileBmp(ch, night, (c * 7 + r * 3) % 5), c * TS - g.cam, OY + r * TS);
+      if (ch === ' ') continue;
+      const x = c * TS - g.cam, y = OY + r * TS;
+      fb.blit(tileBmp(ch, night, (c * 7 + r * 3) % 5), x, y);
+      // the side walls where a roof ends at a gap: a dark edge and a strip of shade
+      if (ch === '#' || ch === '=') {
+        if (c + 1 < st.w && st.grid[r][c + 1] === ' ') { fb.fillRect(x + 13, y, 2, TS, night ? '#241c44' : '#8a7a6a'); fb.vline(x + 15, y, TS, '#201830'); }
+        if (c > 0 && st.grid[r][c - 1] === ' ') fb.vline(x, y, TS, '#201830');
+      }
     }
     fb.blit(goalBmp(t), st.goalX - g.cam - 4, OY + 8 * TS - 48);
+    if (g.over) return; // the results card sits on a quiet scene: no pickups, foes or pops showing through
     for (const c of st.coins) if (!c.got) fb.blit(BTN(((t + c.x) >> 4) & 1 && ((t + c.x) & 15) < 4 ? 1 : 0), c.x - g.cam, c.y);
     for (const f of st.foes) {
       if (f.y > NP.H) continue;
@@ -364,10 +382,10 @@
     const st = buildStage(STAGES[0]);
     skyline(fb, st.def, 0, t);
     for (let r = 0; r < ROWS; r++) for (let c = 0; c < 17; c++) { const ch = st.grid[r][c]; if (ch !== ' ') fb.blit(tileBmp(ch, false, (c * 7 + r * 3) % 5), c * TS, OY + r * TS); }
-    fb.blendRect(0, 14, NP.W, 64, '#101028', 0.55);
-    K.center(fb, 'ROOFTOP HOP', 24, '#f8b048');
-    K.center(fb, 'Run across Shibuyarn and reach the GOAL sign!', 40, '#f8f8f8');
-    K.center(fb, 'A jump   B hold to run   hop on lint bunnies', 56, '#a8a0c8');
+    fb.fillRect(0, 14, NP.W, 54, '#101028'); fb.hline(0, 67, NP.W, '#3a3a6a');
+    K.center(fb, 'ROOFTOP HOP', 22, '#f8b048');
+    K.center(fb, 'Run across Shibuyarn and reach the GOAL sign!', 38, '#f8f8f8');
+    K.center(fb, 'A jump   B hold to run   hop on lint bunnies', 52, '#a8a0c8');
     fb.blit(hero((t >> 4) & 1 ? 'run1' : 'run2'), 60, OY + 8 * TS - 18);
     fb.blit(BUNNY(), 150, OY + 8 * TS - 11);
   }

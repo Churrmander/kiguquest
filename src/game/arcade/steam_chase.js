@@ -45,47 +45,43 @@
   // ------------------------------------------------------------------------------------------- sprites
   // Woolly: a round Kigu girl in a fleecy sheep hood, mouth open / shut, drawn facing right (flipped / turned for the others)
   const WOOL = { k: '#3a2c3a', w: '#fffaf0', W: '#d8d0d8', s: '#f8d0b0', e: '#302040', p: '#f898a8', m: '#a02840', h: '#8a6a50' };
+  // 12x10: wool scallops along the top of the hood and a little pink ear poking out each side
   const WOOLLY = [
-    ['...kkkkkk...',
-     '..kwWwwWwk..',
-     '.kwwwwwwwwk.',
-     'kwWkhhhhkwWk',
-     'kwkssssssskw',
-     'kwksesssesk.',
-     'kwkssssssskw',
-     'kwkpsmmmspkw',
-     'kwWkssmsskWk',
-     '.kwwkkkkkwk.',
+    ['..kk.kk.kk..',
+     '.kwWkwWkwWk.',
+     '.kwWkkkkwWk.',
+     'kpwkssssswpk',
+     'kpwksesesWpk',
+     '.kwkpssspwk.',
+     '.kwksssmswk.',
+     '.kWwkkkkwWk.',
      '..kwWwwWwk..',
      '...kkkkkk...'],
-    ['...kkkkkk...',
-     '..kwWwwWwk..',
-     '.kwwwwwwwwk.',
-     'kwWkhhhhkwWk',
-     'kwkssssssskw',
-     'kwksesssesk.',
-     'kwksssssskk.',
-     'kwkpssmm....',
-     'kwWkssmmm...',
-     '.kwwkkkkkk..',
+    ['..kk.kk.kk..',
+     '.kwWkwWkwWk.',
+     '.kwWkkkkwWk.',
+     'kpwksssssk..',
+     'kpwksesk....',
+     '.kwkpsk.....',
+     '.kwksssk....',
+     '.kWwkkkkkk..',
      '..kwWwwWwk..',
      '...kkkkkk...'],
   ];
   const woolly = (f) => K.spr('sc.w' + f, WOOLLY[f], WOOL);
   // steam iron, 12x12, facing right; the four irons share it in four colourways
+  // steam iron seen from the side, 10x10, nose to the right: handle on top, flat sole, point at the front
   const IRON_ROWS = [
-    '....kkkk....',
-    '...khhhhk...',
-    '..kh....hk..',
-    '..kkkkkkkk..',
-    '.kbbbbbbbbk.',
-    'kbbwekbwekbk',
-    'kbbwkkbwkkbk',
-    'kbbbbbbbbbbk',
-    'kBBBBBBBBBBk',
-    'kssssssssssk',
-    '.kssssssssk.',
-    '..kkkkkkkk..',
+    '.kkkkk....',
+    'kh...hk...',
+    'kkkkkkkk..',
+    'klbbbbbbk.',
+    'klwebwebk.',
+    'kbwkbwkbbk',
+    'kbbbbbbbbk',
+    'kBBBBBBBBk',
+    'ksssssssk.',
+    '.kkkkkkk..',
   ];
   const IRONS = [
     { name: 'Crease', b: '#e8f0ff', B: '#98a8d8' },
@@ -94,10 +90,10 @@
     { name: 'Serge', b: '#f8c0d0', B: '#c87890' },
   ];
   const ironBmp = (i, cool, flash) => K.spr('sc.i' + i + (cool ? (flash ? 'f' : 'c') : ''), IRON_ROWS, {
-    k: '#1c2038', h: '#506080', s: '#d8e0f0', w: '#ffffff', e: '#202848',
+    k: '#1c2038', h: '#506080', s: '#d8e0f0', w: '#ffffff', e: '#202848', l: cool ? '#c8fff0' : '#ffffff',
     b: cool ? (flash ? '#ffffff' : '#78d8c8') : IRONS[i].b, B: cool ? (flash ? '#f8c8c8' : '#38a090') : IRONS[i].B,
   });
-  const EYES = () => K.spr('sc.eyes', ['.ww..ww.', 'wwkwwwkw', '.ww..ww.'], { w: '#ffffff', k: '#202848' });
+  const EYES = () => K.spr('sc.eyes', ['.ww.ww.', 'wwkwwkw', '.ww.ww.'], { w: '#ffffff', k: '#202848' });
   const RINSE = () => K.spr('sc.rinse', ['..kk..', '.kwwk.', '.kbbk.', 'kbbbbk', 'kbwbbk', 'kbbbbk', '.kkkk.'], { k: '#1c3048', w: '#ffffff', b: '#78c8f8' });
   const MACARON = () => K.spr('sc.mac', ['..kkkk..', '.kppppk.', 'kppppppk', 'kcccccck', 'kppppppk', '.kkkkkk.'], { k: '#6a2840', p: '#f8a8c8', c: '#fff4e0' });
 
@@ -109,10 +105,10 @@
       // felt walls with a stitched edge where they meet the floor
       b.fillRect(x * T, y * T, T, T, '#5a2c78');
       for (let i = 0; i < T; i++) {
-        if (!wall(x, y - 1)) { b.set(x * T + i, y * T, '#b070e0'); if (i % 3 === 1) b.set(x * T + i, y * T + 2, '#f8d8ff'); }
-        if (!wall(x, y + 1)) { b.set(x * T + i, y * T + T - 1, '#2a1240'); if (i % 3 === 1) b.set(x * T + i, y * T + T - 3, '#f8d8ff'); }
-        if (!wall(x - 1, y)) { b.set(x * T, y * T + i, '#9858c8'); if (i % 3 === 1) b.set(x * T + 2, y * T + i, '#f8d8ff'); }
-        if (!wall(x + 1, y)) { b.set(x * T + T - 1, y * T + i, '#3a1858'); if (i % 3 === 1) b.set(x * T + T - 3, y * T + i, '#f8d8ff'); }
+        if (!wall(x, y - 1)) { b.set(x * T + i, y * T, '#b070e0'); if (i % 4 === 1) b.set(x * T + i, y * T + 2, '#d8b0f0'); }
+        if (!wall(x, y + 1)) b.set(x * T + i, y * T + T - 1, '#2a1240');
+        if (!wall(x - 1, y)) b.set(x * T, y * T + i, '#9858c8');
+        if (!wall(x + 1, y)) b.set(x * T + T - 1, y * T + i, '#3a1858');
       }
     }
     // the ironing board (iron home) and its gate
@@ -287,22 +283,21 @@
       else if (b === 2 && ((t >> 3) & 1)) fb.blit(RINSE(), OX + x * T + 1, OY + y * T);
     }
     if (g.macaron) fb.blit(MACARON(), OX + 13 * T + 4, OY + 12 * T + 1);
+    if (g.over) return; // keep the results card clear: just the maze behind it
     for (const r of g.irons) {
       const [x, y] = r.mode === 'home' ? [OX + (11 + r.i * 2) * T, OY + 10 * T + 4 + (((r.bob || 0) >> 4) & 1)] : pos(r);
-      if (r.eyes) { fb.blit(EYES(), x - 4, y - 2); continue; }
+      if (r.eyes) { fb.blit(EYES(), x - 3, y - 1); continue; }
       const cool = r.cooled && g.cool > 0, flash = cool && g.cool < 120 && ((t >> 3) & 1);
       const bmp = ironBmp(r.i, cool, flash);
-      fb.blit(bmp, x - 6, y - 6, { flipX: r.dir === 'left' });
+      fb.blit(bmp, x - 5, y - 5, { flipX: r.dir === 'left' });
       // a puff of steam now and then
-      if (!cool && ((t + r.i * 13) % 40) < 8) fb.set(x - 1 + ((t >> 2) & 1), y - 9, '#d8e0f0');
+      if (!cool && ((t + r.i * 13) % 40) < 8) fb.set(x + (r.dir === 'left' ? -3 : 3) + ((t >> 2) & 1), y - 6, '#d8e0f0');
     }
     if (g.dying === 0 || g.dying > 60 || (g.dying & 4)) {
       const p = g.p, [x, y] = pos(p);
       const f = g.dying ? 0 : (p.mouth >> 3) & 1;
       const b = woolly(f);
-      if (p.dir === 'left') fb.blit(b, x - 6, y - 6, { flipX: true });
-      else if (p.dir === 'up' || p.dir === 'down') fb.blit(b, x - 6, y - 6, { flipX: p.dir === 'up' });
-      else fb.blit(b, x - 6, y - 6);
+      fb.blit(b, x - 6, y - 5, { flipX: p.dir === 'left' || p.dir === 'up' });
     }
     for (const p of g.pops) K.text(fb, p.txt, p.x, p.y - 6, '#78f0f8', { align: 'center' });
     if (g.ready > 0) K.text(fb, 'READY!', OX + 14 * T, OY + 12 * T - 2, '#f8d048', { align: 'center' });
@@ -312,19 +307,20 @@
   function drawTitle(fb, t) {
     fb.clear('#120c20');
     fb.blit(mazeBmp(), OX, OY);
-    fb.blendRect(0, 0, NP.W, NP.H, '#120c20', 0.7);
+    fb.blendRect(0, 0, NP.W, NP.H, '#120c20', 0.82);
+    fb.fillRect(60, 52, 168, 66, '#1c1430'); fb.strokeRect(60, 52, 168, 66, '#5a2c78');
     K.center(fb, 'STEAM CHASE', 24, '#78d8f8');
     K.center(fb, 'Gobble every thread bead. Dodge the irons!', 40, '#f8f8f8');
-    IRONS.forEach((d, i) => { fb.blit(ironBmp(i), 74, 58 + i * 15); K.text(fb, d.name, 92, 59 + i * 15, d.b); });
-    fb.blit(RINSE(), 146, 60); K.text(fb, 'Soft Rinse', 156, 59, '#78c8f8');
-    fb.blit(ironBmp(0, true), 147, 74); K.text(fb, '= cool, bump it!', 162, 74, '#78d8c8');
+    IRONS.forEach((d, i) => { fb.blit(ironBmp(i), 70, 57 + i * 15); K.text(fb, d.name, 86, 57 + i * 15, d.b); });
+    fb.blit(RINSE(), 142, 58); K.text(fb, 'Soft Rinse', 156, 57, '#78c8f8');
+    fb.blit(ironBmp(0, true), 140, 72); K.text(fb, '= bump it!', 156, 72, '#78d8c8');
     fb.blit(woolly((t >> 3) & 1), 122, 124);
     K.center(fb, 'D-pad steer   Start pause', 144, '#a8a0c8');
   }
 
   AR.register('cab_3', {
     title: 'Steam Chase', cost: 3, lights: true, create, drawTitle,
-    lifeIcon: () => K.memo('sc.life', () => woolly(0).crop(1, 1, 10, 10)),
+    lifeIcon: () => K.memo('sc.life', () => woolly(0).clone()),
     tickets: (score) => Math.floor(score / 80),
     bot(g, f) {
       // greedy: walk to the nearest bead, away from close hot irons (BFS on the tile grid)

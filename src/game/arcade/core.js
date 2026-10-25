@@ -87,7 +87,7 @@
     if (game.lives !== undefined) {
       const ic = def.lifeIcon ? def.lifeIcon() : null;
       for (let i = 0; i < Math.min(5, game.lives); i++) {
-        if (ic) fb.blit(ic, NP.W - 12 - i * 11, 2);
+        if (ic) fb.blit(ic, NP.W - 2 - ic.w - i * (ic.w + 1), 2);
         else fb.fillRect(NP.W - 10 - i * 8, 4, 5, 5, '#f87878');
       }
     }

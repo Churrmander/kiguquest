@@ -1,5 +1,5 @@
 /* src/art/tiles/stamp_arcade.js — furniture for the Lucky Spool arcade in Shibuyarn (Chapter 5).
- *   arcade_cab   1x2  upright cabinet; variants = the game on it: moth button steam hop off (off = dark during the brownout)
+ *   arcade_cab   1x2  upright cabinet; variants = the game on it: moth button steam hop, plus off / <game>_off (dark during the brownout)
  *   claw_machine 2x2  glass case of plushes with a pink frame and a chasing light strip; variants default off
  *   prize_shelf  2x2  wall shelving full of prizes (plushes, boxed toys); stands on the two wall rows like cloth_shelf
  *   neon_sign    2x1  wall decor: a pink-and-blue neon spool sign; variants default off
@@ -68,11 +68,13 @@
   });
 
   K.stamp('arcade_cab', {
-    w: 1, h: 2, variants: ['moth', 'button', 'steam', 'hop', 'off'], frames: 2, animSpeed: 22,
+    w: 1, h: 2, variants: ['moth', 'button', 'steam', 'hop', 'off', 'button_off', 'steam_off', 'hop_off'], frames: 2, animSpeed: 22,
     paint: (v, f) => {
       const b = K.B(16, 32);
-      const g = GAMES[v] || GAMES.off, r = K.ramp(g.body), m = K.ramp(g.marquee);
-      const lit = v !== 'off';
+      // '<game>_off' is that cabinet during the brownout: its own colours one shade darker, marquee and screen dead
+      const lit = !/off$/.test(v), base = v.replace(/_off$/, '');
+      const g = GAMES[base] || GAMES.off, m = K.ramp(lit ? g.marquee : 'gray');
+      const r0 = K.ramp(g.body), r = lit ? r0 : r0.map((c, i) => r0[Math.min(r0.length - 1, i + 1)]);
       // side panels and body
       b.fillRect(1, 2, 14, 29, r[3]);
       b.fillRect(1, 2, 2, 29, r[2]); b.vline(1, 2, 29, r[1]);
@@ -82,7 +84,7 @@
       b.hline(2, 1, 12, lit ? m[0] : m[2]); b.hline(2, 6, 12, r[5]);
       if (lit) { for (let x = 4; x < 12; x += 2) b.set(x, 3 + ((x >> 1) & 1), m[4]); b.hline(4, 4, 8, m[3]); }
       // screen bezel and screen
-      b.fillRect(2, 8, 12, 11, P.black); b.fillRect(3, 9, 10, 9, K.col(g.screen));
+      b.fillRect(2, 8, 12, 11, P.black); b.fillRect(3, 9, 10, 9, K.col(lit ? g.screen : '#202028'));
       if (lit) { screenArt(b, v, f, 3, 10); b.set(3, 9, K.col('#ffffff')); b.set(4, 9, K.col('#9098b0')); }
       // control deck
       b.fillRect(1, 19, 14, 4, r[2]); b.hline(1, 19, 14, r[1]); b.hline(1, 22, 14, r[4]);
@@ -165,7 +167,7 @@
       b.strokeRect(1, 2, 30, 12, K.col(on ? '#f878c8' : '#4a3050'));
       // a spool (left) and a wavy thread running off it
       const c1 = K.col(on ? '#78e8f8' : '#284858'), c2 = K.col(on ? (f ? '#f8f0a0' : '#f878c8') : '#4a3050');
-      b.strokeRect(5, 5, 6, 6, c1); b.hline(4, 5, 8, c1); b.hline(4, 10, 8, c1);
+      b.strokeRect(5, 5, 6, 6, c1); b.hline(3, 5, 10, c1); b.hline(3, 10, 10, c1);
       for (let x = 12; x < 28; x++) b.set(x, 8 + Math.round(Math.sin(x / 2) * 2), c2);
       if (on) b.set(26, 4, K.col('#ffffff'));
       K.outer(b, INK);
