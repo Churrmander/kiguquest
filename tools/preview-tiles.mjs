@@ -51,7 +51,7 @@ export function renderMap({ rows, legend, stamps = [], actors = [], tick = 0 }) 
     if (o.kind === 's') {
       const b = tiles.stamp(o.s.id, o.s.variant, tiles.frameAt(o.s.def, tick));
       const over = o.s.def.over * 16;
-      bmp.blit(b, o.s.x * 16, o.s.y * 16 + over, { sy: over, sh: b.h - over });
+      bmp.blit(b, o.s.x * 16, o.s.y * 16 + over - (o.s.def.rise || 0), { sy: over, sh: b.h - over });
     } else {
       const a = o.a;
       bmp.blit(a.bmp, a.x * 16, a.y * 16 - 8);
