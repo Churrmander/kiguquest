@@ -319,8 +319,8 @@ Everspool is protected by a **woven ward** that only opens for Kigu the ward hol
 * **Why the Society is there:** they came to Press the guardian. Pressing the maiden did nothing, so they worked out that the ward is in
   the Cocoona's cocoon and Pressed her; the ward dropped, and Crease snipped her sample (proposed reason: the Society needs Everspool thread
   for the merge with the tapestry, since the tapestry is woven from it). Mimi's first Soft Rinse undoes the Pressing, the Cocoona wakes,
-  and the ward closes again behind the hero. (Proposed: Mimi rinses the Mothelia too, as a second, easier rinse that shows the trick works
-  twice.)
+  and the ward closes again behind the hero. Mimi then rinses the Mothelia too (owner, 2026-10-26), a second,
+  easier rinse that shows the trick works twice.
 
 **Art direction, Spindle Shrine (owner, 2026-10-26).** A grand Japanese temple deep in Gingham Woods: a red torii gate on the approach,
 stone lanterns, a gravel path, a tiered wooden hall with sweeping curved roofs, and shide-style paper streamers made of thread. The
