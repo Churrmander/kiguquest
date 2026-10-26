@@ -129,6 +129,14 @@ road ends up. Her line to the hero at the start: "Go and see Tsumugi. Meet the M
 ### Mom, {rival}'s mum, the town
 Mom bakes and heals you with cocoa. {rival}'s mum has known you since you were both in nappies, and treats you like family. She worries about her husband's tidy letters. Neighbours are warm, nosy and slightly over-informed about other people's Kigu.
 
+**Why the Seamstresses chose the hero (owner, 2026-10-26).** Mom has an older Kigu who helps around the house (proposed: a **Nibblenna**,
+the baker hamster, since Mom bakes; the owner picks). Like every Kigu, she can talk with the Seamstresses, and she has been bragging about
+the hero to them for years. The hero has always shown Kigu empathy, kindness and friendship, so the Seamstresses have had their eye on
+them for the day they are old enough to become a Tailor. That is why most Kigu are so drawn to the hero: they can sense the Seamstresses'
+favour on them. It is also how word of the hero reaches the Needles inside the tapestry (§7b). Proposed seeds: Mom's Kigu greets the
+hero like an old friend and hums at the window at night; wild Kigu linger near the hero more than near other kids (a line from Bobbin:
+"They don't usually do that.").
+
 ### "Mr. Sharp" — the recurring peddler (spoiler: Sharps, the fourth Needle, who took Damask's old seat)
 A cheerful travelling seller in a different absurd disguise in every town (false moustache, a chef's hat, a sailor cap) who always insists he is "just a humble peddler,
 nothing suspicious." Everyone sees through him; he doesn't know. He is the Guild's scout, and it is his report that makes the Weave Guardian say *yes*.
