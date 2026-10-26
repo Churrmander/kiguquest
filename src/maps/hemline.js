@@ -19,6 +19,7 @@
   M.rect(0, 0, W, 2, 'T').rect(0, 2, 2, H - 2, 'T').rect(W - 2, 2, 2, H - 2, 'T').rect(0, 22, W, 2, 'T');
   M.rect(0, 11, W, 2, 'c');                       // main street (x0 west to Gingham Woods, x27 east towards Seamstead)
   M.rect(5, 18, 18, 2, 'c');                      // back street (door to door)
+  M.rect(20, 20, 3, 4, 'p');                      // the lane south through the trees to Hemline Riverside and the lake
   M.rect(12, 13, 2, 5, 'c');                      // connector
   M.rect(12, 7, 3, 4, 'c');                       // lane to the Salon door (3 wide, centred on it)
   M.rect(4, 8, 3, 3, 'c');                        // lane to the Tea House door
@@ -52,8 +53,9 @@
   M.interact(14, 13, STALL, 'honey stall').interact(15, 13, STALL, 'honey stall');
   M.interact(14, 20, SKEP, 'skep').interact(16, 20, SKEP, 'skep').interact(18, 20, SKEP, 'skep').interact(11, 8, SKEP, 'skep').interact(15, 8, SKEP, 'skep');
 
-  M.spawn('west', 2, 11, 'right').spawn('east', 25, 12, 'left');
-  M.edge('w', 11, 12, 'spindle_shrine', 'east').edge('e', 11, 12, 'route3', 'west');
+  M.spawn('west', 2, 11, 'right').spawn('east', 25, 12, 'left').spawn('south', 21, 21, 'up');
+  M.edge('w', 11, 12, 'spindle_shrine', 'east').edge('e', 11, 12, 'route3', 'west').edge('s', 20, 22, 'hemline_river', 'north');
+  M.sign(19, 21, 'SOUTH: HEMLINE LAKE\nThe fishing contest is held there every day!', 'south sign (Hemline Riverside)');
   // no sequence break: the seam road east waits for the Buzz Button (otherwise Bryn, the Paddle Disc and Chapter 2's ending are skippable)
   M.trigger({ x: 26, y: 11, w: 1, h: 2, id: 'east_before_bryn', when: (c) => !c.flag('badge2'), script: function* (c) {
     yield* c.sayT('hemline.east_block', 'Mimi: Wait up, {player}! Bryn is expecting you at the Salon first.\\pIt\'s the big building north of the main street.\\pSeamstead will still be there afterwards, I promise!');

@@ -28,6 +28,7 @@
         healPoint: { map: 'player_house', spawn: 'door' },
         visited: {},
         dex: { seen: {}, caught: {} }, starter: null, rivalStarter: null,
+        fish: { pocket: [], log: {} },   // the Fish Pocket and the Fishing Log (src/game/fishing.js)
         opts: { textSpeed: 1, battleAnim: true, battleStyle: 'shift' },
         saved: 0,
       };

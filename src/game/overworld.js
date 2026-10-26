@@ -528,10 +528,12 @@
     }
 
     *wildBattle(sp, lv, o) {
-      const foe = NP.Kigu.create(sp, lv);
-      const st = NP.state;
-      yield* this.transitionToBattle('battle_wild');
-      const res = yield* this.runBattle({ wild: true, foe: [foe], bg: this.map.def.battleBg || 'grass', music: 'battle_wild', mood: this.weather, noCatch: !!(o && o.noCatch) });
+      o = o || {};
+      const foe = NP.Kigu.create(sp, lv, o.kigu);   // o.kigu: Kigu.create options (the gold Ryukoi's colourway and IVs)
+      const music = o.music || 'battle_wild';
+      yield* this.transitionToBattle(music);
+      // noCatch: true, or { first, again } lines for a Kigu who won't take a spool yet; canLose: no blackout (the scene carries on)
+      const res = yield* this.runBattle({ wild: true, foe: [foe], bg: o.bg || this.map.def.battleBg || 'grass', music, mood: this.weather, noCatch: o.noCatch || false, canLose: !!o.canLose });
       return res;
     }
 
@@ -597,6 +599,7 @@
     // ---- player control
     update() {
       NP.state.frames++;
+      if (NP.Fishing) NP.Fishing.tick(this);   // the contest clock at Hemline Lake
       this.stepTasks();
       if (this.popup > 0) this.popup--;
       const p = this.player;
@@ -610,6 +613,7 @@
       if (p.moving) return;
       if (Input.pressed.start) { this.runMenu(); return; }
       if (Input.pressed.a) { this.interact(); return; }
+      if (Input.pressed.select && NP.Fishing && NP.Fishing.quick(this)) return;   // Select: cast the best rod you carry
       const v3 = NP.view3d;
       if (v3 && v3.on) v3.q = v3.quarterFor(this.map, p.x, p.y);
       // a held key keeps its map direction while the camera swings (a camera zone turning mid-walk must not bend your path)
@@ -784,6 +788,7 @@
         if (won) {
           NP.state.flags[key] = true;
           yield* this.ctx.sayT(tk + '.win', tr.win);
+          if (tr.then) yield* this.resolveScript(tr.then)(this.ctx, a);   // a trainer with more to say once beaten (Gus gives you a rod)
         }
       } catch (e) { if (e !== ABORT) throw e; }
     }
@@ -807,7 +812,7 @@
           a.dir = OPP[p.dir];
           const tr = d.trainer;
           if (tr) {
-            if (NP.state.flags['tr_' + m.id + '_' + a.id]) this.runScript(function* (c) { yield* c.sayT(m.id + '.' + a.id + '.after', tr.after); });
+            if (NP.state.flags['tr_' + m.id + '_' + a.id]) this.runScript(tr.then || function* (c) { yield* c.sayT(m.id + '.' + a.id + '.after', tr.after); }, a);
             else this.spawn(this.trainerEncounter(a, false), 'trainer');
             return;
           }
@@ -872,6 +877,7 @@
         } else if (k === 'bag') {
           const s = new NP.BagScene({ mode: 'field' }); NP.Game.push(s); yield* this.waitFor(() => s.finished);
           if (s.result && s.result.escape) { yield* this.useEscape(); break; }
+          if (s.result && s.result.rod) { const rod = s.result.rod; this.runScript(function* (c) { yield* NP.Fishing.cast(c, rod); }); break; }
         } else if (k === 'dex') {
           const s = new NP.DexScene(); NP.Game.push(s); yield* this.waitFor(() => s.finished);
         } else if (k === 'card') {
@@ -926,6 +932,7 @@
       p.swim = this.paddling();
       if (!this.map.def.hidePlayer) list.push({ sortY: p.py + 16.5, x: p.px + 8, hero: true, draw: (f, X, Y) => p.draw(f, X, Y, fr) });
       this.map.draw(fb, cx, cy, fr, list);
+      if (NP.Fishing && (this.bobber || this.contest)) NP.Fishing.draw(this, fb, cx, cy);
       if (this.weather) NP.Weather.draw(fb, this.weather, fr);
       // emotes
       for (const a of this.actors.concat([p])) {

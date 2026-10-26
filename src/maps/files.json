@@ -11,6 +11,8 @@
 "src/maps/gingham_woods.js",
 "src/maps/spindle_shrine.js",
 "src/maps/hemline.js",
+"src/maps/hemline_river.js",
+"src/maps/hemline_lake.js",
 "src/maps/ch3_lib.js",
 "src/maps/route3.js",
 "src/maps/seamstead.js",
@@ -31,5 +33,6 @@
 "src/maps/spark_cellar.js",
 "src/maps/route6.js",
 "src/maps/kite_hill.js",
-"src/maps/kite_salon.js"
+"src/maps/kite_salon.js",
+"src/maps/fishing_spots.js"
 ]
