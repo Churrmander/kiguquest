@@ -1493,7 +1493,7 @@
       parts: [
         { name: 'wing', polys: [[[45, 28], [62, 28], [62, 66], [37, 66], [37, 37], [38, 35], [41, 33], [43, 31], [45, 31]]], z: 0.5, pivot: [37, 48], parent: 'upper', comp: 'main', extend: [box(33, 36, 39, 64)] },
         { name: 'speck', polys: [box(38, 0, 40, 1)], z: 3, parent: 'upper', comp: 'floater' },
-        { name: 'head', polys: [box(0, 0, 50, 27), box(0, 28, 44, 28), box(0, 29, 36, 36)], z: 3, pivot: [20, 38], parent: 'upper', fill: [['upper', [box(5, 34, 36, 40)]]] },
+        { name: 'head', polys: [box(0, 0, 50, 27), box(0, 28, 44, 28), box(0, 29, 36, 36)], z: 3, pivot: [20, 38], parent: 'upper', fill: [['upper', [box(5, 34, 34, 40)]]] },
         ...breathe(60, 63, 77),
       ],
       anim: { upper: BOB, wing: { ang: ['tab', 'OPEN', -4, 0] }, head: { dx: ['tab', 'SWAY', 0.5, 2] } },
