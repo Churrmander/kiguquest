@@ -309,8 +309,10 @@ Scene ids are the `story.*` / `script.*` keys in `docs/text.md`. **Rival** = a f
 stiff white collars said the planks were uneven." Poppy's Salon. **Rival #2** outside the Salon (they lost; you didn't) - a conversation and a gift of snack cakes, NOT a battle, so there are never two rival fights back to back. Poppy gives Disc: Snip, cream thread, the 'D' handkerchief, and "go and see Tsumugi."
 **Ch. 2 — Route 2 → Gingham Woods → Hemline (Salon 2, Buzz).** *Society shrine incident:* at the **Spindle Shrine**, Pressers led by Pleat Crease are "inspecting" the **Everspool** (a silk spool that never
 runs out; the straightest thread in the world); they have Pressed the shrine's guardian Cocoona. You drive them off; Crease snips a sample and leaves ("The Society is patient"). Mimi's first Soft Rinse works. **How the Everspool is guarded (owner pick, 2026-10-26):** it sits in a small shrine hall behind a
-**woven ward** that only opens for Kigu the shrine's guardian trusts. The guardian is the Cocoona. Crease Pressed her, and the ward
-dropped; that is how the Society got in. Once the Cocoona is rinsed, the ward closes again behind the hero. (Map and text still show the
+**woven ward** that only opens for Kigu the shrine's guardian trusts. The guardian is the Cocoona. **Why the Society is there (owner,
+2026-10-26):** they came to Press the guardian, because Pressing her drops the ward. Crease Pressed her, the ward dropped, and Crease
+snipped her sample (proposed reason: the Society needs Everspool thread for the merge with the tapestry, since the tapestry is woven
+from it). Mimi's first Soft Rinse undoes the Pressing, so the guardian wakes and the Society's way in closes. Once the Cocoona is rinsed, the ward closes again behind the hero. (Map and text still show the
 old open clearing; changing them is a follow-up.) Hemline: Bryn;
 the hemmers' grievance; Bryn gives a length of Everspool silk. *Scenes:* `route2_inspectors`, `spindle_shrine`, `rinse`, `script.bryn`.
 **Ch. 3 — Seamstead City (Salon 3, Volt).** Big, bright, jazzy. **Rival #3** on the plaza: the rival defends Crisp & Co. ("my dad works there"). **Crisp & Co. raid:** a department-store dungeon (Linens, Uniforms, Hats...), Pleat Serge's
