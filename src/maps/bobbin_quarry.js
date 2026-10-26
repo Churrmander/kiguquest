@@ -74,7 +74,7 @@
   M.trigger({ x: 3, y: 14, w: 1, h: 2, id: 'rival4', when: (c) => !c.flag('rival4_done'), script: rival4 });
 
   // the Salon is shut while Gusset is down the pit: an apprentice minds the door
-  M.npc('appr', 17, 7, 'hiker', 'down', ['The Salon\'s shut. Gusset\'s down in the tunnels after the Pebblump herd,\\pand nobody battles in his Salon without him. He\'d notice.'], { hideIf: 'gusset_back', note: 'blocks the Salon lane until gusset_back' });
+  M.npc('appr', 17, 7, 'hiker', 'down', ['The Salon\'s shut. Gusset\'s down in the tunnels after the Pebblump herd,\\pand nobody battles in his tent without him. The weavers at Canvas Rest sewed it from sun-cloth,\\pso it\'s the only place in the quarry that stays cool. He\'d notice if we sneaked in.'], { hideIf: 'gusset_back', note: 'blocks the Salon lane until gusset_back' });
   M.npc('rival_q', 8, 15, 'rival', 'left', ['{rival}: ...'], { hidden: true });
   M.npc('miner1', 13, 17, 'hiker', 'down', ['The Society bought every slab we cut this year. They want them flat as glass.\\pWe asked what for. They said "pressing", and then they smiled. I didn\'t like the smile.']);
   M.npc('miner2', 30, 15, 'camper', 'left', ['That cart line runs out to the quarry face. When the herd\'s back home,\\pwe can get digging again. Slowly, this time.'], { move: 'turn' });

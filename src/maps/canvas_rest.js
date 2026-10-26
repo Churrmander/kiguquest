@@ -50,7 +50,7 @@
     yield* c.sayT('canvas_rest.home.2', 'The big desert Kigu watches from the edge of the camp, holding her herbs. One of the mothers walks over,\\ptakes her paw, and leads her over to sit with the children.');
     yield* c.approach(chief);
     yield* c.sayT('canvas_rest.home.3', 'Chief Weft: You found our children, and you brought them home without anyone getting hurt. Not even her.\\pI said sun-cloth isn\'t for strangers. You two aren\'t strangers anymore.');
-    yield* c.sayT('canvas_rest.home.4', 'Chief Weft hands Mimi a folded length of sun-cloth. It\'s light as paper and warm as a hand.');
+    yield* c.sayT('canvas_rest.home.4', 'Chief Weft hands Mimi a folded length of sun-cloth. It\'s thin and light, and the desert heat doesn\'t get through it at all.');
     yield* c.sayT('canvas_rest.home.5', 'Mimi: There\'s enough for two! One for you, and one for me. Give me a moment. Don\'t look!');
     yield* c.ow.fadeOut(10);
     NP.snd.sfx('save');
@@ -107,7 +107,7 @@
       }
       if (!c.flag('sand_cave_found')) {
         yield* c.sayT('canvas_rest.mimi.clue1', 'Mimi: You\'re back! Look what I found, snagged on the thorns at the edge of the flats.\\pIt\'s a scrap of woven scarf, and a child\'s sandal. The scarf scrap smells of herbs.');
-        yield* c.sayT('canvas_rest.mimi.clue2', 'Mimi: So let\'s put it together. Little footprints going south-east, with big soft paw prints right beside them.\\pSomeone neatly picking fever herbs at the spring, the week little Bo had a cough.');
+        yield* c.sayT('canvas_rest.mimi.clue2', 'Mimi: So let\'s put it together. Little footprints going south-east, with big soft paw prints right beside them.\\pSomeone neatly picking silver-leaf at the spring, the week little Bo had a cough.');
         yield* c.sayT('canvas_rest.mimi.clue3', 'Mimi: A big Kigu in a woven scarf, carrying something small towards the humming dune. And now this scarf.\\pIt\'s the Echo Dune, south-east on the flats! Somebody\'s taking the children there, and I don\'t think she means them any harm.');
         yield* c.sayT('canvas_rest.mimi.clue4', 'Mimi: Come on! I\'ll meet you at the Echo Dune.');
         c.set('sand_cave_found');
@@ -126,7 +126,7 @@
     ask: 'Weaver Ama: You want to help? Then I need needles. We sew sun-cloth with Pricklepot spines, because nothing else gets through it.\\pThe wild Pricklepot shed them in the cactus field on the Sun Flats. Three good bundles would keep me going all season.',
     thanks: 'Weaver Ama: Oh, these are lovely and straight. Thank you. I can sew again!',
     clue: 'Weaver Ama: You\'re looking for the children too, aren\'t you? When I was out gathering spines last week, I saw small footprints\\pgoing south-east, with big soft paw prints walking right beside them. As if somebody was holding their hands.',
-    after: 'Weaver Ama: Every stitch in that tent is a Pricklepot spine. Well, the last forty are.',
+    after: 'Weaver Ama: Every stitch in that tent is a Pricklepot spine. Well, the last forty are.\\pWe sewed Gusset\'s big tent at the Quarry, too. If he ever says a seam has come loose, tell him I don\'t believe him.',
   }) });
   M.npc('healer', 10, 13, 'nurse_aide', 'down', null, { note: 'chore: spring herbs', script: chore('herbs', {
     item: 'desert_herbs', has: (c) => (c.state.bag.desert_herbs || 0) >= 3,
