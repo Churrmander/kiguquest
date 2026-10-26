@@ -1488,27 +1488,29 @@
   };
 
   // ---------------------------------------------------------------- batch 12
-  R.arcorn = { // the striped wings open after the breath, the goggled head rocks; the fist waves (back)
+  R.arcorn = { // the striped wings open after the breath, the goggled head sways; the fist waves (back)
     front: {
       parts: [
         { name: 'wing', polys: [[[45, 28], [62, 28], [62, 66], [37, 66], [37, 37], [38, 35], [41, 33], [43, 31], [45, 31]]], z: 0.5, pivot: [37, 48], parent: 'upper', comp: 'main', extend: [box(33, 36, 39, 64)] },
-        { name: 'head', polys: [box(0, 0, 50, 27), box(0, 28, 44, 28), box(0, 29, 36, 36)], z: 3, pivot: [20, 38], parent: 'upper', comp: 'main', fill: [['upper', [box(5, 34, 36, 40)]]] },
+        { name: 'speck', polys: [box(38, 0, 40, 1)], z: 3, parent: 'upper', comp: 'floater' },
+        { name: 'head', polys: [box(0, 0, 50, 27), box(0, 28, 44, 28), box(0, 29, 36, 36)], z: 3, pivot: [20, 38], parent: 'upper', fill: [['upper', [box(5, 34, 36, 40)]]] },
         ...breathe(60, 63, 77),
       ],
-      anim: { upper: BOB, wing: { ang: ['tab', 'OPEN', -4, 0] }, head: { ang: ['tab', 'SWAY', 1.25, 2] } },
+      anim: { upper: BOB, wing: { ang: ['tab', 'OPEN', -4, 0] }, head: { dx: ['tab', 'SWAY', 0.5, 2] } },
     },
     back: {
       parts: [
-        { name: 'wing', polys: [[[0, 33], [34, 33], [36, 44], [36, 72], [31, 72], [31, 81], [18, 81], [0, 70]]], z: 3, pivot: [37, 56], parent: 'upper', comp: 'main', fill: [['upper', [box(28, 40, 40, 74)]]] },
+        { name: 'wing', polys: [[[0, 33], [34, 33], [36, 44], [36, 72], [31, 72], [31, 80], [18, 80], [0, 70]]], z: 3, pivot: [37, 56], parent: 'upper', comp: 'main', fill: [['upper', [box(28, 40, 40, 74)]]] },
         { name: 'fist', polys: [box(60, 49, 75, 63)], z: 4, pivot: [59, 56], parent: 'upper', comp: 'main', fill: [['upper', [box(56, 49, 62, 63)]]] },
         { name: 'head', polys: [box(31, 0, 84, 31)], z: 3, pivot: [52, 34], parent: 'upper', comp: 'main', fill: [['upper', [box(36, 29, 72, 35)]]] },
+        { name: 'headBits', polys: [box(31, 0, 84, 31)], z: 3, parent: 'head' },
         ...breathe(72, 85, 96),
       ],
       anim: { upper: BOB, wing: { ang: ['tab', 'OPEN', 3, 0] }, fist: { ang: ['tab', 'FLICK', 4, 0] }, head: { dx: ['tab', 'SWAY', 0.5, 2] } },
     },
   };
 
-  R.warpa = { // the crowned head sways after the breath, loose threads drift at her sides
+  R.warpa = { // the crowned head sways after the breath; loose threads drift (front), the sleeve cords swing (back)
     front: {
       parts: [
         { name: 'f1', polys: [box(0, 50, 1, 82)], z: 5, comp: 'floater' },
@@ -1520,10 +1522,11 @@
     },
     back: {
       parts: [
-        { name: 'f1', polys: [box(0, 52, 10, 76)], z: 5, comp: 'floater' },
+        { name: 'cordA', polys: [box(49, 58, 59, 60), box(48, 61, 59, 65)], z: 4, parent: 'upper' },
+        { name: 'cordB', polys: [box(46, 66, 59, 77)], z: 4, parent: 'cordA' },
         ...breathe(74, 60, 85),
       ],
-      anim: { upper: BOB, f1: { dy: ['float', 1.5, 1.4, true] } },
+      anim: { upper: BOB, cordA: { dx: ['tab', 'SWAY', 0.5, 2] }, cordB: { dx: ['tab', 'SWAY', 0.5, 4] } },
     },
   };
 
@@ -1550,17 +1553,17 @@
   R.weftie = { // her ribbons stream and curl after the breath
     front: {
       parts: [
-        { name: 'ribL', polys: [box(5, 17, 16, 27)], z: 3, parent: 'upper', comp: 'main', fill: [['upper', [box(9, 25, 16, 27)]]] },
-        { name: 'ribR', polys: [[[56, 17], [64, 17], [72, 28], [72, 37], [61, 37], [60, 30], [56, 26]]], z: 3, parent: 'upper', comp: 'main', fill: [['upper', [box(55, 17, 61, 37)]]] },
+        { name: 'ribL', polys: [box(5, 17, 16, 19), box(5, 20, 15, 23), box(5, 24, 16, 27)], z: 3, parent: 'upper', comp: 'main', fill: [['upper', [box(9, 25, 16, 27)]]] },
+        { name: 'ribR', polys: [[[56, 17], [64, 17], [72, 26], [72, 28], [56, 28]]], z: 0.5, parent: 'upper', comp: 'main', extend: [box(52, 17, 55, 28)] },
         ...breathe(74, 73, 85),
       ],
-      anim: { upper: BOB, ribL: { dy: ['tab', 'OPEN', -1, 2] }, ribR: { dx: ['tab', 'OPEN', 1, 2] } },
+      anim: { upper: BOB, ribL: { dx: ['tab', 'OPEN', -1, 2] }, ribR: { dx: ['tab', 'OPEN', 1, 2] } },
     },
     back: {
       parts: [
-        { name: 'ribA', polys: [box(8, 12, 19, 24)], z: 3, parent: 'upper', fill: [['upper', [box(16, 12, 20, 24)]]] },
-        { name: 'ribB', polys: [box(0, 29, 11, 42)], z: 3, parent: 'upper', comp: 'main', fill: [['upper', [box(8, 29, 12, 42)]]] },
-        { name: 'ribC', polys: [box(54, 13, 63, 27)], z: 3, parent: 'upper', comp: 'main', fill: [['upper', [box(53, 13, 57, 27)]]] },
+        { name: 'ribA', polys: [box(8, 12, 19, 24)], z: 0.5, parent: 'upper', extend: [box(20, 19, 23, 26)] },
+        { name: 'ribB', polys: [box(0, 29, 11, 36), box(0, 37, 7, 42)], z: 0.5, parent: 'upper', comp: 'main', extend: [box(12, 29, 14, 30)] },
+        { name: 'ribC', polys: [box(54, 13, 63, 27)], z: 0.5, parent: 'upper', comp: 'main', extend: [box(50, 16, 53, 25)] },
         ...breathe(72, 70, 83),
       ],
       anim: { upper: BOB, ribA: { dy: ['tab', 'OPEN', -1, 2] }, ribB: { dx: ['tab', 'OPEN', -1, 2] }, ribC: { dx: ['tab', 'OPEN', 1, 2] } },
@@ -1579,9 +1582,9 @@
     },
     back: {
       parts: [
-        { name: 'wand', polys: [[[64, 20], [80, 20], [80, 49], [61, 49], [61, 40], [64, 36]]], z: 4, pivot: [65, 53], parent: 'upper', comp: 'main', fill: [['upper', [box(60, 46, 68, 54)]]] },
-        { name: 'earL', polys: [box(28, 0, 40, 11)], z: 3, parent: 'upper', comp: 'main', fill: [['upper', [box(28, 11, 40, 12)]]] },
-        { name: 'earR', polys: [box(50, 0, 66, 14)], z: 3, parent: 'upper', comp: 'main', fill: [['upper', [box(50, 14, 66, 15)]]] },
+        { name: 'wand', polys: [[[64, 20], [80, 20], [80, 49], [61, 49], [61, 40], [64, 36]]], z: 4, pivot: [68, 50], parent: 'upper', comp: 'main', fill: [['upper', [box(60, 46, 68, 54)]]] },
+        { name: 'earL', polys: [box(27, 0, 40, 11)], z: 3, parent: 'upper', fill: [['upper', [box(27, 11, 40, 12)]]] },
+        { name: 'earR', polys: [box(50, 0, 61, 11), box(62, 0, 67, 14)], z: 3, parent: 'upper', fill: [['upper', [box(50, 11, 61, 11), box(62, 13, 67, 14)]]] },
         ...breathe(90, 81, 104),
       ],
       anim: { upper: BOB, wand: { ang: ['tab', 'SWAY', -3, 2] }, earL: { dy: ['twitch', -1, 5] }, earR: { dy: ['twitch', -1, 15] } },
