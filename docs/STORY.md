@@ -308,12 +308,26 @@ Scene ids are the `story.*` / `script.*` keys in `docs/text.md`. **Rival** = a f
 **Ch. 1 — Meadow Lane → Thimble Village (Salon 1, Fluff).** Tailors on the lane; **Rival #1** at the top of the lane ("I'll be waiting in Thimble"). Mimi gives a Silk Spool. The bridge to Route 2 is closed: "inspectors in
 stiff white collars said the planks were uneven." Poppy's Salon. **Rival #2** outside the Salon (they lost; you didn't) - a conversation and a gift of snack cakes, NOT a battle, so there are never two rival fights back to back. Poppy gives Disc: Snip, cream thread, the 'D' handkerchief, and "go and see Tsumugi."
 **Ch. 2 — Route 2 → Gingham Woods → Hemline (Salon 2, Buzz).** *Society shrine incident:* at the **Spindle Shrine**, Pressers led by Pleat Crease are "inspecting" the **Everspool** (a silk spool that never
-runs out; the straightest thread in the world); they have Pressed the shrine's guardian Cocoona. You drive them off; Crease snips a sample and leaves ("The Society is patient"). Mimi's first Soft Rinse works. **How the Everspool is guarded (owner pick, 2026-10-26):** it sits in a small shrine hall behind a
-**woven ward** that only opens for Kigu the shrine's guardian trusts. The guardian is the Cocoona. **Why the Society is there (owner,
-2026-10-26):** they came to Press the guardian, because Pressing her drops the ward. Crease Pressed her, the ward dropped, and Crease
-snipped her sample (proposed reason: the Society needs Everspool thread for the merge with the tapestry, since the tapestry is woven
-from it). Mimi's first Soft Rinse undoes the Pressing, so the guardian wakes and the Society's way in closes. Once the Cocoona is rinsed, the ward closes again behind the hero. (Map and text still show the
-old open clearing; changing them is a follow-up.) Hemline: Bryn;
+runs out; the straightest thread in the world); they have Pressed the shrine's guardian Cocoona. You drive them off; Crease snips a sample and leaves ("The Society is patient"). Mimi's first Soft Rinse works. **How the Everspool is guarded (owner, 2026-10-26).** The **Spindle Shrine** is a **grand temple of Japanese design**
+(art direction below). Inside, the Everspool sits high on a pedestal, and its free end of thread spins slowly around the altar. The
+Everspool is protected by a **woven ward** that only opens for Kigu the ward holder trusts.
+
+* **The ward holder is the Cocoona.** Her cocoon is not made of her own silk: it is Everspool silk, spun after she ate her fill of
+  Everspool thread. That is part of the ritual for becoming the ward holder, and it does not hurt the spool, which never runs out.
+* **The shrine maiden is a Mothelia** (Cocoona's evolution), who runs the temple. The Society Pressed her too, but it did not drop the
+  ward, because she is not the one holding it.
+* **Why the Society is there:** they came to Press the guardian. Pressing the maiden did nothing, so they worked out that the ward is in
+  the Cocoona's cocoon and Pressed her; the ward dropped, and Crease snipped her sample (proposed reason: the Society needs Everspool thread
+  for the merge with the tapestry, since the tapestry is woven from it). Mimi's first Soft Rinse undoes the Pressing, the Cocoona wakes,
+  and the ward closes again behind the hero. (Proposed: Mimi rinses the Mothelia too, as a second, easier rinse that shows the trick works
+  twice.)
+
+**Art direction, Spindle Shrine (owner, 2026-10-26).** A grand Japanese temple deep in Gingham Woods: a red torii gate on the approach,
+stone lanterns, a gravel path, a tiered wooden hall with sweeping curved roofs, and shide-style paper streamers made of thread. The
+interior is a tall hall with wooden pillars; the altar stands at the back on raised steps, and the Everspool sits high on a pedestal above
+it, with its golden-green thread circling the altar in a slow loop. The woven ward shows as a shimmering curtain of thread across the inner
+doorway. The Mothelia shrine maiden wears shrine-maiden colours (white and red) on her moth-wing robe. Stay in the Black/White sprite style.
+(The current map is still the old open clearing with the spool on a stump; rebuilding it is a follow-up.) Hemline: Bryn;
 the hemmers' grievance; Bryn gives a length of Everspool silk. *Scenes:* `route2_inspectors`, `spindle_shrine`, `rinse`, `script.bryn`.
 **Ch. 3 — Seamstead City (Salon 3, Volt).** Big, bright, jazzy. **Rival #3** on the plaza: the rival defends Crisp & Co. ("my dad works there"). **Crisp & Co. raid:** a department-store dungeon (Linens, Uniforms, Hats...), Pleat Serge's
 smile, the basement **Pressing Floor** where a hundred white Kigu stand in rows. The rival's dad is on the floor, pleasant and empty. Serge fights; then Madame Damask appears for the first time and invites the hero to tea
