@@ -197,8 +197,7 @@ one keeps folding your shirt while you battle. Class key `presser`. **Crisp & Co
 
 **The true beginning (owner, 2026-10-26; nobody alive tells it this way).** Warpa and Weftie were the **Goddesses of Order and Nature**
 (proposed: Warpa is Order, the steady straight thread; Weftie is Nature, the restless thread that wanders across). The Unweaving
-threatened to consume the universe, so they wove a **magic tapestry** to contain him, using the **Everspool** (owner's words: "the Eternal
-Spool"; read here as the same spool, see §15). Then they wove **Tsumugi as the tapestry's
+threatened to consume the universe, so they wove a **magic tapestry** to contain him, using the **Everspool** (owner confirmed 2026-10-26). Then they wove **Tsumugi as the tapestry's
 opposite**, so he would be better contained: the tapestry is tight, flat and still, and Tsumugi is loose, patched and full of choices.
 As long as the two stay different, they cannot become one cloth, and he cannot get out.
 
@@ -384,7 +383,7 @@ is a suggestion until the owner picks.
 1. The entity's name and look.
 2. ~~Who trapped it~~ Answered 2026-10-26: the goddesses wove the tapestry to contain him.
 2a. ~~How the Order's leader was tricked.~~ Answered 2026-10-26: through a loose thread of the tapestry. Still open: where it was found.
-2b. Is "the Eternal Spool" the Everspool (assumed), or a second, older spool? If it is the same, keep the name Everspool or rename it?
+2b. ~~Eternal Spool?~~ Answered: it is the Everspool, and the name stays.
 3. How the vanished Needles square with the Four Needles fight and Mr. Sharp.
 4. When the Needles vanished.
 5. The Guild and the Association: one body or two.
