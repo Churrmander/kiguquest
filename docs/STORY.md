@@ -77,11 +77,14 @@ Motif kit: buttons, threads, patches, tea, tape measures, lanterns, white vs. co
 
 **Tsumugi** ("spun thread") is a patchwork land joined by *seam roads*. **Kigu** are spirit-girls who wear *living costumes* (animal, plant,
 object onesies that grow more elaborate as they evolve). A person who forms a **Stitch Bond** with a Kigu is a **Tailor**. The
-**Tailors' Guild** licenses Tailors, runs the eight **Salons** (each led by a **Master Tailor**, who gives a **Button**), and crowns the
-Grand Tailor at the **Grand Atelier**. The **Starch Society** believes the world should be pressed flat.
+**Global Tailor's Association** is the authority over every Tailor, and it is led by **the Needles**. In Tsumugi its local branch, the
+**Tailors' Guild** (proposed: the Guild is the Association's Tsumugi branch), licenses Tailors, runs the eight **Salons** (each led by a
+**Master Tailor**, who gives a **Button**), and crowns the Grand Tailor at the **Grand Atelier**. **The Needles have vanished**, and the
+**Starch Society**, which everyone trusted, stepped into the gap they left. The Society believes the world should be pressed flat.
 
-**Timeline.** *Long ago:* the twin weavers Warpa and Weftie weave the land (§7). *Thirty years ago:* **the Great Snarl** at Loomhaven's Lantern
-Festival (§6). *Now:* the hero is 12 or 13, turns apprentice, and the Society is weeks from its big day: **this year's Lantern Festival.**
+**Timeline.** *Long ago:* the twin weavers Warpa and Weftie weave the land, and bind the **Unweaving** (working name, §7a) inside a magic
+tapestry. *Thirty years ago:* **the Great Snarl** at Loomhaven's Lantern Festival (§6); the Starch Society begins as a kind ribbon-warden club.
+*A few years ago (proposed: five):* the Needles vanish, the Society fills the power vacuum, and its leaders find the tapestry. *Now:* the hero is 12 or 13, turns apprentice, and the Society is weeks from its big day: **this year's Lantern Festival.**
 
 ## 4. The cast
 
@@ -143,6 +146,9 @@ Purl — slow, exact, knitting words ("cast on", "drop a stitch", "purl"). Rue �
 
 ## 6. The Starch Society
 
+**Mantra:** *"Flat is fair."* **Motto:** *"Perfection is just the beginning."* (Both are the owner's words; keep them verbatim. The mantra
+is what Pressers say to each other and to you; the motto is on the banners, the letterheads and Damask's lips.)
+
 **What they believe:** *Flat is fair. Crisp. Clean. Even.* A cloth that is perfectly flat cannot tangle or tear. So: no wild Kigu (they are "creases"), no tangles, no surprises. A
 **Pressed** Kigu is bleached white with blue piping, calm, obedient, and says "Yes, Tailor." in a pleasant monotone. She cannot choose. (Soft Rinse undoes it.)
 
@@ -152,9 +158,22 @@ daughter **Hester**, then a festival warden, took the Guild's title *Madame Dama
 identical ribbon. The idea grew: identical ribbons, identical costumes, identical roads. Many of its members joined because they were frightened, and were *helped*. That is why it works.
 Her younger sister **Bobbin** went the other way: if wild threads can tangle, study them. They have not spoken since.
 
+**How it went wrong (owner, 2026-10-26).** For most of those thirty years the Society really was benevolent: ribbon wardens, lost-and-found
+desks, tidy-day parades. Then the Needles vanished (§7), and Tailors who had nobody else to ask started asking the Society. It was organised,
+polite and already everywhere, so it filled the power vacuum almost without trying. That is why there are Society inspectors on bridges in
+Chapter 1 and why nobody argues with them.
+
+Around the same time, the Society's leadership (Damask and her Pleats) found the **magic tapestry** and the thing bound inside it (§7a).
+It is not a Kigu. It talks, and it is patient, and it told them a story: that it was a gentle spirit of order, that the legendary
+seamstresses Warpa and Weftie had locked it away because it wanted a world where nothing tangles and nobody gets lost, and that the
+seamstresses are the reason the weave keeps tearing. Damask believed it, because it was exactly what she wanted to hear. The Society's
+plan is to **flatten Tsumugi and transfer it into the tapestry**, which they have been told will "rescue" the spirit and let it keep
+the whole land safe and smooth forever. They are not lying to anyone; they have been lied to.
+
 **Madame Damask.** Tall, iron-grey bun, steam-iron brooch, exquisitely polite ("Do mind the creases, dear"). Never raises her voice. Pours tea. Her weakness: she has not sewn a stitch since
 the Snarl (her mother's thimble is in Rue's drawer). Her plan: **re-weave Tsumugi as a plain weave** — over, under, over, under, no patterns — using the **Great Press** at the Starch Works and the
-twins' threads pulled taut through the **Great Loom** in Loomhaven during the Lantern Festival: *"This year, nobody gets lost."* Her ace is the twin the hero did not save.
+twins' threads pulled taut through the **Great Loom** in Loomhaven during the Lantern Festival, then pass the pressed weave into the magic
+tapestry, which she believes will set its prisoner free: *"This year, nobody gets lost."* Her ace is the twin the hero did not save.
 
 **The Pleats (admins)** — each with a human reason, each beaten kindly:
 
@@ -176,6 +195,11 @@ knot, and where they tied a knot a town grew (the first knot is Button Town — 
 came, the sisters said: *"No thread holds by itself. Let the people and the Kigu choose one another."* That was the first Stitch Bond. When the weave was done they were tired, and lay down at the two
 ends of the cloth — Warpa in a bed of embers in the north (Woolen Peak), Weftie in a bed of tides at the sea (Loomhaven harbour) — and promised to wake if the weave ever tore.
 
+**The seamstresses speak through Kigu (owner, 2026-10-26).** Warpa and Weftie are the **legendary Kigu seamstresses**. They do not talk
+the way people do, but every Kigu wears cloth they wove, so they can speak *through* a Kigu. That is how they talk to the hero in the
+end-game: a line appears in the hero's lead Kigu's text box, under her name, but the words are the sisters'. Before that, the only hint
+is a Kigu who briefly says something she could not know (proposed: once after the twin choice in Chapter 8).
+
 **Lullaby (Tea House, Tapestry, Loomhaven):** *"Warp goes up and weft goes by, / one holds fast and one runs wide. / Cross them once and tie them true, / and the world will hold for me and you."*
 
 **The truth the Society missed:** a weave only holds if its threads can *give*. The Great Press works by pulling the sisters taut *apart* — the tension is what flattens the land. Reunite them, and
@@ -185,13 +209,35 @@ the tension slackens and colour returns.
 always wants to see what's over there. At the Works they are held in two tension frames. **The hero can free only one** (cut her thread with the Disc: Snip Poppy gave you — the first gift pays off):
 the one freed takes the hero's thread in her sleeve and joins the party (suggest Lv 45ish). Damask takes the other to Loomhaven. The text supports both (`{twin}` / `{twin2}`; story keys end `.warpa` / `.weftie`). The rival stands beside the hero for this choice: *"Whichever you pick, I have got your back."*
 
-**The Four Needles** (Elite Four; Guild seniors, named for real needles): each is a kind of mending.
+### 7a. The Unweaving (working name) and the magic tapestry
+
+**What it is (owner, 2026-10-26).** The real enemy of the game is **not a Kigu**. It is a non-Kigu entity that is the antithesis of the
+legendary seamstresses: they tie threads together and let people and Kigu choose each other, and it pulls threads apart until there is
+nothing left to choose. It has no costume and no Sketchbook page. **It cannot be bonded
+with**: a Bond Spool simply will not take, and the battle text says so plainly. **The Everspool cannot sway it** either. The Everspool's
+thread can calm any heart that is able to choose, which is how the first Stitch Bond was tied; the entity has nothing to choose with,
+so the thread slides off.
+
+**The tapestry.** Long ago the seamstresses could not unmake it, so they wove it into a magic tapestry and hid the tapestry away. The
+tapestry holds it, but it is not quiet. Its pull is what made the Needles vanish (proposed: they were drawn into the tapestry, §7 below).
+
+**Name and look:** open, see §15. Working name in docs only: "the Unweaving". It must not look like a Kigu girl in a costume.
+
+### 7b. The Needles and the Global Tailor's Association
+
+**The Needles lead the Global Tailor's Association** (owner, 2026-10-26), the authority over all Tailors everywhere. **They vanished
+because of the entity's activity**, and the Starch Society filled the power vacuum (§6). Proposed way to keep the Grand Atelier fight
+intact: three of the Four Needles (Bodkin, Darner and Tapestry) were drawn into the tapestry; Sharps was away on the road and escaped,
+which is why he has been wandering Tsumugi as "Mr. Sharp" ever since, looking for them and scouting for the Guild. When the tapestry is
+broken open after the climax, the three come home, and the Four Needles sit at the Grand Atelier again. (Open, see §15.)
+
+**The Four Needles** (Elite Four; leaders of the Global Tailor's Association, named for real needles): each is a kind of mending.
 
 | Needle | Type | Who | Lesson | Line |
 |---|---|---|---|---|
 | **Bodkin** | Brawl | gentle giant in monk robes, eyes closed; speaks in proverbs | *Patience.* Stopped fighting after the Snarl because he couldn't untie one knot fast enough | "Breathe in. Thread through." |
-| **Darner** | Iron | knightly woman in thimble-plate; formal, chivalrous, cannot cook | *Mending is work, not wishing.* The Guild's auditor; she admits the Guild saw the Society rising and looked away | "No hole is too small to darn." |
-| **Tapestry** | Dream | ancient, nightcap-and-robe, falls asleep mid-sentence; keeper of the lullaby | *Dreams are plans that haven't woken up yet.* The only living person who met the twins, as a child | "Mm? ...Oh, yes. Where was I?" |
+| **Darner** | Iron | knightly woman in thimble-plate; formal, chivalrous, cannot cook | *Mending is work, not wishing.* The Association's auditor; she admits she felt the tapestry's pull for years and never reported it | "No hole is too small to darn." |
+| **Tapestry** | Dream | ancient, nightcap-and-robe, falls asleep mid-sentence; keeper of the lullaby | *Dreams are plans that haven't woken up yet.* The only living person who met the twins, as a child. Proposed: she was the tapestry's warden, which is why she carries its name | "Mm? ...Oh, yes. Where was I?" |
 | **Sharps** | Shade | masked trickster (the peddler!), grins in every disguise, turns serious on one line | *Notice things.* Being sharp is noticing, not pointing | "Keep your eyes sharp, friend!" |
 
 **The Grand Tailor — Sashiko.** Old, small, merry; a long coat patched with hundreds of mismatched patches (each one a story; she points them out); white hair with needles stuck in the bun; calls the
@@ -219,12 +265,14 @@ the slabs are Press plates. *Scenes:* `desert_*`, `rival4`, `script.gusset`.
 **Ch. 7 — Woolen Peak (Salon 6, Frost).** Snow, knit-everything. Purl's evidence: sheep-Kigu gone quiet, the old mill lit all night. He knits you a scarf. *Scenes:* `script.purl`, `mill_watch`.
 **Ch. 8 — The Starch Works.** Infiltration in a delivery cart (Mimi drives). Pleat Calender ("Right on schedule"). The Tension Hall: the twins in their frames. **Choose which twin to free.** Damask on the speaker:
 "Bring her to Loomhaven, Calender. It is nearly time." The rival finds their dad. *Scenes:* `works_*`, `twin_choice`.
-**Ch. 9 — Loomhaven (Salon 7, Spook) and the Great Loom.** An old harbour city hung with lanterns for the festival; murals of the legend; Rue's Lost & Found and the thimble. **Rival #6** ("If you can't beat me you can't beat her").
+**Ch. 9 — Loomhaven (Salon 7, Spook) and the Great Loom.** *(Lore beats 2026-10-26: Damask learns at the Loom that she was misled; the entity
+is still bound but no longer hidden, and it becomes the end-game threat. Exact rework open, see §15.)* An old harbour city hung with lanterns for the festival; murals of the legend; Rue's Lost & Found and the thimble. **Rival #6** ("If you can't beat me you can't beat her").
 **The climax:** the Lantern Festival; Damask at the Great Loom with the other twin; the battle; she starts the Press anyway; white spreads; Bobbin arrives ("Hester."); the hero returns the thimble; the
 hero braids the eight Button-threads and ties the twins together; the Press slackens; colour returns; Mimi and the townsfolk with buckets. Damask sits down. Nobody is taken away in handcuffs; she is given tea. *Scenes:* `loom_*`, `script.rue`.
 **Ch. 10 — Selvage (Salon 8, Drake).** The border-city and the Gate. Brocade tests you with a real battle ("I want to see what you have become") and gives the last Button. *Scene:* `script.brocade`.
 **Ch. 11 — The Last Seam** (BIBLE working name: Victory Road — that is a real-franchise place-name, so in text it is **the Last Seam**; see §14). **Rival #7** in the last pass, the friendly final fight.
-**Ch. 12 — The Grand Atelier.** The Four Needles (Bodkin, Darner, Tapestry, Sharps — the peddler, finally in no disguise); the Grand Tailor; the Hall of Fame (we call it the Wall of Stitches); the twins weave the last seam across
+**Ch. 12 — The Grand Atelier.** *(Lore beats 2026-10-26: the seamstresses speak through your lead Kigu here; where the entity is faced, and
+how the vanished Needles come back, is open, see §15.)* The Four Needles (Bodkin, Darner, Tapestry, Sharps — the peddler, finally in no disguise); the Grand Tailor; the Hall of Fame (we call it the Wall of Stitches); the twins weave the last seam across
 the sky; credits. *Post-story:* the Press becomes a festival steamer; Damask runs the Neatness Committee ("Wrinkles are permitted in Tsumugi, except on Tuesdays"); Poppy pours tea for two sisters.
 
 ## 9. Recurring jokes and motifs
@@ -281,7 +329,10 @@ Every Tea House maid opens with a variation of "Please rest your Kigu... and you
 
 Dahlia and Draco are childhood friends from next-door houses in Button Town; the rival is always the other one. The Snarl was 30 years ago at the Loomhaven Lantern Festival. Hester Bobbin (Madame Damask) is ~60; Prof. Bobbin ~57; Sashiko ~80. The Everspool is in the Spindle Shrine. The Society was a ribbon-warden club before it was the Society.
 Nobody in the game dies. Pressed Kigu are cured by Soft Rinse (Mimi's invention) plus time. The hero's jacket ends with eight Buttons; Buttons are sewn on with the Master's thread. Kigu choose Tailors; the word "captured" is never used.
-Tea Houses everywhere serve cocoa. The hero's Mom knows more than she says (she has never mentioned why she stitches her hems with a double knot — the Loomhaven way).
+Tea Houses everywhere serve cocoa. The Starch Society's mantra is "Flat is fair." and its motto is "Perfection is just the beginning." (verbatim).
+The Needles lead the Global Tailor's Association and vanished because of the entity; the Society filled the gap. The Society was benevolent
+before its leaders found the tapestry and were misled. The legendary seamstresses (Warpa and Weftie) speak through Kigu. The big bad is
+**not a Kigu**: it cannot be bonded with and the Everspool cannot sway it. The rival's dad stays pressed until Chapter 8. The hero's Mom knows more than she says (she has never mentioned why she stitches her hems with a double knot — the Loomhaven way).
 
 ## 14. Glossary: words the text must NEVER contain (enforced by `tests/text.test.mjs`)
 
@@ -297,3 +348,18 @@ Tea Houses everywhere serve cocoa. The hero's Mom knows more than she says (she 
 
 (Generic English words like "hall of fame", "badge of honour" in a non-game sense, or "caught a cold" are fine *outside* game terms; keep them rare, and the test only matches the
 whole-word forms above.)
+
+## 15. Open questions from the 2026-10-26 lore beats (owner decides)
+
+Summary and recommendations: `/mnt/project-files/story/lore-beats-2026-10-26.md`. Anything marked (proposed) in §§3, 6, 7, 7a and 7b
+is a suggestion until the owner picks.
+
+1. The entity's name and look.
+2. Who trapped it in the tapestry (read here as the seamstresses, long ago).
+3. How the vanished Needles square with the Four Needles fight and Mr. Sharp.
+4. When the Needles vanished.
+5. The Guild and the Association: one body or two.
+6. Which legendaries count as the "seamstresses".
+7. The Needle called Tapestry and the magic tapestry share a name.
+8. Where and how the entity is faced, since it cannot be bonded or swayed.
+9. Whether the entity caused the Great Snarl.

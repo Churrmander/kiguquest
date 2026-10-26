@@ -16,9 +16,11 @@ roads". Warm, cosy, a little magical — festival lanterns, sewing-shop signs, p
 | **Tea House** | The heal station in every town (Kigu nap + cocoa). Has the storage terminal. |
 | **General Store** | Shops. |
 | **Salon** / **Master Tailor** | The eight gyms / gym leaders. Win a **Button** (badge). |
-| **The Four Needles** | The Elite Four. **The Grand Tailor** = Champion. The final hall is **the Grand Atelier**. |
-| **The Starch Society** | The villain team. Believes the world should be *pressed flat and uniform*: no wild Kigu, no wrinkles. Grunts wear stiff white uniforms with blue starch collars ("Pressers"); admins are "Pleats". Leader: **Madame Damask**. |
-| **Warpa & Weftie** | Twin guardian Kigu who "wove" the land (warp = vertical threads, weft = horizontal). The Society wants them. Player bonds with one; the leader's ace is the other. |
+| **Global Tailor's Association** | The authority over all Tailors, led by the Needles. The Tailors' Guild is its Tsumugi branch (proposed). |
+| **The Four Needles** | The Elite Four, and the leaders of the Global Tailor's Association. They vanished because of the entity's activity, which left a power vacuum the Starch Society filled (STORY §7b). **The Grand Tailor** = Champion. The final hall is **the Grand Atelier**. |
+| **The Starch Society** | The villain team. Believes the world should be *pressed flat and uniform*: no wild Kigu, no wrinkles. Grunts wear stiff white uniforms with blue starch collars ("Pressers"); admins are "Pleats". Leader: **Madame Damask**. Mantra: *"Flat is fair."* Motto: *"Perfection is just the beginning."* Benevolent until its leaders found the magic tapestry and were misled by what is inside it. |
+| **The entity** (working name "the Unweaving") | The big bad, bound in a **magic tapestry**; the antithesis of the legendary Kigu seamstresses. **Not a Kigu**: it cannot be bonded with, and the Everspool cannot sway it. Name and look still open (STORY §7a). |
+| **Warpa & Weftie** | Twin guardian Kigu who "wove" the land (warp = vertical threads, weft = horizontal). The legendary Kigu seamstresses; they speak through Kigu, which is how they talk to the player in the end-game. The Society wants them. Player bonds with one; the leader's ace is the other. |
 | **Paddle / Snip / Shove / Glide / Climb** | Field moves (HM-style): cross water / cut small trees / push boulders / fast-travel / climb waterfalls. |
 
 Species cry = a short sound-word shown in battle ("Kon!").
