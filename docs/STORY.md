@@ -266,7 +266,8 @@ broken open after the climax, the three come home, and the Four Needles sit at t
 **Safe inside (owner, 2026-10-26).** The Needles have **direct contact with the Seamstresses**, and that is why they are safe inside the
 tapestry: the goddesses keep them from harm the whole time. The hero's Kigu have been talking about the hero to the Seamstresses all game,
 and the Seamstresses passed it on to the Needles. So when the Needles come home, they already know the hero, and they want to **formally
-challenge** them so the hero can formally earn the title of **Weave Guardian** (owner's name, 2026-10-26). That is why the Four Needles battles happen at the Grand Atelier.
+challenge** them so the hero can formally earn the title of **Weave Guardian** (owner's name, 2026-10-26), the champion title: the hero earns it by beating the Four
+Needles and the Grand Tailor. That is why the Four Needles battles happen at the Grand Atelier.
 
 **The Four Needles** (Elite Four; leaders of the Global Tailor's Association, named for real needles): each is a kind of mending.
 
@@ -409,6 +410,6 @@ is a suggestion until the owner picks.
 9. Whether the entity caused the Great Snarl.
 10. ~~Whether Damask is the leader who was tricked~~ Answered: yes, and she is an ex-Needle. Still open: who else knows the real plan, her
     Needle name (proposed Chenille), how long she sat and why she left.
-10a. ~~"Woven Champion"~~ Answered: the title is **Weave Guardian**. Still open: is it the same thing as becoming Grand Tailor, or a
-    separate title?
+10a. ~~"Woven Champion"~~ Answered: **Weave Guardian** is the champion title, earned by beating the Four Needles and Sashiko.
+    Still open: does "Grand Tailor" stay as Sashiko's title, or become "Weave Guardian" too so there is one name?
 11. Types for the goddesses (Order as Dream/Ember and Nature as Dream/Tide still fit; Iron and Sprout are options).
