@@ -231,7 +231,7 @@ Named Pleats (all PROPOSED ids, built from `pleat`):
 
 ---
 
-## 6. Four Needles & Grand Tailor
+## 6. Four Needles & Weave Guardian
 
 All P2 except the peddler disguise of Sharps, which is P1. Each Needle is a kind of mending.
 
@@ -268,7 +268,7 @@ All P2 except the peddler disguise of Sharps, which is P1. Each Needle is a kind
 - **Expression / pose:** drowsy, half-lidded eyes, mid-yawn.
 - **Must keep:** nightcap with pompom; long nightrobe; half-lidded eyes.
 
-### `sashiko` — Sashiko (Grand Tailor) · P2 · PROPOSED
+### `sashiko` — Sashiko (Weave Guardian) · P2 · PROPOSED
 *Story: old, small and merry. Calls the hero "little stitch". Taught both sisters to sew. Has "retired" four times. Says "Every tear tells a story. Mend it where everyone can see."*
 - **Look (proposed):** elder woman, small and round. Warm skin. White hair (#ecebf2) in a bun with silver needles (#c4c8dc) stuck through it. Brown eyes (#7a4a2e), crinkled and merry.
 - **Outfit (proposed):** long coat in brown (#7c4e30) covered in hundreds of mismatched patches (red #d8363a, yellow #f2cc40, teal #2c9294, lilac #b494e0, green #4a9a48).
@@ -401,6 +401,6 @@ Resolved in this brief as shown. Please confirm the ones marked *decision needed
 5. **Bryn's props.** STORY gives goggles and a pushed-up beekeeper veil. `looks.js` has neither. Kept `looks.js`. Add them only if approved.
 6. **Pleat sex.** `looks.js` `pleat` is male. STORY's Pleat Crease is a woman. Added three named variants.
 7. **Loomhaven and Selvage.** BIBLE §9 lists Loomhaven as Salon 7 Drake (with a "?") and the final city as Salon 8. STORY ch. 9–10 says Loomhaven is Salon 7 Spook (Rue) and Selvage is Salon 8 Drake (Brocade). Followed STORY.
-8. **Grand Tailor.** `looks.js` `old_tailor` (male, moustache) is not Sashiko (old, small, she). Kept `old_tailor` as a generic. Sashiko added as PROPOSED.
+8. **Weave Guardian.** `looks.js` `old_tailor` (male, moustache) is not Sashiko (old, small, she). Kept `old_tailor` as a generic. Sashiko added as PROPOSED.
 9. **Story-only people with no look id.** Zip, the rival's dad and the peddler (Mr. Sharp) appear in chapters 1–3 but have no `looks.js` id. Added as PROPOSED. *Decision needed:* approve them for P1 generation.
 10. **Tapestry's sex is unstated** in STORY. The proposed look is an old woman. Pick one and keep it.

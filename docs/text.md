@@ -81,7 +81,7 @@ Rules: a `{var}` not in this table fails the test. Do not put a variable at the 
 ## Branding / originality / all-ages (enforced by the test)
 
 Say **Kigu** (never monster/creature), **Tailor** (never trainer), **Salon** (gym), **Button** (badge), **Master Tailor** (gym leader),
-**the Four Needles / the Grand Tailor** (Elite Four / champion), **Sketchbook**, **Tea House**, **General Store**, **Bond Spool**,
+**the Four Needles / the Weave Guardian** (Elite Four / champion), **Sketchbook**, **Tea House**, **General Store**, **Bond Spool**,
 **Stitch Bond** / **befriend** (never catch/capture/tame). Kigu "fall asleep" ("too sleepy to go on"), nobody is hurt, nothing dies.
 Never use real-franchise names or terms (see the glossary in `docs/STORY.md` §14). Wholesome: no fanservice, no insults at the
 player, no swearing ("darn" and "drat" are the strongest words in Tsumugi).

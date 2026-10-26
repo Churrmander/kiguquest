@@ -68,7 +68,7 @@ A beautiful-sounding sentence that does not make sense is a failed sentence.
    different; a Pressed Kigu's is bleached white with blue piping. The hero ends with eight *different* Buttons on one jacket.
 2. **Bonds you choose.** Kigu *choose* their Tailors (never captured: she shakes the spool because she is deciding). The rival and Mimi choose to stay
    friends. The twins choose. The Society's sin is taking the choosing away.
-3. **Mending, not erasing.** You don't iron out a tear, you mend it — visibly, proudly (the Grand Tailor's coat is all patches). The villain is not
+3. **Mending, not erasing.** You don't iron out a tear, you mend it — visibly, proudly (the Weave Guardian's coat is all patches). The villain is not
    destroyed; she is *invited to sew again*. Pressing is a fine tool for a seam; it is a terrible philosophy for a world.
 
 Motif kit: buttons, threads, patches, tea, tape measures, lanterns, white vs. colour, "where everyone can see" (visible mending).
@@ -79,7 +79,7 @@ Motif kit: buttons, threads, patches, tea, tape measures, lanterns, white vs. co
 object onesies that grow more elaborate as they evolve). A person who forms a **Stitch Bond** with a Kigu is a **Tailor**. The
 **Global Tailor's Association** is the authority over every Tailor, and it is led by **the Needles**. In Tsumugi its local branch, the
 **Tailors' Guild** (proposed: the Guild is the Association's Tsumugi branch), licenses Tailors, runs the eight **Salons** (each led by a
-**Master Tailor**, who gives a **Button**), and crowns the Grand Tailor at the **Grand Atelier**. **The Needles have vanished**, and the
+**Master Tailor**, who gives a **Button**), and crowns the Weave Guardian at the **Grand Atelier**. **The Needles have vanished**, and the
 **Starch Society**, which everyone trusted, stepped into the gap they left. The Society believes the world should be pressed flat.
 
 **Timeline.** *Before the land:* Warpa and Weftie, the Goddesses of Order and Nature, weave a magic tapestry to hold the **Unweaving**
@@ -105,7 +105,7 @@ mends the land. Never speaks; the writing gives them things to be kind *to*.
 
 ### {rival} — the rival (Draco if you play Dahlia, Dahlia if you play Draco)
 Sunny, a bit show-offy, loyal, quick to laugh. Hates losing for exactly three seconds, then cheers the winner loudest. Teases the player *up*, never down; no insults, no sulking, no "Hmph." Drawn with the other hero's look (no look of its own). Their dad is a floor manager at **Crisp & Co.** in Seamstead, and his letters home have been getting *so tidy lately*. Their mum is warm and a little worried about those letters, and the rival is worried too, though they do not say so yet.
-**Arc:** (1) Lab: you both get a Kigu on the same morning. The rival takes the one that beats yours, as a dare: "Fair is fair!" (2) Route 1: the first friendly challenge, at the top of Meadow Lane. (3) Thimble: loses to Poppy and turns up outside the Salon with snack cakes and tips. (4) Seamstead: defends Crisp & Co. because their dad works there; the raid shakes them. (5) Quarry: quieter; asks for a battle "to measure" how far you have both come. (6) Kite Hill: goes looking for their dad; Dart teases them until they laugh. (7) The Starch Works: finds their dad pressed on the Pressing Floor, and gets him back. (8) The Last Seam: the friendly final fight: *"You were never in my way. You were the map."* They ask Prof. Bobbin to take them on as an apprentice. They win their Buttons on their own, never become Grand Tailor, and do not need to.
+**Arc:** (1) Lab: you both get a Kigu on the same morning. The rival takes the one that beats yours, as a dare: "Fair is fair!" (2) Route 1: the first friendly challenge, at the top of Meadow Lane. (3) Thimble: loses to Poppy and turns up outside the Salon with snack cakes and tips. (4) Seamstead: defends Crisp & Co. because their dad works there; the raid shakes them. (5) Quarry: quieter; asks for a battle "to measure" how far you have both come. (6) Kite Hill: goes looking for their dad; Dart teases them until they laugh. (7) The Starch Works: finds their dad pressed on the Pressing Floor, and gets him back. (8) The Last Seam: the friendly final fight: *"You were never in my way. You were the map."* They ask Prof. Bobbin to take them on as an apprentice. They win their Buttons on their own, never become Weave Guardian, and do not need to.
 
 ### Mimi (the cheerful friend)
 Pink cardigan, enormous bow, talks in exclamation marks, always has a spare snack. Dreams of *designing Kigu costumes*, not battling. She brings the
@@ -125,7 +125,7 @@ Mom bakes and heals you with cocoa. {rival}'s mum has known you since you were b
 
 ### "Mr. Sharp" — the recurring peddler (spoiler: Sharps, the fourth Needle, who took Damask's old seat)
 A cheerful travelling seller in a different absurd disguise in every town (false moustache, a chef's hat, a sailor cap) who always insists he is "just a humble peddler,
-nothing suspicious." Everyone sees through him; he doesn't know. He is the Guild's scout, and it is his report that makes the Grand Tailor say *yes*.
+nothing suspicious." Everyone sees through him; he doesn't know. He is the Guild's scout, and it is his report that makes the Weave Guardian say *yes*.
 Catchphrase: "Keep your eyes sharp, friend!" (NPC id suggestion `peddler`, in Thimble, Hemline, Seamstead, the Quarry, Kite Hill, Woolen Peak, Loomhaven, the Last Seam.)
 
 ## 5. The eight Master Tailors
@@ -200,7 +200,7 @@ tapestry, which she believes will set its prisoner free: *"This year, nobody get
 one keeps folding your shirt while you battle. Class key `presser`. **Crisp & Co.:** the respectable front — linens, uniforms, "Crisp Care" cleaning. **Starch Works:** the old Woolen Peak mill.
 **Public face:** "The Starch Society: A Society for Tidy Living." Its Tidy Days are folded-laundry parades.
 
-## 7. The legend, the twins, the Needles and the Grand Tailor
+## 7. The legend, the twins, the Needles and the Weave Guardian
 
 **The true beginning (owner, 2026-10-26; nobody alive tells it this way).** Warpa and Weftie were the **Goddesses of Order and Nature**
 (proposed: Warpa is Order, the steady straight thread; Weftie is Nature, the restless thread that wanders across). The Unweaving
@@ -267,7 +267,7 @@ broken open after the climax, the three come home, and the Four Needles sit at t
 tapestry: the goddesses keep them from harm the whole time. The hero's Kigu have been talking about the hero to the Seamstresses all game,
 and the Seamstresses passed it on to the Needles. So when the Needles come home, they already know the hero, and they want to **formally
 challenge** them so the hero can formally earn the title of **Weave Guardian** (owner's name, 2026-10-26), the champion title: the hero earns it by beating the Four
-Needles and the Grand Tailor. That is why the Four Needles battles happen at the Grand Atelier.
+Needles and the reigning Weave Guardian, Sashiko. That is why the Four Needles battles happen at the Grand Atelier.
 
 **The Four Needles** (Elite Four; leaders of the Global Tailor's Association, named for real needles): each is a kind of mending.
 
@@ -278,7 +278,7 @@ Needles and the Grand Tailor. That is why the Four Needles battles happen at the
 | **Tapestry** | Dream | ancient, nightcap-and-robe, falls asleep mid-sentence; keeper of the lullaby | *Dreams are plans that haven't woken up yet.* The only living person who met the twins, as a child. Proposed: she was the tapestry's warden, which is why she carries its name | "Mm? ...Oh, yes. Where was I?" |
 | **Sharps** | Shade | masked trickster (the peddler!), grins in every disguise, turns serious on one line | *Notice things.* Being sharp is noticing, not pointing | "Keep your eyes sharp, friend!" |
 
-**The Grand Tailor — Sashiko.** Old, small, merry; a long coat patched with hundreds of mismatched patches (each one a story; she points them out); white hair with needles stuck in the bun; calls the
+**The Weave Guardian — Sashiko.** Old, small, merry; a long coat patched with hundreds of mismatched patches (each one a story; she points them out); white hair with needles stuck in the bun; calls the
 hero "little stitch." Taught both sisters to sew a straight line; "I forgot to teach Hester to forgive a crooked one." Has "retired" four times. Keeps a chair for Hester at the table. Her teaching:
 *"Every tear tells a story. Mend it where everyone can see."* After the fight she hands over the **Golden Needle** and asks the hero to be the next Mender.
 
@@ -314,7 +314,7 @@ hero braids the eight Button-threads and ties the twins together; the Press slac
 **Ch. 11 — The Last Seam** (BIBLE working name: Victory Road — that is a real-franchise place-name, so in text it is **the Last Seam**; see §14). **Rival #7** in the last pass, the friendly final fight.
 **Ch. 12 — The Grand Atelier.** *(Lore beats 2026-10-26: the seamstresses speak through your lead Kigu here. The Needles have come home from
 the tapestry, already knowing the hero through the Kigu and the Seamstresses, and challenge them formally for the title of Weave Guardian.
-Where the entity is faced is still open, see §15.)* The Four Needles (Bodkin, Darner, Tapestry, Sharps — the peddler, finally in no disguise); the Grand Tailor; the Hall of Fame (we call it the Wall of Stitches); the twins weave the last seam across
+Where the entity is faced is still open, see §15.)* The Four Needles (Bodkin, Darner, Tapestry, Sharps — the peddler, finally in no disguise); the Weave Guardian; the Hall of Fame (we call it the Wall of Stitches); the twins weave the last seam across
 the sky; credits. *Post-story:* the Press becomes a festival steamer; Damask runs the Neatness Committee ("Wrinkles are permitted in Tsumugi, except on Tuesdays"); Poppy pours tea for two sisters.
 
 ## 9. Recurring jokes and motifs
@@ -332,7 +332,7 @@ the sky; credits. *Post-story:* the Press becomes a festival steamer; Damask run
 
 ## 10. Endings and credits beats
 
-Hall of Fame (the Wall of Stitches): the Grand Tailor sews your name in. The twins appear above the Atelier's roof and weave the last seam, a thread of light from horizon to horizon; colour rolls over Tsumugi.
+Hall of Fame (the Wall of Stitches): the Weave Guardian sews your name in. The twins appear above the Atelier's roof and weave the last seam, a thread of light from horizon to horizon; colour rolls over Tsumugi.
 Credits vignettes: Poppy adds a cardigan in your size to the window; Bryn's bees make a new honey ("Everspool Blend"); Zip's marquee says "SHOWING TONIGHT: EVERYONE"; Gusset's hard hat has a bouquet;
 Dart's balloon now has a patch shaped like you; Purl has finished the scarf (it is eleven metres long); Rue's Lost & Found has a new sign ("Found: Sister"); Brocade's teacup has a golden seam; Damask sews a button on a coat;
 Bobbin finds her tape measure; the rival, at the Atelier door: "Last one in buys the cocoa!" Mimi's costume line: **"Mimi & Co."** (no starch).
@@ -383,7 +383,7 @@ before its leaders found the tapestry and were misled. The legendary seamstresse
 | Pokemon / Pokémon / Poké / Poke Ball / Pokedex / Pokémon Center / Poké Mart, monster, creature, pocket monster | Kigu; Bond Spool; Sketchbook; Tea House; General Store |
 | trainer (for the player and NPCs) | Tailor (classes: Tailor, Picnicker...) |
 | gym, gym leader, badge | Salon, Master Tailor, Button |
-| Elite Four, champion | the Four Needles, the Grand Tailor |
+| Elite Four, champion | the Four Needles, the Weave Guardian |
 | Victory Road, Pallet / Lavender / Viridian / any franchise town, Team Rocket / Plasma / Galactic / Aqua / Magma / Flare / Skull / Yell / Star, Ghetsis, N (the character), any franchise hero/rival/professor or monster name (Pikachu, Charizard, Eevee, Mew...) | original equivalents (see §§5-7, 12) |
 | capture, captured, tame, tamed, caught (of a Kigu) | befriend, Stitch Bond, "she accepted the spool" |
 | die / dead / kill / blood / gore / damn / hell / crap / stupid / idiot / shut up | falls asleep / "darn" / "drat" / silly |
@@ -410,6 +410,6 @@ is a suggestion until the owner picks.
 9. Whether the entity caused the Great Snarl.
 10. ~~Whether Damask is the leader who was tricked~~ Answered: yes, and she is an ex-Needle. Still open: who else knows the real plan, her
     Needle name (proposed Chenille), how long she sat and why she left.
-10a. ~~"Woven Champion"~~ Answered: **Weave Guardian** is the champion title, earned by beating the Four Needles and Sashiko.
-    Still open: does "Grand Tailor" stay as Sashiko's title, or become "Weave Guardian" too so there is one name?
+10a. ~~"Woven Champion"~~ Answered: **Weave Guardian** is the champion title, earned by beating the Four Needles and the reigning Weave Guardian, Sashiko.
+    Answered too: Sashiko's old title "Grand Tailor" is now **Weave Guardian** as well, so there is one name (owner, 2026-10-26).
 11. Types for the goddesses (Order as Dream/Ember and Nature as Dream/Tide still fit; Iron and Sprout are options).
