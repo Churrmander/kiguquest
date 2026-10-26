@@ -266,8 +266,7 @@ broken open after the climax, the three come home, and the Four Needles sit at t
 **Safe inside (owner, 2026-10-26).** The Needles have **direct contact with the Seamstresses**, and that is why they are safe inside the
 tapestry: the goddesses keep them from harm the whole time. The hero's Kigu have been talking about the hero to the Seamstresses all game,
 and the Seamstresses passed it on to the Needles. So when the Needles come home, they already know the hero, and they want to **formally
-challenge** them so the hero can formally earn the title of **Woven Champion** (owner's name; see §15 about the word "champion" in game
-text). That is why the Four Needles battles happen at the Grand Atelier.
+challenge** them so the hero can formally earn the title of **Weave Guardian** (owner's name, 2026-10-26). That is why the Four Needles battles happen at the Grand Atelier.
 
 **The Four Needles** (Elite Four; leaders of the Global Tailor's Association, named for real needles): each is a kind of mending.
 
@@ -313,7 +312,7 @@ hero braids the eight Button-threads and ties the twins together; the Press slac
 **Ch. 10 — Selvage (Salon 8, Drake).** The border-city and the Gate. Brocade tests you with a real battle ("I want to see what you have become") and gives the last Button. *Scene:* `script.brocade`.
 **Ch. 11 — The Last Seam** (BIBLE working name: Victory Road — that is a real-franchise place-name, so in text it is **the Last Seam**; see §14). **Rival #7** in the last pass, the friendly final fight.
 **Ch. 12 — The Grand Atelier.** *(Lore beats 2026-10-26: the seamstresses speak through your lead Kigu here. The Needles have come home from
-the tapestry, already knowing the hero through the Kigu and the Seamstresses, and challenge them formally for the title of Woven Champion.
+the tapestry, already knowing the hero through the Kigu and the Seamstresses, and challenge them formally for the title of Weave Guardian.
 Where the entity is faced is still open, see §15.)* The Four Needles (Bodkin, Darner, Tapestry, Sharps — the peddler, finally in no disguise); the Grand Tailor; the Hall of Fame (we call it the Wall of Stitches); the twins weave the last seam across
 the sky; credits. *Post-story:* the Press becomes a festival steamer; Damask runs the Neatness Committee ("Wrinkles are permitted in Tsumugi, except on Tuesdays"); Poppy pours tea for two sisters.
 
@@ -410,7 +409,6 @@ is a suggestion until the owner picks.
 9. Whether the entity caused the Great Snarl.
 10. ~~Whether Damask is the leader who was tricked~~ Answered: yes, and she is an ex-Needle. Still open: who else knows the real plan, her
     Needle name (proposed Chenille), how long she sat and why she left.
-10a. The title "Woven Champion" (owner). §14 and `tests/text.test.mjs` ban the word "champion" in game text, so either the rule gets an
-    exception for this title or the title changes (ideas: Woven Tailor, Woven Mender). Also: is it the same thing as becoming Grand
-    Tailor, or a separate title Sashiko gives?
+10a. ~~"Woven Champion"~~ Answered: the title is **Weave Guardian**. Still open: is it the same thing as becoming Grand Tailor, or a
+    separate title?
 11. Types for the goddesses (Order as Dream/Ember and Nature as Dream/Tide still fit; Iron and Sprout are options).
