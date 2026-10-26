@@ -140,8 +140,8 @@ Old ids from the round 2 rename live in `src/data/renames.js` (saves migrate on 
 51. `cordymime` Cordymime — Nettle/Sprout — 2/2 — cute+creepy mushroom mime: parasol cap, frilly gill skirt, mycelium threads on her fingers like gentle puppet strings; mimes pulling invisible ropes. Spooky-cute, never gory. *(Redesign still to do.)*
 52. `pilfurr` Pilfurr — Shade — 1/2, →Lv20 `prowlure` — black-cat highwayman: black cat hood, highwayman mask, cape, striped socks, stolen scarf; cheeky. *(Redesign still to do.)*
 53. `prowlure` Prowlure — Shade — 2/2 — swashbuckling musketeer thief: highwayman mask, rapier, cape, feathered musketeer cap (no top hat, so she does not twin with Wiskedabra), ribbon-lock tail. *(Redesign still to do.)*
-54. `smolava` Smolava — Drake — 1/3, →Lv50 `wyvrant` — little dragon onesie (crimson/black), tiny horns hood, stubby tail.
-55. `wyvrant` Wyvrant — Drake — 2/3, →Lv64 `empyress` — moody teen wyvern with a bad attitude (wyvern plus rant): dragon hoodie with wings and horns, long tail.
+54. `smolava` Smolava — Drake — 1/3, →Lv30 `wyvrant` (owner 2026-10-26, was Lv50) — little dragon onesie (crimson/black), tiny horns hood, stubby tail.
+55. `wyvrant` Wyvrant — Drake — 2/3, →Lv55 `empyress` (owner 2026-10-26, was Lv64) — moody teen wyvern with a bad attitude (wyvern plus rant): dragon hoodie with wings and horns, long tail.
 56. `empyress` Empyress — Drake/Shade — 3/3 — composed dragon empress (empress plus pyre), grown out of her teen rants: three-horn crown, huge wing-cape, flowing gown.
 57. `warpa` **Astara** (was Warpa; id renames later) — Dream/Ember — legendary, single stage — tall weaver-spirit in a white-and-crimson ceremonial robe, vertical threads streaming from her sleeves, a loom-comb crown.
 58. `weftie` **Anwela** (was Weftie; id renames later) — Dream/Tide — legendary, single stage — her twin, in white-and-blue, horizontal threads swirling around her like ribbons.

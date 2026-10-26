@@ -324,6 +324,22 @@ Everspool is protected by a **woven ward** that only opens for Kigu the ward hol
   and the ward closes again behind the hero. Mimi then rinses the Mikoga too (owner, 2026-10-26), a second,
   easier rinse that shows the trick works twice.
 
+**The shrine's big fight: the Wyvrant (owner, 2026-10-26).** The Society brought a **Wyvrant** to the shrine. She is not Pressed
+and she is not evil: she tagged along because siding with the Society feels like rebellion, and she ignores the commands of the Presser
+who thinks she is his (proposed: Pin, the male Presser already in the scene; Crease stays in charge). The Mikoga are terrified of her,
+because she breathes fire (Ember moves) and they are moths with paper wings. How it plays:
+
+1. You battle the Wyvrant (Lv30, far above you). Her first hit leaves your Kigu at 1 HP and never knocks it out (proposed), so the
+   threat lands but the fight can't be lost (no blackout).
+2. Watching you stand up to her, the Mikoga are emboldened and **heal your Kigu every turn, by at least 50% HP**. Proposed: they also
+   throw a Gust each turn, so a Lv12 team can wear her down in about 5 or 6 turns instead of 30.
+3. The healing **enrages** her. She stops thinking clearly and **keeps missing** her attacks.
+4. At about **10% HP** she gives up, starts **sulking**, and the battle ends. The text says she flies off somewhere to sulk. Proposed:
+   little or no exp, since she never faints.
+5. Then the other Mikoga fly in from all directions and **form a line between the hero and Mimi and the Pressers**.
+
+Proposed follow-up: the sulking Wyvrant turns up again later as an optional Kigu you can befriend.
+
 **Art direction, Spindle Shrine (owner, 2026-10-26).** A grand Japanese temple deep in Gingham Woods: a red torii gate on the approach,
 stone lanterns, a gravel path, a tiered wooden hall with sweeping curved roofs, and shide-style paper streamers made of thread. The
 interior is a tall hall with wooden pillars; the altar stands at the back on raised steps, and the Everspool sits high on a pedestal above
