@@ -1254,20 +1254,21 @@
   };
 
   // ---------------------------------------------------------------- batch 10
-  R.lanternid = { // the lantern swings on its hook after the breath
+  R.lanternid = { // the lantern swings on its hook after the breath (front: the cord tilts and the lantern slides)
     front: {
       parts: [
-        { name: 'lantern', polys: [[[53, 10], [58, 10], [58, 15], [59, 15], [59, 28], [50, 28], [50, 15], [53, 15]]], z: 4, pivot: [55, 9], parent: 'upper', comp: 'main' },
+        { name: 'cord', polys: [box(53, 10, 57, 15)], z: 4.5, pivot: [55, 10], parent: 'upper', comp: 'main' },
+        { name: 'lantern', polys: [box(50, 16, 59, 28)], z: 4, parent: 'upper', comp: 'main' },
         ...breathe(62, 68, 76),
       ],
-      anim: { upper: BOB, lantern: { ang: ['tab', 'OPEN', -3, 1] } },
+      anim: { upper: BOB, cord: { ang: ['tab', 'OPEN', 8, 10] }, lantern: { dx: ['tab', 'OPEN', -1, 10] } },
     },
     back: {
       parts: [
         { name: 'lantern', polys: [[[14, 13], [19, 13], [19, 19], [23, 19], [23, 35], [11, 35], [11, 19], [14, 19]]], z: 4, pivot: [16, 12], parent: 'upper', comp: 'main' },
         ...breathe(74, 81, 97),
       ],
-      anim: { upper: BOB, lantern: { ang: ['tab', 'OPEN', -3, 1] } },
+      anim: { upper: BOB, lantern: { ang: ['tab', 'OPEN', -3, 10] } },
     },
   };
 
