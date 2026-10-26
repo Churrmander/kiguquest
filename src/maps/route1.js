@@ -48,7 +48,7 @@
     encounters: {
       grass: [
         { sp: 'chirpadee', min: 2, max: 4, w: 30 }, { sp: 'nibblit', min: 2, max: 4, w: 30 },   // a Lv5 starter should win these comfortably
-        { sp: 'kittabra', min: 3, max: 5, w: 25 }, { sp: 'silkie', min: 3, max: 4, w: 10 },
+        { sp: 'kittabra', min: 3, max: 5, w: 25 }, { sp: 'acolarva', min: 3, max: 4, w: 10 },
       ],
     },
     props: [

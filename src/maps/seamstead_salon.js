@@ -60,5 +60,5 @@
   M.trainer('sal3_t2', 9, 6, 'artist', 'down', { cls: 'Tailor', name: 'Lux', sight: 1, reward: 11, ai: 1, team: [['kumi|nibblit', 19], ['scurrent|kittabra', 19]],
     intro: 'I draw lightning bolts on everything, and that includes you!', win: 'Lightning does strike twice. It struck me twice.', after: 'Zip\'s just past the second barrier. Try not to flinch!' });
   M.npc('zip', 5, 3, 'zip|rocker', 'down', null, { script: 'zip', note: 'Master Tailor #3 (Volt)' });
-  M.reg().zipTeam = L.team([['scurrent|kittabra', 19], ['kumara|silkie', 20], ['arcorn|kittabra', 22]]);
+  M.reg().zipTeam = L.team([['scurrent|kittabra', 19], ['kumara|acolarva', 20], ['arcorn|kittabra', 22]]);
 })(typeof globalThis !== 'undefined' ? globalThis : window);

@@ -44,22 +44,22 @@ assert.ok(t.travel(14, 0, 1500), 'cross the woods; at ' + t.pos());
 at('spindle_shrine');
 assert.ok(!st.flags.shrine1_done);
 assert.equal(t.ow.map.def.stamps.find((s) => s.id === 'shrine').variant, 'pressed', 'the shrine looks pressed before the incident');
-assert.equal(t.ow.find('cocoona').look, 'cocoona_pressed');
+assert.equal(t.ow.find('vowspun').look, 'cocoona_pressed');
 
 // ---- the incident: Pin, Welt, then Pleat Crease; Mimi's Soft Rinse
 assert.ok(t.travel(9, 13, 100), 'walk up to the clearing; at ' + t.pos());
 t.go('up');
 assert.ok(t.mash(() => t.idle() && st.flags.shrine1_done, 60000), 'shrine incident resolves; flags ' + JSON.stringify(st.flags));
 assert.ok(st.flags.shrine_pin && st.flags.shrine_welt && st.flags.rinse_done);
-assert.equal(t.ow.find('cocoona').look, 'cocoona', 'the Soft Rinse worked');
+assert.equal(t.ow.find('vowspun').look, 'vowspun', 'the Soft Rinse worked');
 assert.ok(!t.ow.find('crease').visible, 'Crease has gone');
 assert.equal(t.ow.map.placements.find((p) => p.id === 'shrine').variant, 'default', 'the shrine looks like itself again');
-// the Cocoona now rests your Kigu
+// the Vowspun now rests your Kigu
 st.party[0].hp = 1;
-assert.ok(t.travel(9, 10), 'step up to the Cocoona; at ' + t.pos());
+assert.ok(t.travel(9, 10), 'step up to the Vowspun; at ' + t.pos());
 faceUp(); t.tap('a');
 assert.ok(t.mash(() => t.idle(), 5000));
-assert.equal(st.party[0].hp, NP.Kigu.maxHp(st.party[0]), 'the Cocoona healed the party');
+assert.equal(st.party[0].hp, NP.Kigu.maxHp(st.party[0]), 'the Vowspun healed the party');
 console.log('shrine done', Date.now() - t0, 'ms');
 
 // ---- Hemline

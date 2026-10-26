@@ -1,4 +1,4 @@
-/* Species ids renamed by the round 2 naming pass (2026-10-26, see the naming rule in docs/BIBLE.md §3). old id -> new id.
+/* Species ids renamed by the round 2 and 3 naming passes (2026-10-26, see the naming rule in docs/BIBLE.md §3). old id -> new id.
  * NP.State.load() moves old saves onto the new ids, and the cry generator seeds from the old id so every cry sounds as before. */
 (function (root) {
   'use strict';
@@ -60,6 +60,12 @@
     cloudli: 'flumble',
     jerbi: 'dunehop',
     tumbi: 'tumbleyarn',
+    // round 3 (2026-10-26): the twin goddesses and the shrine-maiden line
+    warpa: 'astara',
+    weftie: 'anwela',
+    silkie: 'acolarva',
+    cocoona: 'vowspun',
+    mothelia: 'mikoga',
   });
   const from = (NP.data.renamedFrom = {});
   Object.keys(R).forEach((o) => (from[R[o]] = o));

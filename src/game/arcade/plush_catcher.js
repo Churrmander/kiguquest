@@ -9,7 +9,7 @@
 
   const RAIL = 22, FLOOR = 170, CHUTE = { x: 14, w: 34 }, X0 = 56, X1 = 236;
   // the plushes in the machine (Kigu who are in the game; any that aren't loaded are skipped)
-  AR.PLUSHES = ['konko', 'ottopi', 'sprubun', 'kittabra', 'nibblit', 'chirpadee', 'buzzlet', 'scurrent', 'kumi', 'molli', 'lapinlily', 'daisip', 'silkie', 'kerochapu'];
+  AR.PLUSHES = ['konko', 'ottopi', 'sprubun', 'kittabra', 'nibblit', 'chirpadee', 'buzzlet', 'scurrent', 'kumi', 'molli', 'lapinlily', 'daisip', 'acolarva', 'kerochapu'];
   const plushIds = () => AR.PLUSHES.filter((id) => NP.data.species[id]);
 
   // the golden plush ramp: dark outline and eyes stay, everything else is re-dyed by how light it was

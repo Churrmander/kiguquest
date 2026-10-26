@@ -44,7 +44,7 @@
     yield* c.sayT('thimble.inspect.4', 'Fold: Loose threads become tangles, Tailor, and tangles become messes.\\pThe Society can press that right out, free of charge!');
     yield* c.sayT('thimble.inspect.5', '{player}\'s Kigu tugged her sleeve away from the Presser.');
     yield* c.sayT('thimble.inspect.6', 'Tuck: Resisting an inspection? That is... untidy.\\pStay in line, Tailor!');
-    const won = yield* c.trainerBattle({ cls: 'Presser', name: 'Tuck', look: 'grunt_m', ai: 1, reward: 8, music: 'battle_society', canLose: true, team: team([['kittabra', 8], ['silkie', 7]]) });
+    const won = yield* c.trainerBattle({ cls: 'Presser', name: 'Tuck', look: 'grunt_m', ai: 1, reward: 8, music: 'battle_society', canLose: true, team: team([['kittabra', 8], ['acolarva', 7]]) });
     if (won) {
       yield* c.sayT('thimble.inspect.win.1', 'Tuck: Flat is fair... flat is fair... I was only supposed to count planks.');
       yield* c.sayT('thimble.inspect.win.2', 'Fold: Please don\'t tell the Inspector.\\pI\'d honestly rather be baking.');

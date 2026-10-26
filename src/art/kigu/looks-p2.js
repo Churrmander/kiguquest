@@ -96,12 +96,12 @@
 
   // ---- legendary twins
   const WAR = { main: '#fff6f0', sub: '#e04048', hair: '#f0e0d8', mitt: '#fff6f0', foot: '#e04048', eye: '#e04a4a', inner: '#f8d0c8', thread: '#ff7a8a', gold: '#f4c542', robe: '#fff6f0' };
-  D('warpa', { name: 'Warpa', stage: 1, size: 85, rise: 13, legend: true, pal: WAR, hood: { type: 'none' }, hair: { style: 'long', bangs: 'part', drop: 4 }, mouth: 'smile', arms: { mittMat: 'mitt', mat: 'robe', pose: 'out' }, footMat: 'foot',
+  D('astara', { name: 'Astara', stage: 1, size: 85, rise: 13, legend: true, pal: WAR, hood: { type: 'none' }, hair: { style: 'long', bangs: 'part', drop: 4 }, mouth: 'smile', arms: { mittMat: 'mitt', mat: 'robe', pose: 'out' }, footMat: 'foot',
     parts: [['cape', { mat: 'sub', flare: 9, drop: 8, trim: 'gold' }], ['skirt', { mat: 'robe', len: 6, flare: 6, up: 11, trim: 'sub' }], ['belly', { kind: 'v', mat: 'sub' }],
       ['hat', { kind: 'crown', mat: 'gold', points: 7 }],
       ['shapes', { stage: 'front', at: 'handR', m: false, g: 'threadsR', shade: 0, list: [['l', 3, 2, 3, 12, 'thread', 0], ['l', 6, 2, 6, 10, 'thread', 0], ['l', 0, 3, 0, 9, 'thread', 0]] }],
       ['shapes', { stage: 'front', at: 'handL', g: 'threadsL', shade: 0, list: [['l', -3, 2, -3, 12, 'thread', 0], ['l', -6, 2, -6, 10, 'thread', 0], ['l', 0, 3, 0, 9, 'thread', 0]] }]] });
-  D('weftie', { name: 'Weftie', stage: 1, size: 85, rise: 13, legend: true, pal: Object.assign({}, WAR, { sub: '#3a78d8', foot: '#3a78d8', eye: '#3a78d8', thread: '#7ac0ff', hair: '#dce8f8' }), hood: { type: 'none' }, hair: { style: 'long', bangs: 'part', drop: 4 }, mouth: 'smile', arms: { mittMat: 'mitt', mat: 'robe', pose: 'out' }, footMat: 'foot',
+  D('anwela', { name: 'Anwela', stage: 1, size: 85, rise: 13, legend: true, pal: Object.assign({}, WAR, { sub: '#3a78d8', foot: '#3a78d8', eye: '#3a78d8', thread: '#7ac0ff', hair: '#dce8f8' }), hood: { type: 'none' }, hair: { style: 'long', bangs: 'part', drop: 4 }, mouth: 'smile', arms: { mittMat: 'mitt', mat: 'robe', pose: 'out' }, footMat: 'foot',
     parts: [['cape', { mat: 'sub', flare: 9, drop: 8, trim: 'gold' }], ['skirt', { mat: 'robe', len: 6, flare: 6, up: 11, trim: 'sub' }], ['belly', { kind: 'v', mat: 'sub' }],
       ['hat', { kind: 'crown', mat: 'gold', points: 7 }],
       ['ring', { at: 'chest', rx: 17, ry: 4, th: 1, mat: 'thread', dy: 4 }], ['ring', { at: 'waist', rx: 15, ry: 3, th: 1, mat: 'thread', dy: -6 }]] });

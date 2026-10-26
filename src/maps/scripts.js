@@ -87,7 +87,7 @@
       return;
     }
     yield* c.sayT('script.bryn.2', 'Bryn: Welcome to the Hemline Salon!\\pI\'m Bryn! I\'m the Master Tailor here, and the Warden of the woods.\\pI make the honey, I check every hem in town, and I\'m late for three things!\\pLittle threads, big hive!');
-    if (c.flag('shrine1_done')) yield* c.sayT('script.bryn.3', 'Bryn: Mimi told me everything.\\pThe Everspool, the Pressers, the Cocoona, the rinse... all of it!\\pFour things I needed to hear, and one I really hoped I wouldn\'t.\\pSomebody has to say it out loud, so I will. The Society is a problem.\\pThere. I said it.');
+    if (c.flag('shrine1_done')) yield* c.sayT('script.bryn.3', 'Bryn: Mimi told me everything.\\pThe Everspool, the Pressers, the Vowspun, the rinse... all of it!\\pFour things I needed to hear, and one I really hoped I wouldn\'t.\\pSomebody has to say it out loud, so I will. The Society is a problem.\\pThere. I said it.');
     yield* c.sayT('script.bryn.4', 'Bryn: But a Button has to be earned, so show me your stitches!\\pMy bees and I are ready!');
     const won = yield* c.trainerBattle({ cls: 'Master', name: 'Bryn', look: 'bryn', ai: 2, reward: 14, master: true, music: 'battle_master', team: c.map.def.brynTeam });
     if (!won) { yield* c.sayT('script.bryn.5', 'Bryn: Ooh, so close! Rest your Kigu and have some tea.\\pI\'ll be here. Probably. Unless the bees need me.'); return; }

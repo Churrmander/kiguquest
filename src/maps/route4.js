@@ -68,7 +68,7 @@
     intro: 'This is the last shady spot before the desert, so it\'s my picnic spot. Battle for it!', win: 'Fine, you can share the shade.', after: 'Have a sandwich for the road. Oh, wait, I ate them all.' });
   M.trainer('r4_t3', 17, 9, 'net_kid', 'down', { cls: 'Net Kid', name: 'Pip', sight: 2, reward: 9, ai: 1, team: [['dunehop|nibblit', 21], ['dunehop|nibblit', 22]],
     intro: 'I\'ve been trying to net a Dunehop all morning! You look easier to net.', win: 'Okay, you were harder to net.', after: 'Dunehop jump right over my net, every single time. They do it on purpose, I swear.' });
-  M.trainer('r4_t4', 30, 12, 'grunt_m', 'up', { cls: 'Presser', name: 'Crimp', sight: 2, reward: 12, ai: 1, music: 'battle_society', team: [['kittabra', 22], ['silkie', 22], ['chiseltail|nibblit', 23]],
+  M.trainer('r4_t4', 30, 12, 'grunt_m', 'up', { cls: 'Presser', name: 'Crimp', sight: 2, reward: 12, ai: 1, music: 'battle_society', team: [['kittabra', 22], ['acolarva', 22], ['chiseltail|nibblit', 23]],
     intro: 'Hold still. Your map is all creased, so I\'m folding it properly while we battle.', win: 'There! Your map is folded beautifully. ...I lost, though.', after: 'Hospital corners on a map. That\'s my one joy out here.' });
   M.trainer('r4_t5', 31, 9, 'grunt_f', 'down', { cls: 'Presser', name: 'Starch', sight: 2, reward: 12, ai: 1, music: 'battle_society', team: [['sandkit|kittabra', 23], ['pricklepot|nibblit', 23]],
     intro: 'Those slabs are for the Works, and the Works needs them flat. You look a little lumpy.', win: 'Lumpy, and strong. That\'s not in the handbook.', after: 'The slabs go north to the Works. I don\'t know what they press up there, and I\'m told not to wonder.' });

@@ -43,7 +43,7 @@
     status: 'a status adjective (burned, poisoned, paralyzed, asleep, frozen)',
     starter: 'the player\'s starter species name (Konko / Ottopi / Sprubun)',
     rstarter: 'the rival\'s starter species name',
-    twin: 'the legendary twin the player befriended (Warpa or Weftie)',
+    twin: 'the legendary twin the player befriended (Astara or Anwela)',
     twin2: 'the other twin (the one Madame Damask keeps)',
     count: 'a generic number (Buttons earned, Kigu seen...)',
   };
@@ -53,7 +53,7 @@
     player: 'WWWWWWWW', rival: 'WWWWWWWW', kigu: 'WWWWWWWWWW', mon: 'Foe WWWWWWWWWW', foe: 'Foe WWWWWWWWWW',
     trainer: 'Scientist WWWWWWWW', cls: 'Scientist', name: 'WWWWWWWW', item: 'Sparkle Brooch', move: 'Flurry Swipe', old: 'Flurry Swipe',
     stat: 'Sp. Atk', n: '99', lv: '100', hp: '999', exp: '99999', money: '999999', to: 'WWWWWWWWWW', from: 'WWWWWWWWWW',
-    place: 'Seamstead City', status: 'paralyzed', starter: 'Ottomarine', rstarter: 'Ottomarine', twin: 'Warpa', twin2: 'Weftie', count: '99',
+    place: 'Seamstead City', status: 'paralyzed', starter: 'Ottomarine', rstarter: 'Ottomarine', twin: 'Astara', twin2: 'Anwela', count: '99',
   };
 
   function pagesOf(p) {
