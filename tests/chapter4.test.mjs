@@ -133,9 +133,9 @@ assert.ok(t.travel(3, 5, 600) || t.ow.map.id === 'quarry_tunnels_2', 'down the s
 t.mash(() => t.idle(), 3000);
 at('quarry_tunnels_2');
 heal();
-assert.ok(use(20, 6), 'face Boulderina; ' + t.pos());
+assert.ok(use(20, 6), 'face Bouldame; ' + t.pos());
 press('gusset_back', 120000);
-assert.ok(st.flags.herd_done && st.bag.spare_tape && st.party.some((k) => k.species === 'boulderina'), 'herd settled, Boulderina joins, the spare tape');
+assert.ok(st.flags.herd_done && st.bag.spare_tape && st.party.some((k) => k.species === 'bouldame'), 'herd settled, Bouldame joins, the spare tape');
 
 // ---- the Terra Salon: three track switches, two Miners, Gusset
 heal();

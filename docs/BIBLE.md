@@ -111,8 +111,8 @@ Old ids from the round 2 rename live in `src/data/renames.js` (saves migrate on 
 29. `molluna` Molluna — Terra/Iron — 2/2 — miner: hard-hat with lamp, steel-toe boots, drill-pick.
 
 **Phase 2 (art after P1)**
-30. `pebblump` Pebblump — Pebble — 1/3, →Lv25 `boulderina` — pebble-patterned grey onesie, rock hair-clips, stoic.
-31. `boulderina` Boulderina — Pebble — 2/3, →Lv40 `craggoth` — boulder shoulder-guards, crystal chips in hair.
+30. `pebblump` Pebblump — Pebble — 1/3, →Lv25 `bouldame` — pebble-patterned grey onesie, rock hair-clips, stoic.
+31. `bouldame` Bouldame — Pebble — 2/3, →Lv40 `craggoth` — boulder shoulder-guards, crystal chips in hair.
 32. `craggoth` Craggoth — Pebble — 3/3 — crystal-crowned gem queen with boulder gauntlets.
 33. `scurrent` Scurrent — Volt — 1/2, →Lv26 `arcorn` — red squirrel: copper-gold onesie, long ear tufts, zigzag-stripe tail, static-fluffed hair; zapped so often she twitches, and zaps everything she touches. "Zip!" *(Recolour from yellow and ear tufts still to do.)*
 34. `arcorn` Arcorn — Volt — 2/2 — gadget inventor: bolt-shaped tail cape, spark-plug hair clips (not tesla-coil buns, so she does not twin with Teslaria), goggles, fingerless gloves; builds gadgets from acorns and wire. *(Hair clips still to draw.)*

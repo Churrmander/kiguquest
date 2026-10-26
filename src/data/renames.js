@@ -60,6 +60,7 @@
     cloudli: 'flumble',
     jerbi: 'dunehop',
     tumbi: 'tumbleyarn',
+    boulderina: 'bouldame',
   });
   const from = (NP.data.renamedFrom = {});
   Object.keys(R).forEach((o) => (from[R[o]] = o));

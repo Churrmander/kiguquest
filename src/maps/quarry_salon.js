@@ -63,5 +63,5 @@
   M.trainer('sal4_t2', 8, 5, 'hiker', 'down', { cls: 'Miner', name: 'Mica', sight: 2, reward: 13, ai: 2, team: [['pebblump|kumi', 26], ['chiseltail|nibblit', 27], ['sandkit|kittabra', 26]],
     intro: 'Gusset trained me himself, and he never said a word the whole time!', win: 'Huh. That\'s what losing sounds like.', after: 'Gusset stitched the flowers on his hard hat himself. Don\'t mention them. He goes red.' });
   M.npc('gusset', 4, 2, 'gusset|hiker', 'down', null, { script: 'gusset', note: 'Master Tailor #4 (Terra)' });
-  M.reg().gussetTeam = L.team([['quarrel|chiseltail', 27, { nature: 'adamant' }], ['mossgable|tortile', 27], ['boulderina|pebblump', 29]]);
+  M.reg().gussetTeam = L.team([['quarrel|chiseltail', 27, { nature: 'adamant' }], ['mossgable|tortile', 27], ['bouldame|pebblump', 29]]);
 })(typeof globalThis !== 'undefined' ? globalThis : window);
