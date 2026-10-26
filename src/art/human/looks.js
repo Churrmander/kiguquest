@@ -138,9 +138,10 @@
   def('pleat_calender', { name: 'Pleat Calender', build: 'tall', sex: 'm', skin: 'fair', hair: hair('sidepart', '#9c9cac'), eyes: 'grey', facial: 'mustache', facialColor: '#9c9cac',
     face: { eyes: 'sharp', mouth: 'flat', brows: 'stern' }, outfit: out('suit', 'white', 'starch', 'white'), bottom: { type: 'pants', color: 'white' }, shoes: 'black',
     acc: ['brooch:#e8b830', 'glasses:#9c9cac'] });
-  def('dart', { name: 'Dart', build: 'adult', sex: 'f', skin: 'brown', hair: hair('ponytail', 'red'), eyes: 'amber',
-    face: { eyes: 'happy', mouth: 'grin', lashes: true }, outfit: out('jacket', '#5a9ae8', 'white', 'white'), bottom: { type: 'pants', color: 'khaki' }, shoes: 'chocolate',
-    acc: ['goggles:#d8a030', 'scarf:#f06a3a'] });
+  // matches her AutoSprite battle sprite: long loose brown hair, brown bomber jacket, cream scarf, flight goggles
+  def('dart', { name: 'Dart', build: 'adult', sex: 'f', skin: 'fair', hair: hair('long', '#8e5a36'), eyes: 'brown',
+    face: { eyes: 'happy', mouth: 'grin', lashes: true }, outfit: out('jacket', 'chocolate', 'cream', 'white'), bottom: { type: 'pants', color: 'khaki' }, shoes: 'chocolate',
+    acc: ['goggles:#b8bccc', 'scarf:#f4e6c4'] });
   def('courier', { name: 'Courier', build: 'teen', sex: 'm', skin: 'tan', hair: hair('spiky', 'black'), eyes: 'dark',
     face: { eyes: 'sharp', mouth: 'grin' }, outfit: out('jacket', 'red', 'white', 'black'), bottom: { type: 'shorts', color: 'charcoal' }, legs: 'white', shoes: 'red',
     acc: ['cap:#d8363a/#f6f4f0', 'bag:#3a3a44'] });
