@@ -17,7 +17,7 @@
     }
     yield* c.sayT('script.dart.1', 'Dart: You read the wind! Most people stand in the fans and shout at them.\\pI\'m Dart, Master Tailor of Kite Hill. I sew sails, I sew balloons, and I never sit still.');
     yield* c.sayT('script.dart.2', 'Dart: You fixed my balloon, so I owe you a flight. But first, let\'s see if you can keep up with me!');
-    const team = L.team([['larkette|peepi', 36], ['kamiko|kamipi', 37], ['propera|propi', 37], ['cumulo|cloudli', 38]]);
+    const team = L.team([['lyripip|chirpadee', 36], ['tsurugami|foldling', 37], ['aviatrix|whirligig', 37], ['cumulo|flumble', 38]]);
     const won = yield* c.trainerBattle({ cls: 'Master', name: 'Dart', look: 'dart', ai: 3, reward: 28, master: true, music: 'battle_master', team });
     if (!won) { yield* c.sayT('script.dart.lose', 'Dart: Blown away! Don\'t worry, it happens to everyone up here.\\pGo and rest at the Tea House, then come back and try again.'); return; }
     yield* c.sayT('script.dart.3', 'Dart: Whoosh! You flew right past me. That\'s the Gale Button, and you\'ve earned every stitch of it.');
@@ -43,9 +43,9 @@
   M.interact(8, 9, L.switchLever('fan2', 'fan2', 'A lever marked FANS. An arrow on it points east, then west.'), 'band 2 fan lever');
   M.stamp('plant', 1, 13).stamp('plant', 13, 13).stamp('plant', 1, 2).stamp('plant', 13, 2);
   M.sign(10, 13, 'KITE HILL SALON\\nMaster Tailor: Dart\\p"Lean into the wind, and it\'ll carry you."', 'salon sign');
-  M.trainer('ks_t1', 11, 8, 'pilot', 'down', { cls: 'Pilot', name: 'Wren', sight: 1, reward: 18, ai: 2, team: [['kamipi', 34], ['propi', 35]],
+  M.trainer('ks_t1', 11, 8, 'pilot', 'down', { cls: 'Pilot', name: 'Wren', sight: 1, reward: 18, ai: 2, team: [['foldling', 34], ['whirligig', 35]],
     intro: 'Most people end up flat against the wall on their first try. You made it through!', win: 'You read the wind better than I do.', after: 'The second lot of fans blow east, but the gap is in the west. Dart thinks that\'s hilarious.' });
-  M.trainer('ks_t2', 2, 3, 'skier', 'down', { cls: 'Pilot', name: 'Lark', sight: 1, reward: 18, ai: 2, team: [['cloudli', 35], ['peepi', 35], ['kamipi', 36]],
+  M.trainer('ks_t2', 2, 3, 'skier', 'down', { cls: 'Pilot', name: 'Lark', sight: 1, reward: 18, ai: 2, team: [['flumble', 35], ['chirpadee', 35], ['foldling', 36]],
     intro: 'Dart\'s right behind me, and she\'s in a flying mood. You\'ll have to get past me first!', win: 'Whoosh. Off you go, then.', after: 'When Dart wins, she does a little spin. When she loses, she does a bigger spin.' });
   M.npc('dart', 7, 2, 'dart', 'down', null, { script: 'dart', note: 'Master Tailor Dart (Gale)' });
   M.reg();

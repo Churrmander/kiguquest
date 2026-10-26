@@ -116,7 +116,7 @@
         cv.capsule(sx, sy, hx, hy - 1, 2.6 * k, 2.3 * k, mat);
         if (A.mitt !== false) cv.ell(hx, hy + 1, (A.mittR || 2.8) * k, (A.mittR || 2.8) * k, A.mittMat || 'mitt');
       }
-      if (A.extraArms && !L.icon) { // webbi: four sleeve arms
+      if (A.extraArms && !L.icon) { // spinnet: four sleeve arms
         cv.capsule(sx, sy + 5 * k, hx + s * 1, hy + 2 * k, 2 * k, 1.8 * k, mat);
         cv.ell(hx + s, hy + 3 * k, 2 * k, 2 * k, A.mittMat || 'mitt');
       }

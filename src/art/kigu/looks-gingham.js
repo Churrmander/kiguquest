@@ -61,8 +61,8 @@
   });
 
   const SPI = { main: '#5a3f86', sub: '#8a6cc0', hair: '#c9b4ea', mitt: '#7a5ab0', foot: '#3a2a5a', eye: '#3a2a5a', inner: '#8a6cc0', spot: '#ff4a5a', yarn: '#ff8fb0', silver: '#e8e8f4', black: '#241830', lace: '#d8d0ec', needle: '#cfd6e6' };
-  D('webbi', {
-    name: 'Webbi', stage: 1, size: 62, rise: 3, pal: SPI,
+  D('spinnet', {
+    name: 'Spinnet', stage: 1, size: 62, rise: 3, pal: SPI,
     hood: { type: 'up', ears: null }, hair: { style: 'short', bangs: 'part' }, eyes: { style: 'dot' }, mouth: 'flat', face: ['eyespots'],
     arms: { mittMat: 'mitt', extraArms: true }, footMat: 'foot',
     parts: [
@@ -101,8 +101,8 @@
   });
 
   const FROG = { main: '#5cc070', sub: '#f0ffd8', hair: '#3a8a5a', mitt: '#8ae09a', foot: '#8ae09a', eye: '#2a5a3a', inner: '#ffcfa0', coat: '#58b868', yellow: '#ffd23a', pad: '#3fae5a', overall: '#4a78c8', hat: '#f2c24a', boot: '#8a5a30' };
-  D('ribbi', {
-    name: 'Ribbi', stage: 1, size: 62, rise: 6, pal: FROG,
+  D('kerochapu', {
+    name: 'Kerochapu', stage: 1, size: 62, rise: 6, pal: FROG,
     hood: { type: 'up', ears: null }, hair: { style: 'short', bangs: 'part' }, mouth: 'o',
     arms: { mittMat: 'mitt' }, footMat: 'foot',
     parts: [

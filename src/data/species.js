@@ -61,26 +61,26 @@
     dex: 'Crowned in flowers, her ears flow like a blooming cape. Petals follow wherever she walks.' });
 
   // ---- Meadow Lane / Thimble
-  sp('mittsy', 'Mittsy', ['fluff'], [48, 50, 40, 35, 40, 65], { catch: 190, exp: 55, ab: ['cuddly', 'run_away'], cry: 'Mya', evo: [{ to: 'meowtrice', level: 18 }],
+  sp('kittabra', 'Kittabra', ['fluff'], [48, 50, 40, 35, 40, 65], { catch: 190, exp: 55, ab: ['cuddly', 'run_away'], cry: 'Mya', evo: [{ to: 'wiskedabra', level: 18 }],
     ls: [[1, 'paw_swipe'], [1, 'tail_wag'], [5, 'sweet_talk'], [9, 'quick_dash'], [13, 'flurry_swipe'], [18, 'pillow_slam']],
-    dex: 'A sleepy kitten onesie with huge mitten paws. The bell on her hood rings when she naps.' });
-  sp('meowtrice', 'Meowtrice', ['fluff'], [70, 74, 60, 58, 62, 100], { catch: 75, exp: 140, ab: ['cuddly', 'run_away'], cry: 'Meowl', stage: 2, family: 'mittsy',
+    dex: 'A playful kitten with huge mitten paws. She bats at yarn and hides whatever she finds in her mittens.' });
+  sp('wiskedabra', 'Wiskedabra', ['fluff'], [70, 74, 60, 58, 62, 100], { catch: 75, exp: 140, ab: ['cuddly', 'run_away'], cry: 'Meowl', stage: 2, family: 'kittabra',
     ls: [[1, 'paw_swipe'], [1, 'sweet_talk'], [9, 'quick_dash'], [13, 'flurry_swipe'], [18, 'pillow_slam'], [24, 'sly_nip'], [30, 'sprint']],
-    dex: 'A dapper tuxedo cat with a little top hat. She tips it to everyone she meets.' });
-  sp('nibbi', 'Nibbi', ['fluff'], [50, 48, 42, 30, 35, 60], { catch: 255, exp: 52, ab: ['run_away', 'pickup'], cry: 'Nom!', evo: [{ to: 'nibblenna', level: 15 }],
+    dex: 'A tuxedo stage magician in a little top hat. She tips it to everyone she meets, and a ribbon pops out.' });
+  sp('nibblit', 'Nibblit', ['fluff'], [50, 48, 42, 30, 35, 60], { catch: 255, exp: 52, ab: ['run_away', 'pickup'], cry: 'Nom!', evo: [{ to: 'nibblenna', level: 15 }],
     ls: [[1, 'pounce'], [1, 'tail_wag'], [4, 'snack_time'], [7, 'quick_dash'], [11, 'cheek_crunch'], [15, 'flurry_swipe']],
     dex: 'Her cheeks are always puffed with seeds. Ask nicely and she might share.' });
-  sp('nibblenna', 'Nibblenna', ['fluff'], [80, 75, 65, 50, 55, 90], { catch: 127, exp: 135, ab: ['run_away', 'pickup'], cry: 'Nomnom!', stage: 2, family: 'nibbi',
+  sp('nibblenna', 'Nibblenna', ['fluff'], [80, 75, 65, 50, 55, 90], { catch: 127, exp: 135, ab: ['run_away', 'pickup'], cry: 'Nomnom!', stage: 2, family: 'nibblit',
     ls: [[1, 'pounce'], [1, 'snack_time'], [7, 'quick_dash'], [11, 'cheek_crunch'], [15, 'flurry_swipe'], [22, 'pillow_slam'], [28, 'sprint']],
     dex: 'A baker hamster with a basket of warm buns. The buns are delicious, and so is the smell.' });
-  sp('peepi', 'Peepi', ['fluff', 'gale'], [40, 45, 40, 35, 35, 56], { catch: 255, exp: 50, ab: ['keen_eye'], cry: 'Pip!', evo: [{ to: 'larkette', level: 14 }],
+  sp('chirpadee', 'Chirpadee', ['fluff', 'gale'], [40, 45, 40, 35, 35, 56], { catch: 255, exp: 50, ab: ['keen_eye'], cry: 'Pip!', evo: [{ to: 'lyripip', level: 14 }],
     ls: [[1, 'pip_peck'], [1, 'tail_wag'], [8, 'gust_puff'], [9, 'quick_dash'], [14, 'wing_flutter']],
     dex: 'A sparrow-chick onesie with wing sleeves. She practices flapping every sunrise.' });
-  sp('larkette', 'Larkette', ['fluff', 'gale'], [62, 65, 55, 58, 55, 85], { catch: 120, exp: 122, ab: ['keen_eye'], cry: 'Lark!', stage: 2, family: 'peepi',
-    evo: [{ to: 'larkessa', level: 32 }],
+  sp('lyripip', 'Lyripip', ['fluff', 'gale'], [62, 65, 55, 58, 55, 85], { catch: 120, exp: 122, ab: ['keen_eye'], cry: 'Lark!', stage: 2, family: 'chirpadee',
+    evo: [{ to: 'larkestra', level: 32 }],
     ls: [[1, 'pip_peck'], [1, 'gust_puff'], [9, 'quick_dash'], [14, 'wing_flutter'], [20, 'feather_dance'], [26, 'glide_strike']],
     dex: 'A songbird with a feather-crest headband. Her songbook is full of tunes she wrote herself.' });
-  sp('larkessa', 'Larkessa', ['fluff', 'gale'], [82, 90, 70, 78, 68, 100], { catch: 45, exp: 230, ab: ['keen_eye'], cry: 'Larkessa!', stage: 3, family: 'peepi',
+  sp('larkestra', 'Larkestra', ['fluff', 'gale'], [82, 90, 70, 78, 68, 100], { catch: 45, exp: 230, ab: ['keen_eye'], cry: 'Larkestra!', stage: 3, family: 'chirpadee',
     ls: [[1, 'pip_peck'], [14, 'wing_flutter'], [26, 'glide_strike'], [32, 'feather_dance'], [38, 'pillow_slam']],
     dex: 'An elegant lark with a long wing-cape. Her song can be heard across three towns.' });
 
@@ -95,17 +95,17 @@
     ls: [[1, 'stinger'], [1, 'tail_wag'], [6, 'thread_shot'], [10, 'nibble'], [16, 'sap_bite']], dex: 'A bee onesie with stripes and tiny antennae. Guards her honey pot fiercely.' });
   sp('hunnibloom', 'Hunnibloom', ['buzz', 'sprout'], [75, 90, 65, 75, 65, 95], { catch: 75, exp: 150, ab: ['swarm'], cry: 'Bzzbloom', stage: 2, family: 'buzzlet',
     ls: [[1, 'stinger'], [1, 'nibble'], [16, 'sap_bite'], [20, 'sap_drain'], [26, 'buzz_song']], dex: 'A honeycomb dress and a flower crown. She stirs honey with a dipper wand.' });
-  sp('webbi', 'Webbi', ['buzz'], [45, 50, 42, 50, 42, 50], { catch: 190, exp: 55, ab: ['swarm'], cry: 'Wib', evo: [{ to: 'spindra', level: 22 }],
+  sp('spinnet', 'Spinnet', ['buzz'], [45, 50, 42, 50, 42, 50], { catch: 190, exp: 55, ab: ['swarm'], cry: 'Wib', evo: [{ to: 'spindra', level: 22 }],
     ls: [[1, 'thread_shot'], [1, 'stinger'], [8, 'shadow_lick'], [14, 'nibble']], dex: 'A shy girl in a purple hoodie with four extra sleeves for knitting.' });
-  sp('spindra', 'Spindra', ['buzz', 'spook'], [70, 75, 60, 90, 70, 65], { catch: 75, exp: 155, ab: ['swarm'], cry: 'Spindra', stage: 2, family: 'webbi',
+  sp('spindra', 'Spindra', ['buzz', 'spook'], [70, 75, 60, 90, 70, 65], { catch: 75, exp: 155, ab: ['swarm'], cry: 'Spindra', stage: 2, family: 'spinnet',
     ls: [[1, 'thread_shot'], [1, 'shadow_lick'], [22, 'sap_bite'], [28, 'phantom_tuck']], dex: 'A lacy weaver with silver threads in her long black hair.' });
   sp('daisip', 'Daisip', ['sprout'], [45, 40, 48, 62, 55, 42], { catch: 255, exp: 50, ab: ['chlorophyll'], cry: 'Dai', evo: [{ to: 'daisia', level: 21 }],
     ls: [[1, 'vine_snip'], [1, 'sweet_talk'], [6, 'sip_sap'], [12, 'numb_dust'], [18, 'nap_dust']], dex: 'A white petal hood frames her sunny face.' });
   sp('daisia', 'Daisia', ['sprout'], [70, 60, 70, 95, 82, 60], { catch: 120, exp: 150, ab: ['chlorophyll'], cry: 'Daisia', stage: 2, family: 'daisip',
     ls: [[1, 'vine_snip'], [1, 'sip_sap'], [21, 'petal_storm'], [26, 'sun_nap']], dex: 'A bouquet dress and a halo of petals.' });
-  sp('ribbi', 'Ribbi', ['tide'], [50, 52, 48, 52, 48, 58], { catch: 190, exp: 55, ab: ['torrent'], cry: 'Rib', evo: [{ to: 'lilyrana', level: 25 }],
+  sp('kerochapu', 'Kerochapu', ['tide'], [50, 52, 48, 52, 48, 58], { catch: 190, exp: 55, ab: ['torrent'], cry: 'Rib', evo: [{ to: 'lilyrana', level: 25 }],
     ls: [[1, 'pounce'], [1, 'bubble_pop'], [7, 'shell_guard'], [13, 'aqua_dash'], [19, 'bubble_beam']], dex: 'A green raincoat with big round eyes on the hood.' });
-  sp('lilyrana', 'Lilyrana', ['tide', 'terra'], [80, 80, 78, 65, 75, 65], { catch: 75, exp: 160, ab: ['torrent'], cry: 'Ribelle', stage: 2, family: 'ribbi',
+  sp('lilyrana', 'Lilyrana', ['tide', 'terra'], [80, 80, 78, 65, 75, 65], { catch: 75, exp: 160, ab: ['torrent'], cry: 'Ribelle', stage: 2, family: 'kerochapu',
     ls: [[1, 'pounce'], [1, 'bubble_pop'], [25, 'mud_shot'], [31, 'tide_wave']], dex: 'Overalls, boots, and a wide rain hat. She loves puddles.' });
   sp('molli', 'Molli', ['terra'], [48, 60, 50, 30, 35, 45], { catch: 190, exp: 58, ab: ['sturdy_soul'], cry: 'Mol', evo: [{ to: 'molluna', level: 24 }],
     ls: [[1, 'pounce'], [1, 'dust_up'], [7, 'earth_thump'], [13, 'pebble_toss'], [19, 'mud_shot']], dex: 'A squinty mole onesie with giant digging mitts and goggles.' });

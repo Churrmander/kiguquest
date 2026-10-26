@@ -59,7 +59,7 @@
   } });
   M.npc('weaver1', 4, 13, 'villager_f2', 'down', ['We sew every tent twice. Once for the shade, and once for the wind.\\pYour friend asked about our seams for an hour! I liked her.']);
   M.npc('weaver2', 23, 13, 'elder_m', 'left', ['The Society wants to buy our tents and press them flat for "neat storage".\\pA flat tent is just a very expensive blanket. I told them no.']);
-  M.npc('kid', 18, 12, 'child_m', 'up', ['I saw a Tumbi roll past in the storm last week! She was so wrapped up in scarves that all I could see were her eyes.\\pThey only come out when the dust is blowing.'], { move: 'wander', range: 2 });
+  M.npc('kid', 18, 12, 'child_m', 'up', ['I saw a Tumbleyarn roll past in the storm last week! She was so wrapped up in scarves that all I could see were her eyes.\\pThey only come out when the dust is blowing.'], { move: 'wander', range: 2 });
   M.npc('sharp', 28, 13, 'gentleman', 'left', null, { script: L.giver('rug', 'snack_cake', 1, {
     give: ['Mr. Sharp: Camel? No, no. I\'m a rug. Just a humble rug, minding my own business.\\pA rug that has a spare Snack Cake, as it happens. Rugs get peckish.'],
     got: ['Mr. Sharp: Off you go, and don\'t tell anyone you talked to a rug. They\'d never believe you.'],

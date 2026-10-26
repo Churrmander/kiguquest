@@ -1,6 +1,6 @@
 // Chapter 4, played end to end by a headless bot from the chapter-3 end state:
 // Seamstead east gate (Zip's cable) -> Route 4 -> Canvas Rest (Mimi's Dust Scarf) -> Dust Bowl (push the stuck slab cart)
-// -> Bobbin Quarry (Rival #4) -> Quarry Tunnels (settle the Pebbi herd, Gusset's hut) -> Terra Salon track switches (Gusset,
+// -> Bobbin Quarry (Rival #4) -> Quarry Tunnels (settle the Pebblump herd, Gusset's hut) -> Terra Salon track switches (Gusset,
 // Terra Button, Disc: Shove) -> Shove the loose rock into the geode alcove. Also checks the gates are closed until earned.
 import assert from 'node:assert/strict';
 import { boot } from './harness.mjs';
@@ -38,7 +38,7 @@ const heal = () => NP.State.healAll();
 // ---- every Chapter 4 map builds
 for (const id of ['route4', 'canvas_rest', 'canvas_tea', 'canvas_store', 'dust_bowl', 'dust_oasis', 'bobbin_quarry', 'quarry_tea', 'quarry_store',
   'quarry_tunnels', 'quarry_tunnels_2', 'quarry_hut', 'quarry_salon']) assert.ok(NP.maps[id], 'map ' + id);
-for (const id of ['jerbi', 'jerbix', 'tumbi', 'tumbora', 'skorpi', 'skorpika', 'cactli', 'cactara', 'sandkit', 'sandoa', 'slatli', 'slatina', 'geodie', 'geodrusa', 'geodora', 'chippi', 'chippona'])
+for (const id of ['dunehop', 'jerbix', 'tumbleyarn', 'tumbora', 'stingle', 'lanternid', 'pricklepot', 'saguarose', 'sandkit', 'sandoa', 'tortile', 'mossgable', 'rockabye', 'geodrusa', 'amethystar', 'chiseltail', 'quarrel'])
   assert.ok(NP.data.species[id] && NP.art.kigu.looks[id], 'species and look ' + id);
 
 // ---- Seamstead: an old save at the end of Chapter 3 gets Zip's gate scene on entry

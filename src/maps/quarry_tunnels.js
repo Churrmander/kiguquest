@@ -1,10 +1,10 @@
 /* Bobbin Quarry tunnels (2 floors) and Gusset's hut. The pre-Salon quest: the herd.
- * Pressers dug too fast and spooked a Pebbi herd, which now fills the cart tunnels. Floor 1: Pebbi sit across the side tunnels and
+ * Pressers dug too fast and spooked a Pebblump herd, which now fills the cart tunnels. Floor 1: Pebblump sit across the side tunnels and
  * shuffle aside once their leader settles; two Pressers and a Hiker. Floor 2: the lead Boulderina has planted herself across the
  * last tunnel, with Gusset stuck behind her. You battle her; she sits down and settles, the herd follows her lead, and she picks you.
  * Then Gusset climbs out, and has tea with you in his hut: the slab orders show the slabs are Press plates.
- * After the Salon (Disc: Shove): a loose rock on floor 2 hides a crystal alcove with a Geodie in it.
- * Dark maps (`dark: true`): Skorpi can evolve down here. Levels 24-27. */
+ * After the Salon (Disc: Shove): a loose rock on floor 2 hides a crystal alcove with a Rockabye in it.
+ * Dark maps (`dark: true`): Stingle can evolve down here. Levels 24-27. */
 (function (root) {
   'use strict';
   const NP = root.NP, L = NP.levels;
@@ -30,19 +30,19 @@
   M.warp({ xs: [2, 3], y: 19, to: 'bobbin_quarry', door: 'tunnel', sound: 'door' });
   M.rect(2, 19, 2, 1, 'f');
   M.stamp('ore_cart', 6, 17, 'full').stamp('ore_cart', 25, 9, 'empty').stamp('rock', 12, 5).stamp('rock', 19, 13).stamp('lamp', 22, 15);
-  M.sign(5, 15, 'TUNNEL 1 / CART LINE\\nMind the carts. Mind your head. Mind the Pebbi.', 'tunnel sign');
-  M.enc('grass', [['pebbi|kumi', 24, 26, 34], ['slatli|kumi', 24, 26, 26], ['chippi|nibbi', 24, 25, 22], ['geodie|kumi', 25, 26, 6], ['skorpi|peepi', 24, 26, 12]]);
-  // the herd: Pebbi sitting across the tunnels until Boulderina settles (each one a little joke)
-  const pebbi = (id, x, y, dir, line) => M.npc(id, x, y, 'pebbi|child_f', dir, [line], { hideIf: 'herd_done', note: 'Pebbi of the herd (gone once herd_done)' });
+  M.sign(5, 15, 'TUNNEL 1 / CART LINE\\nMind the carts. Mind your head. Mind the Pebblump.', 'tunnel sign');
+  M.enc('grass', [['pebblump|kumi', 24, 26, 34], ['tortile|kumi', 24, 26, 26], ['chiseltail|nibblit', 24, 25, 22], ['rockabye|kumi', 25, 26, 6], ['stingle|chirpadee', 24, 26, 12]]);
+  // the herd: Pebblump sitting across the tunnels until Boulderina settles (each one a little joke)
+  const pebblump = (id, x, y, dir, line) => M.npc(id, x, y, 'pebblump|child_f', dir, [line], { hideIf: 'herd_done', note: 'Pebblump of the herd (gone once herd_done)' });
   // three of them sit across the side tunnel (a short cut, open once the herd goes home); the way on is round by the east line
-  pebbi('peb1', 8, 7, 'down', 'A Pebbi is sitting right across the tunnel. She stares at you, very firmly.\\pShe isn\'t moving until her leader says so.');
-  pebbi('peb2', 9, 7, 'down', 'This Pebbi has rolled herself into a ball. "Tok," she says, which seems to mean "no".');
-  pebbi('peb3', 10, 7, 'down', 'This Pebbi keeps looking down the tunnel towards the deep end, where her leader is.\\pShe\'s waiting to be told it\'s safe.');
-  M.trainer('qt_t1', 16, 16, 'grunt_m', 'down', { cls: 'Presser', name: 'Rivet', sight: 3, reward: 13, ai: 1, music: 'battle_society', team: [['chippi|nibbi', 24], ['slatli|kumi', 25]],
+  pebblump('peb1', 8, 7, 'down', 'A Pebblump is sitting right across the tunnel. She stares at you, very firmly.\\pShe isn\'t moving until her leader says so.');
+  pebblump('peb2', 9, 7, 'down', 'This Pebblump has rolled herself into a ball. "Tok," she says, which seems to mean "no".');
+  pebblump('peb3', 10, 7, 'down', 'This Pebblump keeps looking down the tunnel towards the deep end, where her leader is.\\pShe\'s waiting to be told it\'s safe.');
+  M.trainer('qt_t1', 16, 16, 'grunt_m', 'down', { cls: 'Presser', name: 'Rivet', sight: 3, reward: 13, ai: 1, music: 'battle_society', team: [['chiseltail|nibblit', 24], ['tortile|kumi', 25]],
     intro: 'We dug a little fast, all right? The quota said "faster". You can\'t argue with a quota.', win: 'I can\'t argue with you either, apparently.', after: 'The big one\'s down on the next floor. She doesn\'t like Pressers. Honestly, I can\'t blame her.' });
-  M.trainer('qt_t2', 22, 4, 'grunt_f', 'down', { cls: 'Presser', name: 'Twill', sight: 2, reward: 13, ai: 1, music: 'battle_society', team: [['mittsy', 24], ['pebbi|kumi', 25], ['sandkit|mittsy', 25]],
+  M.trainer('qt_t2', 22, 4, 'grunt_f', 'down', { cls: 'Presser', name: 'Twill', sight: 2, reward: 13, ai: 1, music: 'battle_society', team: [['kittabra', 24], ['pebblump|kumi', 25], ['sandkit|kittabra', 25]],
     intro: 'This gallery is now Society property. Please exit flatly.', win: 'That was not a flat exit.', after: 'I signed the slab orders without reading them. I\'m starting to think I should have.' });
-  M.trainer('qt_t3', 16, 9, 'hiker', 'down', { cls: 'Miner', name: 'Haddie', sight: 2, reward: 12, ai: 1, team: [['pebbi|kumi', 25], ['chippi|nibbi', 25]],
+  M.trainer('qt_t3', 16, 9, 'hiker', 'down', { cls: 'Miner', name: 'Haddie', sight: 2, reward: 12, ai: 1, team: [['pebblump|kumi', 25], ['chiseltail|nibblit', 25]],
     intro: 'Gusset\'s my boss. If you\'re going down after him, you\'ll get past me first!', win: 'Fair enough. You\'ll do.', after: 'Tell Gusset we\'ve put the kettle on. He\'ll know what that means.' });
   M.pickup('order', 18, 5, 'slab_order', 1, 'a dropped Society slab order');
   M.pickup('cake', 26, 5, 'fancy_cake', 1);
@@ -61,9 +61,9 @@
     yield* c.ow.fadeOut(8);
     c.hideNpc(n.id);
     yield* c.ow.fadeIn(8);
-    if (res && res.caught) yield* c.sayT('quarry_tunnels_2.boul.kept', 'Boulderina sat down with a thump, right in the middle of the tunnel.\\pOne by one, the Pebbi of the herd sat down beside her, and the tunnel went quiet.');
+    if (res && res.caught) yield* c.sayT('quarry_tunnels_2.boul.kept', 'Boulderina sat down with a thump, right in the middle of the tunnel.\\pOne by one, the Pebblump of the herd sat down beside her, and the tunnel went quiet.');
     else {
-      yield* c.sayT('quarry_tunnels_2.boul.3', 'Boulderina sat down with a thump, right in the middle of the tunnel.\\pOne by one, the Pebbi of the herd sat down beside her, and the tunnel went quiet.');
+      yield* c.sayT('quarry_tunnels_2.boul.3', 'Boulderina sat down with a thump, right in the middle of the tunnel.\\pOne by one, the Pebblump of the herd sat down beside her, and the tunnel went quiet.');
       yield* c.sayT('quarry_tunnels_2.boul.4', 'After a while, Boulderina got up, dusted off her shoulders, and walked over to you.\\pShe stood at your side, as if she\'d always meant to.');
       yield* c.giveKigu('boulderina', 26);
     }
@@ -106,19 +106,19 @@
   L.stairs(M2, 3, 4, 'up', 'quarry_tunnels', 'up');
   M2.spawn('up', 4, 4, 'right');
   M2.stamp('ore_cart', 21, 16, 'empty').stamp('rock', 17, 5).stamp('lamp', 22, 3);
-  M2.enc('grass', [['pebbi|kumi', 25, 27, 34], ['slatli|kumi', 25, 27, 26], ['geodie|kumi', 25, 27, 14], ['skorpi|peepi', 25, 27, 14], ['chippi|nibbi', 25, 26, 12]]);
+  M2.enc('grass', [['pebblump|kumi', 25, 27, 34], ['tortile|kumi', 25, 27, 26], ['rockabye|kumi', 25, 27, 14], ['stingle|chirpadee', 25, 27, 14], ['chiseltail|nibblit', 25, 26, 12]]);
   M2.npc('boulderina', 20, 6, 'boulderina|elder_f', 'down', null, { script: boulderina, hideIf: 'herd_done', note: 'the lead Boulderina: battle her to settle the herd' });
-  for (const [i, x, y] of [[1, 21, 6], [2, 22, 6], [3, 19, 4], [4, 23, 5]]) M2.npc('herd' + i, x, y, 'pebbi|child_f', 'down', ['A Pebbi peeks out from behind her leader. "Tok?"'], { hideIf: 'herd_done' });
+  for (const [i, x, y] of [[1, 21, 6], [2, 22, 6], [3, 19, 4], [4, 23, 5]]) M2.npc('herd' + i, x, y, 'pebblump|child_f', 'down', ['A Pebblump peeks out from behind her leader. "Tok?"'], { hideIf: 'herd_done' });
   M2.npc('gusset_t', 24, 4, 'gusset|hiker', 'down', null, { hidden: true });
-  M2.npc('geode', 10, 4, 'geodie|child_f', 'left', null, { hideIf: 'geode_met', gate: 'shove', note: 'the crystal alcove Kigu (static encounter, behind the loose rock)', script: function* (c, n) {
-    yield* c.sayT('quarry_tunnels_2.geode.1', 'The alcove glitters violet. A sleepy-eyed Geodie blinks at you from the crystals.');
+  M2.npc('geode', 10, 4, 'rockabye|child_f', 'left', null, { hideIf: 'geode_met', gate: 'shove', note: 'the crystal alcove Kigu (static encounter, behind the loose rock)', script: function* (c, n) {
+    yield* c.sayT('quarry_tunnels_2.geode.1', 'The alcove glitters violet. A sleepy-eyed Rockabye blinks at you from the crystals.');
     c.set('geode_met');
-    yield* c.wildBattle('geodie', 26);
+    yield* c.wildBattle('rockabye', 26);
     c.hideNpc(n.id);
   } });
-  M2.trainer('qt2_t1', 7, 12, 'hiker', 'left', { cls: 'Miner', name: 'Clem', sight: 4, reward: 13, ai: 2, team: [['slatli|kumi', 26], ['pebbi|kumi', 26]],
+  M2.trainer('qt2_t1', 7, 12, 'hiker', 'left', { cls: 'Miner', name: 'Clem', sight: 4, reward: 13, ai: 2, team: [['tortile|kumi', 26], ['pebblump|kumi', 26]],
     intro: 'Down here, you either battle or you go back up. There\'s no third option!', win: 'All right, all right. Third option: you win.', after: 'The geodes down here grow in the darkest corners. Some say a Kigu sleeps in one.' });
-  M2.trainer('qt2_t2', 14, 15, 'grunt_m', 'down', { cls: 'Presser', name: 'Tack', sight: 2, reward: 14, ai: 2, music: 'battle_society', team: [['chippi|nibbi', 26], ['sandkit|mittsy', 26], ['silkie', 27]],
+  M2.trainer('qt2_t2', 14, 15, 'grunt_m', 'down', { cls: 'Presser', name: 'Tack', sight: 2, reward: 14, ai: 2, music: 'battle_society', team: [['chiseltail|nibblit', 26], ['sandkit|kittabra', 26], ['silkie', 27]],
     intro: 'I\'m not lost. I\'m conducting a survey of what lost feels like.', win: 'Survey complete. Lost feels like losing.', after: 'If you see my team on the way out, tell them I said I\'m fine. Firmly.' });
   M2.pickup('spool', 12, 9, 'silk_spool', 2);
   M2.pickup('candy', 25, 6, 'wish_candy', 1);

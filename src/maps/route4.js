@@ -1,5 +1,5 @@
 /* Route 4 — the Slab Road: Seamstead City -> Canvas Rest. The meadow dries out as you go east: grass, then scrub, then open dune
- * under sandstone shelves. Levels 20-24. First wild Jerbi, Cactli, Chippi and Sandkit.
+ * under sandstone shelves. Levels 20-24. First wild Dunehop, Pricklepot, Chiseltail and Sandkit.
  * Story: a line of Pressers carries pale stone slabs east on poles (a running joke, never a wall). Five Tailors stand at three
  * pinches (a gap in the woods, the squeeze between a sandstone outcrop and the forest edge, a notch in a sandstone ridge). The hook for later: the slabs are going north "to the Works". */
 (function (root) {
@@ -59,18 +59,18 @@
   M.spawn('west', 2, 10, 'right').spawn('east', 43, 10, 'left');
   M.edge('w', 10, 11, 'seamstead', 'east').edge('e', 10, 11, 'canvas_rest', 'west');
 
-  M.enc('grass', [['jerbi|nibbi', 20, 22, 26], ['chippi|nibbi', 20, 22, 24], ['cactli|nibbi', 21, 23, 20], ['sandkit|mittsy', 20, 23, 18], ['skorpi|peepi', 22, 24, 8], ['tumbi|peepi', 22, 23, 4]]);
+  M.enc('grass', [['dunehop|nibblit', 20, 22, 26], ['chiseltail|nibblit', 20, 22, 24], ['pricklepot|nibblit', 21, 23, 20], ['sandkit|kittabra', 20, 23, 18], ['stingle|chirpadee', 22, 24, 8], ['tumbleyarn|chirpadee', 22, 23, 4]]);
 
   // ---- the five Tailors
-  M.trainer('r4_t1', 6, 9, 'hiker', 'down', { cls: 'Hiker', name: 'Odo', sight: 2, reward: 12, ai: 1, team: [['chippi|nibbi', 21], ['kumi|nibbi', 22]],
+  M.trainer('r4_t1', 6, 9, 'hiker', 'down', { cls: 'Hiker', name: 'Odo', sight: 2, reward: 12, ai: 1, team: [['chiseltail|nibblit', 21], ['kumi|nibblit', 22]],
     intro: 'I\'m walking the whole Slab Road before the slabs do! Let\'s see if you can keep up.', win: 'You\'re faster than a slab, I\'ll give you that.', after: 'The sand gets in everything out east. I found some in a sandwich I hadn\'t even opened yet.' });
-  M.trainer('r4_t2', 16, 12, 'picnicker', 'up', { cls: 'Picnicker', name: 'Lia', sight: 2, reward: 11, ai: 1, team: [['cactli|nibbi', 21], ['peepi', 21], ['mittsy', 22]],
+  M.trainer('r4_t2', 16, 12, 'picnicker', 'up', { cls: 'Picnicker', name: 'Lia', sight: 2, reward: 11, ai: 1, team: [['pricklepot|nibblit', 21], ['chirpadee', 21], ['kittabra', 22]],
     intro: 'This is the last shady spot before the desert, so it\'s my picnic spot. Battle for it!', win: 'Fine, you can share the shade.', after: 'Have a sandwich for the road. Oh, wait, I ate them all.' });
-  M.trainer('r4_t3', 17, 9, 'net_kid', 'down', { cls: 'Net Kid', name: 'Pip', sight: 2, reward: 9, ai: 1, team: [['jerbi|nibbi', 21], ['jerbi|nibbi', 22]],
-    intro: 'I\'ve been trying to net a Jerbi all morning! You look easier to net.', win: 'Okay, you were harder to net.', after: 'Jerbi jump right over my net, every single time. They do it on purpose, I swear.' });
-  M.trainer('r4_t4', 30, 12, 'grunt_m', 'up', { cls: 'Presser', name: 'Crimp', sight: 2, reward: 12, ai: 1, music: 'battle_society', team: [['mittsy', 22], ['silkie', 22], ['chippi|nibbi', 23]],
+  M.trainer('r4_t3', 17, 9, 'net_kid', 'down', { cls: 'Net Kid', name: 'Pip', sight: 2, reward: 9, ai: 1, team: [['dunehop|nibblit', 21], ['dunehop|nibblit', 22]],
+    intro: 'I\'ve been trying to net a Dunehop all morning! You look easier to net.', win: 'Okay, you were harder to net.', after: 'Dunehop jump right over my net, every single time. They do it on purpose, I swear.' });
+  M.trainer('r4_t4', 30, 12, 'grunt_m', 'up', { cls: 'Presser', name: 'Crimp', sight: 2, reward: 12, ai: 1, music: 'battle_society', team: [['kittabra', 22], ['silkie', 22], ['chiseltail|nibblit', 23]],
     intro: 'Hold still. Your map is all creased, so I\'m folding it properly while we battle.', win: 'There! Your map is folded beautifully. ...I lost, though.', after: 'Hospital corners on a map. That\'s my one joy out here.' });
-  M.trainer('r4_t5', 31, 9, 'grunt_f', 'down', { cls: 'Presser', name: 'Starch', sight: 2, reward: 12, ai: 1, music: 'battle_society', team: [['sandkit|mittsy', 23], ['cactli|nibbi', 23]],
+  M.trainer('r4_t5', 31, 9, 'grunt_f', 'down', { cls: 'Presser', name: 'Starch', sight: 2, reward: 12, ai: 1, music: 'battle_society', team: [['sandkit|kittabra', 23], ['pricklepot|nibblit', 23]],
     intro: 'Those slabs are for the Works, and the Works needs them flat. You look a little lumpy.', win: 'Lumpy, and strong. That\'s not in the handbook.', after: 'The slabs go north to the Works. I don\'t know what they press up there, and I\'m told not to wonder.' });
 
   // the resting slab carriers: three lines of a running gag, each a little more tired

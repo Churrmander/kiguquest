@@ -32,7 +32,7 @@ console.log('>> running away from a wild battle');
 {
   const { t, NP, ow, G, st } = fresh(2);
   ow.loadMap('route1', 12, 36, 'up', { noEnter: true });
-  ow.spawn((function* () { yield* ow.wildBattle('mittsy', 2); })(), 'w');
+  ow.spawn((function* () { yield* ow.wildBattle('kittabra', 2); })(), 'w');
   const ok = t.mash(() => G.top() instanceof NP.BattleScene && G.top().menus.length > 0, 3000);
   assert.ok(ok, 'action menu');
   t.tap('right'); t.tap('down'); t.tap('a');

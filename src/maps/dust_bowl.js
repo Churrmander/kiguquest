@@ -1,5 +1,5 @@
 /* The Dust Bowl — open desert between Canvas Rest and Bobbin Quarry, under a dust storm most of the time (map weather 'dust':
- * battles here start in the Dust mood, and Tumbi only rolls in while it blows). Levels 22-26.
+ * battles here start in the Dust mood, and Tumbleyarn only rolls in while it blows). Levels 22-26.
  * The way across is marked by the nomads' threads: red posts lead to the Quarry; blue and yellow posts wander off to a "very proud"
  * post at a dead end (with something for your trouble); green posts lead south to the Oasis.
  * Story: a Society slab cart is stuck in the sand on the red route. Push it out (or battle its bored guard) and he grumbles where
@@ -17,7 +17,7 @@
     if (r === 2 || r < 0) { yield* c.sayT(k('leave'), 'Carter: Sure, leave the man with the cart. Everyone does.'); return; }
     if (r === 1) {
       yield* c.sayT(k('battle'), 'Carter: A battle? Out here? ...Fine. Anything\'s better than pushing.');
-      const won = yield* c.trainerBattle({ cls: 'Presser', name: 'Carter', look: 'grunt_m', ai: 1, reward: 12, music: 'battle_society', team: L.team([['chippi|nibbi', 24], ['sandkit|mittsy', 24]]) });
+      const won = yield* c.trainerBattle({ cls: 'Presser', name: 'Carter', look: 'grunt_m', ai: 1, reward: 12, music: 'battle_society', team: L.team([['chiseltail|nibblit', 24], ['sandkit|kittabra', 24]]) });
       if (!won) return;
       yield* c.sayT(k('won'), 'Carter: You hit harder than the wind out here. Look, while we\'re both standing here,\\pyou might as well give the cart a shove. I\'ll even say please.');
     }
@@ -82,15 +82,15 @@
   M.spawn('west', 1, 21, 'right').spawn('east', 38, 4, 'left').spawn('south', 33, 28, 'up');
   M.edge('n', 26, 28, 'route5', 'south').edge('w', 20, 22, 'canvas_rest', 'east').edge('e', 3, 5, 'bobbin_quarry', 'west').edge('s', 32, 35, 'dust_oasis', 'north');
 
-  M.enc('grass', [['jerbi|nibbi', 22, 25, 22], ['sandkit|mittsy', 22, 25, 20], ['skorpi|peepi', 23, 25, 18], ['cactli|nibbi', 23, 25, 16], ['chippi|nibbi', 22, 24, 12], ['jerbix|nibbi', 25, 26, 4], ['tumbi|peepi', 23, 25, 8]]);
-  // Tumbi only rolls in on the wind: without the storm, her slot goes to Jerbi
-  M.def.encFilter = (list) => (NP.Weather.now === 'dust' ? list : list.map((e) => (e.sp === 'tumbi' ? Object.assign({}, e, { sp: L.sp('jerbi|nibbi') }) : e)));
+  M.enc('grass', [['dunehop|nibblit', 22, 25, 22], ['sandkit|kittabra', 22, 25, 20], ['stingle|chirpadee', 23, 25, 18], ['pricklepot|nibblit', 23, 25, 16], ['chiseltail|nibblit', 22, 24, 12], ['jerbix|nibblit', 25, 26, 4], ['tumbleyarn|chirpadee', 23, 25, 8]]);
+  // Tumbleyarn only rolls in on the wind: without the storm, her slot goes to Dunehop
+  M.def.encFilter = (list) => (NP.Weather.now === 'dust' ? list : list.map((e) => (e.sp === 'tumbleyarn' ? Object.assign({}, e, { sp: L.sp('dunehop|nibblit') }) : e)));
 
-  M.trainer('db_t1', 11, 16, 'hiker', 'right', { cls: 'Hiker', name: 'Burl', sight: 3, reward: 13, ai: 1, team: [['chippi|nibbi', 23], ['slatli|kumi', 24]],
+  M.trainer('db_t1', 11, 16, 'hiker', 'right', { cls: 'Hiker', name: 'Burl', sight: 3, reward: 13, ai: 1, team: [['chiseltail|nibblit', 23], ['tortile|kumi', 24]],
     intro: 'Can\'t see a thing in this storm! Oh, hello. Let\'s battle while we wait for it to clear.', win: 'I didn\'t see that coming. I didn\'t see anything coming.', after: 'Keep your scarf up. Sand in the teeth is no way to live.' });
-  M.trainer('db_t2', 25, 8, 'picnicker', 'right', { cls: 'Nomad', name: 'Sefa', sight: 3, reward: 14, ai: 2, team: [['sandkit|mittsy', 24], ['jerbi|nibbi', 24], ['cactli|nibbi', 25]],
+  M.trainer('db_t2', 25, 8, 'picnicker', 'right', { cls: 'Nomad', name: 'Sefa', sight: 3, reward: 14, ai: 2, team: [['sandkit|kittabra', 24], ['dunehop|nibblit', 24], ['pricklepot|nibblit', 25]],
     intro: 'You followed the red thread all the way here? Then you\'ve earned a proper battle!', win: 'The red thread brought you to a proper fight, and you\'re good at it.', after: 'My grandmother tied that red thread. She tied it twice, because the wind always pulls one knot loose.' });
-  M.trainer('db_t3', 24, 20, 'camper', 'left', { cls: 'Camper', name: 'Dov', sight: 3, reward: 11, ai: 1, team: [['jerbi|nibbi', 23], ['tumbi|peepi', 24]],
+  M.trainer('db_t3', 24, 20, 'camper', 'left', { cls: 'Camper', name: 'Dov', sight: 3, reward: 11, ai: 1, team: [['dunehop|nibblit', 23], ['tumbleyarn|chirpadee', 24]],
     intro: 'Are you lost too? Battle me, and then we can be lost together!', win: 'Okay, I\'m still lost, but I\'m lost and impressed.', after: 'Someone told me to follow the blue thread. I think they were teasing me.' });
   M.pickup('yellow_prize', 3, 4, 'wish_candy', 1);                     // the yellow detour pays off a little
   M.pickup('blue_prize', 25, 24, 'revive_tea', 1);

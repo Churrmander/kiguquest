@@ -17,7 +17,7 @@
     yield* c.sayT('thimble.rival2.3', '{rival}: Her Fluff Kigu are a lot tougher than they look.\\pDon\'t let them tuck you in for a nap. Here, take these.\\pMum packed far too many snack cakes.');
     yield* c.giveItem('snack_cake', 3);
     c.set('rival2_done');
-    if (!c.flag('yarn_basket')) yield* c.sayT('thimble.rival2.basket', '{rival}: Oh! And Poppy\'s lost her yarn basket, and she\'s in a real flap.\\pI saw a Mittsy rolling yarn about in the flowers by the road.');
+    if (!c.flag('yarn_basket')) yield* c.sayT('thimble.rival2.basket', '{rival}: Oh! And Poppy\'s lost her yarn basket, and she\'s in a real flap.\\pI saw a Kittabra rolling yarn about in the flowers by the road.');
     yield* c.sayT('thimble.rival2.win', '{rival}: Next time we meet, I\'ll have a proper plan, and it\'ll be a great one.\\pGo on, {player}. Poppy\'s waiting, and you\'re going to be brilliant.');
     yield* c.face(t, 'up');
     yield* c.wait(12);
@@ -44,7 +44,7 @@
     yield* c.sayT('thimble.inspect.4', 'Fold: Loose threads become tangles, Tailor, and tangles become messes.\\pThe Society can press that right out, free of charge!');
     yield* c.sayT('thimble.inspect.5', '{player}\'s Kigu tugged her sleeve away from the Presser.');
     yield* c.sayT('thimble.inspect.6', 'Tuck: Resisting an inspection? That is... untidy.\\pStay in line, Tailor!');
-    const won = yield* c.trainerBattle({ cls: 'Presser', name: 'Tuck', look: 'grunt_m', ai: 1, reward: 8, music: 'battle_society', canLose: true, team: team([['mittsy', 8], ['silkie', 7]]) });
+    const won = yield* c.trainerBattle({ cls: 'Presser', name: 'Tuck', look: 'grunt_m', ai: 1, reward: 8, music: 'battle_society', canLose: true, team: team([['kittabra', 8], ['silkie', 7]]) });
     if (won) {
       yield* c.sayT('thimble.inspect.win.1', 'Tuck: Flat is fair... flat is fair... I was only supposed to count planks.');
       yield* c.sayT('thimble.inspect.win.2', 'Fold: Please don\'t tell the Inspector.\\pI\'d honestly rather be baking.');
@@ -67,11 +67,11 @@
     c.set('presser1_done');
   }
 
-  // ---- Poppy's lost yarn basket: a Mittsy is having the time of her life with it. No battle, just a gentle swap.
+  // ---- Poppy's lost yarn basket: a Kittabra is having the time of her life with it. No battle, just a gentle swap.
   function* yarn(c) {
-    yield* c.sayT('thimble.yarn.1', 'A trail of cream yarn leads into the flowers...\\pA Mittsy is pouncing on a yarn ball and rolling it round a basket!');
+    yield* c.sayT('thimble.yarn.1', 'A trail of cream yarn leads into the flowers...\\pA Kittabra is pouncing on a yarn ball and rolling it round a basket!');
     if (!(yield* c.ask('Roll her a pebble to chase instead?'))) return;
-    yield* c.sayT('thimble.yarn.2', 'The Mittsy batted the yarn one last time... then bounded after the pebble.\\pShe looks very pleased with her new toy.');
+    yield* c.sayT('thimble.yarn.2', 'The Kittabra batted the yarn one last time... then bounded after the pebble.\\pShe looks very pleased with her new toy.');
     c.hideProp('yarn');
     if (c.flag('poppy_asked')) yield* c.sayT('thimble.yarn.3', "{player} picked up Poppy's yarn basket!");
     else yield* c.sayT('thimble.yarn.3b', "{player} picked up the yarn basket.\\pA tag says: PROPERTY OF THIMBLE SALON. Every stitch counts!");
@@ -137,7 +137,7 @@
         else yield* c.sayT('thimble.sign_r2.closed', 'ROUTE 2  Closed\\nInspection in progress. Please be patient.');
       } },
     ],
-    // Poppy's yarn basket, with a Mittsy playing in it, in the flowers by the road (the Salon's pre-quest; see S.poppy)
+    // Poppy's yarn basket, with a Kittabra playing in it, in the flowers by the road (the Salon's pre-quest; see S.poppy)
     props: [{ id: 'yarn', x: 10, y: 17, icon: 'item:cream_thread', hideIf: 'yarn_basket', script: yarn }],
     // Rival #2 ambushes anyone who steps up to the Salon door (12,7 is the only tile the door can be entered from; 13,7 is the road beside it)
     triggers: [{ x: 12, y: 7, w: 2, h: 1, id: 'rival2', when: (c) => !c.flag('rival2_done') && !c.flag('badge1'), script: rival2 }],
@@ -227,15 +227,15 @@
     npcs: [
       { id: 'poppy', x: 4, y: 3, look: 'poppy', dir: 'down', script: 'poppy' },
       { id: 'salon_t1', x: 5, y: 9, look: 'tailor_m', dir: 'left',
-        trainer: { cls: 'Tailor', name: 'Ren', sight: 3, reward: 7, ai: 1, team: team([['nibbi', 5], ['mittsy', 5]]),
+        trainer: { cls: 'Tailor', name: 'Ren', sight: 3, reward: 7, ai: 1, team: team([['nibblit', 5], ['kittabra', 5]]),
           intro: 'Poppy teaches us that every stitch counts. Show me yours!', win: 'Such neat work!', after: 'Poppy is at the back. Don\'t underestimate her Kigu.' } },
       { id: 'salon_t2', x: 4, y: 6, look: 'tailor_f', dir: 'right',
-        trainer: { cls: 'Tailor', name: 'Noa', sight: 3, reward: 8, ai: 1, team: team([['peepi', 6], ['nibbi', 6]]),
+        trainer: { cls: 'Tailor', name: 'Noa', sight: 3, reward: 8, ai: 1, team: team([['chirpadee', 6], ['nibblit', 6]]),
           intro: 'Halt! Nobody gets to Poppy without getting past me first.', win: 'You got that one exactly right...', after: 'Go on, Poppy is waiting.' } },
     ],
   });
-  // softened for starter-only runs (playtest QA); her Peepi sticks to Fluff moves so the Gale ones don't flatten a Sprubun starter
-  NP.maps.salon.poppyTeam = team([['nibbi', 6], ['peepi', 7, { moves: ['pounce', 'tail_wag', 'sweet_talk'] }], ['mittsy', 8]]);
+  // softened for starter-only runs (playtest QA); her Chirpadee sticks to Fluff moves so the Gale ones don't flatten a Sprubun starter
+  NP.maps.salon.poppyTeam = team([['nibblit', 6], ['chirpadee', 7, { moves: ['pounce', 'tail_wag', 'sweet_talk'] }], ['kittabra', 8]]);
 
   // -------------------------------------------------------------------------------------- houses
   K.room({

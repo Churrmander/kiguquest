@@ -589,8 +589,11 @@
   function cryParams(id) {
     if (id && typeof id === 'object') id = id.id !== undefined ? id.id : JSON.stringify(id);
     const sp = NP.data.species && NP.data.species[id];
-    const ri = rngOf('cry:' + id);
+    const was = (NP.data && NP.data.renamedFrom) || {}; // renamed species keep the cry seeded from their old id
+    const seed = was[id] || id;
+    const ri = rngOf('cry:' + seed);
     let word = sp && sp.cry, family = sp ? sp.family || id : id, stage = sp ? sp.stage || 1 : 1;
+    const famSeed = was[family] || family;
     if (!word) {
       const n = 1 + Math.floor(ri() * 2.6);
       word = '';
@@ -598,7 +601,7 @@
       word += CODAS[Math.floor(ri() * CODAS.length)] + (ri() < 0.5 ? '!' : ri() < 0.3 ? '~' : '');
       stage = 1 + Math.floor(ri() * 3);
     }
-    const rf = rngOf('cryfam:' + family);
+    const rf = rngOf('cryfam:' + famSeed);
     const region = 250 * Math.pow(2, rf() * 1.9); // family pitch region ~250..930 Hz (stage 1; Gen 5 cries centre around ~550 Hz)
     const body = Math.floor(rf() * 3); // 0 pulse + detuned triangle, 1 soft triangle/sine, 2 pulse + sub-octave
     const duty = [1, 2, 1, 3][Math.floor(rf() * 4)];
@@ -614,7 +617,7 @@
     if (st === 2 && tex === 'clean' && rf() < 0.6) tex = 'rasp'; // final forms get some grit
     if (contour === 4) tex = 'growl';
     // gesture = the overall shape of the call; palette = the instrument it is sung with (both drive most of the audible variety)
-    const rg = rngOf('crygest:' + (rf() < 0.55 ? family : id));
+    const rg = rngOf('crygest:' + (rf() < 0.55 ? famSeed : seed));
     // known species are spread evenly over gestures (by dex number) and families over palettes, so no two neighbours sound alike
     const fam = sp && NP.data.species[family];
     const cv = (sp && sp.cryVoice) || {}; // optional hand-picked overrides: { gesture, palette, tex }
@@ -622,7 +625,7 @@
     const palette = cv.palette || (fam && fam.num ? PALETTES[(fam.num * 3) % PALETTES.length] : PALETTES[Math.floor(rf() * PALETTES.length)]);
     if (cv.tex) tex = cv.tex;
     return {
-      gesture, palette, gseed: 'crynotes:' + id, interval: [3, 4, 5, 6, 7, 12][Math.floor(rg() * 6)],
+      gesture, palette, gseed: 'crynotes:' + seed, interval: [3, 4, 5, 6, 7, 12][Math.floor(rg() * 6)],
       tex, rough: 0.5 + rf() * 0.5,
       types, word, syl: syllables(word), stage: st + 1, body, duty, det, fshift,
       base, contour,

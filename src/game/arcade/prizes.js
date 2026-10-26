@@ -1,5 +1,5 @@
 /* src/game/arcade/prizes.js — what the prize counter sells for tickets: held items (defined here with their battle hooks),
- * Cabbi the taxi Kigu, and Tailor Card designs. Held items whose icons already exist in src/art/icons/items-held.js are given
+ * Cabriolet the taxi Kigu, and Tailor Card designs. Held items whose icons already exist in src/art/icons/items-held.js are given
  * data here; the type pins (pin_<type>) give that type's moves a 20% boost. */
 (function (root) {
   'use strict';
@@ -45,7 +45,7 @@
   }
 
   // ------------------------------------------------------------------------------------------- the catalogue
-  AR.CABBI = 'cabbi';   // added by the Chapter 4-6 work; the prize hides itself until the species exists
+  AR.CABBI = 'cabriolet';   // added by the Chapter 4-6 work; the prize hides itself until the species exists
   AR.CARDS = {
     plain: { name: 'Classic', price: 0, desc: 'The card the Tailor Association hands out.' },
     gingham: { name: 'Gingham', price: 150, desc: 'Red and white gingham, like a picnic blanket.' },

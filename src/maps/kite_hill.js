@@ -73,8 +73,8 @@
     yield* c.sayT('kite_hangar.rival5.6', 'Dart: I\'m Dart. I run the Salon, and I fly the fastest balloon on the hill, when I\'m allowed to fly it.\\pGet my balloon patched up, and I\'ll fly you both over the pass myself. That\'s a promise.');
     yield* c.sayT('kite_hangar.rival5.7', '{rival}: ...Thanks. I think I needed someone to tell me I was being silly.\\p{player}, battle me? I need to let off some steam before I do anything else.');
     c.music('battle_rival');
-    const counter = { konko: 'ottelia|ribbi', ottopi: 'voltessa|sparkin', sprubun: 'larkette|peepi' }[c.state.starter] || 'sparkin|peepi';
-    const team = L.team([[L.evoStarter(c.state.rivalStarter), 35], [counter, 33], ['propera|propi', 33], ['slatina|slatli', 34], ['kumara|silkie', 33]]);
+    const counter = { konko: 'ottelia|kerochapu', ottopi: 'arcorn|scurrent', sprubun: 'lyripip|chirpadee' }[c.state.starter] || 'scurrent|chirpadee';
+    const team = L.team([[L.evoStarter(c.state.rivalStarter), 35], [counter, 33], ['aviatrix|whirligig', 33], ['mossgable|tortile', 34], ['kumara|silkie', 33]]);
     const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'rival', ai: 2, reward: 30, canLose: true, team });
     c.music(c.map.def.music);
     if (won) yield* c.sayT('kite_hangar.rival5.win', '{rival}: Ha! You\'re still ahead. Somehow that makes me feel better, like things are how they should be.');
@@ -151,7 +151,7 @@
     if (!c.flag('balloon_fixed')) { yield* c.sayT('kite_hill.race.wait', 'Racer Fen: No racing while the balloons are grounded. I\'m practising my winning face instead.'); return; }
     yield* c.sayT('kite_hill.race.ask', 'Racer Fen: The Kite Tail Race! Three heats, first to the top of the airfield wins. Our Kigu race on the wind.\\pWe settle it with a battle, though, because it\'s quicker. Heat ' + (done + 1) + ', ready?');
     const lv = 33 + done;
-    const won = yield* c.trainerBattle({ cls: 'Racer', name: 'Fen', look: 'pilot', ai: 2, reward: 15, team: L.team([['kamipi', lv], ['propi', lv], ['peepi', lv]]) });
+    const won = yield* c.trainerBattle({ cls: 'Racer', name: 'Fen', look: 'pilot', ai: 2, reward: 15, team: L.team([['foldling', lv], ['whirligig', lv], ['chirpadee', lv]]) });
     if (!won) return;
     c.set('race_' + (done + 1));
     if (done + 1 >= 3) {
@@ -196,7 +196,7 @@
   M.spawn('west', 2, 23, 'right');
   M.edge('w', 22, 24, 'route6', 'east');
   M.trigger({ x: 2, y: 22, w: 1, h: 3, id: 'arrive', when: (c) => !c.flag('kite_arrived'), script: arrival });
-  M.enc('grass', [['kamipi', 31, 33, 40], ['propi', 31, 33, 34], ['peepi', 31, 33, 26]]);
+  M.enc('grass', [['foldling', 31, 33, 40], ['whirligig', 31, 33, 34], ['chirpadee', 31, 33, 26]]);
 
   // 6.2: Mr. Sharp at the airfield gate, in a leather flying helmet
   M.npc('sharp', 27, 27, 'gentleman', 'left', null, { script: L.giver('sharp_kite', 'snack_cake', 1, {
@@ -211,7 +211,7 @@
     after: 'Knitter: My sister says the scarf is nearly done. I\'ve started knitting her a reply. It might take a while.',
   }) });
   // the patch quest (6.5): four favours
-  M.trainer('kh_pilot', 15, 12, 'pilot', 'down', { cls: 'Pilot', name: 'Skye', sight: 0, reward: 16, ai: 2, team: [['kamipi', 33], ['propi', 33], ['cloudli', 34]],
+  M.trainer('kh_pilot', 15, 12, 'pilot', 'down', { cls: 'Pilot', name: 'Skye', sight: 0, reward: 16, ai: 2, team: [['foldling', 33], ['whirligig', 33], ['flumble', 34]],
     intro: 'A patch? Sure, if you can beat me. Grounded pilots get very bored, you know.', win: 'Okay, okay! The patch is yours.', after: 'Tell Dart I want a go in her balloon when it flies.' });
   M.npc('pilot_patch', 16, 13, 'skier', 'up', null, { hideIf: 'patch_pilot', note: 'gives the sky-blue patch once Skye is beaten', script: function* (c) {
     if (!c.flag('rival5_done')) { yield* c.sayT('kite_hill.skye.wait', 'Skye\'s co-pilot: We\'re just standing about until the balloons fly again.'); return; }

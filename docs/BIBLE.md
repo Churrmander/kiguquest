@@ -53,6 +53,28 @@ Effectiveness is the classic Gen-2→5 chart under these names (implemented in `
 tail / accessories carry it. Distinct silhouette + palette per family. Stage 2 adds accessories and maturity; stage 3 is the full
 "festival" version. Suggested cry in quotes.
 
+### Naming rule (LAW, owner's decision 2026-10-26)
+
+Every new or changed Kigu name must pass all of these, and **the owner approves every new name before it goes into the game**
+(code, maps, text, art keys) or the roster notes.
+
+1. **Ending budget.** No ending is shared by more than 3 family base names. The "ee" ending (-i, -ie, -y) is closed for new
+   families unless it is a real word or a clear reference that earns it (Musubi, Chirpadee). Stage 2 and 3 names follow the
+   same cap for endings like -ora, -ina, -ika, -ara, -essa.
+2. **No chop-and-add.** Never an English word cut short plus a cute ending (the old Cactli, Slatli, Glowli). Blend two ideas:
+   the creature plus her costume, her habit or a pun (Rockabye, Hedgehug, Aviatrix). Words from other languages are welcome
+   and need no explanation (Lumipom, Kuurlace, Tomibou).
+3. **Mix the shapes.** Consonant endings, compounds, real words with a twist.
+4. **Lines may share a root, families may not.** No two families share a stem of 4 letters or more.
+5. **Box test.** Read it aloud in a column of eight roster names. Two rhymes in a row, or a look-alike, means rename.
+6. **No real Pokemon names and no other well-known character names** (Smolder was dropped for a League of Legends dragon;
+   Keropon for Sanrio's Keroppi). A sound echo is fine when the creature looks different (Dozala and Komala). Nothing that
+   could be misread as a rude word (Pricklepot, not Prickpot; Peepi was renamed).
+7. **One obvious reading.** A player who has never heard it said should stress it the way we mean (Pomisno was dropped).
+8. **10 letters or fewer**, so it fits the battle HP box and menus.
+
+Old ids from the round 2 rename live in `src/data/renames.js` (saves migrate on load; cries keep their old sound).
+
 **Starters (P1)**
 1. `konko` Konko — Ember — 1/3, →Lv16 `kitsuri` — orange fox onesie, cream tummy, dark paw-mittens, fox-ear hood; short copper bob, amber eyes; her tail tip burns like a candle. "Kon!"
 2. `kitsuri` Kitsuri — Ember — 2/3, →Lv36 `kyuubelle` — hood pushed back into a headband with ears; long copper hair with a side-tail; red scarf; two flame-tipped tails; tiny shrine bell.
@@ -65,13 +87,13 @@ tail / accessories carry it. Distinct silhouette + palette per family. Stage 2 a
 9. `lapinade` Lapinade — Sprout — 3/3 — flower crown, ears flowing like a blossoming cape, petal skirt, watering-can wand, floating petals.
 
 **Meadow Lane / Thimble Village (P1)**
-10. `mittsy` Mittsy — Fluff — 1/2, →Lv18 `meowtrice` — kitten: white-and-grey cat onesie with oversized mitten paws, sleepy eyes, bell on the hood. "Mya"
-11. `meowtrice` Meowtrice — Fluff — 2/2 — dapper tuxedo cat: bow tie, little top hat with ears poking out, cane, ribboned tail.
-12. `nibbi` Nibbi — Fluff — 1/2, →Lv15 `nibblenna` — hamster in cream-caramel onesie, puffed seed-stuffed cheeks, tiny round ears, rust twin tails. "Nom!"
+10. `kittabra` Kittabra — Fluff — 1/2, →Lv18 `wiskedabra` — playful kitten: tuxedo-cat onesie (black body and hood, white bib, white blaze down the nose, white mitten paws, black tail, yellow-green eyes), bell on the hood. Bats at yarn and hides things in her big mittens, so she visibly grows into the stage magician. "Mya" *(Recolour from white-and-grey is still to do.)*
+11. `wiskedabra` Wiskedabra — Fluff — 2/2 — tuxedo stage magician: bow tie, little top hat with ears poking out, cane, ribboned tail; pulls ribbons out of her hat.
+12. `nibblit` Nibblit — Fluff — 1/2, →Lv15 `nibblenna` — hamster in cream-caramel onesie, puffed seed-stuffed cheeks, tiny round ears, rust twin tails. "Nom!"
 13. `nibblenna` Nibblenna — Fluff — 2/2 — baker hamster: apron, chef hat with ears, basket of buns.
-14. `peepi` Peepi — Fluff/Gale — 1/3, →Lv14 `larkette` — sparrow chick: yellow-brown feather onesie, wing-sleeves, feather-tuft hair. "Pip!"
-15. `larkette` Larkette — Fluff/Gale — 2/3, →Lv32 `larkessa` — songbird: feather crest headband, wing cape, tail-feather skirt, songbook.
-16. `larkessa` Larkessa — Fluff/Gale — 3/3 — elegant lark: long wing-cape, tail-feather train, feather crown, note motifs.
+14. `chirpadee` Chirpadee — Fluff/Gale — 1/3, →Lv14 `lyripip` — sparrow chick (the name nods to the chickadee): yellow-brown feather onesie, wing-sleeves, feather-tuft hair; practises flapping every sunrise. "Pip!"
+15. `lyripip` Lyripip — Fluff/Gale — 2/3, →Lv32 `larkestra` — songwriter songbird: feather crest headband, wing cape, tail-feather skirt, a songbook of tunes she wrote herself.
+16. `larkestra` Larkestra — Fluff/Gale — 3/3 — famous singer lark: long wing-cape, tail-feather train, feather crown, note motifs; her song carries across three towns.
 
 **Gingham Woods / Seamstead (P1–P2)**
 17. `silkie` Silkie — Buzz — 1/3, →Lv10 `cocoona` — silkworm: white fuzzy segmented onesie, stubby nub antennae hood, pale lavender hair, sleepy.
@@ -79,43 +101,43 @@ tail / accessories carry it. Distinct silhouette + palette per family. Stage 2 a
 19. `mothelia` Mothelia — Buzz/Gale — 3/3 — moth-wing dress-cape with big patterned wings, feathery antenna headband, sparkle scales.
 20. `buzzlet` Buzzlet — Buzz — 1/2, →Lv20 `hunnibloom` — bee: yellow-black striped onesie, tiny antennae, honey pot, blonde bobbles.
 21. `hunnibloom` Hunnibloom — Buzz/Sprout — 2/2 — honeycomb dress, flower crown, translucent wings, honey-dipper wand.
-22. `webbi` Webbi — Buzz — 1/2, →Lv22 `spindra` — spider: dark-purple hoodie with four extra small sleeve-arms for knitting, eight tiny red eye-spots on the hood, yarn ball; shy.
+22. `spinnet` Spinnet — Buzz — 1/2, →Lv22 `spindra` — spider: dark-purple hoodie with four extra small sleeve-arms for knitting, eight tiny red eye-spots on the hood, yarn ball; shy.
 23. `spindra` Spindra — Buzz/Spook — 2/2 — weaver: web-lace shawl, knitting needles, long black hair with silver threads.
 24. `daisip` Daisip — Sprout — 1/2, →Lv21 `daisia` — daisy: white petal hood framing her face, yellow onesie.
 25. `daisia` Daisia — Sprout — 2/2 — bouquet dress, petal halo, petal skirt.
-26. `ribbi` Ribbi — Tide — 1/2, →Lv25 `lilyrana` — frog: green raincoat, big round eyes on the hood, lily-pad umbrella.
+26. `kerochapu` Kerochapu — Tide — 1/2, →Lv25 `lilyrana` — happy rain frog: green raincoat, big round eyes on the hood, lily-pad umbrella; splashes in puddles and ribbits (kero-kero plus chappu).
 27. `lilyrana` Lilyrana — Tide/Terra — 2/2 — overalls + boots, lily-pad skirt, wide rain hat.
 28. `molli` Molli — Terra — 1/2, →Lv24 `molluna` — mole: brown-grey onesie, giant digging mitts, goggles on forehead, squinty.
 29. `molluna` Molluna — Terra/Iron — 2/2 — miner: hard-hat with lamp, steel-toe boots, drill-pick.
 
 **Phase 2 (art after P1)**
-30. `pebbi` Pebbi — Pebble — 1/3, →Lv25 `boulderina` — pebble-patterned grey onesie, rock hair-clips, stoic.
+30. `pebblump` Pebblump — Pebble — 1/3, →Lv25 `boulderina` — pebble-patterned grey onesie, rock hair-clips, stoic.
 31. `boulderina` Boulderina — Pebble — 2/3, →Lv40 `craggoth` — boulder shoulder-guards, crystal chips in hair.
 32. `craggoth` Craggoth — Pebble — 3/3 — crystal-crowned gem queen with boulder gauntlets.
-33. `sparkin` Sparkin — Volt — 1/2, →Lv26 `voltessa` — squirrel: yellow onesie, zigzag-stripe tail, static-fluffed hair. "Zip!"
-34. `voltessa` Voltessa — Volt — 2/2 — bolt-shaped tail cape, tesla-coil hair buns, goggles, fingerless gloves.
+33. `scurrent` Scurrent — Volt — 1/2, →Lv26 `arcorn` — red squirrel: copper-gold onesie, long ear tufts, zigzag-stripe tail, static-fluffed hair; zapped so often she twitches, and zaps everything she touches. "Zip!" *(Recolour from yellow and ear tufts still to do.)*
+34. `arcorn` Arcorn — Volt — 2/2 — gadget inventor: bolt-shaped tail cape, spark-plug hair clips (not tesla-coil buns, so she does not twin with Teslaria), goggles, fingerless gloves; builds gadgets from acorns and wire. *(Hair clips still to draw.)*
 35. `kumi` Kumi — Brawl — 1/3, →Lv25 `kumara` — bear cub: brown onesie, bandage-wrapped mitt paws, determined pout.
 36. `kumara` Kumara — Brawl — 2/3, →Lv40 `kumazen` — boxing gloves, headband, braid.
 37. `kumazen` Kumazen — Brawl — 3/3 — monk robes over onesie, prayer beads, closed calm eyes, huge mitts.
-38. `hootie` Hootie — Dream/Gale — 1/2, →Lv28 `hootamo` — owl: brown-feather onesie, big round glasses, tiny book.
+38. `tomibou` Tomibou — Dream/Gale — 1/2, →Lv28 `hootamo` — bookworm owl (tome plus hibou, French for owl): brown-feather onesie, big round glasses, tiny book.
 39. `hootamo` Hootamo — Dream/Gale — 2/2 — mortarboard with ear tufts, feather shawl, scroll.
-40. `dozey` Dozey — Dream — 1/3, →Lv26 `slumbrio` — koala: grey onesie, clutches a pillow, half-closed eyes, yawning.
+40. `dozala` Dozala — Dream — 1/3, →Lv26 `slumbrio` — koala: grey onesie, clutches a pillow, half-closed eyes, yawning. Koala ears carry through on Slumbrio's nightcap and Somnia's crown.
 41. `slumbrio` Slumbrio — Dream — 2/3, →Lv44 `somnia` — nightgown + nightcap, dream bubble, teddy.
 42. `somnia` Somnia — Dream — 3/3 — moon queen of dreams: starry robe, star blanket, floating dream orbs.
-43. `sheetie` Sheetie — Spook — 1/2, →Lv30 `spectrina` — bedsheet-ghost costume with big eyes peeking out of the eyeholes; shy.
-44. `spectrina` Spectrina — Spook — 2/2 — lace ghost dress, lantern, long translucent veil.
-45. `yukimi` Yukimi — Frost — 1/2, →Lv30 `yukiara` — snow bunny: white fluffy onesie with pompoms, scarf, pale-blue hair.
-46. `yukiara` Yukiara — Frost — 2/2 — snowflake crown, fur-trim frost cape, icicle wand.
-47. `pinny` Pinny — Sprout/Iron — 1/3, →Lv30 `needlette` — pincushion-tomato hat-hood, pins as hairpins, prickly.
-48. `needlette` Needlette — Sprout/Iron — 2/3, →Lv45 `thimbrel` — sewing-kit knight: thimble helmet, needle lance.
-49. `thimbrel` Thimbrel — Sprout/Iron — 3/3 — full thimble-plate armour dress, long thread cape.
-50. `shroomi` Shroomi — Nettle/Sprout — 1/2, →Lv28 `shroomkin` — mushroom: red-spotted cap hood, brown onesie, spore puffs.
-51. `shroomkin` Shroomkin — Nettle/Sprout — 2/2 — parasol cap, frilly gill skirt.
-52. `purrlie` Purrlie — Shade — 1/2, →Lv20 `prowlette` — black cat burglar: domino mask, striped socks, stolen scarf; cheeky.
-53. `prowlette` Prowlette — Shade — 2/2 — phantom thief: top hat, cape, ribbon-lock tail.
-54. `draki` Draki — Drake — 1/3, →Lv50 `drakessa` — little dragon onesie (crimson/black), tiny horns hood, stubby tail.
-55. `drakessa` Drakessa — Drake — 2/3, →Lv64 `drakonia` — dragon hoodie with wings and horns, long tail.
-56. `drakonia` Drakonia — Drake/Shade — 3/3 — dragon empress: three-horn crown, huge wing-cape, flowing gown.
+43. `hushroud` Hushroud — Spook — 1/2, →Lv30 `spectrina` — bedsheet-ghost costume with big eyes peeking out of the eyeholes; shy but friendly: she sneaks closer when you are not looking and freezes behind her sheet when you turn around. Overworld idea: a wild one inches toward the player while their back is turned.
+44. `spectrina` Spectrina — Spook — 2/2 — lace ghost dress, lantern, long translucent veil; brave enough at last to step into the light.
+45. `lumipom` Lumipom — Frost — 1/2, →Lv30 `kuurlace` — snow bunny (lumi is Finnish for snow): white fluffy onesie with pompoms, scarf, pale-blue hair.
+46. `kuurlace` Kuurlace — Frost — 2/2 — graceful, regal snow-bunny queen (kuura is Finnish for hoarfrost): snowflake crown with bunny ears, fur-trim frost-lace cape, icicle wand.
+47. `tomasquire` Tomasquire — Sprout/Iron — 1/3, →Lv30 `needlance` — pincushion-tomato hat-hood, pins as hairpins, prickly.
+48. `needlance` Needlance — Sprout/Iron — 2/3, →Lv45 `thimbelot` — sewing-kit knight: thimble helmet, needle lance.
+49. `thimbelot` Thimbelot — Sprout/Iron — 3/3 — full thimble-plate armour dress, long thread cape.
+50. `myceliquin` Myceliquin — Nettle/Sprout — 1/2, →Lv28 `cordymime` — cute+creepy mushroom harlequin: red-spotted cap hood, brown onesie, purple spore puffs that make other Kigu giggly and sleepy, a too-sweet smile, mycelium threads trailing from her hem. *(Redesign still to do.)*
+51. `cordymime` Cordymime — Nettle/Sprout — 2/2 — cute+creepy mushroom mime: parasol cap, frilly gill skirt, mycelium threads on her fingers like gentle puppet strings; mimes pulling invisible ropes. Spooky-cute, never gory. *(Redesign still to do.)*
+52. `pilfurr` Pilfurr — Shade — 1/2, →Lv20 `prowlure` — black-cat highwayman: black cat hood, highwayman mask, cape, striped socks, stolen scarf; cheeky. *(Redesign still to do.)*
+53. `prowlure` Prowlure — Shade — 2/2 — swashbuckling musketeer thief: highwayman mask, rapier, cape, feathered musketeer cap (no top hat, so she does not twin with Wiskedabra), ribbon-lock tail. *(Redesign still to do.)*
+54. `smolava` Smolava — Drake — 1/3, →Lv50 `wyvrant` — little dragon onesie (crimson/black), tiny horns hood, stubby tail.
+55. `wyvrant` Wyvrant — Drake — 2/3, →Lv64 `empyress` — moody teen wyvern with a bad attitude (wyvern plus rant): dragon hoodie with wings and horns, long tail.
+56. `empyress` Empyress — Drake/Shade — 3/3 — composed dragon empress (empress plus pyre), grown out of her teen rants: three-horn crown, huge wing-cape, flowing gown.
 57. `warpa` Warpa — Dream/Ember — legendary, single stage — tall weaver-spirit in a white-and-crimson ceremonial robe, vertical threads streaming from her sleeves, a loom-comb crown.
 58. `weftie` Weftie — Dream/Tide — legendary, single stage — her twin, in white-and-blue, horizontal threads swirling around her like ribbons.
 

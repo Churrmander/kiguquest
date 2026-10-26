@@ -610,7 +610,7 @@
       }
       // wild encounters
       let enc = m.def.encounters && m.def.encounters[kind];
-      if (enc && m.def.encFilter) enc = m.def.encFilter(enc);   // e.g. Tumbi only while the dust blows
+      if (enc && m.def.encFilter) enc = m.def.encFilter(enc);   // e.g. Tumbleyarn only while the dust blows
       if (enc && st.repel <= 0 && this.stepsSinceMap > 2 && st.steps - this.lastBattleStep > 3 && NP.rng.chance(0.11)) {
         const pick = NP.rng.weighted(enc);
         const lv = NP.rng.range(pick.min, pick.max);

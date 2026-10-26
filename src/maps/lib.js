@@ -3,7 +3,7 @@
  *  L.map(o)      chainable builder: terrain grid + stamps / npcs / props / warps / triggers, registered through NP.mapkit.
  *  L.room(o)     indoor room with a door mat + exit warp;  L.tea(o) / L.store(o) the standard Tea House / General Store.
  *  trainers, pickups (visible + hidden), signs, gates and Snip trees (terrain that changes with story flags, persisted by flag).
- *  'want|fallback' picks: 'sparkin|nibbi' = Sparkin if that species exists yet, else Nibbi (logged in L.subs; tests report it),
+ *  'want|fallback' picks: 'scurrent|nibblit' = Scurrent if that species exists yet, else Nibblit (logged in L.subs; tests report it),
  *  so maps keep working while the data/art teams are still adding species, items and looks.
  *
  * Text conventions (docs/text.md): one page = <= 2 lines (~75 chars); '\\p' = new page; '\\n' = line break; say Kigu / Tailor /
@@ -25,13 +25,13 @@
     if (!L.subs.some((s) => s.kind === kind && s.want === want && s.used === fb)) L.subs.push({ kind, want, used: fb });
     return fb;
   }
-  L.sp = (s, d) => pick('species', NP.data.species, s, d || 'nibbi');
+  L.sp = (s, d) => pick('species', NP.data.species, s, d || 'nibblit');
   L.item = (s, d) => pick('item', NP.data.items, s, d || 'snack_cake');
   L.look = (s, d) => (/^(rival|player_kid|rival_kid)$/.test(String(s).split('|')[0]) ? String(s).split('|')[0] : pick('look', NP.art && NP.art.human && NP.art.human.looks, s, d || 'villager_m1'));
   L.hasItem = (id) => !!(NP.data.items && NP.data.items[id]);
   L.hasMove = (id) => !!(NP.data.moves && NP.data.moves[id]);
 
-  /** team([['cocoona', 14, { moves:[..], item:'plum_treat', nature:'adamant' }], ['sparkin|nibbi', 12]]) */
+  /** team([['cocoona', 14, { moves:[..], item:'plum_treat', nature:'adamant' }], ['scurrent|nibblit', 12]]) */
   L.team = function (list) {
     return list.map((e) => {
       const o = e[2] || {};

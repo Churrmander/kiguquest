@@ -30,14 +30,14 @@
 
     if (!c.flag('shrine_pin')) {
       yield* c.sayT(k('pin.intro'), 'Pin: Flat is fair! I\'ll be quick about it. I\'d like to be home for supper.');
-      yield* c.trainerBattle({ cls: 'Presser', name: 'Pin', look: 'grunt_m', ai: 1, reward: 8, music: 'battle_society', team: L.team([['mittsy', 10], ['nibbi', 10]]) });
+      yield* c.trainerBattle({ cls: 'Presser', name: 'Pin', look: 'grunt_m', ai: 1, reward: 8, music: 'battle_society', team: L.team([['kittabra', 10], ['nibblit', 10]]) });
       c.set('shrine_pin');
       c.music('society_theme');
       yield* c.sayT(k('pin.win'), 'Pin: ...Flat is fair. Flat is... Do you think there\'s bread at supper?');
     }
     if (!c.flag('shrine_welt')) {
       yield* c.sayT(k('welt.intro'), 'Welt: Excuse me, your collar is a little untidy. May I? ...There.\\pNow, where were we? Right. Battle!');
-      yield* c.trainerBattle({ cls: 'Presser', name: 'Welt', look: 'grunt_f', ai: 1, reward: 8, music: 'battle_society', team: L.team([['peepi', 10], ['silkie', 11]]) });
+      yield* c.trainerBattle({ cls: 'Presser', name: 'Welt', look: 'grunt_f', ai: 1, reward: 8, music: 'battle_society', team: L.team([['chirpadee', 10], ['silkie', 11]]) });
       c.set('shrine_welt');
       c.music('society_theme');
       yield* c.sayT(k('welt.win'), 'Welt: I keep folding things, and I can\'t stop. Is that normal?');
@@ -50,7 +50,7 @@
     yield* c.walk(crease, ['left', 1, 'down', 3, 'right', 1], 2);
     crease.dir = 'down';
     yield* c.sayT(k('crease.intro'), 'Crease: You beat both of my Pressers? Hm. It was messy, but it was brisk,\\pand I do like brisk. I\'ll measure you myself, then.');
-    yield* c.trainerBattle({ cls: 'Pleat', name: 'Crease', look: 'pleat', ai: 2, reward: 14, music: 'battle_admin', team: L.team([['peepi', 12], ['silkie', 13], ['webbi', 14]]) });
+    yield* c.trainerBattle({ cls: 'Pleat', name: 'Crease', look: 'pleat', ai: 2, reward: 14, music: 'battle_admin', team: L.team([['chirpadee', 12], ['silkie', 13], ['spinnet', 14]]) });
     c.music('society_theme');
     yield* c.sayT(k('crease.win.1'), 'Crease: A crease. ...One single crease, right on my own sleeve.\\pI hate that.');
     yield* c.walk(crease, ['left', 1, 'up', 2], 2);

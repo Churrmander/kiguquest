@@ -60,8 +60,22 @@
         const st = Object.assign(f, s);
         st.opts = Object.assign(f.opts, s.opts || {});
         if (!st.rival || st.rival === 'Tomo') st.rival = rivalNameFor(st.name, st.gender); // saves from before the lore change
+        S.migrateSpecies(st); // saves from before the round 2 Kigu renames
         return st;
       } catch (e) { return null; }
+    },
+    /** Move renamed species ids (NP.data.renamed, old -> new) onto their new ids: party, box, Sketchbook, starters. */
+    migrateSpecies(st) {
+      const R = (NP.data && NP.data.renamed) || {};
+      const to = (id) => R[id] || id;
+      for (const k of (st.party || []).concat(st.box || [])) if (k && k.species) k.species = to(k.species);
+      for (const key of ['seen', 'caught']) {
+        const m = (st.dex && st.dex[key]) || {};
+        for (const id of Object.keys(m)) if (R[id]) { m[R[id]] = m[id]; delete m[id]; }
+      }
+      if (st.starter) st.starter = to(st.starter);
+      if (st.rivalStarter) st.rivalStarter = to(st.rivalStarter);
+      return st;
     },
     erase() { try { root.localStorage.removeItem(KEY); } catch (e) { /* */ } },
 

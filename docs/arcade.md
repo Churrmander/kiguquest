@@ -22,7 +22,7 @@ Everything inside the arcade lives in `src/game/arcade/` (its own manifest, `src
 | tickets | Moth Patrol score/60, Button Breaker score/100 (a go is three quilts, +2000 for clearing the third), Steam Chase score/120, Rooftop Hop score/200 (+10 for clearing all three stages), claw 2 for a miss, 10 for a plush, 25 for a golden plush. A decent go pays about 30-45 |
 
 Prizes (`src/game/arcade/prizes.js`, tickets): Plum Treat 150, Wish Candy 250, Snack Bag 300, Quick Claw 450, Expert Belt 700,
-Sturdy Sash 700, Coin Charm 900, any of the 17 type pins 400, Cabbi Lv25 2000 (one only, listed once `NP.data.species.cabbi`
+Sturdy Sash 700, Coin Charm 900, any of the 17 type pins 400, Cabriolet Lv25 2000 (one only, listed once `NP.data.species.cabriolet`
 exists), Tailor Card designs 150-1000 (Gingham, Denim, Patchwork, Neon Night, Starry Sky, Gold Thread).
 
 Held items defined here: `expert_belt` (super-effective hits +20%), `sturdy_sash` (survive one KO hit from full HP, used up),
@@ -33,7 +33,7 @@ it), `pin_<type>` (that type's moves +20% power). Held items are given from the 
 ## Save data
 
 `NP.state.arcade = { coins, tickets, best: {id: score}, plays: {id: n}, plush: {speciesId | speciesId_gold: n}, cards: {id: 1},
-card: id, bought: {cabbi: 1} }`, made on first use, so older saves need nothing.
+card: id, bought: {cabriolet: 1} }`, made on first use, so older saves need nothing.
 
 ## Adding a cabinet
 

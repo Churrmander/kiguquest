@@ -1,6 +1,6 @@
 /* Shibuyarn — the big city (Chapter 5, no Salon). North: the station and its plaza. Across the main road: the shotengai, a row of
  * shops (konbini, Mrs. Kasuri's fabric shop, the toy shop, the ramen bar and the arcade). South: the Tea House, a quiet shrine lane,
- * the capsule-toy wall and a vending alley where wild Vendi live. East: the railway, and the level crossing out to Route 6.
+ * the capsule-toy wall and a vending alley where wild Kachunk live. East: the railway, and the level crossing out to Route 6.
  * Story: the neon keeps browning out because Pressers are siphoning the Spark Cellar's static for the Works. Every shop sign is dark
  * (the `_off` variants) and the crossing gates are stuck down until the cellar is fixed (flag shibuyarn_lights).
  * Beats: arrival and brownout (5.2), Mimi and Mrs. Kasuri (5.4), the rival at the claw machine (5.6), the station master opens the
@@ -73,7 +73,7 @@
   }
 
   // ---- the capsule-toy wall: six figures to collect, then the toy shop owner trades you a Starlit Thread
-  const FIGURES = ['a tiny Capsi', 'a little Vendi', 'a glittery Neonki', 'a Bentobi holding a rice ball', 'a Cabbi with a tiny hat', 'a very rare gold Capsi'];
+  const FIGURES = ['a tiny Gachapop', 'a little Kachunk', 'a glittery Blinkeon', 'a Obento holding a rice ball', 'a Cabriolet with a tiny hat', 'a very rare gold Gachapop'];
   function* capsules(c) {
     const n = NP.state.flags.capsules || 0;
     if (n >= FIGURES.length) { yield* c.sayT('shibuyarn.capsule.done', 'You\'ve already got the whole set of capsule figures. The machines look a little sad about it.'); return; }
@@ -135,10 +135,10 @@
   // the shrine lane: a quiet green corner in the south-west
   M.rect(2, 21, 8, 7, 'g').rect(3, 26, 6, 1, 'f');
   M.stamp('shrine', 3, 21).stamp('tree', 2, 26).stamp('tree', 8, 21);
-  // the vending alley: wild Vendi live among the machines
+  // the vending alley: wild Kachunk live among the machines
   M.rect(10, 28, 6, 4, 'A');
   for (let x = 10; x < 18; x += 2) M.def.stamps.push(L.variantByFlag({ id: 'vending', x, y: 26 }, LIT, ['white', 'red', 'blue', 'white'][(x - 10) / 2] + '_off', ['white', 'red', 'blue', 'white'][(x - 10) / 2]));
-  M.rect(22, 29, 11, 4, ',');                                               // a scrap of park by the south road (Capsi and Bentobi)
+  M.rect(22, 29, 11, 4, ',');                                               // a scrap of park by the south road (Gachapop and Obento)
   M.rect(21, 28, 1, 5, 'F').rect(33, 28, 1, 5, 'F').rect(23, 28, 3, 1, 'F').rect(29, 28, 3, 1, 'F');   // a fenced park bed, open in the middle of the top
   M.trees([[22, 28], [32, 28], [27, 32]]);
   M.stamp('lamp', 16, 31).stamp('lamp', 20, 31);
@@ -147,9 +147,9 @@
   M.sign(37, 16, 'EAST: ROUTE 6\\nto Kite Hill', 'east sign');
   M.spawn('south', 18, 33, 'up').spawn('east', 37, 18, 'left');
   M.edge('s', 17, 19, 'route5', 'north').edge('e', 17, 19, 'route6', 'west');
-  M.enc('grass', [['vendi', 28, 31, 40], ['capsi', 28, 30, 22], ['bentobi', 28, 30, 22], ['glowli', 28, 30, 10], ['coili', 28, 30, 6]]);
-  // Neonki come out on the rooftops at dusk, once the signs are lit
-  M.def.encFilter = (list) => (NP.state.flags[LIT] ? list.concat([{ sp: 'neonki', min: 29, max: 31, w: 8 }]) : list);
+  M.enc('grass', [['kachunk', 28, 31, 40], ['gachapop', 28, 30, 22], ['obento', 28, 30, 22], ['glowgrub', 28, 30, 10], ['boingo', 28, 30, 6]]);
+  // Blinkeon come out on the rooftops at dusk, once the signs are lit
+  M.def.encFilter = (list) => (NP.state.flags[LIT] ? list.concat([{ sp: 'blinkeon', min: 29, max: 31, w: 8 }]) : list);
 
   M.trigger({ x: 17, y: 30, w: 3, h: 4, id: 'arrive', when: (c) => !c.flag('shibuyarn_arrived'), script: arrival });
   M.trigger({ x: 25, y: 17, w: 7, h: 3, id: 'claw', when: (c) => c.flag('kasuri_done') && !c.flag('rival_claw_done'), script: rivalClaw });
@@ -238,7 +238,7 @@
     .npc('owner', 4, 2, 'old_tailor', 'down', null, { script: function* (c) {
       if (c.flag('capsule_prize')) { yield* c.sayT('shibuyarn_toys.after', 'Toy shop owner: The full set sits on my counter now. Customers ask where I found the gold one. I tell them it\'s a secret.'); return; }
       if ((NP.state.flags.capsules || 0) >= 6) {
-        yield* c.sayT('shibuyarn_toys.set', 'Toy shop owner: Is that... the whole set? With the gold Capsi? I\'ve been trying for that one for years!\\pLet me put them on the counter, and I\'ll give you something from the back in return.');
+        yield* c.sayT('shibuyarn_toys.set', 'Toy shop owner: Is that... the whole set? With the gold Gachapop? I\'ve been trying for that one for years!\\pLet me put them on the counter, and I\'ll give you something from the back in return.');
         c.set('capsule_prize');
         yield* c.giveItem('starlit_thread', 1);
         yield* c.sayT('shibuyarn_toys.set2', 'Toy shop owner: Starlit Thread. It glitters like the night sky, and some crystal Kigu are very fond of it.');
@@ -246,7 +246,7 @@
       }
       yield* c.sayT('shibuyarn_toys.hint', 'Toy shop owner: Have you tried the capsule machines outside? There are six figures to collect,\\pand the gold one is very rare. Bring me the full set and I\'ll make it worth your while.');
     } })
-    .npc('kid', 6, 5, 'child_f', 'left', ['I got three Vendi figures in a row. Three! I wanted a Neonki.'])
+    .npc('kid', 6, 5, 'child_f', 'left', ['I got three Kachunk figures in a row. Three! I wanted a Blinkeon.'])
     .reg();
 
   // ---- the ramen bar: a free bowl (onigiri) once, and gossip
@@ -262,7 +262,7 @@
 
   // ---- the Tea House and a house
   L.tea({ id: 'shibuyarn_tea', name: 'Tea House', exit: { to: 'shibuyarn', door: 'tea' }, guests: [
-    { id: 'g1', x: 7, y: 6, look: 'scientist', dir: 'left', say: ['The static in the cellar comes from wild Kigu. Glowli, mostly. They glow, they spark, and the city runs on it.\\pIf someone were bottling it, the city would go dark. Hypothetically.'] },
+    { id: 'g1', x: 7, y: 6, look: 'scientist', dir: 'left', say: ['The static in the cellar comes from wild Kigu. Glowgrub, mostly. They glow, they spark, and the city runs on it.\\pIf someone were bottling it, the city would go dark. Hypothetically.'] },
   ] }).reg();
   L.room({ id: 'shibuyarn_house', name: 'Flat', w: 9, h: 8, doorX: 3, exit: { to: 'shibuyarn', door: 'house' } })
     .stamp('bed', 1, 2).stamp('tv', 6, 1).stamp('table_s', 4, 4).stamp('plant', 7, 5)

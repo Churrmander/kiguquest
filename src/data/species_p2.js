@@ -24,13 +24,13 @@
   }
 
   // ---- Volt line (Phase 2)
-  sp('sparkin', 'Sparkin', ['volt'], [45, 50, 43, 70, 50, 65], { catch: 190, exp: 63, ab: ['run_away'], cry: 'Zip!',
-    evo: [{ to: 'voltessa', level: 26 }],
+  sp('scurrent', 'Scurrent', ['volt'], [45, 50, 43, 70, 50, 65], { catch: 190, exp: 63, ab: ['run_away'], cry: 'Zip!',
+    evo: [{ to: 'arcorn', level: 26 }],
     ls: [[1, 'pounce'], [1, 'quick_dash'], [5, 'volt_surge'], [10, 'gust_puff'], [15, 'lullaby'], [20, 'feather_dance']],
-    dex: 'A squirrel onesie with zigzag-striped tail and static-fluffed hair. Lightning crackles around her.' });
-  sp('voltessa', 'Voltessa', ['volt'], [65, 70, 58, 95, 68, 85], { catch: 75, exp: 161, ab: ['run_away'], cry: 'Zzzt!', stage: 2, family: 'sparkin',
+    dex: 'A squirrel who has been zapped so often that she twitches. She zaps everything she touches.' });
+  sp('arcorn', 'Arcorn', ['volt'], [65, 70, 58, 95, 68, 85], { catch: 75, exp: 161, ab: ['run_away'], cry: 'Zzzt!', stage: 2, family: 'scurrent',
     ls: [[1, 'pounce'], [1, 'quick_dash'], [1, 'volt_surge'], [8, 'gust_puff'], [16, 'daydream'], [24, 'feather_dance'], [32, 'buzz_song'], [38, 'pillow_slam']],
-    dex: 'Tesla-coil hair buns and fingerless gloves spark with energy. Her bolt-shaped tail cape trails lightning.' });
+    dex: 'An inventor who builds gadgets out of acorns and wire. Her fingerless gloves spark when she has an idea.' });
 
   // ---- Brawl line (Phase 2)
   sp('kumi', 'Kumi', ['brawl'], [50, 75, 60, 30, 50, 40], { catch: 190, exp: 65, ab: ['sturdy_soul'], cry: 'Koff!',

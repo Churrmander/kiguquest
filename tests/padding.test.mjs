@@ -1,5 +1,5 @@
 // The Chapter 1 padding beats, played by a headless bot: the first morning at home (sheets, kite, tree house promise), Prof. Bobbin's
-// parcel errand (a sleepy wild Peepi, the Town Map), Basting Green's Tidy Day parade, Ribbon Loop's Tailors and leaf-munching Silkie, and
+// parcel errand (a sleepy wild Chirpadee, the Town Map), Basting Green's Tidy Day parade, Ribbon Loop's Tailors and leaf-munching Silkie, and
 // Poppy's pre-Salon quest (her yarn basket and both apprentices). Each gate is checked to be a nudge with a reason, never a dead end.
 import assert from 'node:assert/strict';
 import { boot } from './harness.mjs';
@@ -67,11 +67,11 @@ settle();
 assert.ok(t.ow.player.y > 2, 'turned back at the north road');
 assert.ok(said.some((s) => /pier/.test(s)), 'the townsfolk point at the pier');
 
-// the crate on the pier: a sleepy Peepi, a wild battle, the parcel
+// the crate on the pier: a sleepy Chirpadee, a wild battle, the parcel
 st.party[0].level = 12; st.party[0].hp = NP.Kigu.maxHp(st.party[0]);
 assert.ok(t.travel(13, 19, 400), 'to the pier crate');
 t.tap('down'); t.tick(4); t.tap('a');
-assert.ok(t.mash(() => G.top() instanceof NP.BattleScene, 3000), 'the Peepi battle starts');
+assert.ok(t.mash(() => G.top() instanceof NP.BattleScene, 3000), 'the Chirpadee battle starts');
 assert.ok(t.mash(() => G.top() === t.ow && t.idle() && st.flags.parcel_got, 20000), 'the battle ends and the parcel is ours');
 
 // back to Bobbin: the Town Map, a heal, and the road north opens

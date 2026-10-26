@@ -1,6 +1,6 @@
 /* Bobbin Quarry — a terraced quarry town (Salon 4, Gusset, Terra). Upper terrace: the tunnel mouth, the Salon and the foreman's hut.
  * Middle: the caravan road, the Tea House and the store. Below: the flooded old pit, slab stacks and the ore-cart line.
- * Story: the quarry is shut. Pressers dug too fast and spooked a Pebbi herd, which now fills the tunnels, and Gusset is stuck down
+ * Story: the quarry is shut. Pressers dug too fast and spooked a Pebblump herd, which now fills the tunnels, and Gusset is stuck down
  * the pit. Rival #4 waits at the gate ("I just want to measure how far we've both come"). After the herd settles (quarry_tunnels),
  * Gusset has tea with you in his hut (quarry_hut) and the Salon opens. Flags: quarry_reached, rival4_done, herd_done, gusset_back. */
 (function (root) {
@@ -21,14 +21,14 @@
     yield* c.sayT('bobbin_quarry.rival4.3', '{rival}: Dad always measured the flour twice before he baked anything.\\pI used to think that was boring. Now I sort of get it.');
     c.music('battle_rival');
     // owner's rule: the rival's starter is weak to yours, with one teammate that hits your starter hard (switching pays, never forced)
-    const counter = { konko: 'ottelia|ribbi', ottopi: 'voltessa|sparkin', sprubun: 'larkette|peepi' }[c.state.starter] || 'sparkin|peepi';
-    const team = L.team([[L.evoStarter(c.state.rivalStarter), 26], [counter, 24], ['kumara|silkie', 24], ['slatli|kumi', 25]]);
+    const counter = { konko: 'ottelia|kerochapu', ottopi: 'arcorn|scurrent', sprubun: 'lyripip|chirpadee' }[c.state.starter] || 'scurrent|chirpadee';
+    const team = L.team([[L.evoStarter(c.state.rivalStarter), 26], [counter, 24], ['kumara|silkie', 24], ['tortile|kumi', 25]]);
     const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'rival', ai: 2, reward: 20, canLose: true, team });
     c.set('rival4_done');
     c.music(c.map.def.music);
     if (won) yield* c.sayT('bobbin_quarry.rival4.win', '{rival}: Yep, that\'s about what I measured. You\'re a long way ahead.\\pThat\'s okay. At least now I know how far I\'ve got to go.');
     else yield* c.sayT('bobbin_quarry.rival4.lose', '{rival}: Huh. I won? Don\'t tell anyone, but I didn\'t expect that.\\pGo and rest your Kigu. The Tea House here does a cocoa with cinnamon.');
-    yield* c.sayT('bobbin_quarry.rival4.4', '{rival}: The quarry\'s shut, did you hear? There\'s a whole herd of Pebbi stuck down the tunnels,\\pand the foreman went in after them and hasn\'t come out.\\pI\'m going to ask around town. You should try the tunnel up on the top terrace.');
+    yield* c.sayT('bobbin_quarry.rival4.4', '{rival}: The quarry\'s shut, did you hear? There\'s a whole herd of Pebblump stuck down the tunnels,\\pand the foreman went in after them and hasn\'t come out.\\pI\'m going to ask around town. You should try the tunnel up on the top terrace.');
     yield* c.walk(r, ['right', 6]);
     c.hideNpc('rival_q');
   }
@@ -74,12 +74,12 @@
   M.trigger({ x: 3, y: 14, w: 1, h: 2, id: 'rival4', when: (c) => !c.flag('rival4_done'), script: rival4 });
 
   // the Salon is shut while Gusset is down the pit: an apprentice minds the door
-  M.npc('appr', 17, 7, 'hiker', 'down', ['The Salon\'s shut. Gusset\'s down in the tunnels after the Pebbi herd,\\pand nobody battles in his Salon without him. He\'d notice.'], { hideIf: 'gusset_back', note: 'blocks the Salon lane until gusset_back' });
+  M.npc('appr', 17, 7, 'hiker', 'down', ['The Salon\'s shut. Gusset\'s down in the tunnels after the Pebblump herd,\\pand nobody battles in his Salon without him. He\'d notice.'], { hideIf: 'gusset_back', note: 'blocks the Salon lane until gusset_back' });
   M.npc('rival_q', 8, 15, 'rival', 'left', ['{rival}: ...'], { hidden: true });
   M.npc('miner1', 13, 17, 'hiker', 'down', ['The Society bought every slab we cut this year. They want them flat as glass.\\pWe asked what for. They said "pressing", and then they smiled. I didn\'t like the smile.']);
   M.npc('miner2', 30, 15, 'camper', 'left', ['That cart line runs out to the quarry face. When the herd\'s back home,\\pwe can get digging again. Slowly, this time.'], { move: 'turn' });
   M.npc('elder', 8, 18, 'elder_f', 'right', ['The Bobbin family cut the first slab out of this hill, a long time ago.\\pTwo sisters grew up on the top terrace. One of them became a professor down south.\\pNobody here talks much about the other one.']);
-  M.npc('kid', 21, 12, 'child_f', 'down', ['The Pebbi aren\'t scary. They\'re just stubborn, and so is Gusset.\\pThat\'s why he went down after them on his own.'], { move: 'wander', range: 1 });
+  M.npc('kid', 21, 12, 'child_f', 'down', ['The Pebblump aren\'t scary. They\'re just stubborn, and so is Gusset.\\pThat\'s why he went down after them on his own.'], { move: 'wander', range: 1 });
   M.npc('sharp_q', 31, 13, 'gentleman', 'left', ['Mr. Sharp: Hello there! I\'m a humble miner. Look, I\'ve even got a pickaxe.\\p...It\'s a spoon. But a very determined spoon.']);
   M.pickup('island', 16, 23, 'starlit_thread', 1, 'on the slab island in the flooded pit');
   M.pickup('east', 32, 21, 'silk_spool', 2);

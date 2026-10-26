@@ -1,7 +1,7 @@
 /* Route 6 — the Windy Ridge: Shibuyarn -> Kite Hill. The road climbs out of the city along an open grassy ridge where the wind
  * never stops. Gust tiles (pale streaks) blow you along until you reach still ground, like slow ice: gentle, and a preview of
- * Dart's fan Salon. Levels 30-33. Wild Kamipi and Propi, and Cloudli in the rain. A hidden cave mouth behind the rocks on the
- * north side has a Nocti roosting in it.
+ * Dart's fan Salon. Levels 30-33. Wild Foldling and Whirligig, and Flumble in the rain. A hidden cave mouth behind the rocks on the
+ * north side has a Batnap roosting in it.
  * Five Tailors. Signs for KITE HILL: "Hold on to your hat." */
 (function (root) {
   'use strict';
@@ -28,7 +28,7 @@
   M.rect(3, 6, 6, 4, ',').rect(31, 18, 3, 1, ',').rect(42, 15, 4, 3, ',').rect(15, 15, 6, 3, ',').rect(30, 5, 6, 3, ',');
   M.rect(5, 15, 3, 1, 'f').rect(45, 6, 3, 1, 'f');
   // the hidden cave mouth on the north shoulder, tucked behind boulders
-  M.building('cave_mouth', 6, 2, null, 'cave', 'ridge_cave', { toDoor: null, note: 'hidden cave (Nocti)' });
+  M.building('cave_mouth', 6, 2, null, 'cave', 'ridge_cave', { toDoor: null, note: 'hidden cave (Batnap)' });
   M.rect(6, 2, 3, 2, '.').rect(7, 4, 1, 2, 'd');
   M.stamp('boulder', 5, 5).stamp('boulder', 8, 6);
   M.stamp('windsock', 14, 10).stamp('windsock', 36, 10).stamp('windsock', 46, 14);
@@ -51,19 +51,19 @@
   //  3. a last rocky spine before Kite Hill, with Batten at its foot
   M.rect(38, 4, 4, 3, 'C').rect(38, 7, 3, 2, 'C').rect(39, 9, 2, 2, 'C').rect(39, 15, 3, 3, 'C');
 
-  M.enc('grass', [['kamipi', 30, 32, 26], ['propi', 30, 32, 24], ['peepi', 30, 31, 16], ['larkette|peepi', 31, 33, 8], ['glowli', 30, 31, 10], ['cloudli', 31, 33, 16]]);
-  // Cloudli only drift in on the rain: without it, her slot goes to Kamipi
-  M.def.encFilter = (list) => (NP.Weather.now === 'rain' ? list : list.map((e) => (e.sp === 'cloudli' ? Object.assign({}, e, { sp: L.sp('kamipi') }) : e)));
+  M.enc('grass', [['foldling', 30, 32, 26], ['whirligig', 30, 32, 24], ['chirpadee', 30, 31, 16], ['lyripip|chirpadee', 31, 33, 8], ['glowgrub', 30, 31, 10], ['flumble', 31, 33, 16]]);
+  // Flumble only drift in on the rain: without it, her slot goes to Foldling
+  M.def.encFilter = (list) => (NP.Weather.now === 'rain' ? list : list.map((e) => (e.sp === 'flumble' ? Object.assign({}, e, { sp: L.sp('foldling') }) : e)));
 
-  M.trainer('r6_t1', 10, 10, 'hiker', 'down', { cls: 'Hiker', name: 'Gale', sight: 3, reward: 15, ai: 2, team: [['chippona|chippi', 30], ['propi', 31]],
+  M.trainer('r6_t1', 10, 10, 'hiker', 'down', { cls: 'Hiker', name: 'Gale', sight: 3, reward: 15, ai: 2, team: [['quarrel|chiseltail', 30], ['whirligig', 31]],
     intro: 'I\'ve lost two hats on this ridge already! I\'m not losing a battle too!', win: 'And there goes my third hat. Wait, no, that\'s my pride.', after: 'Tie your hat on with string. That\'s my top tip for the ridge.' });
-  M.trainer('r6_t2', 11, 14, 'pilot', 'up', { cls: 'Pilot', name: 'Ren', sight: 3, reward: 16, ai: 2, team: [['kamipi', 31], ['propi', 31], ['peepi', 30]],
+  M.trainer('r6_t2', 11, 14, 'pilot', 'up', { cls: 'Pilot', name: 'Ren', sight: 3, reward: 16, ai: 2, team: [['foldling', 31], ['whirligig', 31], ['chirpadee', 30]],
     intro: 'My balloon\'s grounded, so I walk the ridge to feel the wind. Want to feel a battle?', win: 'You\'ve got a pilot\'s nerve. Have you ever flown?', after: 'Dart can read the wind just by licking her finger. I tried it, and now my finger\'s cold.' });
-  M.trainer('r6_t3', 26, 10, 'schoolgirl', 'down', { cls: 'Kite Flyer', name: 'Suzu', sight: 3, reward: 13, ai: 1, team: [['kamipi', 31], ['kamipi', 31]],
-    intro: 'My kite and I have been up here all day! Let\'s battle while the wind\'s good.', win: 'My kite lost too. It\'s in a tree now.', after: 'Kamipi fold themselves up like paper kites. I\'ve seen one take off on her own!' });
-  M.trainer('r6_t4', 27, 14, 'courier', 'up', { cls: 'Courier', name: 'Kip', sight: 3, reward: 15, ai: 2, team: [['jerbix|jerbi', 31], ['propi', 32]],
+  M.trainer('r6_t3', 26, 10, 'schoolgirl', 'down', { cls: 'Kite Flyer', name: 'Suzu', sight: 3, reward: 13, ai: 1, team: [['foldling', 31], ['foldling', 31]],
+    intro: 'My kite and I have been up here all day! Let\'s battle while the wind\'s good.', win: 'My kite lost too. It\'s in a tree now.', after: 'Foldling fold themselves up like paper kites. I\'ve seen one take off on her own!' });
+  M.trainer('r6_t4', 27, 14, 'courier', 'up', { cls: 'Courier', name: 'Kip', sight: 3, reward: 15, ai: 2, team: [['jerbix|dunehop', 31], ['whirligig', 32]],
     intro: 'Balloon post is down, so I run the letters over the ridge! I\'ve got legs of steel. Battle me!', win: 'Legs of steel, and I\'m the one out of breath. Fair enough.', after: 'The post office on Kite Hill is drowning in letters. Somebody should help them.' });
-  M.trainer('r6_t5', 40, 14, 'grunt_f', 'up', { cls: 'Presser', name: 'Batten', sight: 3, reward: 16, ai: 2, music: 'battle_society', team: [['propi', 31], ['coili', 31], ['silkie', 32]],
+  M.trainer('r6_t5', 40, 14, 'grunt_f', 'up', { cls: 'Presser', name: 'Batten', sight: 3, reward: 16, ai: 2, music: 'battle_society', team: [['whirligig', 31], ['boingo', 31], ['silkie', 32]],
     intro: 'Kite Hill\'s balloons are grounded for safety, because unscheduled flight is untidy. So is unscheduled walking, frankly.', win: 'Fine. Walk, then. But tidily.', after: 'The notice came straight from the Works. They don\'t want anyone flying over the pass and looking down.' });
   M.npc('flyer', 20, 3, 'child_m', 'down', ['Whoa! The wind up here blows you right back down to the road!\\pI\'ve been trying to get to the top of the ridge for an hour. It\'s the best ride ever.']);
   M.rect(20, 2, 5, 3, '.');
@@ -72,17 +72,17 @@
   M.hidden('bush', 32, 14, 'wish_candy', 1, 'a Wish Candy in the wind-bent bush');
   M.reg();
 
-  // ---- the hidden cave: a Nocti roosts in the dark
+  // ---- the hidden cave: a Batnap roosts in the dark
   const C = L.map({ id: 'ridge_cave', name: 'Ridge Cave', music: 'cave', battleBg: 'cave', border: 'cave_wall', w: 12, h: 10, indoor: true, dark: true,
     legend: { w: 'cave_wall', f: 'cave_floor', ';': 'dry_grass' }, fill: 'w' });
   C.rect(2, 2, 8, 6, 'f').rect(4, 3, 4, 3, ';').rect(5, 8, 2, 1, 'f');
   C.spawn('door', 5, 7, 'up');
   C.warp({ xs: [5, 6], y: 8, to: 'route6', door: 'cave', sound: 'door' });
-  C.enc('grass', [['nocti', 30, 32, 60], ['stalli', 30, 32, 40]]);
-  C.npc('roost', 8, 2, 'nocti|child_f', 'down', null, { hideIf: 'ridge_nocti', note: 'a roosting Nocti (static encounter)', script: function* (c, n) {
-    yield* c.sayT('ridge_cave.nocti', 'A Nocti is hanging upside down from the roof, wrapped in her wings. One eye opens.\\pKi-ki!');
+  C.enc('grass', [['batnap', 30, 32, 60], ['dripstone', 30, 32, 40]]);
+  C.npc('roost', 8, 2, 'batnap|child_f', 'down', null, { hideIf: 'ridge_nocti', note: 'a roosting Batnap (static encounter)', script: function* (c, n) {
+    yield* c.sayT('ridge_cave.batnap', 'A Batnap is hanging upside down from the roof, wrapped in her wings. One eye opens.\\pKi-ki!');
     c.set('ridge_nocti');
-    yield* c.wildBattle('nocti', 32);
+    yield* c.wildBattle('batnap', 32);
     c.hideNpc(n.id);
   } });
   C.pickup('charm', 2, 2, 'dusk_charm', 1, 'Dusk Charm in the back of the cave');

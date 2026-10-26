@@ -40,7 +40,7 @@ const shove = (x, y, d) => { assert.ok(t.travel(x, y, 600), 'to push from ' + x 
 
 for (const id of ['route5', 'shibuyarn', 'shibuyarn_station', 'shibuyarn_konbini', 'shibuyarn_fabric', 'shibuyarn_toys', 'shibuyarn_ramen', 'shibuyarn_tea',
   'shibuyarn_house', 'spark_cellar', 'spark_cellar_2', 'spark_cellar_3', 'route6', 'ridge_cave']) assert.ok(NP.maps[id], 'map ' + id);
-for (const id of ['glowli', 'coili', 'nocti', 'stalli', 'vendi', 'capsi', 'neonki', 'cabbi', 'bentobi', 'kamipi', 'propi', 'cloudli'])
+for (const id of ['glowgrub', 'boingo', 'batnap', 'dripstone', 'kachunk', 'gachapop', 'blinkeon', 'cabriolet', 'obento', 'foldling', 'whirligig', 'flumble'])
   assert.ok(NP.data.species[id] && NP.art.kigu.looks[id], 'species and look ' + id);
 
 // ---- the Dust Bowl's north road -> Route 5 -> Shibuyarn
