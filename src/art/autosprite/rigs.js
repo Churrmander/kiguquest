@@ -1583,11 +1583,11 @@
     back: {
       parts: [
         { name: 'wand', polys: [[[64, 20], [80, 20], [80, 49], [61, 49], [61, 40], [64, 36]]], z: 4, pivot: [68, 50], parent: 'upper', comp: 'main', fill: [['upper', [box(60, 46, 68, 54)]]] },
-        { name: 'earL', polys: [box(27, 0, 40, 11)], z: 3, parent: 'upper', fill: [['upper', [box(27, 11, 40, 12)]]] },
-        { name: 'earR', polys: [box(50, 0, 61, 11), box(62, 0, 67, 14)], z: 3, parent: 'upper', fill: [['upper', [box(50, 11, 61, 11), box(62, 13, 67, 14)]]] },
+        { name: 'earL', polys: [box(27, 0, 40, 10)], z: 3, parent: 'upper', fill: [['upper', [box(27, 10, 40, 10)]]] },
+        { name: 'earR', polys: [box(50, 0, 67, 10)], z: 0.5, parent: 'upper', extend: [box(50, 11, 67, 13)] },
         ...breathe(90, 81, 104),
       ],
-      anim: { upper: BOB, wand: { ang: ['tab', 'SWAY', -3, 2] }, earL: { dy: ['twitch', -1, 5] }, earR: { dy: ['twitch', -1, 15] } },
+      anim: { upper: BOB, wand: { ang: ['tab', 'SWAY', -3, 2] }, earL: { dy: ['twitch', -1, 5] }, earR: { dx: ['twitch', 0.9, 15], dy: ['twitch', -1, 15] } },
     },
   };
 
