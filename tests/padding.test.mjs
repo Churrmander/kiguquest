@@ -1,5 +1,5 @@
 // The Chapter 1 padding beats, played by a headless bot: the first morning at home (sheets, kite, tree house promise), Prof. Bobbin's
-// parcel errand (a sleepy wild Chirpadee, the Town Map), Basting Green's Tidy Day parade, Ribbon Loop's Tailors and leaf-munching Silkie, and
+// parcel errand (a sleepy wild Chirpadee, the Town Map), Basting Green's Tidy Day parade, Ribbon Loop's Tailors and leaf-munching Acolarva, and
 // Poppy's pre-Salon quest (her yarn basket and both apprentices). Each gate is checked to be a nudge with a reason, never a dead end.
 import assert from 'node:assert/strict';
 import { boot } from './harness.mjs';
@@ -102,7 +102,7 @@ assert.ok(st.flags.tidy_seen && said.some((s) => /Participation is optional/.tes
 assert.ok(!t.travel(11, 0, 200), 'the parade fills the north road');
 assert.ok(said.some((s) => /Ribbon Loop/.test(s)), 'and someone points at Ribbon Loop');
 
-// Ribbon Loop: a Tailor on the lane spots you; the leaf-munching Silkie is a one-off meeting
+// Ribbon Loop: a Tailor on the lane spots you; the leaf-munching Acolarva is a one-off meeting
 t.ow.loadMap('ribbon_loop', 7, 20, 'right', { noEnter: true });
 t.tick(4);
 t.go('right', 2);   // returns false once Tam's battle takes over the screen
@@ -110,7 +110,7 @@ assert.ok(t.mash(() => t.idle() && st.flags.tr_ribbon_loop_tam, 30000), 'Hiker T
 t.ow.loadMap('ribbon_loop', 5, 4, 'up', { noEnter: true });
 t.tick(4);
 t.tap('a');
-assert.ok(t.mash(() => G.top() instanceof NP.BattleScene, 3000), 'saying hello to the Silkie starts a battle');
+assert.ok(t.mash(() => G.top() instanceof NP.BattleScene, 3000), 'saying hello to the Acolarva starts a battle');
 assert.ok(t.mash(() => G.top() === t.ow && t.idle(), 20000));
 assert.ok(st.flags.rl_silkie);
 

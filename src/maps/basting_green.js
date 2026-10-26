@@ -87,7 +87,7 @@
       { id: 'ply', x: 12, y: 7, look: 'grunt_f', dir: 'down', hideIf: 'thimble_reached',
         say: ['Ply: Ribbon Loop is the scenic route. I\'d take it myself.\\p...Please don\'t tell Tack I said that either.'] },
       { id: 'kidb', x: 6, y: 11, look: 'child_m', dir: 'right', move: 'turn',
-        say: ['There\'s a Silkie on Ribbon Loop who sits by the hay munching leaves all day.\\pShe just snacks and sunbathes. I want to be her when I grow up.'] },
+        say: ['There\'s a Acolarva on Ribbon Loop who sits by the hay munching leaves all day.\\pShe just snacks and sunbathes. I want to be her when I grow up.'] },
       { id: 'vlb', x: 17, y: 11, look: 'villager_f1', dir: 'left', move: 'wander', range: 2,
         say: ['Tidy Day comes every year now. It used to be Ribbon Day.\\pWe tied ribbons on everything, and nobody folded anything.'] },
       { id: 'flb', x: 16, y: 18, look: 'fisher', dir: 'up',

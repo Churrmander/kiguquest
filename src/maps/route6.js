@@ -63,7 +63,7 @@
     intro: 'My kite and I have been up here all day! Let\'s battle while the wind\'s good.', win: 'My kite lost too. It\'s in a tree now.', after: 'Foldling fold themselves up like paper kites. I\'ve seen one take off on her own!' });
   M.trainer('r6_t4', 27, 14, 'courier', 'up', { cls: 'Courier', name: 'Kip', sight: 3, reward: 15, ai: 2, team: [['jerbix|dunehop', 31], ['whirligig', 32]],
     intro: 'Balloon post is down, so I run the letters over the ridge! I\'ve got legs of steel. Battle me!', win: 'Legs of steel, and I\'m the one out of breath. Fair enough.', after: 'The post office on Kite Hill is drowning in letters. Somebody should help them.' });
-  M.trainer('r6_t5', 40, 14, 'grunt_f', 'up', { cls: 'Presser', name: 'Batten', sight: 3, reward: 16, ai: 2, music: 'battle_society', team: [['whirligig', 31], ['boingo', 31], ['silkie', 32]],
+  M.trainer('r6_t5', 40, 14, 'grunt_f', 'up', { cls: 'Presser', name: 'Batten', sight: 3, reward: 16, ai: 2, music: 'battle_society', team: [['whirligig', 31], ['boingo', 31], ['acolarva', 32]],
     intro: 'Kite Hill\'s balloons are grounded for safety, because unscheduled flight is untidy. So is unscheduled walking, frankly.', win: 'Fine. Walk, then. But tidily.', after: 'The notice came straight from the Works. They don\'t want anyone flying over the pass and looking down.' });
   M.npc('flyer', 20, 3, 'child_m', 'down', ['Whoa! The wind up here blows you right back down to the road!\\pI\'ve been trying to get to the top of the ridge for an hour. It\'s the best ride ever.']);
   M.rect(20, 2, 5, 3, '.');

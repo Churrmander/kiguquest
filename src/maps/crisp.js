@@ -31,7 +31,7 @@
   f1.def.interact.push({ x: 3, y: 4, script: 'shopx' }, { x: 4, y: 4, script: 'shopx' }, { x: 5, y: 4, script: 'shopx' });
   f1.def.shopStock = ['snack_cake', 'fancy_cake', 'aloe_balm', 'mint_tea', 'numb_away'];
   f1.npc('greeter', 6, 9, 'tea_maid', 'right', ['Welcome to Crisp & Co.! Everything here is flat, and everything is fair!\\pZip says we\'re the most respectable store in town.\\pMay I just smooth your collar? ...There! Doesn\'t that look better?']);
-  f1.trainer('c1_t1', 11, 8, 'grunt_f', 'right', { cls: 'Presser', name: 'Fold', sight: 3, reward: 9, ai: 1, music: 'battle_society', team: [['silkie', 16], ['kittabra', 16]],
+  f1.trainer('c1_t1', 11, 8, 'grunt_f', 'right', { cls: 'Presser', name: 'Fold', sight: 3, reward: 9, ai: 1, music: 'battle_society', team: [['acolarva', 16], ['kittabra', 16]],
     intro: 'Customers must walk in straight lines. Yours is a squiggle, and we shall fix it.', win: 'The squiggle... won.', after: 'The stairs are up on the right. Walk straight, please.' });
   f1.reg();
 
@@ -43,9 +43,9 @@
   f2.stamp('display_case', 9, 4).stamp('display_case', 11, 4).stamp('counter_l', 13, 4);   // the back-wall aisle (rows 2-3)
   f2.stamp('fold_table', 9, 6).stamp('fold_table', 12, 6).stamp('cloth_shelf', 9, 8, 'uniforms').stamp('cloth_shelf', 12, 8, 'uniforms').stamp('plant', 11, 9).stamp('plant', 14, 10);
   f2.stamp('cloth_shelf', 1, 0, 'uniforms').stamp('cloth_shelf', 6, 0, 'uniforms').stamp('cloth_shelf', 10, 0, 'uniforms');
-  f2.trainer('c2_t1', 7, 9, 'grunt_m', 'left', { cls: 'Presser', name: 'Pinch', sight: 2, reward: 10, ai: 1, music: 'battle_society', team: [['kittabra', 17], ['silkie', 17]],
+  f2.trainer('c2_t1', 7, 9, 'grunt_m', 'left', { cls: 'Presser', name: 'Pinch', sight: 2, reward: 10, ai: 1, music: 'battle_society', team: [['kittabra', 17], ['acolarva', 17]],
     intro: 'Our uniforms only come in one size, and we call it Fine.\\pYou aren\'t Fine yet. Please try to be Fine.', win: 'I\'m not feeling Fine either.', after: 'There\'s a hat department up top. It\'s very... flat.' });
-  f2.trainer('c2_t2', 14, 4, 'pleat', 'up', { cls: 'Presser', name: 'Lint', sight: 2, reward: 10, ai: 1, music: 'battle_society', team: [['silkie', 17], ['scurrent|kittabra', 17]],
+  f2.trainer('c2_t2', 14, 4, 'pleat', 'up', { cls: 'Presser', name: 'Lint', sight: 2, reward: 10, ai: 1, music: 'battle_society', team: [['acolarva', 17], ['scurrent|kittabra', 17]],
     intro: 'Staff only beyond this rack! ...Well, you can see that. Staff only anyway!', win: 'This is Staff Only, and you won anyway? Nobody trained me for this.', after: 'The Hats floor has the Staff Pass. Don\'t tell Serge I said so.' });
   f2.npc('shopper2', 2, 6, 'lady', 'right', ['They gave me a uniform. It fits. It fits perfectly.\\p...I didn\'t choose it. It fits perfectly.']);
   f2.reg();
@@ -64,7 +64,7 @@
   f3.def.onEnter = function* (c) { L.syncStamps(c); };
   f3.def.interact.push({ x: 6, y: 7, script: L.keyDoor('lock', 'staff_pass'), note: 'locked' }, { x: 7, y: 7, script: L.keyDoor('lock', 'staff_pass'), note: 'locked' });
   L.stairs(f3, 14, 10, 'down', 'crisp_b1', 'up'); f3.spawn('bstairs', 13, 10, 'left');   // stairs to the basement, in the stockroom
-  f3.trainer('c3_t1', 8, 5, 'grunt_f', 'up', { cls: 'Presser', name: 'Brim', sight: 3, reward: 11, ai: 1, music: 'battle_society', team: [['kittabra', 18], ['silkie', 18]],
+  f3.trainer('c3_t1', 8, 5, 'grunt_f', 'up', { cls: 'Presser', name: 'Brim', sight: 3, reward: 11, ai: 1, music: 'battle_society', team: [['kittabra', 18], ['acolarva', 18]],
     intro: 'Hats must sit level, and yours does not. I\'ll level it with a battle.', win: 'The hat is still not level. Neither am I.', after: 'Serge is in the basement. He smiles at everyone. It\'s... a lot.' });
   f3.npc('manager', 13, 6, 'gentleman', 'left', null, { script: function* (c) {
     if (NP.state.bag.staff_pass) { yield* c.sayT('crisp_3.manager.2', ['Manager: You have the pass. Please don\'t go downstairs.\\pI\'d stop you if I could. I just can\'t.\\pI haven\'t been able to stop anything in weeks.']); return; }
@@ -80,7 +80,7 @@
     yield* c.sayT('crisp_b1.serge.1', ['Rows of white Kigu stand in the dark, perfectly still.', 'Their costumes are pressed flat as paper. They\'re all smiling.']);
     yield* c.walk(c.npc('serge'), ['down', 2]);
     yield* c.sayT('crisp_b1.serge.2', ['Serge: Welcome to the Pressing Floor! Quality is consistency.\\pPlease mind your step. We don\'t walk here. We glide.', 'Serge: You\'re the Tailor who "rinsed" the shrine. We heard all about it.\\pDon\'t worry, nobody\'s hurt down here. They\'re simply resting.']);
-    const won = yield* c.trainerBattle({ cls: 'Presser', name: 'Serge', look: 'pleat', ai: 2, reward: 20, music: 'battle_admin', team: T([['silkie', 20], ['kittabra', 20], ['scurrent|kittabra', 21], ['spindra|silkie', 21]]) });
+    const won = yield* c.trainerBattle({ cls: 'Presser', name: 'Serge', look: 'pleat', ai: 2, reward: 20, music: 'battle_admin', team: T([['acolarva', 20], ['kittabra', 20], ['scurrent|kittabra', 21], ['spindra|acolarva', 21]]) });
     if (!won) { yield* c.sayT('crisp_b1.serge.lose', ['Serge: Oh, dear. Please go and rest upstairs.\\pI\'ll keep smiling until you come back.']); return; }
     c.set('crisp_serge_done');
     yield* c.sayT('crisp_b1.serge.win', ['Serge: ...Oh. I seem to have creased.\\pThat\'s a very strange feeling. I don\'t like it. I... don\'t mind it.']);

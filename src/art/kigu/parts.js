@@ -586,7 +586,7 @@
       if (r > 1) cv.plot(x, y, 'shine', 0);
     }
   };
-  /** loom-comb crown: a band with a row of long thin teeth (Warpa / Weftie) with a bead on each tooth. */
+  /** loom-comb crown: a band with a row of long thin teeth (Astara / Anwela) with a bead on each tooth. */
   HG.comb = (cv, L, o, hx, hy, k) => {
     cv.begin('crown', { shade: 1, hi: 4, cast: 1 });
     const n = o.points || 7, w = (o.w || 10) * k, mat = o.mat || 'gold';

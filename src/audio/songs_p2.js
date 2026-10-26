@@ -46,7 +46,7 @@
       drm: d('r:16 |', 6) + ' r:8 s:2 s:2 s:2 s:2 | ' + roll('s', 8) + ' s:2 s:2 x:4 |',
     };
     song('battle_legend', {
-      desc: 'Warpa and Weftie legendary battles: epic, soaring and mythic (brass, choir pad, timpani, string build; strings lead on the repeat).',
+      desc: 'Astara and Anwela legendary battles: epic, soaring and mythic (brass, choir pad, timpani, string build; strings lead on the repeat).',
       bpm: 150, loop: 1, order: 'I A B C A/x B/y', gain: 0.8,
       inst: {
         mel: { patch: 'brass', vol: 12, tr: -12 }, hn: { patch: 'brass', vol: 4, pan: 0.3 }, sl: { patch: 'strings', vol: 11 },

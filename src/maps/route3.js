@@ -34,7 +34,7 @@
     intro: 'I walked from Hemline in a straight line. Mostly straight!', win: 'Huh. I walked here straight and lost crooked.', after: 'The road only bends once. I counted.' });
   M.trainer('r3_t3', 25, 9, 'rocker', 'down', { cls: 'Busker', name: 'Jax', sight: 2, reward: 10, ai: 1, team: [['scurrent|kittabra', 16], ['scurrent|kittabra', 16]],
     intro: 'Seamstead rocks and so do I! Check my amp... oh, it\'s a sewing machine.', win: 'My ears are still ringing! Nice one.', after: 'Zip taught me that tune. Zip teaches everyone that tune.' });
-  M.trainer('r3_t4', 27, 12, 'pleat', 'up', { cls: 'Presser', name: 'Hem', sight: 2, reward: 10, ai: 1, music: 'battle_society', team: [['kittabra', 15], ['silkie', 16]],
+  M.trainer('r3_t4', 27, 12, 'pleat', 'up', { cls: 'Presser', name: 'Hem', sight: 2, reward: 10, ai: 1, music: 'battle_society', team: [['kittabra', 15], ['acolarva', 16]],
     intro: 'Seam Road rules: no dawdling, no wrinkles, and no unauthorised skipping.', win: 'Skipping is... apparently unregulated. I\'ll make a note of that.', after: 'I shall report that the road is satisfactory. ...Barely.' });
 
   M.npc('baker', 24, 16, 'grunt_f', 'left', ['I always wanted to be a baker. Warm bread on a cold morning, you know?\\pBut the Society told me it does more good than any bakery could.\\pMadame Damask never raises her voice. She never has to.\\pEveryone just gets... smoother.']);

@@ -101,9 +101,9 @@
   salon.npc('bryn', 4, 3, 'bryn', 'down', null, { script: 'bryn', note: 'Master Tailor #2 (Buzz)' });
   salon.trainer('salon_t1', 6, 8, 'tailor_f', 'left', { cls: 'Tailor', name: 'Wren', sight: 3, reward: 7, ai: 1, team: [['buzzlet', 11], ['spinnet', 12]],
     intro: 'Bryn always says "ten stitches, ten bees, ten seconds". I\'m the ten seconds!', win: 'Eleven seconds. Oops.', after: 'Bryn\'s right at the back. She battles even faster than she talks!' });
-  salon.trainer('salon_t2', 3, 5, 'tailor_m', 'right', { cls: 'Tailor', name: 'Dov', sight: 3, reward: 8, ai: 1, team: [['silkie', 12], ['sprubun', 12]],
+  salon.trainer('salon_t2', 3, 5, 'tailor_m', 'right', { cls: 'Tailor', name: 'Dov', sight: 3, reward: 8, ai: 1, team: [['acolarva', 12], ['sprubun', 12]],
     intro: 'Nobody reaches Bryn without showing me a clean hem first.', win: 'Now that\'s a clean hem. A very clean hem! Go on through.', after: 'Mind the bees. They don\'t bite. ...Much.' });
-  salon.reg().brynTeam = team([['spinnet', 12], ['cocoona', 13], ['hunnibloom', 14]]);
+  salon.reg().brynTeam = team([['spinnet', 12], ['vowspun', 13], ['hunnibloom', 14]]);
 
   // -------------------------------------------------------------------------------------- houses
   L.room({ id: 'hemline_house1', name: 'Hemmer\'s House', w: 9, h: 8, doorX: 3, exit: { to: 'hemline', door: 'house1' } })

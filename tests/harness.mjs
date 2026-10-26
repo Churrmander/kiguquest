@@ -24,8 +24,8 @@ export function boot(seed) {
     yield* say0.call(this, text, o);
   };
   // lines spoken from out of sight on purpose: Tuck in Thimble wears a plain Presser look (his own look is from Chapter 5),
-  // Gusset calls out from behind the herd, and the pressed Cocoona's sprite is a Kigu
-  const MEANT = [/^thimble \| Tuck:/, /^quarry_tunnels_2 \| Gusset: \(from somewhere/, /^spindle_shrine \| Cocoona:/];
+  // Gusset calls out from behind the herd, and the pressed Vowspun's sprite is a Kigu
+  const MEANT = [/^thimble \| Tuck:/, /^quarry_tunnels_2 \| Gusset: \(from somewhere/, /^spindle_shrine \| Vowspun:/];
   process.on('exit', () => {
     const bad = offscreen.filter((k) => !MEANT.some((r) => r.test(k)));
     if (bad.length) { console.error('Speakers talking from off screen (owner\'s rule: the speaker stands on screen):\n  ' + bad.join('\n  ')); process.exitCode = 1; }
