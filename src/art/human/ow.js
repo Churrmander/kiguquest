@@ -50,7 +50,9 @@
     R.pose = pose || null;
     const out = L.OUT[S.outfit.type] || L.OUT.tee;
     const H = L.head, B = L.body;
-    if (view === 'down') H.hairBack(P, R);
+    // long loose hair hangs behind the body in the side view too, so the top and arm still show
+    const hairFirst = view === 'down' || (view === 'left' && H.looseBack(S));
+    if (hairFirst) H.hairBack(P, R);
     accs(P, R, 'back');
     B.legs(P, R);
     B.torso(P, R, out);
@@ -62,7 +64,7 @@
     H.skull(P, R);
     H.face(P, R);
     H.hair(P, R);
-    if (view !== 'down') H.hairBack(P, R);
+    if (!hairFirst) H.hairBack(P, R);
     accs(P, R, 'face');
     accs(P, R, 'head');
     shade(P, R);

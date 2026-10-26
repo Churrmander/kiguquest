@@ -353,6 +353,9 @@
     }
   }
 
+  /** True for loose hair that hangs down the back (bob, long, wavy), as opposed to tails, buns and short cuts. */
+  HD.looseBack = (S) => { const st = STY[S.hair.style]; return !!st && ['bob', 'long', 'wave'].includes(st.back); };
+
   /** Hair behind the head/body (front view: draw before the body; back view: draw after the body). */
   HD.hairBack = function (P, R) {
     const S = R.S, st = STY[S.hair.style] || STY.short;
@@ -364,14 +367,23 @@
     const hw = R.hw + h.vol;
     if (b === 'bob' || b === 'long' || b === 'wave') {
       const y0 = R.hy + rnd(R.hh * 0.3);
-      const y1 = b === 'bob' ? R.hy + R.hh + U(0.6) : R.shY + rnd(R.torso * (R.t === 'ow' ? 0.5 : 0.45));
+      // overworld back view: stop a little higher so a band of the top still shows below the hair
+      const y1 = b === 'bob' ? R.hy + R.hh + U(0.6) : R.shY + rnd(R.torso * (R.t === 'ow' ? (view === 'up' ? 0.3 : 0.5) : 0.45));
       for (let y = y0; y <= y1; y++) {
         const t = (y - y0) / Math.max(1, y1 - y0);
         let w = b === 'bob' ? hw - (y === y1 ? U(1) : 0) : hw - t * U(1.2);
         if (b === 'wave') w += ((Math.floor((y - y0) / U(2)) & 1) ? 0 : U(0.6));
-        if (view === 'left') { const x0 = rnd(R.cx - (b === 'bob' ? 0 : U(1))), x1 = rnd(R.cx + w) - 1; P.run(y, x0, x1, 'hair', 1); continue; }
+        if (view === 'left') { const x0 = rnd(R.cx - (b === 'bob' ? 0 : U(1))), x1 = rnd(R.cx + w) - 1; P.run(y, x0, x1, 'hair', 2); continue; }
         P.run(y, rnd(R.cx - w), rnd(R.cx + w) - 1, 'hair', view === 'up' ? 2 : 1);
-        if (b !== 'bob' && y === y1) for (let x = rnd(R.cx - w); x <= rnd(R.cx + w) - 1; x++) if ((x & 1) && view !== 'down') P.clearPx(x, y);
+        // ragged ends: trim the two outer corners instead of a comb of single pixels
+        if (b !== 'bob' && y === y1 && view === 'up') { P.clearPx(rnd(R.cx - w), y); P.clearPx(rnd(R.cx + w) - 1, y); }
+      }
+      if (view === 'up' && b !== 'bob') {
+        // seen from behind: a few strand lines in the shadow tone and a soft highlight clump at the top left
+        const sy0 = y0 + rnd((y1 - y0) * 0.35);
+        for (const f of [-0.45, 0.05, 0.5]) { const x = rnd(R.cx + f * hw); for (let y = sy0 + (f > 0 ? 1 : 0); y < y1; y++) P.px(x, y, 'hair', 1); }
+        const hx = rnd(R.cx - hw * 0.7), hy = y0 + 1;
+        P.px(hx, hy, 'hair', 3); P.px(hx + 1, hy, 'hair', 3); P.px(hx, hy + 1, 'hair', 3);
       }
     }
     if (b === 'pony') {
@@ -408,7 +420,9 @@
     const back = P.partsNamed((n) => n.startsWith('hairback'));
     const ow = R.t === 'ow';
     P.cel(hair, { r: ow ? 1 : 2, b: 1, deep: !ow });
-    P.cel(back, { r: ow ? 1 : 2, b: ow ? 0 : 1 });
+    const loose = HD.looseBack(R.S);
+    // loose hair: dark tips along the bottom as well as the right side (strands and highlight are drawn in hairBack)
+    P.cel(back, loose ? { r: ow ? 1 : 2, b: 1 } : { r: ow ? 1 : 2, b: ow ? 0 : 1 });
     if (h && R.S.hair.style !== 'bald') {
       // highlight arc on the upper left of the crown
       const set = new Set(hair);

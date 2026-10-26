@@ -664,6 +664,12 @@
     const m = mc(P, a, '#f6f4f0'), ow = R.t === 'ow';
     P.begin('scarf');
     if (R.view === 'left') { P.run(R.shY, rnd(R.cx - 3), rnd(R.cx + 2), m, 2); P.px(rnd(R.cx + 2), R.shY + 1, m, 1); P.px(rnd(R.cx + 3), R.shY + 2, m, 1); return; }
+    if (ow && R.view === 'down') {
+      // overworld front: a knot just under the chin (the shoulder row is hidden by it) with a short tail over one lapel
+      P.run(R.shY + 1, rnd(R.cx - 2), rnd(R.cx + 2) - 1, m, 2); P.px(rnd(R.cx), R.shY + 1, m, 1);
+      P.px(rnd(R.cx - 1), R.shY + 2, m, 2); P.px(rnd(R.cx - 1), R.shY + 3, m, 1);
+      return;
+    }
     band(P, R, R.shY - (ow ? 0 : 1), R.shY + (ow ? 0 : 2), (y) => (ow ? 3 : 6 - (y - R.shY + 1) * 0.5), m, 2);
     const s = R.view === 'up' ? -1 : 1;
     const x = rnd(R.cx + s * (ow ? 2 : 4)) - (s < 0 ? 1 : 0);
