@@ -12,7 +12,7 @@ const st = NP.state;
 Object.assign(st.flags, { intro_done: true, has_starter: true, tomo_left_lab: true, rival1_done: true, rival2_done: true, badge1: true, presser1_done: true,
   route2_open: true, route2_insp_done: true, shrine1_done: true, badge2: true, rival3_done: true, crisp_done: true, badge3: true, zip_lights: true,
   east_gate_open: true, mimi_camp_done: true, cart_pushed: true, quarry_reached: true, rival4_done: true, herd_done: true, gusset_back: true, badge4: true,
-  shibuyarn_arrived: true, kasuri_done: true, rival_claw_done: true, cellar_open: true, tuck_following: true, tuck_out: true, cellar_arc1: true, cellar_arc2: true,
+  shibuyarn_arrived: true, kasuri_done: true, rival_claw_done: true, cellar_open: true, tuck_following: true, tuck_out: true, cellar_arc1: true, cellar_arc2: true, cellar_arc3: true, cellar_arc4: true,
   calender_done: true, shibuyarn_lights: true, lights_scene: true });
 st.starter = 'ottopi'; st.rivalStarter = 'konko';
 st.badges = [true, true, true, true];
@@ -73,12 +73,14 @@ leave(6, 8);
 heal();
 assert.ok(use(15, 12), 'battle Skye; ' + t.pos());
 press(() => NP.levels.done({ flag: (k) => !!st.flags[k] }, 'kite_hill', 'kh_pilot'), 60000);
-assert.ok(use(16, 13), 'the co-pilot hands over the patch; ' + t.pos());
+assert.ok(use(17, 12), 'the co-pilot hands over the patch; ' + t.pos());
 press('patch_pilot', 30000);
-assert.ok(use(3, 11), 'find the goggles in the grass; ' + t.pos());
+assert.ok(t.ow.find('goggles_lost').visible, 'the lost goggles can be seen');
+assert.ok(use(6, 12), 'find the goggles by the long grass; ' + t.pos());
 press('found_goggles', 20000);
 assert.ok(use(36, 26), 'return the goggles; ' + t.pos());
 press('patch_goggles', 30000);
+assert.ok(!st.bag.flying_goggles, 'the goggles went back to their owner');
 assert.ok(use(13, 8), 'cheer up the nervous pilot; ' + t.pos());
 press('patch_nerves', 30000);
 assert.ok(use(20, 26), 'a cocoa for the cold kid; ' + t.pos());

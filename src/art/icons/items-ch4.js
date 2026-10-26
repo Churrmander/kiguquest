@@ -140,4 +140,66 @@
     art(b, 10, 6, ['.#.#.#.'], { '#': '#8a6a1a' });
     return H.done(b, '#2a2a3a', 'balloon_patches');
   });
+
+  // ================================================================== Canvas Rest's sun-cloth quest (owner's padding idea)
+  // cactus needles: three long cactus spines, laid side by side like sewing needles, with red thread looped through the eye of
+  // the middle one (the weavers sew sun-cloth with them). A sliver of green skin still clings to each root.
+  H.add('cactus_needles', 'key', false, (b) => {
+    const Th = R('#e0485a'), Gr = R('#6aa84a');
+    // the scrap of cactus they came from: a little green pad with two pale areoles, the spines still run through it
+    H.ell(b, 8, 15, 4.5, 3, Gr, { mode: 'dome' });
+    H.pxs(b, [[6, 13], [10, 16]], '#f4f0c0');
+    const needle = (x0, y0, len) => {
+      for (let i = 0; i < len; i++) {
+        const x = x0 + i, y = y0 - i, thick = i < len - 3;
+        b.set(x, y, P('#fff4d0'));
+        if (thick) b.set(x + 1, y, P('#e0c890'));
+        if (thick) b.set(x, y + 1, P('#c8a868'));
+      }
+    };
+    needle(2, 17, 15); needle(5, 20, 15); needle(10, 21, 11);
+    // the eye of the middle needle, with red thread through it, looping out to the right
+    b.set(6, 19, 0);
+    H.pline(b, [[6, 19], [9, 21], [14, 22], [18, 21], [20, 18], [19, 15]], Th.m);
+    H.pline(b, [[8, 20], [12, 21]], Th.l1);
+    H.twinkle(b, 21, 3, '#ffffff');
+    return H.done(b, '#3a2a14', 'cactus_needles');
+  });
+
+  // desert herbs: a tied bunch of silver-leaf, with lance leaves, little orange-eyed flowers and cut stems below the twine
+  H.add('desert_herbs', 'key', false, (b) => {
+    const St = R('#7a5a2a'), Tw = R('#e8d8b0'), LL = '#d4e0d4', LM = '#9cb4a4', LD = '#5f7a6a';
+    // stems: three fanning up from the tie, three cut ends below it
+    H.pline(b, [[11, 18], [6, 6]], St.m); H.pline(b, [[12, 18], [12, 4]], St.m); H.pline(b, [[13, 18], [18, 6]], St.m);
+    H.pxs(b, [[10, 21], [11, 20], [12, 21], [12, 20], [14, 21], [13, 20]], St.d1);
+    // lance leaves (2x4), light edge on the left, shadow on the right, with gaps so the stems show
+    const leaf = (x, y, s) => {
+      for (let i = 0; i < 4; i++) { b.set(x + s * Math.floor(i / 2), y + i, P(i === 0 ? LL : LM)); b.set(x + s * Math.floor(i / 2) + 1, y + i, P(i === 3 ? LD : LM)); }
+    };
+    leaf(4, 10, 1); leaf(8, 12, -1); leaf(13, 9, -1); leaf(16, 11, 1); leaf(9, 6, -1); leaf(14, 13, 1);
+    // flowers: 3x3 plus shapes with orange eyes, poking above the leaves
+    for (const [x, y] of [[6, 4], [12, 2], [18, 4]]) { H.pxs(b, [[x, y - 1], [x - 1, y], [x + 1, y], [x, y + 1]], '#f8d040'); b.set(x, y, P('#e87828')); }
+    // twine
+    H.rect(b, 9, 17, 6, 2, Tw, { mode: 'cel', sh: 1, hi: 1 });
+    H.twinkle(b, 21, 18, '#ffffff');
+    return H.done(b, '#24341a', 'desert_herbs');
+  });
+
+  // field journal: a sand-scuffed notebook, with a pencil tucked in its band and a little nibble out of one corner
+  H.add('field_journal', 'key', false, (b) => {
+    const Cv = R('#3a8a7a'), Pg = R('cream'), Bd = R('#c8603a'), Pc = R('#f0c040');
+    H.rect(b, 6, 4, 14, 17, Pg, { mode: 'cel', sh: 1, hi: 0 });
+    for (let y = 7; y <= 18; y += 2) b.hline(18, y, 2, P(Pg.d1));
+    H.rrect(b, 3, 3, 15, 17, 1, Cv, { mode: 'cel', sh: 1, hi: 1 });
+    H.rect(b, 3, 3, 2, 17, R('#2a6a5a'), { mode: 'flat' });                   // spine
+    // a paw-print sticker on the cover (the researcher's), and the nibble out of the bottom corner
+    H.pxs(b, [[9, 12], [10, 12], [11, 12], [9, 13], [10, 13], [11, 13], [7, 10], [9, 9], [11, 9], [13, 10]], Pg.l1);   // paw: a 3x2 pad, four toes in a flat arc
+    // elastic band and a pencil
+    H.rect(b, 14, 3, 2, 17, Bd, { mode: 'cel', sh: 1, hi: 0 });
+    H.cap(b, 20, 2, 21, 13, 1, Pc, { mode: 'cyl' }); H.pxs(b, [[21, 14], [21, 15]], '#5a3a20');
+    for (const [x, y] of [[19, 20], [18, 20], [19, 19]]) b.set(x, y, 0);                         // the nibble out of the page corner
+    H.pxs(b, [[17, 20], [18, 19], [19, 18]], Pg.d1);
+    H.twinkle(b, 22, 20, '#ffffff');
+    return H.done(b, '#12302a', 'field_journal');
+  });
 })(typeof globalThis !== 'undefined' ? globalThis : window);

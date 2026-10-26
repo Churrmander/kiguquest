@@ -63,7 +63,7 @@
   M.building('general_store', 23, 10, null, 'store', 'quarry_store');
   M.stamp('lamp', 15, 12).stamp('lamp', 19, 12);                          // where the ramp meets the road
   M.stamp('slab_stack', 9, 17).stamp('slab_stack', 10, 17).stamp('slab_stack', 11, 17).stamp('slab_stack', 15, 22).stamp('slab_stack', 16, 22);
-  M.stamp('ore_cart', 22, 17, 'full').stamp('ore_cart', 26, 17, 'empty').stamp('buffer', 33, 17);
+  M.stamp('ore_cart', 22, 17, 'full').stamp('ore_cart', 26, 17, 'empty').stamp('buffer', 33, 17).stamp('buffer', 20, 17);   // buffers at both ends (owner's note: the line just stopped)
   M.stamp('cactus', 2, 17).stamp('cactus', 32, 11, 'plain').stamp('rock', 12, 4).stamp('boulder', 23, 5).stamp('barrel', 31, 4).stamp('crate', 3, 12);
   M.sign(12, 13, 'BOBBIN QUARRY\\nNamed for the family who dug the first slab.\\pSolid seams!', 'town sign');
   M.sign(21, 6, 'BOBBIN QUARRY SALON\\nMaster Tailor: Gusset\\p"Measure twice. Cut once. Talk less."', 'Salon sign');

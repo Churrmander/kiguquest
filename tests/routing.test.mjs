@@ -59,14 +59,14 @@ forced('crisp_2', [1, 3], [[14, 2]], 'the stairs up (past Pinch and Lint)');
 forced('crisp_3', [1, 3], [[6, 6], [7, 6], [12, 6]], 'the Staff door and the manager (past Brim)');
 
 // Chapters 4-6 (owner's rule: route trainers can't be skipped; a trainer in an optional side nook may be)
-NP.state.flags = { badge4: true };
+NP.state.flags = { badge4: true, qt_rockfall: true };
 forced('route4', [2, 10], [[43, 10], [43, 11]], 'Canvas Rest (the Slab Road)');
 forced('route5', [13, 48], [[13, 2], [12, 2], [14, 2]], 'Shibuyarn (the Pylon Road)');
 forced('route6', [2, 12], [[47, 11], [47, 12], [47, 13]], 'Kite Hill (the ridge road)');
 forced('quarry_tunnels', [3, 18], [[4, 5]], 'the way down (past Rivet and Twill)', ['qt_t1', 'qt_t2']);
 forced('quarry_tunnels_2', [4, 4], [[19, 6], [20, 7], [21, 7]], 'the herd');
-NP.state.flags = { badge4: true, cellar_arc1: true, cellar_arc2: true };
-forced('spark_cellar_2', [4, 3], [[6, 14]], 'the stairs down (past Fuse and Volta)');
+NP.state.flags = { badge4: true, cellar_arc1: true, cellar_arc2: true, cellar_arc3: true, cellar_arc4: true };
+forced('spark_cellar_2', [4, 3], [[7, 9]], 'the stairs down (past Fuse and Volta)');
 forced('spark_cellar_3', [4, 3], [[15, 8], [16, 8], [17, 8]], 'the siphon (past Ohm)');
 NP.state.flags = { sal4_a1: true, sal4_a2: true };
 forced('quarry_salon', [5, 14], [[10, 5], [11, 6]], 'lever 3 (past Mica)', ['sal4_t2']);

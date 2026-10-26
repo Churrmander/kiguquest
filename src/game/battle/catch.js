@@ -96,6 +96,10 @@
     }
     const foe = mon.foes[0];
     if (!foe) return;
+    if (battle.cfg.noCatch) {   // a story battle with a wild Kigu who has somewhere she needs to be
+      battle.msg(foe.label() + ' batted the spool away! She has other things on her mind.');
+      return;
+    }
     const sp = d.use.spool;
     battle.msg('You offered a ' + d.name + ' to ' + foe.label() + '!');
     const r = B.spoolRoll(battle, foe.kigu, foe.hp, foe.maxhp, sp.ball, foe.status);

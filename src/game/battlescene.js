@@ -129,7 +129,7 @@
       const foeSide = { party: cfg.foe, ai: cfg.trainer ? cfg.trainer.ai : 1 };
       if (cfg.trainer) foeSide.trainer = { name: cfg.trainer.cls + ' ' + cfg.trainer.name, class: cfg.trainer.cls };
       this.battle = new B.Battle({
-        wild: !!cfg.wild, style: st.opts.battleStyle || 'shift', rng: NP.rng,
+        wild: !!cfg.wild, noCatch: !!cfg.noCatch, style: st.opts.battleStyle || 'shift', rng: NP.rng,
         sides: [{ player: true, name: st.name, party: st.party }, foeSide],
         consume: (id) => NP.State.removeItem(id, 1),
         data: { badges: st.badges.filter(Boolean).length },

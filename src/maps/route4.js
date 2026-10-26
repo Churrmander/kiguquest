@@ -26,11 +26,11 @@
   M.rect(5, 12, 3, 2, 'T').rect(4, 14, 5, 3, 'T').rect(3, 17, 7, 3, 'T');
   //  2. where the meadow meets the sand, a sandstone outcrop comes down from the north and the forest edge from the south; Lia
   //     and Pip wait where the road squeezes between them
-  M.rect(16, 2, 3, 4, 'C').rect(16, 6, 2, 3, 'C').rect(16, 9, 1, 1, 'C');
+  M.rect(16, 2, 3, 4, 'C').rect(16, 6, 2, 3, 'C');
   M.rect(15, 13, 2, 2, 'T').rect(14, 15, 3, 5, 'T');
   //  3. the Slab Cut: a sandstone ridge crosses the desert and the road goes through a notch in it, past the two Pressers
-  M.rect(27, 2, 5, 3, 'C').rect(27, 5, 4, 2, 'C').rect(28, 7, 3, 3, 'C');
-  M.rect(28, 12, 2, 1, 'C').rect(28, 13, 4, 3, 'C').rect(26, 16, 7, 4, 'C');
+  M.rect(27, 2, 5, 3, 'C').rect(27, 5, 4, 2, 'C').rect(28, 7, 3, 2, 'C');
+  M.rect(28, 13, 4, 3, 'C').rect(26, 16, 7, 4, 'C');
   // the other shelves: side pockets in the dunes
   M.rect(18, 2, 6, 3, 'C').rect(38, 15, 6, 5, 'C').rect(37, 2, 3, 2, 'C');
   // the desert edge: a wavy band of pale sand that runs into the dune

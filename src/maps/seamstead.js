@@ -11,6 +11,9 @@
     c.set('rival3_started');
     yield* c.emote('player', 'exclaim');
     c.music('battle_rival');
+    // {rival} runs over from across the plaza and stops beside you (owner's note: they used to talk from off screen)
+    const r = c.npc('rival_s'), home = [r.x, r.y];
+    yield* c.enter(r, { from: ['right', 'down', 'up'], dist: 5 });
     yield* c.sayT('seamstead.rival3.1', '{rival}: {player}! Over here! Look at this place!\\pSee that big white shop? That\'s Crisp & Co., and my dad works there.\\pHe says they\'re the future of tailoring, because nothing there ever creases.');
     yield* c.sayT('seamstead.rival3.2', '{rival}: Mimi says the Society is bad, but she\'s never seen the Linens floor.\\pI have. It\'s so clean, and so quiet.\\pIf you want to go in, you\'ll have to get past me first.\\pNot because I\'m mean! I\'m just proud of my dad.');
     // owner's rule: the rival's starter is weak to yours, but one teammate hits your starter hard, so switching pays off
@@ -22,6 +25,9 @@
     if (won) yield* c.sayT('seamstead.rival3.win', '{rival}: ...Okay, okay! You beat me fair and square.\\pYou\'re really good, {player}. Really, really good.\\pBut Crisp & Co. isn\'t so bad, you\'ll see.\\pMy dad\'s been down in the basement for three weeks. He says it\'s "very restful".\\pHe sounds... far away, sometimes.\\pOh, and Dad says the whole city\'s power runs through that basement now.\\pEven the Salon lights. Funny, right? They\'ve been off all week.');
     else yield* c.sayT('seamstead.rival3.lose', '{rival}: I won? I actually won! Go rest your Kigu, {player}.\\pCome with me to Crisp & Co. one day. Dad would love to meet you.');
     c.set('crisp_open');
+    // off towards Crisp & Co., then out of sight (their scene after the raid shows them again)
+    yield* c.leave(r, 6);
+    c.placeNpc(r, home[0], home[1], 'up');
   }
 
   // ---- after the Crisp & Co. raid: Serge comes out and tells {rival} about Dad himself, plainly. The hero hands over the name tag,

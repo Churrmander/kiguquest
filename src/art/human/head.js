@@ -646,6 +646,41 @@
     }
   });
 
+  // a Kigu onesie hood, worn up: covers the hair to the jaw, with two tall tapering desert ears (color = hood, color2 = inner
+  // ear). Shaded like everything else: lit top-left, a darker right side and underside.
+  reg('kiguhood', (P, R, a, ph) => {
+    if (ph !== 'head') return;
+    const m = mc(P, a, '#e0b070'), inner = mc2(P, a, '#f0a090'), h = R.hairInfo || hp(R, STY.short), U = R.U;
+    const fr = Math.min(h.fdy || R.hy + 3, (R.eyeY || R.hy + 4) - 2), chin = R.hy + R.hh - 1;
+    const top = Math.min(h.top, R.hy - U(1)) - 1, cyc = h.cyc, ry = cyc - top + 0.5, rx = R.hw + Math.max(h.vol, U(1));
+    const hwAt = (y) => { const t = (cyc - y) / ry; return y < cyc ? (t >= 1 ? -1 : rx * Math.pow(1 - Math.pow(t, 2.4), 1 / 2.4)) : rx; };
+    const tone = (x, y, x0, x1) => { const f = (x - x0) / Math.max(1, x1 - x0); return y <= top + 1 && f < 0.5 ? 3 : f > 0.72 || y >= chin - 1 ? 1 : 2; };
+    const row = (y, x0, x1) => { for (let x = x0; x <= x1; x++) P.px(x, y, m, tone(x, y, x0, x1)); };
+    P.begin('kiguhood');
+    const yEnd = R.view === 'up' ? chin : fr;
+    for (let y = top; y <= yEnd; y++) {
+      const hw = hwAt(y); if (hw < 0) continue;
+      const x0 = rnd(R.cx - hw) + (R.view === 'left' && y < R.hy ? 1 : 0), x1 = rnd(R.cx + hw) - 1;
+      row(y, x0, x1);
+    }
+    if (R.view === 'down') {
+      for (let y = fr + 1; y < chin; y++) { const x0 = rnd(R.cx - rx), x1 = rnd(R.cx + rx) - 1; P.run(y, x0, x0 + 1, m, 2); P.run(y, x1 - 1, x1, m, 1); }
+    } else if (R.view === 'left') {
+      for (let y = fr + 1; y <= chin; y++) row(y, rnd(R.cx), rnd(R.cx + rx) - 1);
+    }
+    P.begin('kiguhood:ears');
+    const len = R.t === 'ow' ? 8 : Math.max(6, Math.round(U(8)));
+    const ear = (x, lean, shade) => {
+      for (let i = 0; i < len; i++) {
+        const w = U(1.6) * (1 - i / len), xc = x + lean * i * 0.3, y = top + (R.t === 'ow' ? 6 : Math.round(U(7))) - i;   // (rooted lower in the overworld so the tips fit the cell); tapers to a 1-px point
+        if (w < 0.6) P.px(rnd(xc), y, m, shade); else P.run(y, rnd(xc - w), rnd(xc + w), m, shade);
+        if (w > 0.9 && i > 0 && i < len - 2 && R.view !== 'up') P.px(rnd(xc), y, inner, 2);
+      }
+    };
+    if (R.view === 'left') ear(R.cx + U(1.5), 0.5, 2);
+    else { ear(R.cx - rx * 0.5, -1, 3); ear(R.cx + rx * 0.5, 1, 1); }
+  });
+
   reg('flower', (P, R, a, ph) => {
     if (ph !== 'head' || R.view === 'up') return;
     const m = mc(P, a, '#f06a9c'), h = R.hairInfo, U = R.U;

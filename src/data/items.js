@@ -43,6 +43,10 @@
   I('button_case', 'Button Case', 'key', 0, 'Holds the Buttons you earn.');
   I('town_map', 'Town Map', 'key', 0, 'A map of Tsumugi.');
   I('exp_share', 'Exp Share', 'key', 0, 'Kigu who sit out a battle still get half its Exp. Points. Use it to switch it on or off.', { toggle: 'exp_share_off' }, F);
+  I('flying_goggles', 'Flying Goggles', 'key', 0, 'A pair of flying goggles with brass rims. The wind snatched them off someone at Kite Hill.');
+  I('cactus_needles', 'Cactus Needles', 'key', 0, 'Spines that wild Cactli shed in the Sun Flats. The weavers of Canvas Rest sew with them.');
+  I('desert_herbs', 'Desert Herbs', 'key', 0, 'A bunch of silver-leaf herbs from the spring in the Sun Flats. They help a fever come down.');
+  I('field_journal', 'Field Journal', 'key', 0, 'A researcher\'s notebook, full of sketches of desert Kigu. A Jerbi has nibbled one corner.');
   I('cream_thread', 'Cream Thread', 'key', 0, "A spool of Poppy's cream cotton. A good seam begins with good thread.");
   I('d_handkerchief', "'D' Handkerchief", 'key', 0, "Hand-stitched, with a tidy 'D' in the corner. Every hem is knotted twice.");
   I('disc_snip', 'Disc: Snip', 'key', 0, 'Lets your Kigu snip small bushes. Face one and press A.');

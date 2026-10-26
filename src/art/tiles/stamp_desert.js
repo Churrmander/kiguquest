@@ -3,7 +3,7 @@
  *  thread_post (1x1, a post with a coloured thread knotted on; red / blue / yellow / green)
  *  slab_cart (2x1, a Society cart loaded with pale pressing slabs)   slab_stack (1x1)
  *  ore_cart (1x1, empty / full)    lever (1x1, track switch: left / right)    buffer (1x1, end-of-track buffer with a sign)
- *  cave_mouth (3x2, a timbered tunnel entrance; door in the middle of the bottom row)
+ *  cave_mouth (3x2, a timbered tunnel entrance; door in the middle of the bottom row)   scarf_nest (3x2 floor, the sand cave's nest)   nest_rim (its front rim, drawn over the sleepers)
  * Same rules as every stamp: lit from the top-left, 1px ink outline from S.omap, a soft contact shadow last. */
 (function (root) {
   'use strict';
@@ -237,12 +237,74 @@
     },
   });
 
-  // ============================================================================================ cave mouth (3x2): timbered tunnel entrance
-  K.stamp('cave_mouth', {
-    w: 3, h: 2, solid: ['###', '#D#'],
+  // ============================================================================================ burrow (1x1, floor)
+  // a Jerbi burrow: a dark hole in the sand with a little kicked-up mound on the near side
+  K.stamp('burrow', {
+    w: 1, h: 1, layer: 'floor', solid: ['.'],
+    paint: () => {
+      const b = K.B(16, 16);
+      K.blob(b, 8, 9.5, 7.5, 5.5, K.tn('cn0', 'cn1', 'cn2', 'cn3', 'cn4'));   // the kicked-up rim of pale dirt
+      K.blob(b, 8, 8.5, 6, 4, K.tn('#4a2e18', '#3a2412', '#2e1c0e', '#24160a', '#1a1008'));   // the hole
+      b.set(5, 7, col('#6a4a2a')); b.set(6, 6, col('#6a4a2a'));
+      for (const [x, y] of [[3, 12], [12, 12], [13, 10]]) b.set(x, y, col('#e8d0a0'));
+      return b;
+    },
+  });
+
+  // ============================================================================================ scarf nest (3x2, floor)
+  // the sand cave's nest: a ring of old cloth and scarves heaped into a raised rim, with a soft hollow in the middle
+  K.stamp('scarf_nest', {
+    w: 3, h: 2, layer: 'floor', solid: ['...', '...'],
     paint: () => {
       const b = K.B(48, 32);
+      K.blob(b, 24, 17, 21, 12, CANVAS);                                   // the heaped rim
+      K.blob(b, 24, 18, 14, 7, K.tn('cn3', 'cn3', 'cn4', 'cn4', 'cn4'), { lx: 0.55, ly: 0.72 });   // the hollow (lit from the far side)
+      K.blob(b, 24, 19, 11, 5, K.tn('cn2', 'cn2', 'cn3', 'cn3', 'cn4'), { lx: 0.4, ly: 0.6 });
+      // scarves draped over the rim: a red one, a teal one and a yellow one
+      const drape = (x0, y0, x1, y1, c1, c2) => { for (let t = 0; t <= 1.0001; t += 0.05) { const x = Math.round(x0 + (x1 - x0) * t), y = Math.round(y0 + (y1 - y0) * t - Math.sin(t * Math.PI) * 2); b.set(x, y, col(c1)); b.set(x, y + 1, col(c1)); b.set(x, y + 2, col(c2)); } };
+      drape(5, 13, 16, 7, '#e05a4a', '#a83a34');
+      drape(30, 7, 43, 14, '#4ab0a0', '#2a7a72');
+      drape(14, 26, 32, 27, '#e8b840', '#b07828');
+      for (const [x, y, c] of [[4, 17, '#a83a34'], [6, 18, '#a83a34'], [43, 18, '#2a7a72'], [41, 19, '#2a7a72']]) b.set(x, y, col(c));
+      K.outer(b, ink());
+      K.shadow(b, 24, 29, 21, 2);
+      return b;
+    },
+  });
+
+  // the nest's front rim, drawn over whoever is sleeping in it (place it one row below the nest's top, over the sleepers' legs)
+  K.stamp('nest_rim', {
+    w: 3, h: 2, over: 1, layer: 'obj', solid: ['...', '###'],
+    paint: () => {
+      const b = K.B(48, 32);
+      K.blob(b, 24, 14, 22, 5.5, K.tn('cn2', 'cn2', 'cn3', 'cn3', 'cn4'));   // a shade down from the canvas, so it sits in the den
+      const drape = (x0, y0, x1, y1, c1, c2) => { for (let t = 0; t <= 1.0001; t += 0.05) { const x = Math.round(x0 + (x1 - x0) * t), y = Math.round(y0 + (y1 - y0) * t + Math.sin(t * Math.PI) * 2); b.set(x, y, col(c1)); b.set(x, y + 1, col(c2)); } };
+      drape(6, 11, 22, 13, '#e8b840', '#b07828');
+      drape(26, 13, 42, 11, '#e05a4a', '#a83a34');
+      K.outer(b, ink());
+      K.shadow(b, 24, 20, 20, 2);
+      return b;
+    },
+  });
+
+  // ============================================================================================ cave mouth (3x2): timbered tunnel entrance
+  //   'dune': no timber, just a dark hollow dug into packed sand (the sand cave on the Sun Flats)
+  K.stamp('cave_mouth', {
+    w: 3, h: 2, solid: ['###', '#D#'], variants: ['mine', 'dune'],
+    paint: (v) => {
+      const b = K.B(48, 32);
       const rock = K.tn('ss0', 'ss1', 'ss2', 'ss3', 'ss4');
+      if (v === 'dune') {
+        const sand = K.tn('ss1', 'ss2', 'ss2', 'ss3', 'ss4');   // the dune's own sandstone, so the arch reads as cut into it
+        K.blob(b, 24, 20, 23, 12, sand);
+        for (let y = 9; y < 32; y++) for (let x = 13; x < 35; x++) {
+          const dx = (x + 0.5 - 24) / 10.5, dy = (y - 20) / 10.5;
+          if (y >= 20 || dx * dx + dy * dy <= 1) b.set(x, y, y < 13 ? col('#3a2618') : y < 17 ? col('#24160e') : col('#180e08'));
+        }
+        for (const [x0, x1, y] of [[3, 10, 22], [37, 44, 21], [5, 11, 27], [38, 45, 27]]) for (let x = x0; x <= x1; x++) b.set(x, y, P.ss3);   // wind ripples
+        K.outer(b, S.omap([[sand, P.ss5]], 'ink'));
+        return b;
+      }
       K.blob(b, 24, 18, 23, 15, rock);
       // the dark mouth, an arch
       for (let y = 10; y < 32; y++) for (let x = 15; x < 33; x++) {

@@ -239,4 +239,36 @@
     H.twinkle(b, 20, 3, '#ffffff');
     return H.done(b, '#4a2a18', 'exp_share');
   });
+
+  // ================================================================== flying goggles: a Kite Hill pilot's, lost in the wind
+  //   two deep brass cups joined by a padded leather bridge, with the strap looping round behind them
+  H.add('flying_goggles', 'key', false, (b) => {
+    const Lm = '#6b3118', Ld = '#46241a', Ll = '#8e4a26';                       // leather
+    const Bh = '#e8d890', Bm = '#b8a048', Bd = '#6e6428';                       // brass: highlight, mid, olive shadow
+    const Gl = '#bfe6f8', Gm = '#6cb4e8', Gd = '#2c64b4';                       // glass
+    // the back of the strap, arcing over the top behind the lenses (2px: lit top, shadow under)
+    for (let x = 2; x <= 21; x++) {
+      const t = (x - 11.5) / 9.5, y = Math.round(12 - 7.5 * (1 - t * t));
+      b.set(x, y, P(Ll)); b.set(x, y + 1, P(Lm));
+    }
+    // side tails where the strap meets the cups
+    for (const [x, y] of [[0, 12], [1, 12], [0, 13], [1, 13], [22, 12], [23, 12], [22, 13], [23, 13]]) b.set(x, y, P(y === 12 ? Lm : Ld));
+    // the cups
+    for (const cx of [6, 17]) {
+      const cy = 13.5;
+      for (let y = 7; y <= 20; y++) for (let x = cx - 6; x <= cx + 6; x++) {
+        const dx = x + 0.5 - (cx + 0.5), dy = y + 0.5 - cy, d = Math.hypot(dx, dy);
+        if (d > 4.9) continue;
+        const lit = -dx - dy;                                                   // light from the top-left
+        if (d > 2.9) b.set(x, y, P(lit > 2.5 ? Bh : lit < -3.2 ? Bd : Bm));
+        else b.set(x, y, P(dx + dy > 1.6 ? Gd : lit > 1.2 ? Gl : Gm));
+      }
+      H.pxs(b, [[cx - 2, 12], [cx - 1, 12], [cx - 2, 13]], '#ffffff');        // glint
+    }
+    // padded bridge in the gap between the cups
+    H.pxs(b, [[11, 13], [12, 13], [11, 14], [12, 14]], Lm);
+    H.pxs(b, [[11, 12], [12, 12]], Ll); H.pxs(b, [[11, 15], [12, 15]], Ld);
+    H.twinkle(b, 21, 3, '#ffffff');
+    return H.done(b, '#2a160c', 'flying_goggles');
+  });
 })(typeof globalThis !== 'undefined' ? globalThis : window);
