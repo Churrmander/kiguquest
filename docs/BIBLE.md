@@ -20,7 +20,7 @@ roads". Warm, cosy, a little magical — festival lanterns, sewing-shop signs, p
 | **The Four Needles** | The Elite Four, and the leaders of the Global Tailor's Association. They vanished because of the entity's activity, which left a power vacuum the Starch Society filled (STORY §7b). **The Weave Guardian** = Champion. The final hall is **the Grand Atelier**. |
 | **The Starch Society** | The villain team. Believes the world should be *pressed flat and uniform*: no wild Kigu, no wrinkles. Grunts wear stiff white uniforms with blue starch collars ("Pressers"); admins are "Pleats". Leader: **Madame Damask**, an ex-Needle (which is how the Society has a piece of the Everspool). Mantra: *"Flat is fair."* Motto: *"Perfection is just the beginning."* Began as the **Order of Ribbons**, a respected Tailor organisation; its leader was tricked by the entity and reorganised it into the Society. Members think they are tidying the world; the real plan is to press Tsumugi flat and merge it with the tapestry to free him. |
 | **The entity** (working name "the Unweaving") | The big bad, bound in a **magic tapestry**; the antithesis of the legendary Kigu seamstresses; he once threatened to consume the universe. **Not a Kigu**: it cannot be bonded with, and the Everspool cannot sway it. Name and look still open (STORY §7a). |
-| **Warpa & Weftie** (new names pending owner approval) | The Goddesses of Order and Nature, twin guardian Kigu. They wove the magic tapestry to contain the entity, then wove the land as its opposite (warp = vertical threads, weft = horizontal). The legendary Kigu seamstresses; they speak through Kigu, which is how they talk to the player in the end-game. The Society wants them. Player bonds with one; the leader's ace is the other. |
+| **Astara & Anwela** (owner names 2026-10-26, from Welsh *ystof* warp / *anwe* weft; were Warpa & Weftie; code ids still `warpa` / `weftie`) | The Goddesses of Order and Nature, twin guardian Kigu. They wove the magic tapestry to contain the entity, then wove the land as its opposite (warp = vertical threads, weft = horizontal). The legendary Kigu seamstresses; they speak through Kigu, which is how they talk to the player in the end-game. The Society wants them. Player bonds with one; the leader's ace is the other. |
 | **Paddle / Snip / Shove / Glide / Climb** | Field moves (HM-style): cross water / cut small trees / push boulders / fast-travel / climb waterfalls. |
 
 Species cry = a short sound-word shown in battle ("Kon!").
@@ -74,6 +74,9 @@ Every new or changed Kigu name must pass all of these, and **the owner approves 
    could be misread as a rude word (Pricklepot, not Prickpot; Peepi was renamed).
 7. **One obvious reading.** A player who has never heard it said should stress it the way we mean (Pomisno was dropped).
 8. **10 letters or fewer**, so it fits the battle HP box and menus.
+
+**Owner's note on rule 4 (2026-10-26):** a stem only counts when it carries the same idea. Letters that line up by
+coincidence are fine (Astara has nothing to do with stars, so Amethystar is no clash).
 
 Old ids from the round 2 rename live in `src/data/renames.js` (saves migrate on load; cries keep their old sound).
 
@@ -140,8 +143,8 @@ Old ids from the round 2 rename live in `src/data/renames.js` (saves migrate on 
 54. `smolava` Smolava — Drake — 1/3, →Lv50 `wyvrant` — little dragon onesie (crimson/black), tiny horns hood, stubby tail.
 55. `wyvrant` Wyvrant — Drake — 2/3, →Lv64 `empyress` — moody teen wyvern with a bad attitude (wyvern plus rant): dragon hoodie with wings and horns, long tail.
 56. `empyress` Empyress — Drake/Shade — 3/3 — composed dragon empress (empress plus pyre), grown out of her teen rants: three-horn crown, huge wing-cape, flowing gown.
-57. `warpa` Warpa — Dream/Ember — legendary, single stage — tall weaver-spirit in a white-and-crimson ceremonial robe, vertical threads streaming from her sleeves, a loom-comb crown.
-58. `weftie` Weftie — Dream/Tide — legendary, single stage — her twin, in white-and-blue, horizontal threads swirling around her like ribbons.
+57. `warpa` **Astara** (was Warpa; id renames later) — Dream/Ember — legendary, single stage — tall weaver-spirit in a white-and-crimson ceremonial robe, vertical threads streaming from her sleeves, a loom-comb crown.
+58. `weftie` **Anwela** (was Weftie; id renames later) — Dream/Tide — legendary, single stage — her twin, in white-and-blue, horizontal threads swirling around her like ribbons.
 
 More families (Desert, Harbor, Airfield, Snow, League) get added as chapters are built — the generator must make adding a
 species a ~10-line look spec.

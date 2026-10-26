@@ -60,7 +60,7 @@ a class, add `addBank` entries in `src/data/text/classes.js` (ask the Writer). A
 | `{stat}` | Attack, Sp. Def, Speed, accuracy... | `{n}` `{lv}` `{hp}` `{exp}` `{money}` `{count}` | numbers (write `$` in the text) |
 | `{to}` `{from}` | evolution target / source species | `{place}` | a place name |
 | `{status}` | burned / poisoned / paralyzed / asleep / frozen | `{starter}` `{rstarter}` | player's / rival's starter species |
-| `{twin}` `{twin2}` | the twin you befriended / the other (Warpa, Weftie) | | |
+| `{twin}` `{twin2}` | the twin you befriended / the other (Astara, Anwela; ids `warpa`, `weftie`) | | |
 
 Rules: a `{var}` not in this table fails the test. Do not put a variable at the very start of a sentence if it could be
 "Wild Kittabra" vs "Konko" and read oddly; the `sys.*` lines are written so both forms work ("{mon} used {move}!").

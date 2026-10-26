@@ -82,7 +82,7 @@ object onesies that grow more elaborate as they evolve). A person who forms a **
 **Master Tailor**, who gives a **Button**), and crowns the Weave Guardian at the **Grand Atelier**. **The Needles have vanished**, and the
 **Starch Society**, which everyone trusted, stepped into the gap they left. The Society believes the world should be pressed flat.
 
-**Timeline.** *Before the land:* Warpa and Weftie, the Goddesses of Order and Nature, weave a magic tapestry to hold the **Unweaving**
+**Timeline.** *Before the land:* Astara and Anwela, the Goddesses of Order and Nature, weave a magic tapestry to hold the **Unweaving**
 (working name, §7a), who threatened to consume the universe. *Long ago:* they weave Tsumugi as the tapestry's opposite, to keep him
 contained. *Thirty years ago:* **the Great Snarl** at Loomhaven's Lantern Festival (§6); Hester's ribbon wardens grow into the **Order of
 Ribbons**, a respected Tailor organisation.
@@ -216,8 +216,8 @@ one keeps folding your shirt while you battle. Class key `presser`. **Crisp & Co
 
 ## 7. The legend, the twins, the Needles and the Weave Guardian
 
-**The true beginning (owner, 2026-10-26; nobody alive tells it this way).** Warpa and Weftie were the **Goddesses of Order and Nature**
-(proposed: Warpa is Order, the steady straight thread; Weftie is Nature, the restless thread that wanders across). The Unweaving
+**The true beginning (owner, 2026-10-26; nobody alive tells it this way).** Astara and Anwela were the **Goddesses of Order and Nature**
+(proposed: Astara is Order, the steady straight thread; Anwela is Nature, the restless thread that wanders across). The Unweaving
 threatened to consume the universe, so they wove a **magic tapestry** to contain him, using the **Everspool** (owner confirmed 2026-10-26). Then they wove **Tsumugi as the tapestry's
 opposite**, so he would be better contained: the tapestry is tight, flat and still, and Tsumugi is loose, patched and full of choices.
 As long as the two stay different, they cannot become one cloth, and he cannot get out.
@@ -225,17 +225,17 @@ As long as the two stay different, they cannot become one cloth, and he cannot g
 **Why the goddesses are Kigu (owner, 2026-10-26).** They made the first Kigu by weaving spirits of nature into living costumes with the
 Everspool's thread. Doing that bound the goddesses to the same fate, and they became Kigu themselves. It is why they can speak through
 any Kigu: all Kigu are woven from the same thread they are. *That is why flattening Tsumugi matters:* the
-flatter and more uniform it gets, the more it looks like the tapestry, until the two can be merged. (New names for both goddesses are
-open, §15.)
+flatter and more uniform it gets, the more it looks like the tapestry, until the two can be merged. (Their names are **Astara** (Order) and **Anwela** (Nature), from the Welsh *ystof* "warp" and *anwe* "weft"; owner,
+2026-10-26. Say them "uh-STAR-uh" and "an-WEL-uh". The game code still uses the old ids `warpa` / `weftie` until a rename pass.)
 
 **The legend of Tsumugi (as told in Loomhaven's murals and Tapestry's lullaby):** In the beginning there was only *fluff* — loose, drifting, nameless. (This is what was left over once
-the tapestry was finished.) Two sisters woke in it. **Warpa** could pull a
-thread straight; **Weftie** could carry one across. "Hold this end," said Warpa. "I'll bring the other," said Weftie. Up and across they went, and where a thread crossed a thread they tied a
+the tapestry was finished.) Two sisters woke in it. **Astara** could pull a
+thread straight; **Anwela** could carry one across. "Hold this end," said Astara. "I'll bring the other," said Anwela. Up and across they went, and where a thread crossed a thread they tied a
 knot, and where they tied a knot a town grew (the first knot is Button Town — *the first button*). They dressed the wild spirits in living cloth so nobody would be lonely: the Kigu. When people
 came, the sisters said: *"No thread holds by itself. Let the people and the Kigu choose one another."* That was the first Stitch Bond. When the weave was done they were tired, and lay down at the two
-ends of the cloth — Warpa in a bed of embers in the north (Woolen Peak), Weftie in a bed of tides at the sea (Loomhaven harbour) — and promised to wake if the weave ever tore.
+ends of the cloth — Astara in a bed of embers in the north (Woolen Peak), Anwela in a bed of tides at the sea (Loomhaven harbour) — and promised to wake if the weave ever tore.
 
-**The seamstresses speak through Kigu (owner, 2026-10-26).** Warpa and Weftie are the **legendary Kigu seamstresses**. They do not talk
+**The seamstresses speak through Kigu (owner, 2026-10-26).** Astara and Anwela are the **legendary Kigu seamstresses**. They do not talk
 the way people do, but every Kigu wears cloth they wove, so they can speak *through* a Kigu. That is how they talk to the hero in the
 end-game: a line appears in the hero's lead Kigu's text box, under her name, but the words are the sisters'. Before that, the only hint
 is a Kigu who briefly says something she could not know (proposed: once after the twin choice in Chapter 8).
@@ -246,7 +246,7 @@ is a Kigu who briefly says something she could not know (proposed: once after th
 the Society's order is a copy of the tapestry. A weave only holds if its threads can *give*. The Great Press works by pulling the sisters taut *apart* — the tension is what flattens the land. Reunite them, and
 the tension slackens and colour returns.
 
-**Warpa** (Dream/Ember, white-and-crimson robe, vertical threads from her sleeves): steady, patient, remembers everything. **Weftie** (Dream/Tide, white-and-blue, horizontal ribbons): curious, restless,
+**Astara** (Dream/Ember, white-and-crimson robe, vertical threads from her sleeves): steady, patient, remembers everything. **Anwela** (Dream/Tide, white-and-blue, horizontal ribbons): curious, restless,
 always wants to see what's over there. At the Works they are held in two tension frames. **The hero can free only one** (cut her thread with the Disc: Snip Poppy gave you — the first gift pays off):
 the one freed takes the hero's thread in her sleeve and joins the party (suggest Lv 45ish). Damask takes the other to Loomhaven. The text supports both (`{twin}` / `{twin2}`; story keys end `.warpa` / `.weftie`). The rival stands beside the hero for this choice: *"Whichever you pick, I have got your back."*
 
@@ -383,11 +383,11 @@ Every Tea House maid opens with a variation of "Please rest your Kigu... and you
 
 ## 13. Continuity facts (don't contradict)
 
-Dahlia and Draco are childhood friends from next-door houses in Button Town; the rival is always the other one. The Snarl was 30 years ago at the Loomhaven Lantern Festival. Hester Bobbin (Madame Damask) is ~60; Prof. Bobbin ~57; Sashiko ~80. The Everspool is in the Spindle Shrine. The Society was a ribbon-warden club, then the Order of Ribbons (a respected Tailor organisation), before it was the Starch Society. Warpa and Weftie are the Goddesses of Order and Nature; they wove the tapestry first and Tsumugi second, as its opposite.
+Dahlia and Draco are childhood friends from next-door houses in Button Town; the rival is always the other one. The Snarl was 30 years ago at the Loomhaven Lantern Festival. Hester Bobbin (Madame Damask) is ~60; Prof. Bobbin ~57; Sashiko ~80. The Everspool is in the Spindle Shrine. The Society was a ribbon-warden club, then the Order of Ribbons (a respected Tailor organisation), before it was the Starch Society. Astara and Anwela are the Goddesses of Order and Nature; they wove the tapestry first and Tsumugi second, as its opposite.
 Nobody in the game dies. Pressed Kigu are cured by Soft Rinse (Mimi's invention) plus time. The hero's jacket ends with eight Buttons; Buttons are sewn on with the Master's thread. Kigu choose Tailors; the word "captured" is never used.
 Tea Houses everywhere serve cocoa. The Starch Society's mantra is "Flat is fair." and its motto is "Perfection is just the beginning." (verbatim).
 The Needles lead the Global Tailor's Association and vanished because of the entity; the Society filled the gap. The Society was benevolent
-before its leaders found the tapestry and were misled. The legendary seamstresses (Warpa and Weftie) speak through Kigu; they became Kigu by weaving Kigu with the Everspool. The tapestry is Everspool thread, and the big bad speaks to the Society through one loose thread of it. The big bad is
+before its leaders found the tapestry and were misled. The legendary seamstresses (Astara and Anwela) speak through Kigu; they became Kigu by weaving Kigu with the Everspool. The tapestry is Everspool thread, and the big bad speaks to the Society through one loose thread of it. The big bad is
 **not a Kigu**: it cannot be bonded with and the Everspool cannot sway it. The rival's dad stays pressed until Chapter 8. The hero's Mom knows more than she says (she has never mentioned why she stitches her hems with a double knot — the Loomhaven way).
 
 ## 14. Glossary: words the text must NEVER contain (enforced by `tests/text.test.mjs`)
@@ -410,7 +410,7 @@ whole-word forms above.)
 Summary and recommendations: `/mnt/project-files/story/lore-beats-2026-10-26.md`. Anything marked (proposed) in §§3, 6, 7, 7a and 7b
 is a suggestion until the owner picks.
 
-0. New names for Warpa and Weftie (the owner wants them replaced; proposals in the summary file, owner approves before anything changes).
+0. ~~New names for the goddesses~~ Answered: **Astara** (Order, was Astara) and **Anwela** (Nature, was Anwela). Code rename still to do.
 1. The entity's name and look.
 2. ~~Who trapped it~~ Answered 2026-10-26: the goddesses wove the tapestry to contain him.
 2a. ~~How the Order's leader was tricked.~~ Answered 2026-10-26: through a loose thread of the tapestry. Still open: where it was found.
