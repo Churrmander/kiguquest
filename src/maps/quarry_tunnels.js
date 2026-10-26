@@ -17,8 +17,8 @@
     fill: 'w',
   });
   // tunnels: the main cart line runs east from the entrance, then south; side tunnels branch north and south
-  M.rect(2, 16, 26, 3, 'f').rect(3, 17, 23, 1, 'h');           // the main line, in from the tunnel mouth (bottom left)
-  M.rect(24, 4, 4, 15, 'f').rect(25, 5, 1, 12, 'v');            // north up the east tunnel
+  M.rect(2, 16, 26, 3, 'f').rect(4, 17, 21, 1, 'h');           // the main line, in from the tunnel mouth (bottom left)
+  M.rect(24, 4, 4, 15, 'f').rect(25, 5, 1, 13, 'v');            // north up the east tunnel (the main line bends into it)
   M.rect(8, 4, 17, 3, 'f');                                      // the top gallery
   M.rect(8, 7, 3, 9, 'f');                                       // a side tunnel joining the gallery to the main line
   M.rect(14, 9, 7, 5, 'f');                                      // a chamber off the side tunnel (cave grass grows in the damp)
@@ -29,7 +29,7 @@
   M.spawn('door', 3, 18, 'up').spawn('up', 4, 5, 'right');
   M.warp({ xs: [2, 3], y: 19, to: 'bobbin_quarry', door: 'tunnel', sound: 'door' });
   M.rect(2, 19, 2, 1, 'f');
-  M.stamp('ore_cart', 6, 17, 'full').stamp('ore_cart', 25, 9, 'empty').stamp('rock', 12, 5).stamp('rock', 19, 13).stamp('lamp', 22, 15);
+  M.stamp('rock', 12, 5).stamp('rock', 19, 13).stamp('lamp', 22, 15);
   M.sign(5, 15, 'TUNNEL 1 / CART LINE\\nMind the carts. Mind your head. Mind the Pebblump.', 'tunnel sign');
   M.enc('grass', [['pebblump|kumi', 24, 26, 34], ['tortile|kumi', 24, 26, 26], ['chiseltail|nibblit', 24, 25, 22], ['rockabye|kumi', 25, 26, 6], ['stingle|chirpadee', 24, 26, 12]]);
   // the herd: Pebblump sitting across the tunnels until Boulderina settles (each one a little joke)
@@ -46,7 +46,64 @@
     intro: 'Gusset\'s my boss. If you\'re going down after him, you\'ll get past me first!', win: 'Fair enough. You\'ll do.', after: 'Tell Gusset we\'ve put the kettle on. He\'ll know what that means.' });
   M.pickup('order', 18, 5, 'slab_order', 1, 'a dropped Society slab order');
   M.pickup('cake', 26, 5, 'fancy_cake', 1);
-  M.hidden('cart1', 6, 17, 'thread_ball', 1, 'a Thread Ball in the ore cart');
+
+  // ---- the cart puzzle (owner's note: "the tunnels are a missed opportunity for a minecart puzzle")
+  // A rockfall blocks the east tunnel. A full ore cart, rolled into it, knocks it flat. The full cart waits in a siding off the
+  // points at (18,17); you push it down from the chamber above. But an empty cart sits on the main line in its way, and the points
+  // are set for the siding, so pushing the empty cart west just sends it into the siding, where it jams. Pull the lever first, and
+  // the empty cart runs west to the old buffer, out of the way. If the carts jam, the miner rolls them back (or step outside).
+  M.rect(18, 15, 1, 2, 'v').rect(18, 14, 1, 1, 'f');            // the siding, and a gap into the chamber above it
+  M.set(24, 17, 'h');                                            // (the east tunnel's floor was laid over the end of the line)
+  // the rockfall: a jumble of big and small rocks across the tunnel, spilling up the slope behind
+  for (const [id, x, y] of [['rock', 24, 13], ['boulder', 25, 13], ['boulder', 26, 13], ['rock', 27, 13], ['rock', 25, 12], ['boulder', 26, 12], ['rock', 24, 12]]) M.stamp(id, x, y, null, { goneIf: 'qt_rockfall' });
+  M.stamp('ore_cart', 18, 15, 'full', { roll: true }).stamp('ore_cart', 22, 17, 'empty', { roll: true });
+  M.stamp('buffer', 3, 17);
+  M.interact(3, 17, function* (c) {
+    yield* c.sayT('quarry_tunnels.buffer', 'An old buffer stop at the end of the line. Someone has stuck a Society sign on it: STOP. FLAT IS FAIR.\\pThe miners have drawn a moustache on it.');
+    if (c.flag('got_quarry_tunnels_cart1')) return;   // (the old hidden-item flag, so saves carry over)
+    c.set('got_quarry_tunnels_cart1');
+    NP.snd.sfx('pickup');
+    yield* c.giveItem('thread_ball', 1, { found: true });
+  }, 'west buffer (a Thread Ball tucked behind it)');
+  M.def.railPoints = [{ x: 18, y: 17, trunk: 'right', a: 'up', b: 'left', flag: 'qt_points' }];
+  M.def.stamps.push(L.variantByFlag({ id: 'lever', x: 17, y: 16 }, 'qt_points', 'left', 'right'));
+  M.interact(17, 16, function* (c) {
+    yield* c.sayT('quarry_tunnels.points.ask', [c.flag('qt_points') ? 'A track switch. The points are set to send carts west, down the main line.' : 'A track switch. The points are set to send carts up into the siding.']);
+    if (!(yield* c.ask('Pull the lever?'))) return;
+    NP.snd.sfx('door');
+    c.set('qt_points', !c.flag('qt_points'));
+    L.syncStamps(c);
+    yield* c.sayT('quarry_tunnels.points.done', [c.flag('qt_points') ? 'Ka-CHUNK! The points swung over. Carts from the east will run on west now.' : 'Ka-CHUNK! The points swung back. Carts from the east will turn up into the siding.']);
+  }, 'points lever (siding or main line)');
+  const CARTS = [[18, 15], [22, 17]];
+  const rollBack = (c) => {
+    for (const [x, y] of CARTS) delete NP.state.flags['shove:quarry_tunnels:' + x + ',' + y];
+    c.map.syncShoves(NP.state.flags);
+  };
+  M.def.onEnter = function* (c) { if (!c.flag('qt_rockfall')) rollBack(c); };
+  M.def.onCartStop = function* (c, cart, hit) {
+    const atFall = hit && hit.y === 13 && hit.x >= 24 && hit.x <= 27 && !c.flag('qt_rockfall');
+    if (atFall && cart.variant === 'full') {
+      NP.snd.sfx('ledge');
+      yield* c.ow.fadeOut(6);
+      c.set('qt_rockfall');
+      L.hideStamps(c);
+      yield* c.ow.fadeIn(6);
+      yield* c.sayT('quarry_tunnels.rockfall.down', 'CRASH! The heavy cart slammed into the rockfall, and the rocks tumbled down flat. The east tunnel is open.');
+      return;
+    }
+    if (atFall) yield* c.sayT('quarry_tunnels.rockfall.light', 'Clang! The empty cart bounced off the rockfall. It\'s far too light to move those rocks.');
+    if (atFall || (hit && c.map.cartAt(hit.x, hit.y))) yield* c.sayT('quarry_tunnels.jam', 'If the carts end up stuck, the miner by the points can roll them back.\\pSo can stepping out of the tunnel for a moment.');
+  };
+  M.npc('cart_miner', 20, 18, 'hiker', 'up', null, { note: 'cart puzzle hint, and rolls the carts back', script: function* (c) {
+    if (c.flag('qt_rockfall')) { yield* c.sayT('quarry_tunnels.miner.after', 'Miner: You cleared the rockfall with a cart? That\'s how we\'d have done it, if we\'d thought of it.'); return; }
+    yield* c.sayT('quarry_tunnels.miner.1', 'Miner: There\'s been a rockfall up the east tunnel. A full cart would knock it flat, if it could get there.\\pThe full one\'s up in the siding, but that empty one\'s sat right in its way. And mind the points.');
+    if (!(yield* c.ask('Roll the carts back to the start?'))) return;
+    yield* c.ow.fadeOut(8);
+    rollBack(c);
+    yield* c.ow.fadeIn(8);
+    yield* c.sayT('quarry_tunnels.miner.2', 'Miner: There you go, both carts back where they started. Have another think.');
+  } });
   M.reg();
 
   // ---- floor 2: the deep tunnel, Boulderina, Gusset, and (later) the geode alcove behind a loose rock

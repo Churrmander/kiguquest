@@ -3,12 +3,12 @@
  *  Floor 1: Tuck (the Presser from Thimble) is lost and scared, sitting in the passage to the stairs down. He follows you out to the
  *           stairs up (c.follow), with a few nervous echo jokes on the way, and tells you the static goes north in jars to the Works.
  *           Optional: a pressed Glowgrub, whom Mrs. Kasuri's rinse salts set right.
- *  Floor 2: magnet-stone puzzles. Push a charged stone (Disc: Shove) onto a snapped cable to join it; the cable powers down the
- *           Pressers' arc fence. Stones that get stuck roll back to their spots when you come back to the floor.
- *           Two Pressers, and a Volt Charm on a warm ledge.
+ *  Floor 2: four magnet-stone puzzles that get harder. Push a charged stone (Disc: Shove) onto a snapped cable to join it; the
+ *           cable powers down the Pressers' arc fence. Stuck stones roll home (a demagnetiser lever, or leave the floor).
+ *           Two Pressers, and a Volt Charm on a warm ledge by the stairs down.
  *  Floor 3: the siphon. One Presser, then Pleat Calender, the Works engineer ("Right on schedule"). Win, and he shuts it down;
  *           the Glowgrub are let out of the jars and the city's lights come back (flag shibuyarn_lights).
- * Levels 28-32. Flags: tuck_following, tuck_out, glowli_rinsed, cellar_arc1, cellar_arc2, calender_done, shibuyarn_lights. */
+ * Levels 28-32. Flags: tuck_following, tuck_out, glowli_rinsed, cellar_arc1-4, calender_done, shibuyarn_lights. */
 (function (root) {
   'use strict';
   const NP = root.NP, L = NP.levels;
@@ -85,52 +85,126 @@
   M.reg();
 
   // ------------------------------------------------------------------------------------------ floor 2: the magnet stones
-  // each puzzle: a magnet stone that starts at `home`, a snapped cable at `socket`, and the arc fence `gate` that it powers down
+  // Four puzzles that ramp up (owner's note: "the magnet ball puzzle is underused; after the first one, the next few should
+  // increase in difficulty"). Each has magnet stones that start at `homes`, snapped cables (sockets) that all need a stone on
+  // them, and an arc fence (gate `key`) that powers down once they do. Every layout was checked with a push solver:
+  //   arc1  the gallery bay: two pushes straight down (learn it)
+  //   arc2  the jar store: round a corner, 6 pushes
+  //   arc3  the rock room: the stone starts in a pocket; out, along, and a jog round a rock, 14 pushes, half the moves jam it
+  //   arc4  the twin cables: two stones, two cables, 17 pushes, and the order matters
+  // A stone that jams can be called home: a demagnetiser lever by each of the harder rooms, or leave the floor and come back.
   const PUZ = [
-    { key: 'arc1', home: [10, 5], socket: [10, 7] },
-    { key: 'arc2', home: [19, 7], socket: [19, 10] },
+    { key: 'arc1', homes: [[10, 5]], sockets: [[10, 7]] },
+    { key: 'arc2', homes: [[16, 7]], sockets: [[19, 10]] },
+    { key: 'arc3', homes: [[24, 14]], sockets: [[18, 18]] },
+    { key: 'arc4', homes: [[8, 13], [8, 14]], sockets: [[5, 18], [9, 18]] },
   ];
-  const at = (c, p) => NP.state.flags['shove:spark_cellar_2:' + p.home[0] + ',' + p.home[1]] === p.socket[0] + ',' + p.socket[1];
+  const sk = (h) => 'shove:spark_cellar_2:' + h[0] + ',' + h[1];
+  const solved = (c, p) => p.sockets.every(([x, y]) => c.map.shoveAt(x, y));
+  // a solved puzzle keeps its stones on the cables; an unsolved one sends them home
+  const settle = (c, p) => {
+    p.homes.forEach((h, i) => { if (c.flag('cellar_' + p.key)) NP.state.flags[sk(h)] = p.sockets[i].join(','); else delete NP.state.flags[sk(h)]; });
+  };
+  const demag = (key) => function* (c) {
+    const p = PUZ.find((q) => q.key === key);
+    if (c.flag('cellar_' + key)) { yield* c.sayT('spark_cellar_2.demag.done', 'An old demagnetiser. The cables in this room are joined already, so there\'s no need to pull it.'); return; }
+    yield* c.sayT('spark_cellar_2.demag.ask', 'An old demagnetiser, with a handle marked RECALL. It looks like it pulls the magnet stones in this room back to where they started.');
+    if (!(yield* c.ask('Pull the handle?'))) return;
+    NP.snd.sfx('door');
+    yield* c.ow.fadeOut(6);
+    settle(c, p);
+    c.map.syncShoves(NP.state.flags);
+    yield* c.ow.fadeIn(6);
+    yield* c.sayT('spark_cellar_2.demag.pulled', 'Clunk! The magnet stones slid back to their spots with a hum.');
+  };
   const M2 = cave({
-    id: 'spark_cellar_2', name: 'Spark Cellar B1', w: 26, h: 20,
+    id: 'spark_cellar_2', name: 'Spark Cellar B1', w: 30, h: 22,
     onEnter: function* (c) {
-      // a stone that isn't on its socket rolls back home (so a stuck stone is never stuck for good)
-      for (const p of PUZ) if (!c.flag('cellar_' + p.key)) delete NP.state.flags['shove:spark_cellar_2:' + p.home[0] + ',' + p.home[1]];
+      for (const p of PUZ) settle(c, p);
       c.map.syncShoves(NP.state.flags);
       for (const p of PUZ) if (c.flag('cellar_' + p.key)) L.setGate(c, p.key, true);
     },
     onShove: function* (c) {
       for (const p of PUZ) {
-        if (c.flag('cellar_' + p.key) || !at(c, p)) continue;
+        if (c.flag('cellar_' + p.key) || !solved(c, p)) continue;
+        c.set('cellar_' + p.key);
         NP.snd.sfx('door');
         L.setGate(c, p.key, true);
-        yield* c.sayT('spark_cellar_2.' + p.key, 'The magnet stone clunks onto the snapped cable. Bzzt! The two ends join with a spark,\\pthe cable starts to hum, and somewhere nearby an arc of static fizzles out.');
+        yield* c.sayT('spark_cellar_2.' + p.key, p.sockets.length > 1
+          ? 'Both magnet stones are sitting on the snapped cables. Bzzt! Bzzt! The ends join with two sparks,\\pand the last arc of static fizzles out.'
+          : 'The magnet stone clunks onto the snapped cable. Bzzt! The two ends join with a spark,\\pthe cable starts to hum, and somewhere nearby an arc of static fizzles out.');
       }
     },
   });
+  // a puzzle room from a picture: '.' floor, 'r' a fixed rock, 'M' a magnet stone, 's' a snapped cable, ';' cave grass, '#' wall
+  const room = (x0, y0, rows) => rows.forEach((row, j) => { for (let i = 0; i < row.length; i++) {
+    const ch = row[i], x = x0 + i, y = y0 + j;
+    if (ch === '#') continue;
+    M2.set(x, y, ch === 's' ? 's' : ch === ';' ? ';' : 'f');
+    if (ch === 'r') M2.stamp('rock', x, y);
+    if (ch === 'M') M2.stamp('shove_rock', x, y, 'magnet');
+  } });
   M2.rect(2, 2, 5, 4, 'f');                                        // landing
-  M2.rect(6, 3, 9, 3, 'f');                                        // the first gallery, ending at an arc fence
-  M2.rect(10, 6, 1, 2, 'f').set(10, 7, 's');                        // a narrow bay with the first snapped cable at the end
-  M2.gate('arc1', { flag: 'cellar_arc1', cells: [[14, 3], [14, 4], [14, 5]], closed: 'X', open: 'f', note: 'arc fence 1 (magnet stone onto the socket at 10,7)' });
-  M2.rect(15, 2, 9, 7, 'f');                                       // the jar store
-  M2.rect(19, 9, 1, 2, 'f').set(19, 10, 's');                       // second bay and snapped cable
-  M2.rect(22, 9, 2, 3, 'f');                                       // the way down to the lower hall
-  M2.gate('arc2', { flag: 'cellar_arc2', cells: [[22, 9], [23, 9]], closed: 'X', open: 'f', note: 'arc fence 2 (magnet stone onto the socket at 19,10)' });
-  M2.rect(4, 12, 20, 5, 'f').rect(16, 14, 5, 2, ';');               // the lower hall, with damp cave grass
-  M2.rect(2, 8, 3, 3, 'f').rect(4, 11, 1, 1, 'f');                  // the warm ledge, where the old cables run hot
-  M2.stamp('shove_rock', 10, 5, 'magnet').stamp('shove_rock', 19, 7, 'magnet');
-  L.stairs(M2, 3, 3, 'up', 'spark_cellar', 'down');
-  L.stairs(M2, 5, 14, 'down', 'spark_cellar_3', 'up');
-  M2.spawn('up', 4, 3, 'right').spawn('down', 6, 14, 'right');
+  // arc1: the first gallery, with a narrow bay and the first snapped cable at the end of it
+  M2.rect(6, 3, 9, 3, 'f');
+  room(10, 5, ['M', '.', 's']);
+  M2.gate('arc1', { flag: 'cellar_arc1', cells: [[14, 3], [14, 4], [14, 5]], closed: 'X', open: 'f', note: 'arc fence 1 (one magnet stone, straight down)' });
+  // arc2: the jar store (Fuse stands in the doorway); the cable is in a bay off the south wall
+  room(15, 2, [
+    '.........',
+    '.........',
+    '.........',
+    '.........',
+    '.........',
+    '.M.......',
+    '.........',
+    '####.##..',
+    '####s##..',
+    '#######..',
+  ]);
   for (const [x, y] of [[16, 2], [17, 2], [18, 2], [21, 2], [22, 2], [23, 2]]) M2.stamp('static_jar', x, y);
-  M2.sign(7, 2, 'NOTICE: Magnet stones are charged. Push them onto a snapped cable to join it.\\pIf a stone gets stuck, go back up the stairs and it will roll home.', 'puzzle sign');
+  M2.rect(20, 3, 4, 2, ';');                                       // cave grass in the damp corner
+  M2.set(22, 5, 'w').set(22, 6, 'w').set(12, 3, 'w').set(2, 5, 'w');   // a few jogs and pillars, so the rooms aren't bare boxes (clear of every stone's path)
+  M2.gate('arc2', { flag: 'cellar_arc2', cells: [[22, 9], [23, 9]], closed: 'X', open: 'f', note: 'arc fence 2 (round a corner)' });
+  // arc3: the rock room. You come in at the top right; the cable is in a bay at the bottom left
+  room(16, 12, [
+    '...r.....r',
+    '..........',
+    '...r..rrM.',
+    '...r.rr...',
+    '.r..rrr...',
+    '......r...',
+    '##s',
+  ]);
+  M2.gate('arc3', { flag: 'cellar_arc3', cells: [[15, 17]], closed: 'X', open: 'f', note: 'arc fence 3 (the rock room)' });
+  M2.rect(12, 17, 3, 1, 'f').set(13, 16, 'f');                     // the short passage west, where Volta waits
+  // arc4: the twin cables. Two stones, two cables in the south wall
+  room(4, 12, [
+    '..r.....',
+    '.r..M.r.',
+    'r.r.Mr..',
+    '.....rr.',
+    '....r...',
+    '........',
+    '#s###s',
+  ]);
+  M2.gate('arc4', { flag: 'cellar_arc4', cells: [[7, 11]], closed: 'X', open: 'f', note: 'arc fence 4 (the twin cables): the way to the stairs down' });
+  M2.rect(4, 8, 5, 3, 'f').rect(2, 8, 3, 3, 'f');                  // the stairs down, and the warm ledge where the old cables run hot
+  M2.rect(5, 8, 3, 1, ';');
+  // the demagnetisers by the two harder rooms (pull one to call that room's stones home)
+  M2.set(21, 10, 'f').stamp('lever', 21, 10).interact(21, 10, demag('arc3'), 'demagnetiser: the rock room');
+  M2.set(14, 16, 'f').stamp('lever', 14, 16).interact(14, 16, demag('arc4'), 'demagnetiser: the twin cables');
+  L.stairs(M2, 3, 3, 'up', 'spark_cellar', 'down');
+  L.stairs(M2, 7, 8, 'down', 'spark_cellar_3', 'up');
+  M2.spawn('up', 4, 3, 'right').spawn('down', 7, 9, 'down');
+  M2.sign(7, 2, 'NOTICE: Magnet stones are charged. Push them onto a snapped cable to join it.\\pIf a stone gets stuck, pull a demagnetiser, or go back up the stairs, and it will roll home.', 'puzzle sign');
   M2.enc('grass', [['glowgrub', 29, 31, 34], ['boingo', 29, 31, 20], ['dripstone', 29, 31, 18], ['batnap', 29, 30, 16], ['chiseltail|nibblit', 29, 30, 12]]);
   M2.trainer('sc2_t1', 15, 2, 'grunt_m', 'down', { cls: 'Presser', name: 'Fuse', sight: 3, reward: 16, ai: 2, music: 'battle_society', team: [['boingo', 30], ['kachunk', 30]],
     intro: 'Each jar holds one Glowgrub\'s worth of sparks, and we label every single one of them neatly.', win: 'You\'ve unlabelled me.', after: 'Calender says the Works needs a thousand jars. We\'ve done about forty. He\'s not happy about the schedule.' });
-  M2.trainer('sc2_t2', 12, 12, 'grunt_f', 'down', { cls: 'Presser', name: 'Volta', sight: 4, reward: 16, ai: 2, music: 'battle_society', team: [['glowgrub', 30], ['kittabra', 30], ['boingo', 31]],
-    intro: 'The fences are for your safety. Mostly for our safety. Okay, they\'re to keep you out.', win: 'Well, the fences didn\'t work, and neither did I.', after: 'If the boss asks, you came in through a door that was already open.' });
+  M2.trainer('sc2_t2', 13, 16, 'grunt_f', 'down', { cls: 'Presser', name: 'Volta', sight: 1, reward: 16, ai: 2, music: 'battle_society', team: [['glowgrub', 30], ['kittabra', 30], ['boingo', 31]],
+    intro: 'The fences are for your safety. Mostly for our safety. Okay, they\'re to keep you out.', win: 'Well, the fences didn\'t work, and neither did I.', after: 'Two cables at once? Do the far one first. Don\'t tell anyone I told you.' });
   M2.pickup('charm', 2, 8, 'volt_charm', 1, 'Volt Charm on the warm ledge');
-  M2.pickup('spool', 23, 16, 'gold_spool', 1);
+  M2.pickup('spool', 2, 10, 'gold_spool', 1);
   M2.reg();
 
   // ------------------------------------------------------------------------------------------ floor 3: the siphon and Pleat Calender

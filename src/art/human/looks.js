@@ -130,6 +130,17 @@
   def('kasuri', { name: 'Mrs. Kasuri', build: 'elder', sex: 'f', skin: 'fair', hair: hair('bun', 'silver'), eyes: 'brown',
     face: { eyes: 'happy', mouth: 'smile' }, outfit: out('cardigan', '#34487c', 'white', 'cream'), bottom: { type: 'longskirt', color: 'charcoal' }, shoes: 'black',
     acc: ['roundglasses:#c8a020', 'tape'] });
+  // the children of Canvas Rest (Tavi and Nell; Bo borrows the net kid's goggles)
+  def('camp_kid_m', { name: 'Boy', build: 'child', sex: 'm', skin: 'tan', hair: hair('messy', 'black'), eyes: 'brown',
+    face: { eyes: 'wide', mouth: 'grin' }, outfit: out('tee', '#e8a840', '#f4e4c0'), bottom: { type: 'shorts', color: '#8a5a32' }, shoes: 'brown', acc: ['bandana:#c8483a'] });
+  def('camp_kid_f', { name: 'Girl', build: 'child', sex: 'f', skin: 'warm', hair: hair('ponytail', 'brown'), eyes: 'amber',
+    face: { eyes: 'wide', mouth: 'smile' }, outfit: out('dress', '#4ab0a0', '#f4e4c0'), shoes: 'brown' });
+  // the same three children asleep in the sand cave's nest (eyes shut)
+  for (const id of ['camp_kid_m', 'camp_kid_f', 'net_kid']) def(id + '_nap', Object.assign({}, looks[id], { face: { eyes: 'closed', mouth: 'smile' }, acc: (looks[id].acc || []).filter((a) => !a.startsWith('goggles')) }));
+  // the big desert Kigu of the sand cave (Canvas Rest's sun-cloth quest): a tall sand-coloured onesie with a woven red scarf
+  def('sand_mother', { name: 'Kigu', build: 'adult', sex: 'f', skin: 'fair', hair: hair('short', 'brown'), eyes: 'amber',
+    face: { eyes: 'wide', mouth: 'smile' }, outfit: out('hoodie', '#d49a50', '#d49a50', '#f4e4c0'), bottom: { type: 'pants', color: '#d49a50' }, shoes: '#b88848',
+    acc: ['kigutail:#d49a50', 'kiguhood:#d49a50', 'wovenscarf:#c8483a'] });
   def('station_master', { name: 'Station Master', build: 'adult', sex: 'm', skin: 'warm', hair: hair('short', 'black'), eyes: 'dark', facial: 'mustache',
     face: { eyes: 'normal', mouth: 'smile' }, outfit: out('uniform', 'navy', 'gold', 'white'), bottom: { type: 'pants', color: 'navy' }, shoes: 'black',
     acc: ['cap:#24305c/#e8b830'] });

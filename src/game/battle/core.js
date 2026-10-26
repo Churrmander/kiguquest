@@ -393,7 +393,7 @@
       const t = mon.types;
       if (status === 'brn' && t.indexOf('ember') >= 0) return false;
       if ((status === 'psn' || status === 'tox') && (t.indexOf('nettle') >= 0 || t.indexOf('iron') >= 0)) return false;
-      if (status === 'frz' && t.indexOf('frost') >= 0) return false;
+      if (status === 'frz' && (t.indexOf('frost') >= 0 || t.indexOf('ember') >= 0)) return false;   // Ember Kigu run too hot to freeze (as Fire types in Gen 5)
       const mood = this.weather && B.COND.weather[this.weather.id];
       if (mood && mood.blocksStatus && mood.blocksStatus.indexOf(status) >= 0) return false;
       if (mon.side.conds.safeguard && (!source || source.side !== mon.side)) return false;
@@ -604,7 +604,7 @@
       for (const f of this.sides[1 - side.index].active) {
         if (f && !f.fainted) { f.participants.add(mon); mon.participants.add(f); }
       }
-      this.add({ t: 'in', who: mon, slot, initial: !!o.initial, forced: !!o.forced });
+      this.add({ t: 'in', who: mon, slot, initial: !!o.initial, forced: !!o.forced, hp: mon.hp, status: mon.status });   // a snapshot: the scene plays the turn back after it has all happened
     }
 
     enterEffects(mon, o) {

@@ -1,5 +1,5 @@
 /* Bobbin Quarry Salon — Gusset's Terra Salon (Salon #4). Mechanic: track switches (L.switchLever). Three rail barriers cross the
- * hall, each with two sets of points: one way leads on, the other into a siding that ends at a Society buffer ("Stop. Flat is fair.").
+ * big tent (owner's pick: the Salon is a huge striped tent at the Quarry's edge), each with two sets of points: one way leads on, the other into a siding that ends at a Society buffer ("Stop. Flat is fair.").
  * Every switch starts pointing into the siding, so you see the joke once, then pull the lever. No pushing, no ice, just switches.
  * Two Miner apprentices, then Gusset. Open once the herd is home (gusset_back). Prize: Terra Button, Linen Thread, Disc: Shove. */
 (function (root) {
@@ -30,8 +30,8 @@
   }
   NP.scripts.gusset = gusset;
 
-  const M = L.room({ id: 'quarry_salon', name: 'Bobbin Quarry Salon', w, h, doorX: 5, floor: 'floor_stone', wall: 'wall_stone', music: 'town_thimble', battleBg: 'gym',
-    exit: { to: 'bobbin_quarry', door: 'salon' }, legend: { B: 'barrier', r: 'rail_h', v: 'rail_v' } });
+  const M = L.room({ id: 'quarry_salon', name: 'Bobbin Quarry Salon', w, h, doorX: 5, floor: 'floor_wood', wall: 'wall_canvas', music: 'town_thimble', battleBg: 'gym',
+    exit: { to: 'bobbin_quarry', door: 'salon' }, legend: { B: 'barrier_wood', r: 'rail_h', v: 'rail_v' } });
   // the three rail barriers (rows 12, 8, 4) and the walls that box in each siding
   M.rect(1, 12, 11, 1, 'B').rect(1, 8, 11, 1, 'B').rect(1, 4, 11, 1, 'B');
   M.rect(9, 9, 1, 3, 'B');                                        // siding 1 (east, rows 9-11) walled off from band 2
@@ -39,6 +39,11 @@
   M.rect(8, 2, 1, 2, 'B');                                        // siding 3 (east, rows 2-3)
   // rails laid along each band, for the look of a cart hall
   M.rect(1, 13, 11, 1, 'r').rect(1, 10, 8, 1, 'r').rect(4, 6, 8, 1, 'r');
+  // and the spurs that join each band to the next through its points, or run into a siding to its buffer (owner's note: the
+  // rails used to stop short of each other)
+  M.set(2, 11, 'v').set(10, 11, 'v').rect(10, 9, 1, 2, 'v');                     // band 1: on at x2, siding at x10
+  M.set(7, 9, 'v').set(7, 7, 'v').set(2, 9, 'v').rect(2, 5, 1, 3, 'v');            // band 2: on at x7, siding at x2
+  M.set(4, 5, 'v').set(4, 3, 'v').set(10, 5, 'v').rect(10, 2, 1, 2, 'v');           // band 3: on at x4, siding at x10
   // points: gate a (the way on) starts shut, gate b (into the siding) starts open
   const pts = (n, xa, xb, y) => {
     M.gate('a' + n, { cells: [[xa, y]], closed: 'B', open: 'v', flag: 'sal4_a' + n, note: 'switch ' + n + ': the way on' });

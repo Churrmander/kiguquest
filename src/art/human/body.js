@@ -676,6 +676,40 @@
     for (let y = R.shY + 1; y <= R.shY + (ow ? 3 : 9); y++) { P.px(x, y, m, 2); if (!ow) P.px(x + 1, y, m, 1); }
   });
 
+  // a woven scarf worn big (the sand cave's Kigu): a 2px band round the neck and a long tail, visible from every side
+  reg('wovenscarf', (P, R, a, ph) => {
+    if (ph !== 'body') return;
+    const m = mc(P, a, '#c8483a'), ow = R.t === 'ow';
+    P.begin('wovenscarf');
+    if (R.view === 'left') {
+      P.run(R.shY - 1, rnd(R.cx - 3), rnd(R.cx + 3), m, 2); P.run(R.shY, rnd(R.cx - 3), rnd(R.cx + 3), m, 1);
+      for (let y = R.shY + 1; y <= R.shY + (ow ? 4 : 10); y++) { P.px(rnd(R.cx + 3), y, m, 2); P.px(rnd(R.cx + 4), y, m, 1); }
+      return;
+    }
+    const y0 = ow ? R.shY : R.shY - 1;                    // (in the overworld the chin hides the top row, so it sits a row lower)
+    band(P, R, y0, y0 + 1, ow ? 5 : 7, m, 2);
+    const s = R.view === 'up' ? -1 : 1, x = rnd(R.cx + s * (ow ? 2 : 4)) - (s < 0 ? 1 : 0);
+    for (let y = y0 + 2; y <= R.shY + (ow ? 4 : 10); y++) { P.px(x, y, m, 2); P.px(x + 1, y, m, 1); }
+  });
+
+  // a Kigu onesie tail (fennec-fluffy), from the small of the back; seen from the side and from behind
+  reg('kigutail', (P, R, a, ph) => {
+    if (R.view === 'down' || (R.view === 'up' ? ph !== 'body' : ph !== 'back')) return;
+    const m = mc(P, a, '#e0b070'), tip = P.m(a.color2 !== undefined ? a.color2 : L.col('#f8ecd8')), ow = R.t === 'ow';
+    P.begin('kigutail');
+    const y0 = R.hipY - (ow ? 1 : 3);
+    if (R.view === 'up') {
+      for (let i = 0; i < (ow ? 4 : 10); i++) { const w = ow ? (i < 3 ? 1.5 : 1) : 3 - Math.abs(i - 5) * 0.4; P.run(y0 + i, rnd(R.cx - w), rnd(R.cx + w) - 1, i >= (ow ? 3 : 8) ? tip : m, i < 2 ? 1 : 2); }
+      return;
+    }
+    // side view: sweeping back and down, behind the body
+    const bx = rnd(R.cx + (ow ? 4 : 7)), n = ow ? 5 : 12;
+    for (let i = 0; i < n; i++) {
+      const x = bx + Math.round(i * 0.8), y = y0 + Math.round(i * 0.35), w = ow ? (i > 0 && i < n - 1 ? 2 : 1) : 3;
+      P.run(y, x - 1, x + w - 2, i >= n - 1 ? tip : m, 2); P.px(x, y + 1, m, 1);
+    }
+  });
+
   reg('tape', (P, R, a, ph) => {
     if (ph !== 'body') return;
     const m = P.m('#f2d84a'), ow = R.t === 'ow';

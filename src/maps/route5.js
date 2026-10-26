@@ -46,9 +46,9 @@
   M.enc('grass', [['boingo', 27, 29, 26], ['chirpadee', 26, 28, 18], ['scurrent|kittabra', 27, 29, 16], ['dunehop|nibblit', 26, 28, 14], ['glowgrub', 27, 29, 10], ['stingle|chirpadee', 27, 28, 6], ['chiseltail|nibblit', 26, 28, 10]]);
 
   // ---- the five Tailors
-  M.trainer('r5_t1', 11, 40, 'scientist', 'right', { cls: 'Scientist', name: 'Volta', sight: 3, reward: 15, ai: 2, team: [['boingo', 27], ['scurrent|kittabra', 28]],
+  M.trainer('r5_t1', 11, 41, 'scientist', 'right', { cls: 'Scientist', name: 'Volta', sight: 3, reward: 15, ai: 2, team: [['boingo', 27], ['scurrent|kittabra', 28]],
     intro: 'The pylons are humming in B flat today. Usually it\'s C. Something is pulling on the line, and I want to know what!', win: 'You\'re a lot more charged up than the pylons.', after: 'The hum drops every time the city browns out. I\'ve written it all down. Nobody has asked to read it.' });
-  M.trainer('r5_t2', 15, 39, 'courier', 'left', { cls: 'Courier', name: 'Zed', sight: 3, reward: 14, ai: 1, team: [['jerbix|nibblit', 28], ['chirpadee', 27]],
+  M.trainer('r5_t2', 15, 40, 'courier', 'left', { cls: 'Courier', name: 'Zed', sight: 3, reward: 14, ai: 1, team: [['jerbix|nibblit', 28], ['chirpadee', 27]],
     intro: 'I deliver parcels to Shibuyarn faster than anyone! I also battle faster than anyone. Ready? Too slow!', win: 'Okay, you were faster. Please don\'t tell my boss.', after: 'The city\'s lifts stop when the lights go out. I\'ve carried a fridge up nine floors. Twice.' });
   M.trainer('r5_t3', 7, 22, 'twins_a', 'right', { cls: 'Twins', name: 'Ami', sight: 3, reward: 12, ai: 1, team: [['glowgrub', 27], ['chirpadee', 27]],
     intro: 'Ami: We\'re twins! I\'m the one who battles first, and Yumi battles second. That\'s the rule.', win: 'Ami: Yumi, it\'s your turn! Get them!', after: 'Ami: We tried battling at the same time once. It got very confusing.' });
@@ -66,8 +66,8 @@
   M.hidden('bush', 21, 13, 'wish_candy', 1, 'a Wish Candy in the bush by the meadow');
   // The road is never fenced. Four natural pinches put a Tailor across it (owner's rule: route trainers can't be skipped). Ledges
   // only drop you south, so the side meadows can't be used to climb round a Tailor:
-  //  1. a sandstone ridge crosses the dunes; the road climbs through a notch in it, past Volta and Zed
-  M.rect(2, 40, 5, 3, 'C').rect(7, 40, 4, 2, 'C').rect(15, 40, 4, 2, 'C').rect(19, 40, 5, 3, 'C');
+  //  1. a sandstone ridge crosses the dunes; the road climbs through a notch in it, past Volta and Zed (both stand with open sand in front of them, so the near cliff never hides them)
+  M.rect(2, 40, 5, 3, 'C').rect(7, 40, 5, 1, 'C').rect(7, 41, 4, 1, 'C').rect(16, 40, 3, 2, 'C').rect(19, 40, 5, 3, 'C');
   //  2. a pond fills the east side of the bend, and a ledge runs from the west edge to the road, where Spool minds his cable
   M.rect(15, 25, 7, 5, 'w').rect(12, 26, 3, 3, 'T').rect(22, 25, 2, 4, 'T');   // the water autotile rounds its corners
   M.rect(2, 27, 6, 1, 'l');

@@ -19,6 +19,7 @@
 "src/maps/ch4_lib.js",
 "src/maps/route4.js",
 "src/maps/canvas_rest.js",
+"src/maps/sun_flats.js",
 "src/maps/dust_bowl.js",
 "src/maps/dust_oasis.js",
 "src/maps/bobbin_quarry.js",

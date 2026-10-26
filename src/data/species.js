@@ -33,7 +33,8 @@
     ls: [[1, 'pounce'], [1, 'cinder'], [1, 'foxfire'], [8, 'quick_dash'], [16, 'scorch_tail'], [22, 'daydream'], [28, 'foxfire_blast'], [34, 'pillow_slam']],
     dex: 'Two flame-tipped tails and a tiny shrine bell. She rings it before she sets a fire.' });
   sp('kyuubelle', 'Kyuubelle', ['ember', 'dream'], [85, 85, 75, 115, 90, 100], { growth: 'mediumSlow', catch: 45, exp: 240, ab: ['blaze'], cry: 'Kyuu!', stage: 3, family: 'konko',
-    ls: [[1, 'pounce'], [1, 'cinder'], [1, 'foxfire'], [16, 'scorch_tail'], [28, 'foxfire_blast'], [36, 'dream_wave'], [44, 'pillow_slam']],
+    ls: [[1, 'pounce'], [1, 'cinder'], [1, 'foxfire'], [1, 'daydream'], [16, 'scorch_tail'], [28, 'foxfire_blast'], [34, 'pillow_slam'], [36, 'dream_wave'],
+      [39, 'festive_dance'], [42, 'spirit_bell'], [46, 'fox_moon'], [52, 'ninefold_fire']],
     dex: 'Nine fanned tails and drifting blue fox-fire. Festival nights are her favourite.' });
 
   sp('ottopi', 'Ottopi', ['tide'], [55, 56, 50, 52, 48, 47], { growth: 'mediumSlow', catch: 45, exp: 62, ab: ['torrent'], cry: 'Pii!',

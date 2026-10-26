@@ -33,7 +33,7 @@
       const A = NP.assets;
       for (const s of def.stamps || []) {
         const sd = A.stampDef(s.id);
-        const p = { id: s.id, x: s.x, y: s.y, variant: s.variant, def: sd, name: s.name, w: sd.w, h: sd.h, over: sd.over || 0, layer: sd.layer || 'obj', goneIf: s.goneIf, showIf: s.showIf };
+        const p = { id: s.id, x: s.x, y: s.y, variant: s.variant, def: sd, name: s.name, w: sd.w, h: sd.h, over: sd.over || 0, layer: sd.layer || 'obj', goneIf: s.goneIf, showIf: s.showIf, roll: !!s.roll };
         this.placements.push(p);
         let door = null;
         for (let yy = 0; yy < sd.h; yy++) {
@@ -49,7 +49,7 @@
         if (door) {
           this.blocked[door.y * this.w + door.x] = 0;
           if (s.name) this.doors[s.name] = door;
-          if (s.to) this.warps.set(door.x + ',' + door.y, { x: door.x, y: door.y, to: s.to, spawn: s.spawn || 'door', door: s.toDoor, door_: true });
+          if (s.to) this.warps.set(door.x + ',' + door.y, { x: door.x, y: door.y, to: s.to, spawn: s.spawn || 'door', door: s.toDoor, door_: true, stamp: p });
         }
       }
       for (const w of def.warps || []) {
@@ -126,10 +126,15 @@
       this._solidCells(p, 1);
       this.placeRev = (this.placeRev || 0) + 1;
     }
+    /** an ore cart that rolls along the rails when you push it (stamp placed with `roll: true`); remembered like a Shove rock */
+    cartAt(x, y) { return this.placements.find((p) => p.roll && p.x === x && p.y === y) || null; }
+    isRail(x, y) { const t = this.inBounds(x, y) && NP.terrain[this.idAt(x, y)]; return !!(t && t.group === 'rail'); }
+    /** the directions a rail tile joins up with (its rail neighbours) */
+    railDirs(x, y) { return [['up', 0, -1], ['down', 0, 1], ['left', -1, 0], ['right', 1, 0]].filter(([, dx, dy]) => this.isRail(x + dx, y + dy)).map((d) => d[0]); }
     shoveAt(x, y) { return this.placements.find((p) => p.def.shove && p.x === x && p.y === y) || null; }
     syncShoves(flags) {
       for (const p of this.placements) {
-        if (!p.def.shove) continue;
+        if (!p.def.shove && !p.roll) continue;
         if (p.homeX === undefined) { p.homeX = p.x; p.homeY = p.y; }
         const v = flags['shove:' + this.id + ':' + p.homeX + ',' + p.homeY];
         const [x, y] = v ? v.split(',').map(Number) : [p.homeX, p.homeY];
@@ -137,7 +142,8 @@
       }
     }
 
-    warpAt(x, y) { return this.warps.get(x + ',' + y) || null; }
+    /** (a door whose building is hidden by a story flag, like a cave that hasn't been found yet, leads nowhere) */
+    warpAt(x, y) { const w = this.warps.get(x + ',' + y); return w && !(w.stamp && this.placements.indexOf(w.stamp) < 0) ? w : null; }
     stepSound(x, y) { return (this.tdef(x, y).step || 'step'); }
 
     maskAt(x, y) {

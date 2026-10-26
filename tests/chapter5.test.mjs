@@ -96,22 +96,36 @@ assert.ok(t.travel(5, 7, 1200) || t.ow.map.id === 'spark_cellar_2', 'down to B1;
 t.mash(() => t.idle(), 3000);
 at('spark_cellar_2');
 
-// ---- floor 2: two magnet stones onto two snapped cables
+// ---- floor 2: four magnet-stone puzzles that get harder (the solver's push lists: stone x,y + the way it goes)
 const tm = () => t.ow.map;
+const V = { U: [0, -1], D: [0, 1], L: [-1, 0], R: [1, 0] }, KEY = { U: 'up', D: 'down', L: 'left', R: 'right' };
+const pushes = (list) => { for (const p of list.split(' ')) { const [x, y] = p.slice(0, -1).split(',').map(Number), d = p.slice(-1); heal(); shove(x - V[d][0], y - V[d][1], KEY[d]); } };
 assert.ok(tm().solid(14, 4), 'the first arc fence is up');
 heal();
-shove(10, 4, 'down'); shove(10, 5, 'down');
+pushes('10,5D 10,6D');
 press('cellar_arc1', 10000);
 assert.ok(!tm().solid(14, 4), 'the first arc fence fizzled out');
 heal();
-assert.ok(t.travel(19, 6, 800), 'into the jar store; ' + t.pos());
+assert.ok(t.travel(16, 4, 800), 'into the jar store; ' + t.pos());
 t.mash(() => t.idle(), 60000);
-heal();
-shove(19, 6, 'down'); shove(19, 7, 'down'); shove(19, 8, 'down');
+pushes('16,7D 16,8R 17,8R 18,8R 19,8D 19,9D');
 press('cellar_arc2', 10000);
 assert.ok(!tm().solid(22, 9), 'the second arc fence fizzled out');
+// the rock room: jam the stone first, and the demagnetiser calls it home
+pushes('24,14D');
+assert.ok(use(21, 10), 'the demagnetiser; ' + t.pos()); t.mash(() => t.idle(), 3000);
+assert.ok(tm().shoveAt(24, 14), 'the stone rolled home');
+pushes('24,14U 24,13L 23,13L 22,13L 21,13L 20,13L 19,13L 18,13L 17,13D 17,14D 17,15R 18,15D 18,16D 18,17D');
+press('cellar_arc3', 10000);
+assert.ok(!tm().solid(15, 17), 'the third arc fence fizzled out');
 heal();
-assert.ok(t.travel(5, 14, 1500) || t.ow.map.id === 'spark_cellar_3', 'down to B2; ' + t.pos());
+assert.ok(t.travel(14, 17, 800), 'past Volta; ' + t.pos());
+t.mash(() => t.idle(), 60000);
+pushes('8,13L 8,14U 7,13D 7,14D 8,13L 7,15D 7,16D 7,17R 7,13D 8,17R 9,17D 7,14D 7,15D 7,16D 7,17L 6,17L 5,17D');
+press('cellar_arc4', 10000);
+assert.ok(!tm().solid(7, 11), 'the last arc fence fizzled out');
+heal();
+assert.ok(t.travel(7, 8, 1500) || t.ow.map.id === 'spark_cellar_3', 'down to B2; ' + t.pos());
 t.mash(() => t.idle(), 3000);
 at('spark_cellar_3');
 

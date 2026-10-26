@@ -57,13 +57,13 @@
   M.rect(28, 19, 5, 5, ';');
 
   M.building('cave_mouth', 4, 3, null, 'tunnel', 'quarry_tunnels', { toDoor: null, note: 'into the tunnels' });
-  M.building('salon', 14, 2, 'terra', 'salon', 'quarry_salon');
+  M.building('salon_tent', 14, 2, 'terra', 'salon', 'quarry_salon', { note: 'Gusset\'s Salon: a big striped tent (owner\'s sun-cloth quest idea)' });
   M.building('house_s', 26, 3, 'gray', 'hut', 'quarry_hut', { note: 'Gusset\'s hut' });
   M.building('tea_house', 5, 10, null, 'tea', 'quarry_tea');
   M.building('general_store', 23, 10, null, 'store', 'quarry_store');
   M.stamp('lamp', 15, 12).stamp('lamp', 19, 12);                          // where the ramp meets the road
   M.stamp('slab_stack', 9, 17).stamp('slab_stack', 10, 17).stamp('slab_stack', 11, 17).stamp('slab_stack', 15, 22).stamp('slab_stack', 16, 22);
-  M.stamp('ore_cart', 22, 17, 'full').stamp('ore_cart', 26, 17, 'empty').stamp('buffer', 33, 17);
+  M.stamp('ore_cart', 22, 17, 'full').stamp('ore_cart', 26, 17, 'empty').stamp('buffer', 33, 17).stamp('buffer', 20, 17);   // buffers at both ends (owner's note: the line just stopped)
   M.stamp('cactus', 2, 17).stamp('cactus', 32, 11, 'plain').stamp('rock', 12, 4).stamp('boulder', 23, 5).stamp('barrel', 31, 4).stamp('crate', 3, 12);
   M.sign(12, 13, 'BOBBIN QUARRY\\nNamed for the family who dug the first slab.\\pSolid seams!', 'town sign');
   M.sign(21, 6, 'BOBBIN QUARRY SALON\\nMaster Tailor: Gusset\\p"Measure twice. Cut once. Talk less."', 'Salon sign');
@@ -74,7 +74,7 @@
   M.trigger({ x: 3, y: 14, w: 1, h: 2, id: 'rival4', when: (c) => !c.flag('rival4_done'), script: rival4 });
 
   // the Salon is shut while Gusset is down the pit: an apprentice minds the door
-  M.npc('appr', 17, 7, 'hiker', 'down', ['The Salon\'s shut. Gusset\'s down in the tunnels after the Pebblump herd,\\pand nobody battles in his Salon without him. He\'d notice.'], { hideIf: 'gusset_back', note: 'blocks the Salon lane until gusset_back' });
+  M.npc('appr', 17, 7, 'hiker', 'down', ['The Salon\'s shut. Gusset\'s down in the tunnels after the Pebblump herd,\\pand nobody battles in his tent without him. The weavers at Canvas Rest sewed it from sun-cloth,\\pso it\'s the only place in the quarry that stays cool. He\'d notice if we sneaked in.'], { hideIf: 'gusset_back', note: 'blocks the Salon lane until gusset_back' });
   M.npc('rival_q', 8, 15, 'rival', 'left', ['{rival}: ...'], { hidden: true });
   M.npc('miner1', 13, 17, 'hiker', 'down', ['The Society bought every slab we cut this year. They want them flat as glass.\\pWe asked what for. They said "pressing", and then they smiled. I didn\'t like the smile.']);
   M.npc('miner2', 30, 15, 'camper', 'left', ['That cart line runs out to the quarry face. When the herd\'s back home,\\pwe can get digging again. Slowly, this time.'], { move: 'turn' });

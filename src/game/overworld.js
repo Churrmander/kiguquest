@@ -25,8 +25,8 @@
     }
     get visible() {
       if (this.hidden) return false;
-      const h = this.def && this.def.hideIf;
-      return !(h && NP.state.flags[h]);
+      const h = this.def && this.def.hideIf, sh = this.def && this.def.showIf;   // showIf: only there once a story flag is set
+      return !(h && NP.state.flags[h]) && !(sh && !NP.state.flags[sh]);
     }
     get px() { return this.x * 16 + this.ox; }
     get py() { return this.y * 16 + this.oy; }
@@ -173,7 +173,7 @@
     *pc() { const s = new NP.BoxScene(); NP.Game.push(s); yield* this.ow.waitFor(() => s.finished); }
     *warp(map, x, y, dir) { yield* this.ow.teleport(map, x, y, dir); }
     *trainerBattle(def) { return yield* this.ow.trainerBattle(def); }
-    *wildBattle(sp, lv) { return yield* this.ow.wildBattle(sp, lv); }
+    *wildBattle(sp, lv, o) { return yield* this.ow.wildBattle(sp, lv, o); }
     /** Field move Paddle: offer to step off the shore onto calm water (needs Disc: Paddle). */
     *paddle(dir) {
       if (yield* this.ask('The water looks calm.\\nPaddle across it?')) { NP.snd.sfx('splash'); yield* this.walk('player', [dir, 1]); }
@@ -205,6 +205,102 @@
       a.step(d, spd || 1, true);
       while (a.moving) yield;
     }
+  };
+
+  /** shortest open path (map directions) from actor a to any tile in `goals` ('x,y' strings), round walls, ledges and people */
+  function pathTo(ow, a, goals) {
+    const m = ow.map, D = [['up', 0, -1], ['down', 0, 1], ['left', -1, 0], ['right', 1, 0]];
+    const start = a.x + ',' + a.y;
+    if (goals.has(start)) return [];
+    const prev = new Map([[start, null]]), q = [[a.x, a.y]];
+    while (q.length && prev.size < 6000) {
+      const [x, y] = q.shift();
+      for (const [d, dx, dy] of D) {
+        const nx = x + dx, ny = y + dy, k = nx + ',' + ny;
+        if (prev.has(k) || !m.inBounds(nx, ny) || m.solid(nx, ny) || m.ledge(nx, ny) || ow.actorAt(nx, ny, a)) continue;
+        prev.set(k, [x + ',' + y, d]);
+        if (goals.has(k)) { const out = []; for (let c = k; prev.get(c); c = prev.get(c)[0]) out.unshift(prev.get(c)[1]); return out; }
+        q.push([nx, ny]);
+      }
+    }
+    return null;
+  }
+  const FACE = { up: 'down', down: 'up', left: 'right', right: 'left' };
+  /** walk w to (x, y) by the shortest open path. False if there is no way. */
+  Ctx.prototype.walkTo = function* (w, x, y) {
+    const a = this.who(w), path = pathTo(this.ow, a, new Set([x + ',' + y]));
+    if (!path) return false;
+    yield* this.walk(a, path);
+    return true;
+  };
+  /** w comes over to stand next to the player (or `to`), and the two turn to face each other, so a scene's speaker is always
+   *  on screen beside you (owner's note: "Mimi is talking to me, but is nowhere to be found"). */
+  Ctx.prototype.approach = function* (w, to) {
+    const a = this.who(w), t = this.who(to || 'player');
+    const goals = new Set([[0, -1], [0, 1], [-1, 0], [1, 0]].map(([dx, dy]) => (t.x + dx) + ',' + (t.y + dy)));
+    const path = pathTo(this.ow, a, goals);
+    if (path && path.length) yield* this.walk(a, path);
+    const dx = t.x - a.x, dy = t.y - a.y;
+    const d = Math.abs(dx) >= Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
+    a.dir = d; t.dir = FACE[d];
+    yield* this.ow.wait(4);
+  };
+  /** a hidden NPC walks in from `o.dist` tiles away (first open spot in the `o.from` directions) and comes over to the player */
+  Ctx.prototype.enter = function* (w, o) {
+    o = o || {};
+    const a = this.who(w), p = this.ow.player, m = this.ow.map, dist = o.dist || 5;
+    const V = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
+    let spot = null;
+    for (const d of o.from || ['right', 'left', 'down', 'up']) {
+      for (let r = dist; r >= 2 && !spot; r--) {
+        const x = p.x + V[d][0] * r, y = p.y + V[d][1] * r;
+        if (!m.inBounds(x, y) || m.solid(x, y) || m.ledge(x, y) || this.ow.actorAt(x, y, a)) continue;
+        a.x = x; a.y = y;
+        if (pathTo(this.ow, a, new Set([(p.x - V[d][0]) + ',' + (p.y - V[d][1]), (p.x + 1) + ',' + p.y, (p.x - 1) + ',' + p.y, p.x + ',' + (p.y + 1), p.x + ',' + (p.y - 1)]))) spot = [x, y];
+      }
+      if (spot) break;
+    }
+    if (!spot) { a.x = p.x + 1; a.y = p.y; }
+    a.ox = a.oy = 0; a.hidden = false;
+    yield* this.approach(a);
+  };
+
+  /** w walks off `dist` tiles from the player (the nearest open spot that far) and is hidden: the end of a walk-on scene */
+  Ctx.prototype.leave = function* (w, dist) {
+    const a = this.who(w), p = this.ow.player, m = this.ow.map, far = dist || 5;
+    const goals = new Set();
+    for (let y = 0; y < m.h; y++) for (let x = 0; x < m.w; x++) if (Math.abs(x - p.x) + Math.abs(y - p.y) === far && !m.solid(x, y)) goals.add(x + ',' + y);
+    const path = pathTo(this.ow, a, goals);
+    if (path) yield* this.walk(a, path);
+    a.hidden = true;
+  };
+
+  /** A pushed ore cart rolls along the rails until something stops it: the end of the line, a person, another cart, a rock.
+   *  At points (a rail tile joined three or four ways) a cart coming from the trunk takes the branch its lever is set to; from a
+   *  branch it always runs on to the trunk. Points: def.railPoints = [{x, y, trunk, a, b, flag}] (flag set = branch b).
+   *  def.onCartStop(c, cart, hit) runs when it stops; `hit` is the solid tile it ran into ({x, y}) or null. */
+  Ctx.prototype.rollCart = function* (p, d) {
+    const ow = this.ow, m = ow.map, V = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
+    let dir = d, hit = null, n = 0;
+    NP.snd.sfx('ledge');
+    while (n++ < 200) {
+      const nx = p.x + V[dir][0], ny = p.y + V[dir][1];
+      if (!m.isRail(nx, ny)) break;                                            // the end of the line
+      if (m.solid(nx, ny) || ow.actorAt(nx, ny)) { hit = { x: nx, y: ny }; break; }
+      m.moveStamp(p, nx, ny);
+      if (n % 2) NP.snd.sfx('step');
+      yield* this.wait(3);
+      const exits = m.railDirs(nx, ny).filter((e) => e !== OPP[dir]);
+      if (!exits.length) break;
+      const pt = (m.def.railPoints || []).find((q) => q.x === nx && q.y === ny);
+      if (pt && OPP[dir] === pt.trunk) dir = NP.state.flags[pt.flag] ? pt.b : pt.a;   // facing the points: the lever decides
+      else if (pt) dir = pt.trunk;                                                    // trailing through them
+      else if (!exits.includes(dir)) dir = exits[0];                                  // round a bend
+    }
+    NP.snd.sfx(hit ? 'bump' : 'door');
+    if (p.homeX === undefined) { p.homeX = p.x; p.homeY = p.y; }
+    NP.state.flags['shove:' + m.id + ':' + p.homeX + ',' + p.homeY] = p.x + ',' + p.y;
+    if (m.def.onCartStop) yield* m.def.onCartStop(this, p, hit);
   };
 
   /** A remembered scene (def.memory): warm sepia with a soft vignette, so it reads as the past. The message box is drawn after. */
@@ -293,6 +389,7 @@
       const self = this;
       const gen = (function* () {
         try { yield* f(self.ctx, npc); } catch (e) { if (e !== ABORT) throw e; }
+        if (self.restAfterScene) { self.restAfterScene = false; yield* self.toTeaHouse(false); }
       })();
       return this.spawn(gen, 'script');
     }
@@ -364,8 +461,10 @@
       const res = scene.result || { winner: 1 };
       yield* this.wait(2);
       if (res.winner === 1 && cfg.canLose) {
-        // a story fight that is allowed to go either way (rivals, Society scenes): no blackout and no lost money, the scene carries on
+        // a story fight that is allowed to go either way (rivals, Society scenes): no blackout and no lost money. The scene carries
+        // on, and when it ends you're taken to the Tea House to rest (runScript). Healed now too, so nothing can strand a fainted team.
         NP.State.healAll();
+        this.restAfterScene = true;
       } else if (res.winner === 1) {
         NP.snd.stop(0);
         yield* this.blackout(cfg);
@@ -403,6 +502,14 @@
       NP.Game.fadeTo(0, 0);
       yield* this.say('{player} is out of usable Kigu!\\p{player} blacked out...');
       st.money = Math.floor(st.money / 2);
+      yield* this.toTeaHouse(true);
+    }
+
+    /** Take the player (and her tired Kigu) to the nearest Tea House and rest them: after a blackout, and after a story fight she
+     *  lost once its scene has played out (owner's note: losing to the rival used to leave you standing there with a fainted team). */
+    *toTeaHouse(blackedOut) {
+      const st = NP.state;
+      if (!blackedOut) { this.msg.close(); NP.Game.fadeTo(1, 14); yield* this.wait(16); }
       NP.State.healAll();
       // the nearest unlocked Tea House; else the last place she rested (her bedroom at the start); else anywhere that exists,
       // so a bad or missing heal point can never leave the game stuck
@@ -411,7 +518,7 @@
       const spawns = NP.maps[id].spawns || {};
       const sp = spawns[tea ? 'door' : (hp && hp.spawn)] || spawns.door || { x: 1, y: 1, dir: 'down' };
       this.msg.close();
-      NP.Game.fadeTo(1, 0);
+      if (blackedOut) NP.Game.fadeTo(1, 0);
       this.blackBg = false;
       this.loadMap(id, sp.x, sp.y, sp.dir, { noEnter: true });
       NP.snd.play(this.musicId, { restart: true });
@@ -420,11 +527,11 @@
       yield* this.say(tea ? 'You hurried to the nearest Tea House.\\pYour Kigu were tucked in and had a good nap.' : 'You hurried back to the last place you rested.\\pYour Kigu were tucked in and had a good nap.');
     }
 
-    *wildBattle(sp, lv) {
+    *wildBattle(sp, lv, o) {
       const foe = NP.Kigu.create(sp, lv);
       const st = NP.state;
       yield* this.transitionToBattle('battle_wild');
-      const res = yield* this.runBattle({ wild: true, foe: [foe], bg: this.map.def.battleBg || 'grass', music: 'battle_wild', mood: this.weather });
+      const res = yield* this.runBattle({ wild: true, foe: [foe], bg: this.map.def.battleBg || 'grass', music: 'battle_wild', mood: this.weather, noCatch: !!(o && o.noCatch) });
       return res;
     }
 
@@ -528,6 +635,19 @@
         this.bump();
         return;
       }
+      // an ore cart on the rails: lean on it and it rolls off along the track (no Disc needed: it's on wheels)
+      const cart = this.map.cartAt(nx, ny);
+      if (cart) {
+        const m = this.map, fx = nx + dx, fy = ny + dy;
+        const free = m.isRail(fx, fy) && m.railDirs(nx, ny).includes(d) && !m.solid(fx, fy) && !this.actorAt(fx, fy);
+        if (free && (this.shoveT = (this.shoveT || 0) + 1) > 8) {
+          this.shoveT = 0;
+          this.runScript(function* (c) { yield* c.rollCart(cart, d); });
+          return;
+        }
+        if (!free) this.bump();
+        return;
+      }
       // field move Shove: walking into a loose rock pushes it one tile, if the far side is clear (needs Disc: Shove)
       const rock = this.map.shoveAt(nx, ny);
       if (rock && NP.state.bag.disc_shove) {
@@ -546,7 +666,7 @@
       }
       if (rock) {   // no Disc yet: a friendly hint, once per visit
         this.bump();
-        if (!this.shoveHint) { this.shoveHint = true; this.runScript(function* (c) { yield* c.sayT('field.shove.no', 'It\'s a big loose rock. It wobbles a little when you lean on it.\pA strong Kigu could probably Shove it out of the way.'); }); }
+        if (!this.shoveHint) { this.shoveHint = true; this.runScript(function* (c) { yield* c.sayT('field.shove.no', 'It\'s a big loose rock. It wobbles a little when you lean on it.\\pA strong Kigu could probably Shove it out of the way.'); }); }
         return;
       }
       if (!this.canEnter(p, nx, ny, d)) {

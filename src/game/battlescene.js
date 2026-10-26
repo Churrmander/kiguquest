@@ -129,7 +129,7 @@
       const foeSide = { party: cfg.foe, ai: cfg.trainer ? cfg.trainer.ai : 1 };
       if (cfg.trainer) foeSide.trainer = { name: cfg.trainer.cls + ' ' + cfg.trainer.name, class: cfg.trainer.cls };
       this.battle = new B.Battle({
-        wild: !!cfg.wild, style: st.opts.battleStyle || 'shift', rng: NP.rng,
+        wild: !!cfg.wild, noCatch: !!cfg.noCatch, style: st.opts.battleStyle || 'shift', rng: NP.rng,
         sides: [{ player: true, name: st.name, party: st.party }, foeSide],
         consume: (id) => NP.State.removeItem(id, 1),
         data: { badges: st.badges.filter(Boolean).length },
@@ -157,11 +157,12 @@
       for (const d of this.disp) if (d && d.vis && d.boxT < 1) d.boxT = Math.min(1, d.boxT + 0.1); // data boxes slide in
     }
 
-    setDisp(mon) {
+    /** e: the 'in' event, whose hp/status snapshot is what she had as she came out (mon.* is already the end of the turn) */
+    setDisp(mon, e) {
       const k = mon.kigu;
       const a = this.anchor(mon.side.index);
       this.disp[mon.side.index] = {
-        mon, k, hp: mon.hp, maxhp: mon.maxhp, name: mon.name, level: mon.level, status: mon.status, species: k.species, alt: k.alt,
+        mon, k, hp: e && e.hp !== undefined ? e.hp : mon.hp, maxhp: mon.maxhp, name: mon.name, level: mon.level, status: e && e.status !== undefined ? e.status : mon.status, species: k.species, alt: k.alt,
         x: a.x, y: a.y, offx: 0, offy: 0, sx: 1, sy: 1, pose: false, tint: null, white: 0, alpha: 0, flash: 0, vis: true, exp: NP.Kigu.expProgress(k), blink: 0, boxT: 0, sink: false,
       };
       NP.State.seen(k.species);
@@ -254,7 +255,7 @@
       const tr = this.cfg.trainer;
       if (e.initial) {
         if (side === 1) {
-          this.setDisp(mon);
+          this.setDisp(mon, e);
           if (this.cfg.wild) {
             this.disp[1].alpha = 0; this.disp[1].offx = 60;
             NP.snd.cry(mon.kigu.species);
@@ -282,7 +283,7 @@
           const land = bw ? yield* this.heroThrowBW(bw) : null;
           if (!bw && this.hero && NP.Game.opts.battleAnim !== false) yield* this.heroThrow();
           if (this.hero) { const h = this.hero; for (let i = 0; i < 18; i++) { h.x -= 7; yield; } this.hero = null; }
-          this.setDisp(mon);
+          this.setDisp(mon, e);
           const d = this.disp[0];
           if (land) yield* this.popOut(d, land);
           else {
@@ -294,7 +295,7 @@
         return;
       }
       // mid-battle arrival (message already came from the core)
-      this.setDisp(mon);
+      this.setDisp(mon, e);
       const d = this.disp[side];
       NP.snd.cry(mon.kigu.species);
       for (let i = 1; i <= 14; i++) { d.alpha = i / 14; d.offy = -10 * (1 - i / 14); yield; }

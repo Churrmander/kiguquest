@@ -268,4 +268,31 @@
     },
     topSurf: topSurface(P.n4, P.n2, P.n6, P.n3),
   });
+
+  // sun-cloth tent canvas (Gusset's big-top Salon): cream and sand-gold stripes with stitched seams, roped skirt at the foot
+  const CV = ['#fffaf0', '#f4e8d0', '#e4d0ac', '#c8ae84', '#9c8462', '#6a5442'].map(col);
+  const GD = ['#f2d896', '#d9b25f', '#b88e44', '#8a6830'].map(col);
+  wall('wall_canvas', {
+    face: (b) => {
+      for (let x = 0; x < T; x++) {
+        const gold = (x >> 3) % 2 === 1, lx = x & 7;   // 8-px stripes, the same phase on every tile and every row
+        const c = gold ? (lx === 0 ? GD[0] : lx === 7 ? GD[2] : GD[1]) : (lx === 0 ? CV[0] : lx === 7 ? CV[2] : CV[1]);
+        b.fillRect(x, 0, 1, T, c);
+      }
+      for (let y = 2; y < T; y += 4) { b.set(7, y, CV[3]); b.set(8, y + 1, CV[3]); }   // stitching down the seam
+    },
+    base: (b) => {
+      b.fillRect(0, 10, T, 1, CV[4]);
+      for (let x = 0; x < T; x++) for (let y = 11; y <= 13; y++) b.set(x, y, ((x + y) % 3) === 0 ? GD[3] : ((x + y) % 3) === 1 ? GD[1] : GD[2]);   // twisted rope
+      b.fillRect(0, 14, T, 1, CV[5]);
+      b.fillRect(0, 15, T, 1, col('#3a2a20'));   // its shadow on the floor
+    },
+    // the side walls, seen from above: the same striped canvas, with a pole along the room side
+    topSurf: (b, open) => {
+      for (let x = 0; x < T; x++) { const gold = (x >> 3) % 2 === 1; b.fillRect(x, 0, 1, T, gold ? GD[1] : CV[1]); }
+      if (open.N) { b.fillRect(0, 0, T, 1, CV[0]); }
+      if (open.E) { b.fillRect(13, 0, 2, T, CV[4]); b.fillRect(15, 0, 1, T, CV[5]); }
+      if (open.W) { b.fillRect(1, 0, 2, T, CV[4]); b.fillRect(0, 0, 1, T, CV[5]); }
+    },
+  });
 })(typeof globalThis !== 'undefined' ? globalThis : window);

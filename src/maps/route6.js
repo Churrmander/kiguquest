@@ -45,7 +45,7 @@
 
   // The road is never fenced. Three natural pinches put a Tailor across it (owner's rule: route trainers can't be skipped):
   //  1. rocky spurs run down from both shoulders and nearly meet; Gale and Ren wait in the gap
-  M.rect(9, 5, 3, 2, 'C').rect(10, 7, 2, 3, 'C').rect(9, 14, 2, 3, 'C').rect(8, 17, 4, 2, 'C');
+  M.rect(9, 5, 3, 2, 'C').rect(10, 7, 2, 3, 'C').rect(9, 15, 2, 2, 'C').rect(8, 17, 4, 2, 'C');
   //  2. a wind-bent copse crosses the ridge, with Suzu and Kip at the clearing where the road goes through
   M.rect(24, 2, 4, 3, 'T').rect(26, 5, 3, 2, 'T').rect(25, 7, 3, 3, 'T').rect(25, 14, 2, 2, 'T').rect(25, 16, 4, 2, 'T').rect(26, 18, 5, 4, 'T');
   //  3. a last rocky spine before Kite Hill, with Batten at its foot

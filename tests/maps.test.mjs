@@ -136,5 +136,18 @@ for (const id of ids) {
   }
 }
 
+// a person standing just behind a cliff (seen from the camera) is hidden by it in the 3D view, as if stuck in the wall (owner's note)
+const FRONT = [[0, 1], [-1, 0], [0, -1], [1, 0]];   // the tile between a person and the camera, for camera 0 (looks north) .. 3 (west)
+for (const id of ids) {
+  const tm = tms[id], def = NP.maps[id];
+  if (!tm || def.indoor) continue;
+  for (const n of def.npcs || []) {
+    const z = (def.cameraZones || []).find((q) => n.x >= q.x && n.x < q.x + (q.w || 1) && n.y >= q.y && n.y < q.y + (q.h || 1));
+    const [fx, fy] = FRONT[(z ? z.camera : def.camera || 0) & 3];
+    const t = tm.inBounds(n.x + fx, n.y + fy) && tm.idAt(n.x + fx, n.y + fy);
+    if (t && /^cliff|^cave_wall/.test(t)) bad(id, 'npc ' + n.id + ' at ' + n.x + ',' + n.y + ' stands right behind a cliff (' + t + '), so the 3D view hides them');
+  }
+}
+
 assert.deepEqual(problems, [], '\n' + problems.join('\n'));
 console.log('maps ok:', ids.length, 'maps checked');

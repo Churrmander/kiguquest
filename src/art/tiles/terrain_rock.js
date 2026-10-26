@@ -98,32 +98,63 @@
     },
   });
 
-  // ---- rails: two steel rails on wooden sleepers over packed dirt (rail_h runs east-west, rail_v north-south)
+  // ---- rails: two steel rails on wooden sleepers over packed dirt (rail_h runs east-west, rail_v north-south). Both are one
+  //      autotiled group, so a run turns its corners with a curve and a crossing shows both ways (owner's note: the rails didn't
+  //      join up). A lone tile keeps its own direction.
+  function railGround(b) {
+    for (let i = 0; i < 256; i++) {
+      const x = i & 15, y = i >> 4;
+      const n = hf(x >> 1, y >> 1, 211) * 0.5 + hf(x, y, 213) * 0.5;
+      b.u32[i] = n > 0.8 ? P.cf0 : n > 0.25 ? P.cf1 : P.cf2;
+    }
+  }
+  function straight(b, horiz, from, to) {
+    const put = (a, c, col) => (horiz ? b.set(a, c, col) : b.set(c, a, col));
+    // sleepers every 4px across the run
+    for (let a = 1; a < 16; a += 4) if (a >= from && a + 1 <= to) for (let c = 2; c <= 13; c++) { put(a, c, c === 13 ? P.sl3 : P.sl1); put(a + 1, c, P.sl2); }
+    // the two rails: lit top line, steel body, dark underside
+    for (let a = from; a <= to; a++) for (const r of [4, 10]) { put(a, r, P.rl0); put(a, r + 1, P.rl1); put(a, r + 2, P.rl3); }
+  }
+  // a quarter turn joining two edges: arcs round the tile corner they share (rails at the same offsets as the straights)
+  function curve(b, cx, cy) {
+    for (let y = 0; y < 16; y++) for (let x = 0; x < 16; x++) {
+      const d = Math.hypot(x + 0.5 - cx, y + 0.5 - cy), ang = Math.atan2(y + 0.5 - cy, x + 0.5 - cx);
+      const k = Math.round(Math.abs(ang) * 180 / Math.PI) % 22;
+      if (d >= 2.5 && d <= 14 && (k === 3 || k === 4)) b.set(x, y, d > 13 ? P.sl3 : k === 3 ? P.sl1 : P.sl2);
+    }
+    for (let y = 0; y < 16; y++) for (let x = 0; x < 16; x++) {
+      const r = Math.round(Math.hypot(x + 0.5 - cx, y + 0.5 - cy));
+      const col = { 12: P.rl0, 11: P.rl1, 10: P.rl3, 6: P.rl0, 5: P.rl1, 4: P.rl3 }[r];
+      if (col) b.set(x, y, col);
+    }
+  }
   function rail(horiz) {
-    return (m, f, v) => {
+    return (m) => {
       const b = K.B(T, T);
-      for (let i = 0; i < 256; i++) {
-        const x = i & 15, y = i >> 4;
-        const n = hf(x >> 1, y >> 1, 211) * 0.5 + hf(x, y, 213) * 0.5;
-        b.u32[i] = n > 0.8 ? P.cf0 : n > 0.25 ? P.cf1 : P.cf2;
+      railGround(b);
+      const N = !!(m & K.DIR.N), E = !!(m & K.DIR.E), S = !!(m & K.DIR.S), W = !!(m & K.DIR.W);
+      const h = E || W, v = N || S;
+      if (h && v && (E !== W) && (N !== S)) curve(b, E ? 16 : 0, S ? 16 : 0);   // a corner
+      else if (N + E + S + W === 3) {                                         // points: the straight through, and a turnout curving off it
+        if (E && W) { straight(b, true, 0, 15); curve(b, 16, N ? 0 : 16); }
+        else { straight(b, false, 0, 15); curve(b, E ? 16 : 0, 0); }
+      } else {
+        if (v || (!h && !horiz)) straight(b, false, 0, 15);
+        if (h || (!v && horiz)) straight(b, true, 0, 15);
       }
-      const put = (a, c, col) => (horiz ? b.set(a, c, col) : b.set(c, a, col));
-      // sleepers every 4px across the run
-      for (let a = 1; a < 16; a += 4) for (let c = 2; c <= 13; c++) { put(a, c, c === 13 ? P.sl3 : P.sl1); put(a + 1, c, P.sl2); }
-      // the two rails: lit top line, steel body, dark underside
-      for (let a = 0; a < 16; a++) for (const r of [4, 10]) { put(a, r, P.rl0); put(a, r + 1, P.rl1); put(a, r + 2, P.rl3); }
       return b;
     };
   }
-  K.terrain('rail_h', { step: 'stone', paint: rail(true) });
-  K.terrain('rail_v', { step: 'stone', paint: rail(false) });
+  K.terrain('rail_h', { group: 'rail', autotile: true, maskMode: 'ortho', step: 'stone', paint: rail(true) });
+  K.terrain('rail_v', { group: 'rail', autotile: true, maskMode: 'ortho', step: 'stone', paint: rail(false) });
 
   // ---- barrier: an indoor buffer beam for Salon puzzles (a timber rail on squat posts, banded yellow and black), on a stone
   //      floor. An autotile in its own group, so a run of it joins up, horizontal or vertical.
-  K.terrain('barrier', {
+  // floor: what the fence stands on (stone in most Salons; planks in Gusset's tent, so no stone strip runs across the boards)
+  const barrier = (floor, shade) => ({
     solid: true, autotile: true, maskMode: 'ortho', step: 'stone',
     paint: (m) => {
-      const b = NP.terrain.floor_stone ? NP.terrain.floor_stone.draw(0, 0, 0).clone() : K.B(T, T);
+      const b = NP.terrain[floor] ? NP.terrain[floor].draw(0, 0, 0).clone() : K.B(T, T);
       const E = m & K.DIR.E, Wd = m & K.DIR.W, N = m & K.DIR.N, S = m & K.DIR.S;
       const yel = K.col('#f2c230'), yel2 = K.col('#c8941c'), blk = K.col('#2a2430'), ink = K.P.ink;
       const beamH = (x0, x1) => {
@@ -137,10 +168,12 @@
       if (N || S) beamV(N ? 0 : 3, S ? 15 : 12);
       // a squat post with a shadow at the middle
       b.fillRect(5, 5, 6, 8, K.P.o3); b.fillRect(5, 5, 6, 1, K.P.o1); b.fillRect(5, 5, 1, 8, K.P.o2); b.fillRect(10, 5, 1, 8, K.P.o5);
-      b.fillRect(5, 13, 6, 1, ink); b.fillRect(4, 14, 8, 1, K.col('#7c7484'));
+      b.fillRect(5, 13, 6, 1, ink); b.fillRect(4, 14, 8, 1, K.col(shade));
       return b;
     },
   });
+  K.terrain('barrier', barrier('floor_stone', '#7c7484'));
+  K.terrain('barrier_wood', barrier('floor_wood', '#6a4a2a'));
 
   // ---- 3D: a cliff block's textures (persp_scene.js builds the geometry)
   const cache3 = new Map();

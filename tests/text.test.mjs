@@ -45,6 +45,12 @@ for (const f of files) {
     for (const re of FORBIDDEN) if (re.test(shown)) hits.push(f + ': "' + s.slice(0, 90) + '"  <- ' + re.source);
   }
 }
+// a page break written as '\p' (one backslash) in a JS string is just the letter p on screen ("it.pA strong Kigu")
+const badBreaks = [];
+for (const f of files) fs.readFileSync(path.join(ROOT, f), 'utf8').split('\n').forEach((line, i) => {
+  if (/'(?:[^'\\]|\\.)*[a-z.!?,](?<!\\)\\p[A-Z](?:[^'\\]|\\.)*'/.test(line) && !/\/\*\*|\/\//.test(line.trim().slice(0, 3))) badBreaks.push(f + ':' + (i + 1));
+});
+assert.deepEqual(badBreaks, [], 'single-backslash page breaks (write \\\\p):\n' + badBreaks.join('\n'));
 assert.ok(scanned > 500, 'scanned a plausible amount of text: ' + scanned);
 assert.deepEqual(hits, [], '\nforbidden words in player-facing text:\n' + hits.join('\n'));
 console.log('text ok:', scanned, 'string literals in', files.length, 'files');

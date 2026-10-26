@@ -75,4 +75,27 @@ console.log('>> a missing / stale heal point can no longer strand the game');
   assert.equal(r2.id, 'player_house');
 }
 
+console.log('>> losing a story fight (the rival in Seamstead): the scene plays out, then you rest at the nearest Tea House');
+{
+  const t = boot(21), { NP, G } = t;
+  const ow = NP.quickStart('Ren', 'f'), st = NP.state;
+  Object.assign(st.flags, { intro_done: true, has_starter: true, tomo_left_lab: true, rival1_done: true, rival2_done: true, badge1: true, badge2: true });
+  st.starter = 'konko'; st.rivalStarter = 'sprubun';
+  st.party.length = 0;
+  const k = NP.Kigu.create('konko', 3, { ot: 'Ren', nature: 'hardy' }); k.hp = 1; st.party.push(k);
+  st.money = 1000;
+  ow.msg.close(); ow.tasks = [];
+  ow.loadMap('seamstead', 9, 12, 'right', { noEnter: true });
+  st.visited = { seamstead: 1, seamstead_tea: 1 };
+  const said = [], say = ow.say.bind(ow);
+  ow.say = function* (text, o) { said.push(String(text)); yield* say(text, o); };
+  t.go('right', 1);
+  assert.ok(t.mash(() => G.top() === ow && t.idle() && st.flags.rival3_done && ow.map.id !== 'seamstead', 40000), 'lost to the rival, then went to rest; at ' + t.pos());
+  assert.ok(said.some((x) => /I won\? I actually won!/.test(x)), 'the rival\'s lines still play after the loss');
+  assert.ok(NP.maps[ow.map.id].teaHouse, 'resting in a Tea House: ' + ow.map.id);
+  assert.ok(said.some((x) => /Tea House/.test(x)), 'told about the rest');
+  assert.equal(st.party[0].hp, NP.Kigu.maxHp(st.party[0]), 'party rested');
+  assert.equal(st.money, 1000, 'a story loss costs no money');
+}
+
 console.log('blackout ok');

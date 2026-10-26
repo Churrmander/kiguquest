@@ -327,6 +327,8 @@
       b.fillRect(4, 6, 1, 5, col('#c87a40')); b.fillRect(11, 6, 1, 5, col('#c87a40'));     // bare copper ends
       const sp = f ? [[6, 6], [7, 8], [9, 7], [10, 9]] : [[5, 9], [7, 7], [8, 9], [10, 6]];
       for (const [x, y] of sp) { b.set(x, y, SPK[0]); b.set(x + 1, y, SPK[1]); }
+      // a hazard-striped frame painted on the floor, so you can spot the target from across the room
+      for (let i = 1; i < 15; i++) for (const [x, y] of [[i, 1], [i, 14], [1, i], [14, i]]) b.set(x, y, ((x + y) >> 1) % 2 ? col('#f4d040') : col('#3a2a30'));
       return b;
     },
   });

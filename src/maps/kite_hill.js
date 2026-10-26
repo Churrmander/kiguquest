@@ -213,7 +213,7 @@
   // the patch quest (6.5): four favours
   M.trainer('kh_pilot', 15, 12, 'pilot', 'down', { cls: 'Pilot', name: 'Skye', sight: 0, reward: 16, ai: 2, team: [['foldling', 33], ['whirligig', 33], ['flumble', 34]],
     intro: 'A patch? Sure, if you can beat me. Grounded pilots get very bored, you know.', win: 'Okay, okay! The patch is yours.', after: 'Tell Dart I want a go in her balloon when it flies.' });
-  M.npc('pilot_patch', 16, 13, 'skier', 'up', null, { hideIf: 'patch_pilot', note: 'gives the sky-blue patch once Skye is beaten', script: function* (c) {
+  M.npc('pilot_patch', 17, 12, 'skier', 'down', null, { hideIf: 'patch_pilot', note: 'gives the sky-blue patch once Skye is beaten', script: function* (c) {
     if (!c.flag('rival5_done')) { yield* c.sayT('kite_hill.skye.wait', 'Skye\'s co-pilot: We\'re just standing about until the balloons fly again.'); return; }
     if (!L.done(c, 'kite_hill', 'kh_pilot')) { yield* c.sayT('kite_hill.skye.first', 'Skye\'s co-pilot: Skye has a spare patch. Battle her and she\'ll hand it over. She loves a battle.'); return; }
     yield* c.sayT('kite_hill.skye.give', 'Skye\'s co-pilot: Skye said you won it fair and square. Here\'s the patch.');
@@ -221,16 +221,18 @@
   } });
   M.npc('goggles', 36, 26, 'hiker', 'left', null, { script: function* (c) {
     if (c.flag('patch_goggles')) { yield* c.sayT('kite_hill.goggles.after', 'Thanks again for my goggles. I can see the clouds properly now.'); return; }
-    if (!c.flag('found_goggles')) { yield* c.sayT('kite_hill.goggles.ask', 'Have you seen my goggles? The wind snatched them right off my head.\\pThey went over the cliff towards the airfield. If you find them, I\'ll give you a patch.'); return; }
+    if (!c.flag('found_goggles')) { yield* c.sayT('kite_hill.goggles.ask', 'Have you seen my goggles? The wind snatched them right off my head.\\pThey blew up the hill, over by the hangar on the airfield. If you find them, I\'ll give you a patch.'); return; }
+    delete c.state.bag.flying_goggles;
     yield* c.sayT('kite_hill.goggles.give', 'My goggles! You found them! Here, take this patch. It\'s got a goggle print on it, so that seems right.');
     yield* gotPatch(c, 'patch_goggles');
   } });
-  M.interact(3, 11, function* (c) {
-    if (c.flag('found_goggles')) return;
+  // the lost goggles lie in plain sight at the edge of the long grass by the hangar (owner's playtest: they used to be an invisible
+  // spot in the tall grass, so nobody could find them)
+  M.def.props.push({ id: 'goggles_lost', x: 6, y: 12, icon: 'item:flying_goggles', hideIf: 'found_goggles', note: 'the lost goggles (airfield, by the long grass)', script: function* (c) {
     c.set('found_goggles');
-    NP.snd.sfx('pickup');
-    yield* c.sayT('kite_hill.goggles.found', 'Tangled in the long grass, there\'s a pair of flying goggles. Someone must have lost them in the wind.');
-  }, 'the lost goggles (in the airfield grass)');
+    yield* c.sayT('kite_hill.goggles.found', 'Tangled in a tuft of grass, there\'s a pair of flying goggles. Someone must have lost them in the wind.');
+    yield* c.giveItem('flying_goggles', 1, { found: true });
+  } });
   M.npc('nervous', 13, 8, 'schoolgirl', 'down', null, { script: function* (c) {
     if (c.flag('patch_nerves')) { yield* c.sayT('kite_hill.nervous.after', 'I\'m going to fly as soon as the balloons are free. Probably. Definitely! Probably.'); return; }
     yield* c.sayT('kite_hill.nervous.1', 'I passed my pilot\'s test last week, and now I\'m scared to go up. What if the wind doesn\'t like me?');

@@ -67,10 +67,11 @@
   M.stamp('thread_post', 2, 3, 'yellow');
   M.interact(2, 3, proud('proud_yellow', ['Another post. It stands up very straight, as if it knows you\'re looking.\\pThe yellow thread just goes round and round it. You\'ve come the wrong way.']), 'proud post (yellow wrong way)');
   // the stuck slab cart: blocks the middle shelf until it's pushed, then sits in the alcove to the north
-  M.stamp('slab_cart', 20, 10, null, { goneIf: 'cart_pushed' }).stamp('slab_cart', 20, 11, null, { goneIf: 'cart_pushed' });
+  // (the carter stands at the north end, against the cliff behind him, so the near cliff never hides him: owner's note)
+  M.stamp('slab_cart', 20, 11, null, { goneIf: 'cart_pushed' }).stamp('slab_cart', 20, 12, null, { goneIf: 'cart_pushed' });
   M.rect(20, 7, 4, 2, 'u');                                           // the alcove the cart rolls into
   M.stamp('slab_cart', 20, 7, null, { showIf: 'cart_pushed' });
-  M.npc('carter', 20, 12, 'grunt_m', 'left', null, { script: cart, note: 'stuck slab cart (help push or battle); with the cart he blocks the shelf' });
+  M.npc('carter', 20, 10, 'grunt_m', 'left', null, { script: cart, note: 'stuck slab cart (help push or battle); with the cart he blocks the shelf' });
 
   // the road north to Route 5 and Shibuyarn: three Pressers stand on it until the Terra Button (Gusset "has a word" with them)
   M.rect(26, 0, 3, 3, 'u');
