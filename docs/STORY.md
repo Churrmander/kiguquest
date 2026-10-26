@@ -82,11 +82,11 @@ object onesies that grow more elaborate as they evolve). A person who forms a **
 **Master Tailor**, who gives a **Button**), and crowns the Weave Guardian at the **Grand Atelier**. **The Needles have vanished**, and the
 **Starch Society**, which everyone trusted, stepped into the gap they left. The Society believes the world should be pressed flat.
 
-**Timeline.** *Before the land:* Astara and Anwela, the Goddesses of Order and Nature, weave a magic tapestry to hold the **Unweaving**
-(working name, §7a), who threatened to consume the universe. *Long ago:* they weave Tsumugi as the tapestry's opposite, to keep him
+**Timeline.** *Before the land:* Astara and Anwela, the Goddesses of Order and Nature, weave a magic tapestry to hold **Datod the Weave-Eater**
+(§7a), who threatened to consume the universe. *Long ago:* they weave Tsumugi as the tapestry's opposite, to keep him
 contained. *Thirty years ago:* **the Great Snarl** at Loomhaven's Lantern Festival (§6); Hester's ribbon wardens grow into the **Order of
 Ribbons**, a respected Tailor organisation.
-*A few years ago (proposed: five):* the Needles vanish, the Order's leader is tricked by the Unweaving, and the Order reorganises
+*A few years ago (proposed: five):* the Needles vanish, the Order's leader is tricked by Datod, and the Order reorganises
 into the **Starch Society**, which fills the power vacuum. *Now:* the hero is 12 or 13, turns apprentice, and the Society is weeks from its big day: **this year's Lantern Festival.**
 
 ## 4. The cast
@@ -177,16 +177,16 @@ Tailor patrols. The idea grew: identical ribbons, identical costumes, identical 
 Her younger sister **Bobbin** went the other way: if wild threads can tangle, study them. They have not spoken since.
 
 **How it went wrong (owner, 2026-10-26).** For most of those thirty years the Order of Ribbons really was benevolent. Then the Needles
-vanished (§7b), and around the same time the Order's leader, Damask, was **tricked by the Unweaving** (how is still open, §15). She
+vanished (§7b), and around the same time the Order's leader, Damask, was **tricked by Datod** (how is still open, §15). She
 **reorganised the Order from top to bottom into the Starch Society**: new uniforms, new rules, new name. Tailors who had nobody else
 to ask started asking the Society. It was organised, polite and already everywhere, so it filled the power vacuum almost without trying.
 That is why there are Society inspectors on bridges in Chapter 1 and why nobody argues with them.
 
 **Two plans, one Society.** *What the members believe:* they are simply making the world more orderly. Tidy roads, no tangles, nobody
-lost. Pressers and most Pleats are sincere about this. *The real plan:* press Tsumugi flat and **merge it with the tapestry to free the
-Unweaving**. Proposed: only Damask knows the whole of it; the Pleats each know one piece.
+lost. Pressers and most Pleats are sincere about this. *The real plan:* press Tsumugi flat and **merge it with the tapestry to free
+Datod**. Proposed: only Damask knows the whole of it; the Pleats each know one piece.
 
-**The lie they were told.** The Unweaving's story, which the leadership believes and teaches, is that **the seamstresses are the bad
+**The lie they were told.** Datod's story, which the leadership believes and teaches, is that **the seamstresses are the bad
 ones**: they locked him in the tapestry to keep his power for themselves, and freeing him is a rescue. Damask believed it because it
 gave her fear a purpose. They have been lied to, and only the top of the Society is passing the lie on.
 
@@ -194,7 +194,7 @@ gave her fear a purpose. They have been lied to, and only the top of the Society
 carries a needle threaded with **Everspool** silk as the badge of the office (proposed), which is why the Society has a piece of the
 Everspool at all. Proposed: she held the seat for about twenty years, then gave it up to run the Order of Ribbons full time, and kept her
 thread. Sharps, the youngest Needle, took her seat. Because the tapestry is woven of the same thread, the loose thread found her through
-it, and it is also how the Unweaving reached the other Needles. She had already left, so she did not vanish with them; she was simply the
+it, and it is also how Datod reached the other Needles. She had already left, so she did not vanish with them; she was simply the
 one he could still talk to. Her Needle name was **Chenille** (owner approved 2026-10-26), a real needle like the others.
 
 **Madame Damask.** Tall, iron-grey bun, steam-iron brooch, exquisitely polite ("Do mind the creases, dear"). Never raises her voice. Pours tea. Her weakness: she has not sewn a stitch since
@@ -217,7 +217,7 @@ one keeps folding your shirt while you battle. Class key `presser`. **Crisp & Co
 ## 7. The legend, the twins, the Needles and the Weave Guardian
 
 **The true beginning (owner, 2026-10-26; nobody alive tells it this way).** Astara and Anwela were the **Goddesses of Order and Nature**
-(proposed: Astara is Order, the steady straight thread; Anwela is Nature, the restless thread that wanders across). The Unweaving
+(proposed: Astara is Order, the steady straight thread; Anwela is Nature, the restless thread that wanders across). Datod
 threatened to consume the universe, so they wove a **magic tapestry** to contain him, using the **Everspool** (owner confirmed 2026-10-26). Then they wove **Tsumugi as the tapestry's
 opposite**, so he would be better contained: the tapestry is tight, flat and still, and Tsumugi is loose, patched and full of choices.
 As long as the two stay different, they cannot become one cloth, and he cannot get out.
@@ -250,13 +250,13 @@ the tension slackens and colour returns.
 always wants to see what's over there. At the Works they are held in two tension frames. **The hero can free only one** (cut her thread with the Disc: Snip Poppy gave you — the first gift pays off):
 the one freed takes the hero's thread in her sleeve and joins the party (suggest Lv 45ish). Damask takes the other to Loomhaven. The text supports both (`{twin}` / `{twin2}`; story keys end `.warpa` / `.weftie`). The rival stands beside the hero for this choice: *"Whichever you pick, I have got your back."*
 
-### 7a. The Unweaving (working name) and the magic tapestry
+### 7a. Datod the Weave-Eater and the magic tapestry
 
-**What it is (owner, 2026-10-26).** The real enemy of the game is **not a Kigu**. It is a non-Kigu entity that is the antithesis of the
+**What it is (owner, 2026-10-26).** The real enemy of the game is **not a Kigu**. He is a non-Kigu force that is the antithesis of the
 legendary seamstresses: they tie threads together and let people and Kigu choose each other, and he pulls threads apart until there is
-nothing left to choose. Left loose, he would consume the universe (owner). Pronoun: he. It has no costume and no Sketchbook page. **It cannot be bonded
+nothing left to choose. Left loose, he would consume the universe (owner). Pronoun: he. He has no costume and no Sketchbook page. **He cannot be bonded
 with**: a Bond Spool simply will not take, and the battle text says so plainly. **The Everspool cannot sway it** either. The Everspool's
-thread can calm any heart that is able to choose, which is how the first Stitch Bond was tied; the entity has nothing to choose with,
+thread can calm any heart that is able to choose, which is how the first Stitch Bond was tied; Datod has nothing to choose with,
 so the thread slides off.
 
 **The tapestry.** Before Tsumugi existed, the goddesses could not unmake him, so they wove a magic tapestry around him, and then wove
@@ -267,12 +267,15 @@ it, the same way the goddesses talk through Kigu, because it is the same thread.
 how he still gives the Society its orders. (Proposed: Damask keeps it wound on a plain white spool in her brooch case, and the Society's
 interest in the Everspool in Chapter 2 is really an attempt to find more of the same thread.) Its pull is what made the Needles vanish (proposed: they were drawn into the tapestry, §7 below).
 
-**Name and look:** open, see §15. Working name in docs only: "the Unweaving". It must not look like a Kigu girl in a costume.
+**Name (owner, 2026-10-26):** **Datod the Weave-Eater**. *Datod* is Welsh for "to undo, to untie", matching the goddesses' Welsh names;
+say it "DAH-tod". Always hyphenate Weave-Eater. **Look (proposed):** he is a force, not a body: a moving hole in the weave. Colours drain
+toward it and threads curl off its edges as if they are being pulled in. In battle he is a tear in the background itself, not a sprite on a
+platform. He must never look like a Kigu girl in a costume.
 
 ### 7b. The Needles and the Global Tailor's Association
 
 **The Needles lead the Global Tailor's Association** (owner, 2026-10-26), the authority over all Tailors everywhere. **They vanished
-because of the entity's activity**, and the Starch Society filled the power vacuum (§6). Proposed way to keep the Grand Atelier fight
+because of Datod's activity**, and the Starch Society filled the power vacuum (§6). Proposed way to keep the Grand Atelier fight
 intact: three of the Four Needles (Bodkin, Darner and Tapestry) were drawn into the tapestry; Sharps was away on the road and escaped,
 which is why he has been wandering Tsumugi as "Mr. Sharp" ever since, looking for them and scouting for the Guild. When the tapestry is
 broken open after the climax, the three come home, and the Four Needles sit at the Grand Atelier again.
@@ -320,7 +323,7 @@ the slabs are Press plates. *Scenes:* `desert_*`, `rival4`, `script.gusset`.
 **Ch. 7 — Woolen Peak (Salon 6, Frost).** Snow, knit-everything. Purl's evidence: sheep-Kigu gone quiet, the old mill lit all night. He knits you a scarf. *Scenes:* `script.purl`, `mill_watch`.
 **Ch. 8 — The Starch Works.** Infiltration in a delivery cart (Mimi drives). Pleat Calender ("Right on schedule"). The Tension Hall: the twins in their frames. **Choose which twin to free.** Damask on the speaker:
 "Bring her to Loomhaven, Calender. It is nearly time." The rival finds their dad. *Scenes:* `works_*`, `twin_choice`.
-**Ch. 9 — Loomhaven (Salon 7, Spook) and the Great Loom.** *(Lore beats 2026-10-26: Damask learns at the Loom that she was misled; the entity
+**Ch. 9 — Loomhaven (Salon 7, Spook) and the Great Loom.** *(Lore beats 2026-10-26: Damask learns at the Loom that she was misled; Datod
 is still bound but no longer hidden, and it becomes the end-game threat. Exact rework open, see §15.)* An old harbour city hung with lanterns for the festival; murals of the legend; Rue's Lost & Found and the thimble. **Rival #6** ("If you can't beat me you can't beat her").
 **The climax:** the Lantern Festival; Damask at the Great Loom with the other twin; the battle; she starts the Press anyway; white spreads; Bobbin arrives ("Hester."); the hero returns the thimble; the
 hero braids the eight Button-threads and ties the twins together; the Press slackens; colour returns; Mimi and the townsfolk with buckets. Damask sits down. Nobody is taken away in handcuffs; she is given tea. *Scenes:* `loom_*`, `script.rue`.
@@ -328,7 +331,7 @@ hero braids the eight Button-threads and ties the twins together; the Press slac
 **Ch. 11 — The Last Seam** (BIBLE working name: Victory Road — that is a real-franchise place-name, so in text it is **the Last Seam**; see §14). **Rival #7** in the last pass, the friendly final fight.
 **Ch. 12 — The Grand Atelier.** *(Lore beats 2026-10-26: the seamstresses speak through your lead Kigu here. The Needles have come home from
 the tapestry, already knowing the hero through the Kigu and the Seamstresses, and challenge them formally for the title of Weave Guardian.
-Where the entity is faced is still open, see §15.)* The Four Needles (Bodkin, Darner, Tapestry, Sharps — the peddler, finally in no disguise); the Weave Guardian; the Hall of Fame (we call it the Wall of Stitches); the twins weave the last seam across
+Where Datod is faced is still open, see §15.)* The Four Needles (Bodkin, Darner, Tapestry, Sharps — the peddler, finally in no disguise); the Weave Guardian; the Hall of Fame (we call it the Wall of Stitches); the twins weave the last seam across
 the sky; credits. *Post-story:* the Press becomes a festival steamer; Damask runs the Neatness Committee ("Wrinkles are permitted in Tsumugi, except on Tuesdays"); Poppy pours tea for two sisters.
 
 ## 9. Recurring jokes and motifs
@@ -386,7 +389,7 @@ Every Tea House maid opens with a variation of "Please rest your Kigu... and you
 Dahlia and Draco are childhood friends from next-door houses in Button Town; the rival is always the other one. The Snarl was 30 years ago at the Loomhaven Lantern Festival. Hester Bobbin (Madame Damask) is ~60; Prof. Bobbin ~57; Sashiko ~80. The Everspool is in the Spindle Shrine. The Society was a ribbon-warden club, then the Order of Ribbons (a respected Tailor organisation), before it was the Starch Society. Astara and Anwela are the Goddesses of Order and Nature; they wove the tapestry first and Tsumugi second, as its opposite.
 Nobody in the game dies. Pressed Kigu are cured by Soft Rinse (Mimi's invention) plus time. The hero's jacket ends with eight Buttons; Buttons are sewn on with the Master's thread. Kigu choose Tailors; the word "captured" is never used.
 Tea Houses everywhere serve cocoa. The Starch Society's mantra is "Flat is fair." and its motto is "Perfection is just the beginning." (verbatim).
-The Needles lead the Global Tailor's Association and vanished because of the entity; the Society filled the gap. The Society was benevolent
+The Needles lead the Global Tailor's Association and vanished because of Datod; the Society filled the gap. The Society was benevolent
 before its leaders found the tapestry and were misled. The legendary seamstresses (Astara and Anwela) speak through Kigu; they became Kigu by weaving Kigu with the Everspool. The tapestry is Everspool thread, and the big bad speaks to the Society through one loose thread of it. The big bad is
 **not a Kigu**: it cannot be bonded with and the Everspool cannot sway it. The rival's dad stays pressed until Chapter 8. The hero's Mom knows more than she says (she has never mentioned why she stitches her hems with a double knot — the Loomhaven way).
 
@@ -411,7 +414,7 @@ Summary and recommendations: `/mnt/project-files/story/lore-beats-2026-10-26.md`
 is a suggestion until the owner picks.
 
 0. ~~New names for the goddesses~~ Answered: **Astara** (Order, was Astara) and **Anwela** (Nature, was Anwela). Code rename still to do.
-1. The entity's name and look.
+1. ~~Datod's name~~ Answered: Datod the Weave-Eater. Still open: approve the proposed look (§7a).
 2. ~~Who trapped it~~ Answered 2026-10-26: the goddesses wove the tapestry to contain him.
 2a. ~~How the Order's leader was tricked.~~ Answered 2026-10-26: through a loose thread of the tapestry. Still open: where it was found.
 2b. ~~Eternal Spool?~~ Answered: it is the Everspool, and the name stays.
@@ -420,8 +423,8 @@ is a suggestion until the owner picks.
 5. The Guild and the Association: one body or two.
 6. Which legendaries count as the "seamstresses".
 7. The Needle called Tapestry and the magic tapestry share a name.
-8. Where and how the entity is faced, since it cannot be bonded or swayed.
-9. Whether the entity caused the Great Snarl.
+8. Where and how Datod is faced, since he cannot be bonded or swayed.
+9. Whether Datod caused the Great Snarl.
 10. ~~Whether Damask is the leader who was tricked~~ Answered: yes, and she is an ex-Needle. Still open: who else knows the real plan, her
     Needle name (proposed Chenille), how long she sat and why she left.
 10a. ~~"Woven Champion"~~ Answered: **Weave Guardian** is the champion title, earned by beating the Four Needles and the reigning Weave Guardian, Sashiko.
