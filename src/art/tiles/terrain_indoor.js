@@ -268,4 +268,26 @@
     },
     topSurf: topSurface(P.n4, P.n2, P.n6, P.n3),
   });
+
+  // sun-cloth tent canvas (Gusset's big-top Salon): cream and sand-gold stripes with stitched seams, roped skirt at the foot
+  const CV = ['#fffaf0', '#f4e8d0', '#e4d0ac', '#c8ae84', '#9c8462', '#6a5442'].map(col);
+  const GD = ['#f2d896', '#d9b25f', '#b88e44', '#8a6830'].map(col);
+  wall('wall_canvas', {
+    face: (b, v) => {
+      for (let x = 0; x < T; x++) {
+        const gold = ((x >> 3) + v) % 2 === 1, lx = x & 7;
+        const c = gold ? (lx === 0 ? GD[0] : lx === 7 ? GD[2] : GD[1]) : (lx === 0 ? CV[0] : lx === 7 ? CV[2] : CV[1]);
+        b.fillRect(x, 0, 1, T, c);
+      }
+      for (let y = 2; y < T; y += 4) { b.set(7, y, CV[3]); b.set(8, y + 1, CV[3]); }   // stitching down the seam
+    },
+    base: (b) => {
+      b.fillRect(0, 11, T, 1, CV[4]);
+      b.fillRect(0, 12, T, 2, CV[3]);
+      for (let x = 1; x < T; x += 5) b.fillRect(x, 12, 2, 2, GD[3]);   // the rope lacing
+      b.fillRect(0, 14, T, 1, CV[4]);
+      b.fillRect(0, 15, T, 1, CV[5]);
+    },
+    topSurf: topSurface(CV[3], CV[1], CV[5], CV[2]),
+  });
 })(typeof globalThis !== 'undefined' ? globalThis : window);

@@ -3,7 +3,7 @@
  *  thread_post (1x1, a post with a coloured thread knotted on; red / blue / yellow / green)
  *  slab_cart (2x1, a Society cart loaded with pale pressing slabs)   slab_stack (1x1)
  *  ore_cart (1x1, empty / full)    lever (1x1, track switch: left / right)    buffer (1x1, end-of-track buffer with a sign)
- *  cave_mouth (3x2, a timbered tunnel entrance; door in the middle of the bottom row)   scarf_nest (3x2 floor, the sand cave's nest)   nest_rim (its front rim, drawn over the sleepers)
+ *  salon_tent (7x5, the big-top Salon at the Quarry)   cave_mouth (3x2, a timbered tunnel entrance; door in the middle of the bottom row)   scarf_nest (3x2 floor, the sand cave's nest)   nest_rim (its front rim, drawn over the sleepers)
  * Same rules as every stamp: lit from the top-left, 1px ink outline from S.omap, a soft contact shadow last. */
 (function (root) {
   'use strict';
@@ -53,6 +53,72 @@
       b.fillRect(3, 42, 2, 2, P.o3); b.fillRect(59, 42, 2, 2, P.o3);
       K.outer(b, ink());
       K.shadow(b, 32, 44, 26, 3);
+      return b;
+    },
+  });
+
+  // ============================================================================================ salon_tent (7x5): a big-top Salon
+  // Gusset's Salon in the desert (owner's sun-cloth idea: "the Salon, which is a big tent out in the open desert"). A round marquee
+  // in the badge colour and sun-cloth cream: a striped bell roof on a centre pole, a scalloped valance, striped walls, and the doorway
+  // in the middle of the bottom row with its flaps tied back and lamplight inside. Same footprint and door column as the stone salon.
+  const SCISSOR_ROWS = ['..x.....x..', '..xx...xx..', '...xx.xx...', '....xxx....', '.....o.....', '....xxx....', '..xx.x.xx..', '.x..x.x..x.', '.x..xxx..x.', '..xx...xx..'];
+  K.stamp('salon_tent', {
+    w: 7, h: 5, rise: 24, solid: ['#######', '#######', '#######', '#######', '###D###'], variants: Object.keys(S.TYPE_COLORS),
+    paint: (v) => {
+      const b = K.B(112, 104);
+      const r = S.ramp6(S.TYPE_COLORS[v]);
+      const RED = [col('#e85a50'), col('#b83a3a'), col('#7a2228')];
+      const cream = (u) => (u < 0.18 ? P.cn0 : u < 0.6 ? P.cn1 : u < 0.86 ? P.cn2 : P.cn3);
+      const band = (u) => (u < 0.18 ? r[1] : u < 0.6 ? r[2] : u < 0.86 ? r[3] : r[4]);
+      // ---- the walls: vertical stripes, lit from the left, a darker skirt where they meet the sand
+      for (let y = 50; y <= 100; y++) for (let x = 9; x <= 102; x++) {
+        const u = (x - 9) / 93, stripe = Math.floor((x - 9) / 9) % 2;
+        let c = stripe ? band(u) : cream(u);
+        if (y >= 96) c = stripe ? r[4] : P.cn3;
+        b.set(x, y, c);
+      }
+      // ---- the roof: a bell from the pole top down to the eaves, striped like an umbrella
+      for (let y = 10; y <= 48; y++) {
+        const t = (y - 10) / 38, half = 5 + 49 * Math.pow(t, 0.62);
+        for (let x = Math.round(56 - half); x <= Math.round(56 + half); x++) {
+          const u = (x - (56 - half)) / (2 * half), seg = Math.floor(u * 10) % 2;
+          let c = seg ? band(u) : cream(u);
+          if (t > 0.08 && Math.abs(((u * 10) % 1) - 0.5) > 0.47) c = seg ? r[4] : P.cn3;      // seam between the gores
+          b.set(x, y, c);
+        }
+      }
+      // ---- scalloped valance at the eaves, red and cream
+      for (let i = 0; i < 12; i++) {
+        const x0 = 4 + i * 9, c = i % 2 ? RED : [P.cn1, P.cn2, P.cn3];
+        for (let x = x0; x < x0 + 9 && x <= 107; x++) {
+          const dx = (x - x0 - 4) / 4.5, drop = Math.round(Math.sqrt(Math.max(0, 1 - dx * dx)) * 5);
+          for (let y = 47; y <= 50 + drop; y++) b.set(x, y, y === 47 ? c[0] : y > 49 + drop - 1 ? c[2] : c[1]);
+        }
+      }
+      // ---- pole, pennant, and the ball on top
+      b.fillRect(55, 0, 2, 12, P.o3); b.vline(55, 0, 12, P.o1);
+      b.fillRect(54, 0, 4, 2, P.yl2 || col('#f4d040'));
+      for (let i = 0; i < 6; i++) b.vline(57 + i, 2 + (i >> 1), 6 - i, RED[i < 3 ? 0 : 1]);
+      // ---- the doorway: an arch, flaps tied back, lamplight inside, and a strip of rug at the threshold
+      for (let y = 60; y <= 101; y++) for (let x = 45; x <= 66; x++) {
+        const dx = (x + 0.5 - 56) / 11, dy = (y - 70) / 11;
+        if (y >= 70 || dx * dx + dy * dy <= 1) b.set(x, y, y < 76 ? col('#5a3420') : y < 88 ? col('#7a4a28') : col('#4a2a18'));
+      }
+      for (let y = 62; y <= 101; y++) { const w = Math.round((y - 62) * 0.2); b.fillRect(45 - w, y, 3, 1, P.cn1); b.set(44 - w, y, P.cn0); b.fillRect(65 + w, y, 3, 1, P.cn3); }
+      b.fillRect(43, 80, 3, 2, RED[0]); b.fillRect(67, 80, 3, 2, RED[0]);                  // tie-backs
+      b.fillRect(52, 74, 8, 6, col('#ffd860')); b.fillRect(53, 75, 6, 4, col('#fff0b0'));   // a lantern glowing inside
+      b.fillRect(49, 96, 14, 4, RED[1]); b.hline(49, 96, 14, RED[0]);
+      // ---- the Salon banner over the door: badge colour with the scissors mark
+      b.fillRect(44, 52, 24, 2, P.o4); b.fillRect(44, 52, 24, 1, P.o2);
+      b.fillRect(47, 54, 18, 13, r[2]); b.fillRect(47, 54, 2, 13, r[1]); b.fillRect(63, 54, 2, 13, r[3]);
+      for (let yy = 64; yy <= 66; yy++) for (let xx = 47; xx < 65; xx++) if (Math.abs(xx - 55.5) < (yy - 63) * 2.4) b.set(xx, yy, 0);
+      b.blit(K.spr(SCISSOR_ROWS, { x: r[4], o: r[4] }), 51, 55);
+      b.blit(K.spr(SCISSOR_ROWS, { x: P.cn0, o: col('#f4d040') }), 50, 54);
+      // ---- guy ropes out to pegs in the sand
+      b.line(8, 52, 1, 98, P.o4); b.line(103, 52, 110, 98, P.o4);
+      b.fillRect(0, 98, 3, 3, P.o3); b.fillRect(109, 98, 3, 3, P.o3);
+      K.outer(b, ink([[r, r[5]], [RED, RED[2]]]));
+      K.shadow(b, 56, 101, 50, 3);
       return b;
     },
   });

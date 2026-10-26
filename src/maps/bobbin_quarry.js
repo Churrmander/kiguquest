@@ -57,7 +57,7 @@
   M.rect(28, 19, 5, 5, ';');
 
   M.building('cave_mouth', 4, 3, null, 'tunnel', 'quarry_tunnels', { toDoor: null, note: 'into the tunnels' });
-  M.building('salon', 14, 2, 'terra', 'salon', 'quarry_salon');
+  M.building('salon_tent', 14, 2, 'terra', 'salon', 'quarry_salon', { note: 'Gusset\'s Salon: a big striped tent (owner\'s sun-cloth quest idea)' });
   M.building('house_s', 26, 3, 'gray', 'hut', 'quarry_hut', { note: 'Gusset\'s hut' });
   M.building('tea_house', 5, 10, null, 'tea', 'quarry_tea');
   M.building('general_store', 23, 10, null, 'store', 'quarry_store');
