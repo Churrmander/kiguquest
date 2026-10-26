@@ -30,8 +30,8 @@
   }
   NP.scripts.gusset = gusset;
 
-  const M = L.room({ id: 'quarry_salon', name: 'Bobbin Quarry Salon', w, h, doorX: 5, floor: 'floor_stone', wall: 'wall_canvas', music: 'town_thimble', battleBg: 'gym',
-    exit: { to: 'bobbin_quarry', door: 'salon' }, legend: { B: 'barrier', r: 'rail_h', v: 'rail_v' } });
+  const M = L.room({ id: 'quarry_salon', name: 'Bobbin Quarry Salon', w, h, doorX: 5, floor: 'floor_wood', wall: 'wall_canvas', music: 'town_thimble', battleBg: 'gym',
+    exit: { to: 'bobbin_quarry', door: 'salon' }, legend: { B: 'barrier_wood', r: 'rail_h', v: 'rail_v' } });
   // the three rail barriers (rows 12, 8, 4) and the walls that box in each siding
   M.rect(1, 12, 11, 1, 'B').rect(1, 8, 11, 1, 'B').rect(1, 4, 11, 1, 'B');
   M.rect(9, 9, 1, 3, 'B');                                        // siding 1 (east, rows 9-11) walled off from band 2

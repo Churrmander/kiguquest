@@ -1,5 +1,5 @@
 /* Route 5 — the Pylon Road: the top of the Dust Bowl -> Shibuyarn. The desert gives way to scrub and then meadow as the road climbs
- * north beside a line of humming power pylons. Levels 27-30. First wild Coili and Glowli (Glowli mostly at the far end, near the city).
+ * north beside a line of humming power pylons. Levels 27-30. First wild Boingo and Glowgrub (Glowgrub mostly at the far end, near the city).
  * Story: a Presser is unspooling cable along the pylons "for maintenance" (it runs north to the city, and down into the cellar under
  * the station: the hook for the Spark Cellar). Five Tailors, the twins as two battles side by side. */
 (function (root) {
@@ -43,20 +43,20 @@
   M.spawn('south', 13, 48, 'up').spawn('north', 13, 2, 'down');
   M.edge('s', 12, 14, 'dust_bowl', 'north').edge('n', 12, 14, 'shibuyarn', 'south');
 
-  M.enc('grass', [['coili', 27, 29, 26], ['peepi', 26, 28, 18], ['sparkin|mittsy', 27, 29, 16], ['jerbi|nibbi', 26, 28, 14], ['glowli', 27, 29, 10], ['skorpi|peepi', 27, 28, 6], ['chippi|nibbi', 26, 28, 10]]);
+  M.enc('grass', [['boingo', 27, 29, 26], ['chirpadee', 26, 28, 18], ['scurrent|kittabra', 27, 29, 16], ['dunehop|nibblit', 26, 28, 14], ['glowgrub', 27, 29, 10], ['stingle|chirpadee', 27, 28, 6], ['chiseltail|nibblit', 26, 28, 10]]);
 
   // ---- the five Tailors
-  M.trainer('r5_t1', 11, 41, 'scientist', 'right', { cls: 'Scientist', name: 'Volta', sight: 3, reward: 15, ai: 2, team: [['coili', 27], ['sparkin|mittsy', 28]],
+  M.trainer('r5_t1', 11, 41, 'scientist', 'right', { cls: 'Scientist', name: 'Volta', sight: 3, reward: 15, ai: 2, team: [['boingo', 27], ['scurrent|kittabra', 28]],
     intro: 'The pylons are humming in B flat today. Usually it\'s C. Something is pulling on the line, and I want to know what!', win: 'You\'re a lot more charged up than the pylons.', after: 'The hum drops every time the city browns out. I\'ve written it all down. Nobody has asked to read it.' });
-  M.trainer('r5_t2', 15, 40, 'courier', 'left', { cls: 'Courier', name: 'Zed', sight: 3, reward: 14, ai: 1, team: [['jerbix|nibbi', 28], ['peepi', 27]],
+  M.trainer('r5_t2', 15, 40, 'courier', 'left', { cls: 'Courier', name: 'Zed', sight: 3, reward: 14, ai: 1, team: [['jerbix|nibblit', 28], ['chirpadee', 27]],
     intro: 'I deliver parcels to Shibuyarn faster than anyone! I also battle faster than anyone. Ready? Too slow!', win: 'Okay, you were faster. Please don\'t tell my boss.', after: 'The city\'s lifts stop when the lights go out. I\'ve carried a fridge up nine floors. Twice.' });
-  M.trainer('r5_t3', 7, 22, 'twins_a', 'right', { cls: 'Twins', name: 'Ami', sight: 3, reward: 12, ai: 1, team: [['glowli', 27], ['peepi', 27]],
+  M.trainer('r5_t3', 7, 22, 'twins_a', 'right', { cls: 'Twins', name: 'Ami', sight: 3, reward: 12, ai: 1, team: [['glowgrub', 27], ['chirpadee', 27]],
     intro: 'Ami: We\'re twins! I\'m the one who battles first, and Yumi battles second. That\'s the rule.', win: 'Ami: Yumi, it\'s your turn! Get them!', after: 'Ami: We tried battling at the same time once. It got very confusing.' });
-  M.trainer('r5_t4', 11, 22, 'twins_b', 'left', { cls: 'Twins', name: 'Yumi', sight: 3, reward: 12, ai: 1, team: [['coili', 27], ['mittsy', 28]],
+  M.trainer('r5_t4', 11, 22, 'twins_b', 'left', { cls: 'Twins', name: 'Yumi', sight: 3, reward: 12, ai: 1, team: [['boingo', 27], ['kittabra', 28]],
     intro: 'Yumi: Ami lost, so now it\'s me. I\'m the one who wins! ...Usually.', win: 'Yumi: Hmm. We both lost. That\'s also twins, I suppose.', after: 'Yumi: Ami gets the top bunk because she\'s three minutes older. Three minutes!' });
-  M.trainer('r5_t5', 15, 10, 'picnicker', 'left', { cls: 'Picnicker', name: 'Hana', sight: 3, reward: 13, ai: 1, team: [['peepi', 28], ['cactli|nibbi', 28], ['glowli', 29]],
+  M.trainer('r5_t5', 15, 10, 'picnicker', 'left', { cls: 'Picnicker', name: 'Hana', sight: 3, reward: 13, ai: 1, team: [['chirpadee', 28], ['pricklepot|nibblit', 28], ['glowgrub', 29]],
     intro: 'I came up here for the view of the city lights, but they keep going out! I\'ll battle you while I wait.', win: 'Okay, you can have my view. It\'s mostly dark anyway.', after: 'When the city lights up at night, it looks like someone spilled a jewellery box. I\'ve only seen it once.' });
-  M.trainer('r5_t6', 11, 27, 'grunt_m', 'left', { cls: 'Presser', name: 'Spool', sight: 3, reward: 15, ai: 2, music: 'battle_society', team: [['coili', 28], ['silkie', 28], ['chippi|nibbi', 29]],
+  M.trainer('r5_t6', 11, 27, 'grunt_m', 'left', { cls: 'Presser', name: 'Spool', sight: 3, reward: 15, ai: 2, music: 'battle_society', team: [['boingo', 28], ['silkie', 28], ['chiseltail|nibblit', 29]],
     intro: 'This cable is for maintenance. It\'s very boring maintenance, so there\'s nothing to see here. Please stop looking at it.', win: 'Fine, look at the cable all you like. It\'s just a cable.', after: 'It runs to the city, then down under the station. Why does it go under the station? That\'s classified. Also I don\'t know.' });
 
   M.npc('lineman', 20, 31, 'hiker', 'left', ['These pylons carry the power to Shibuyarn, and the city uses every bit of it.\\pLately, someone has been tapping into the line before it gets there.']);

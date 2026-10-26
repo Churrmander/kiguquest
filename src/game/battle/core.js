@@ -604,7 +604,7 @@
       for (const f of this.sides[1 - side.index].active) {
         if (f && !f.fainted) { f.participants.add(mon); mon.participants.add(f); }
       }
-      this.add({ t: 'in', who: mon, slot, initial: !!o.initial, forced: !!o.forced });
+      this.add({ t: 'in', who: mon, slot, initial: !!o.initial, forced: !!o.forced, hp: mon.hp, status: mon.status });   // a snapshot: the scene plays the turn back after it has all happened
     }
 
     enterEffects(mon, o) {

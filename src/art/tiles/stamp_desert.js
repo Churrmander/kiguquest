@@ -70,9 +70,11 @@
       const RED = [col('#e85a50'), col('#b83a3a'), col('#7a2228')];
       const cream = (u) => (u < 0.18 ? P.cn0 : u < 0.6 ? P.cn1 : u < 0.86 ? P.cn2 : P.cn3);
       const band = (u) => (u < 0.18 ? r[1] : u < 0.6 ? r[2] : u < 0.86 ? r[3] : r[4]);
+      // gores and wall stripes share one phase (10 panels across the 108-px eave), so the canvas reads as one continuous panel
+      const panel = (x) => Math.floor(((x - 2) / 108) * 10) % 2;
       // ---- the walls: vertical stripes, lit from the left, a darker skirt where they meet the sand
       for (let y = 50; y <= 100; y++) for (let x = 9; x <= 102; x++) {
-        const u = (x - 9) / 93, stripe = Math.floor((x - 9) / 9) % 2;
+        const u = (x - 9) / 93, stripe = panel(x);
         let c = stripe ? band(u) : cream(u);
         if (y >= 96) c = stripe ? r[4] : P.cn3;
         b.set(x, y, c);
@@ -87,37 +89,50 @@
           b.set(x, y, c);
         }
       }
-      // ---- scalloped valance at the eaves, red and cream
+      // ---- scalloped valance at the eaves, red and cream: rounded hanging curves with a darker hem
       for (let i = 0; i < 12; i++) {
-        const x0 = 4 + i * 9, c = i % 2 ? RED : [P.cn1, P.cn2, P.cn3];
-        for (let x = x0; x < x0 + 9 && x <= 107; x++) {
-          const dx = (x - x0 - 4) / 4.5, drop = Math.round(Math.sqrt(Math.max(0, 1 - dx * dx)) * 5);
-          for (let y = 47; y <= 50 + drop; y++) b.set(x, y, y === 47 ? c[0] : y > 49 + drop - 1 ? c[2] : c[1]);
+        const x0 = 3 + i * 9, c = i % 2 ? RED : [P.cn1, P.cn2, P.cn3];
+        for (let x = x0; x < x0 + 9 && x <= 108; x++) {
+          const dx = Math.abs(x - x0 - 4), drop = dx <= 1 ? 4 : dx === 2 ? 3 : dx === 3 ? 2 : 1;
+          for (let y = 47; y <= 49 + drop; y++) b.set(x, y, y === 47 ? c[0] : y === 49 + drop ? c[2] : c[1]);
         }
       }
       // ---- pole, pennant, and the ball on top
       b.fillRect(55, 0, 2, 12, P.o3); b.vline(55, 0, 12, P.o1);
-      b.fillRect(54, 0, 4, 2, P.yl2 || col('#f4d040'));
+      b.fillRect(54, 0, 4, 2, col('#f4d040'));
       for (let i = 0; i < 6; i++) b.vline(57 + i, 2 + (i >> 1), 6 - i, RED[i < 3 ? 0 : 1]);
-      // ---- the doorway: an arch, flaps tied back, lamplight inside, and a strip of rug at the threshold
+      // ---- the doorway: a dark arch with a lantern hanging high in it and its warm glow falling down and out
+      const DARK = col('#2a1810'), GLOW1 = col('#a86030'), GLOW2 = col('#f0c060');
       for (let y = 60; y <= 101; y++) for (let x = 45; x <= 66; x++) {
         const dx = (x + 0.5 - 56) / 11, dy = (y - 70) / 11;
-        if (y >= 70 || dx * dx + dy * dy <= 1) b.set(x, y, y < 76 ? col('#5a3420') : y < 88 ? col('#7a4a28') : col('#4a2a18'));
+        if (!(y >= 70 || dx * dx + dy * dy <= 1)) continue;
+        const g = Math.hypot((x + 0.5 - 56) / 1.2, y - 72);
+        b.set(x, y, g < 3 ? GLOW2 : g < 5 ? GLOW1 : g < 7 && (x + y) % 2 === 0 ? GLOW1 : DARK);
       }
-      for (let y = 62; y <= 101; y++) { const w = Math.round((y - 62) * 0.2); b.fillRect(45 - w, y, 3, 1, P.cn1); b.set(44 - w, y, P.cn0); b.fillRect(65 + w, y, 3, 1, P.cn3); }
-      b.fillRect(43, 80, 3, 2, RED[0]); b.fillRect(67, 80, 3, 2, RED[0]);                  // tie-backs
-      b.fillRect(52, 74, 8, 6, col('#ffd860')); b.fillRect(53, 75, 6, 4, col('#fff0b0'));   // a lantern glowing inside
-      b.fillRect(49, 96, 14, 4, RED[1]); b.hline(49, 96, 14, RED[0]);
-      // ---- the Salon banner over the door: badge colour with the scissors mark
-      b.fillRect(44, 52, 24, 2, P.o4); b.fillRect(44, 52, 24, 1, P.o2);
-      b.fillRect(47, 54, 18, 13, r[2]); b.fillRect(47, 54, 2, 13, r[1]); b.fillRect(63, 54, 2, 13, r[3]);
-      for (let yy = 64; yy <= 66; yy++) for (let xx = 47; xx < 65; xx++) if (Math.abs(xx - 55.5) < (yy - 63) * 2.4) b.set(xx, yy, 0);
-      b.blit(K.spr(SCISSOR_ROWS, { x: r[4], o: r[4] }), 51, 55);
+      b.vline(56, 62, 6, P.o4);                                                        // the lantern's hanger
+      b.fillRect(55, 68, 3, 4, col('#fff0b0')); b.hline(55, 68, 3, P.o3); b.hline(55, 71, 3, P.o3);
+      b.fillRect(49, 97, 14, 3, RED[1]); b.hline(49, 97, 14, RED[0]);                   // a rug at the threshold
+      // ---- the flaps, tied back: a curved drape each side, wide at the tie and narrowing up to the arch, shadowed on the inside
+      for (let y = 61; y <= 100; y++) {
+        const k = y <= 80 ? (y - 61) / 19 : (100 - y) / 20, w = Math.max(1, Math.round(1 + k * 3));
+        const lx = 45 - Math.round(k * 2), rx = 66 + Math.round(k * 2);
+        for (let i = 0; i < w; i++) { b.set(lx - i, y, i === 0 ? P.cn3 : i === w - 1 ? P.cn0 : P.cn1); b.set(rx + i, y, i === 0 ? r[4] : i === w - 1 ? r[2] : r[3]); }
+      }
+      for (const kx of [40, 69]) { b.fillRect(kx, 79, 2, 2, RED[2]); b.set(kx + 1, 81, RED[2]); b.set(kx + 1, 82, RED[1]); }   // rope knots, ends dangling
+      // ---- the Salon banner over the door: a red swallowtail with a dark border, the cream scissors on it
+      b.fillRect(44, 51, 24, 2, P.o4); b.fillRect(44, 51, 24, 1, P.o2);
+      for (let yy = 53; yy <= 66; yy++) for (let xx = 47; xx <= 64; xx++) {
+        const notch = yy >= 63 && Math.abs(xx - 55.5) < (yy - 62) * 2.2;
+        if (notch) continue;
+        const edge = xx === 47 || xx === 64 || yy === 53 || (yy >= 62 && Math.abs(xx - 55.5) < (yy - 61) * 2.2 + 0.5);
+        b.set(xx, yy, edge ? RED[2] : xx < 50 ? RED[0] : RED[1]);
+      }
+      b.blit(K.spr(SCISSOR_ROWS, { x: RED[2], o: RED[2] }), 51, 55);
       b.blit(K.spr(SCISSOR_ROWS, { x: P.cn0, o: col('#f4d040') }), 50, 54);
       // ---- guy ropes out to pegs in the sand
       b.line(8, 52, 1, 98, P.o4); b.line(103, 52, 110, 98, P.o4);
       b.fillRect(0, 98, 3, 3, P.o3); b.fillRect(109, 98, 3, 3, P.o3);
-      K.outer(b, ink([[r, r[5]], [RED, RED[2]]]));
+      K.outer(b, S.omap([[WOOD, P.o6], [CANVAS, col('#5a4030')], [r, r[5]], [RED, RED[2]]], 'ink'));
       K.shadow(b, 56, 101, 50, 3);
       return b;
     },
@@ -304,7 +319,7 @@
   });
 
   // ============================================================================================ burrow (1x1, floor)
-  // a Jerbi burrow: a dark hole in the sand with a little kicked-up mound on the near side
+  // a Dunehop burrow: a dark hole in the sand with a little kicked-up mound on the near side
   K.stamp('burrow', {
     w: 1, h: 1, layer: 'floor', solid: ['.'],
     paint: () => {

@@ -67,7 +67,7 @@ for (const [x, y] of [[5, 6], [9, 8], [4, 11]]) talk(x, y, 'needles at ' + x + '
 assert.equal(st.bag.cactus_needles, 3, 'three bundles of needles');
 for (const [x, y] of [[20, 6], [27, 8], [21, 10]]) talk(x, y, 'herbs at ' + x + ',' + y);
 assert.equal(st.bag.desert_herbs, 3, 'three handfuls of herbs');
-for (const [x, y] of [[11, 17], [18, 19], [14, 20]]) talk(x, y, 'the Jerbi at ' + x + ',' + y);
+for (const [x, y] of [[11, 17], [18, 19], [14, 20]]) talk(x, y, 'the Dunehop at ' + x + ',' + y);
 press('journal_got', 60000);
 assert.ok(st.bag.field_journal, 'the journal');
 assert.ok(!t.ow.map.warpAt(25, 19), 'the cave isn\'t there until you know where to look');

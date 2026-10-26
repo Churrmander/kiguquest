@@ -1,6 +1,6 @@
 /* The Sun Flats and the sand cave — south of Canvas Rest (Chapter 4 padding: the sun-cloth quest, from the owner's idea).
  * Chief Weft won't hand out sun-cloth to strangers, and the camp's children keep going missing. Three chores around camp each
- * turn up a clue (Cactli needles in the cactus field, herbs from the spring, a researcher's journal a Jerbi ran off with), Mimi
+ * turn up a clue (Pricklepot needles in the cactus field, herbs from the spring, a researcher's journal a Dunehop ran off with), Mimi
  * finds the last one, and together they point to the Echo Dune. In the cave under it, a big desert Kigu with a woven scarf has
  * been scooping up children who wander off and mothering them. You battle her, your Kigu talk her round, the children go home,
  * and the chief gives Mimi sun-cloth for two scarves. (The scenes in camp are in canvas_rest.js.)
@@ -27,7 +27,7 @@
   });
   M.rect(0, 0, W, 2, 'C').rect(0, H - 2, W, 2, 'C').rect(0, 2, 2, H - 4, 'C').rect(W - 2, 2, 2, H - 4, 'C');
   M.rect(14, 0, 3, 2, 'u');                                        // up to Canvas Rest
-  // the cactus field (west): wild Cactli grow here and shed their spines in the sand
+  // the cactus field (west): wild Pricklepot grow here and shed their spines in the sand
   M.blob(8, 8, 6, 5, ';').blob(4, 11, 3, 2, ';');
   for (const [x, y] of [[2, 8], [14, 7], [14, 9], [13, 4], [3, 4], [2, 9]]) M.set(x, y, 'u');   // nibble the edges so they aren't straight strips
   for (const [x, y, w] of [[15, 4, 1], [14, 8, 2], [3, 15, 1], [16, 11, 1], [9, 14, 2], [2, 6, 1]]) M.rect(x, y, w, 1, ';');   // stray tufts
@@ -39,7 +39,7 @@
   M.rect(19, 10, 2, 1, 'f').rect(25, 5, 2, 1, 'f');
   M.stamp('palm', 18, 5).stamp('palm', 27, 10).stamp('palm', 26, 3);
   M.rect(W - 2, 2, 2, H - 4, 'C').rect(0, 2, 2, H - 4, 'C');      // (the pool and the grass ran into the cliffs)
-  // the Jerbi burrows (south): dry grass with holes in it
+  // the Dunehop burrows (south): dry grass with holes in it
   M.blob(14, 18, 6.8, 3, ';').blob(10, 20, 3, 2, ';');
   for (const [x, y] of [[8, 17], [20, 18], [19, 20], [7, 19], [12, 15]]) M.set(x, y, 'u');
   for (const [x, y, w] of [[21, 14, 1], [6, 19, 2], [24, 22, 1], [4, 23, 2], [19, 22, 1]]) M.rect(x, y, w, 1, ';');
@@ -58,11 +58,11 @@
   M.sign(17, 3, 'THE SUN FLATS\\nCactus field to the west, the spring to the east.\\pChildren: stay where the camp can see you!', 'flats sign');
   M.spawn('north', 15, 2, 'down');
   M.edge('n', 14, 16, 'canvas_rest', 'south');
-  M.enc('grass', [['cactli|nibbi', 20, 23, 34], ['jerbi|nibbi', 20, 23, 30], ['sandkit|mittsy', 20, 22, 20], ['skorpi|peepi', 21, 23, 16]]);
+  M.enc('grass', [['pricklepot|nibblit', 20, 23, 34], ['dunehop|nibblit', 20, 23, 30], ['sandkit|kittabra', 20, 22, 20], ['stingle|chirpadee', 21, 23, 16]]);
 
-  // chore 1: Cactli needles in the cactus field
-  const needle = (n, x, y) => M.def.props.push({ id: 'needle_' + n, x, y, icon: 'item:cactus_needles', hideIf: 'needle_' + n, showIf: 'sun_quest', note: 'Cactli needles (chore)',
-    script: gather('needle_', 'cactus_needles', n, 'Lying in the sand by the cactus is a little heap of long, pale spines. A Cactli must have shed them.') });
+  // chore 1: Pricklepot needles in the cactus field
+  const needle = (n, x, y) => M.def.props.push({ id: 'needle_' + n, x, y, icon: 'item:cactus_needles', hideIf: 'needle_' + n, showIf: 'sun_quest', note: 'Pricklepot needles (chore)',
+    script: gather('needle_', 'cactus_needles', n, 'Lying in the sand by the cactus is a little heap of long, pale spines. A Pricklepot must have shed them.') });
   needle(1, 5, 6); needle(2, 9, 8); needle(3, 4, 11);
   // chore 2: herbs from the spring
   const herb = (n, x, y) => M.def.props.push({ id: 'herb_' + n, x, y, icon: 'item:desert_herbs', hideIf: 'herb_' + n, showIf: 'sun_quest', note: 'spring herbs (chore)',
@@ -70,14 +70,14 @@
       ? 'A clump of silver-leaf herbs grows by the water. Someone has already picked half of it, and very neatly, too.'
       : 'A clump of silver-leaf herbs grows by the water. You pick a good handful.') });
   herb(1, 20, 6); herb(2, 27, 8); herb(3, 21, 10);
-  // chore 3: the Jerbi with the journal hops off twice, then turns round and battles
+  // chore 3: the Dunehop with the journal hops off twice, then turns round and battles
   const HOPS = [[11, 17], [18, 19], [14, 20]];
-  M.npc('jerbi_thief', HOPS[0][0], HOPS[0][1], 'jerbi|child_f', 'down', null, { showIf: 'sun_quest', hideIf: 'journal_got', note: 'the Jerbi with the journal (chore)', script: function* (c, n) {
+  M.npc('jerbi_thief', HOPS[0][0], HOPS[0][1], 'dunehop|child_f', 'down', null, { showIf: 'sun_quest', hideIf: 'journal_got', note: 'the Dunehop with the journal (chore)', script: function* (c, n) {
     const hop = (c.state.flags.jerbi_hop || 0);
     if (hop < 2) {
-      yield* c.sayT('sun_flats.jerbi.' + hop, hop === 0
-        ? 'A Jerbi is sitting on a notebook, chewing the corner. She sees you, grabs it in her teeth, and bounces off!'
-        : 'The Jerbi peeks out of a burrow with the notebook. "Jeb!" Off she bounces again.');
+      yield* c.sayT('sun_flats.dunehop.' + hop, hop === 0
+        ? 'A Dunehop is sitting on a notebook, chewing the corner. She sees you, grabs it in her teeth, and bounces off!'
+        : 'The Dunehop peeks out of a burrow with the notebook. "Jeb!" Off she bounces again.');
       NP.snd.sfx('ledge');
       c.state.flags.jerbi_hop = hop + 1;
       yield* c.ow.fadeOut(4);
@@ -85,17 +85,17 @@
       yield* c.ow.fadeIn(4);
       return;
     }
-    yield* c.sayT('sun_flats.jerbi.2', 'The Jerbi has nowhere left to hop. She drops the notebook, puffs up her cheeks, and squares up to you!');
-    const res = yield* c.wildBattle('jerbi', 22);
+    yield* c.sayT('sun_flats.dunehop.2', 'The Dunehop has nowhere left to hop. She drops the notebook, puffs up her cheeks, and squares up to you!');
+    const res = yield* c.wildBattle('dunehop', 22);
     if (res && res.fled) return;
     c.set('journal_got');
     c.hideNpc(n.id);
     yield* c.giveItem('field_journal', 1, { found: true });
   } });
   // padding: two optional trainers out on the flats
-  M.trainer('sf_t1', 7, 14, 'camper', 'right', { cls: 'Camper', name: 'Ilse', sight: 3, reward: 11, ai: 1, team: [['sandkit|mittsy', 21], ['cactli|nibbi', 22]],
+  M.trainer('sf_t1', 7, 14, 'camper', 'right', { cls: 'Camper', name: 'Ilse', sight: 3, reward: 11, ai: 1, team: [['sandkit|kittabra', 21], ['pricklepot|nibblit', 22]],
     intro: 'I\'m practising for the caravan trials! You\'re my practice!', win: 'Okay, I need more practice.', after: 'The kids from camp used to play out here. Now their parents keep them by the well.' });
-  M.trainer('sf_t2', 22, 13, 'picnicker', 'left', { cls: 'Picnicker', name: 'Rue', sight: 3, reward: 12, ai: 1, team: [['jerbi|nibbi', 22], ['skorpi|peepi', 22]],
+  M.trainer('sf_t2', 22, 13, 'picnicker', 'left', { cls: 'Picnicker', name: 'Rue', sight: 3, reward: 12, ai: 1, team: [['dunehop|nibblit', 22], ['stingle|chirpadee', 22]],
     intro: 'This is the only grass for miles, and I brought a whole picnic. You can have a battle instead!', win: 'Fine, have a sandwich too.', after: 'Sometimes the Echo Dune hums at night. It sounds like somebody singing.' });
   M.pickup('candy', 29, 3, 'snack_cake', 2);
   M.reg();

@@ -150,10 +150,11 @@
 
   // ---- barrier: an indoor buffer beam for Salon puzzles (a timber rail on squat posts, banded yellow and black), on a stone
   //      floor. An autotile in its own group, so a run of it joins up, horizontal or vertical.
-  K.terrain('barrier', {
+  // floor: what the fence stands on (stone in most Salons; planks in Gusset's tent, so no stone strip runs across the boards)
+  const barrier = (floor, shade) => ({
     solid: true, autotile: true, maskMode: 'ortho', step: 'stone',
     paint: (m) => {
-      const b = NP.terrain.floor_stone ? NP.terrain.floor_stone.draw(0, 0, 0).clone() : K.B(T, T);
+      const b = NP.terrain[floor] ? NP.terrain[floor].draw(0, 0, 0).clone() : K.B(T, T);
       const E = m & K.DIR.E, Wd = m & K.DIR.W, N = m & K.DIR.N, S = m & K.DIR.S;
       const yel = K.col('#f2c230'), yel2 = K.col('#c8941c'), blk = K.col('#2a2430'), ink = K.P.ink;
       const beamH = (x0, x1) => {
@@ -167,10 +168,12 @@
       if (N || S) beamV(N ? 0 : 3, S ? 15 : 12);
       // a squat post with a shadow at the middle
       b.fillRect(5, 5, 6, 8, K.P.o3); b.fillRect(5, 5, 6, 1, K.P.o1); b.fillRect(5, 5, 1, 8, K.P.o2); b.fillRect(10, 5, 1, 8, K.P.o5);
-      b.fillRect(5, 13, 6, 1, ink); b.fillRect(4, 14, 8, 1, K.col('#7c7484'));
+      b.fillRect(5, 13, 6, 1, ink); b.fillRect(4, 14, 8, 1, K.col(shade));
       return b;
     },
   });
+  K.terrain('barrier', barrier('floor_stone', '#7c7484'));
+  K.terrain('barrier_wood', barrier('floor_wood', '#6a4a2a'));
 
   // ---- 3D: a cliff block's textures (persp_scene.js builds the geometry)
   const cache3 = new Map();

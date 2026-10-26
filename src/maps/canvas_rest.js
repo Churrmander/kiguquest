@@ -120,13 +120,13 @@
     if (c.flag('herd_done')) { yield* c.sayT('canvas_rest.mimi.later', 'Mimi: The weavers asked me to make ten more scarves! TEN! For money!\\pI\'m trying very hard to act normal about it.'); return; }
     yield* c.sayT('canvas_rest.mimi.again', 'Mimi: Keep your scarf up over your nose in the storm, and follow the red thread.\\pIf you see a very proud post, you\'ve gone the wrong way.');
   } });
-  M.npc('weaver1', 4, 13, 'villager_f2', 'down', null, { note: 'chore: Cactli needles', script: chore('needles', {
+  M.npc('weaver1', 4, 13, 'villager_f2', 'down', null, { note: 'chore: Pricklepot needles', script: chore('needles', {
     item: 'cactus_needles', has: (c) => (c.state.bag.cactus_needles || 0) >= 3,
     flavour: 'We sew every tent twice. Once for the shade, and once for the wind.\\pYour friend asked about our seams for an hour! I liked her.',
-    ask: 'Weaver Ama: You want to help? Then I need needles. We sew sun-cloth with Cactli spines, because nothing else gets through it.\\pThe wild Cactli shed them in the cactus field on the Sun Flats. Three good bundles would keep me going all season.',
+    ask: 'Weaver Ama: You want to help? Then I need needles. We sew sun-cloth with Pricklepot spines, because nothing else gets through it.\\pThe wild Pricklepot shed them in the cactus field on the Sun Flats. Three good bundles would keep me going all season.',
     thanks: 'Weaver Ama: Oh, these are lovely and straight. Thank you. I can sew again!',
     clue: 'Weaver Ama: You\'re looking for the children too, aren\'t you? When I was out gathering spines last week, I saw small footprints\\pgoing south-east, with big soft paw prints walking right beside them. As if somebody was holding their hands.',
-    after: 'Weaver Ama: Every stitch in that tent is a Cactli spine. Well, the last forty are.',
+    after: 'Weaver Ama: Every stitch in that tent is a Pricklepot spine. Well, the last forty are.',
   }) });
   M.npc('healer', 10, 13, 'nurse_aide', 'down', null, { note: 'chore: spring herbs', script: chore('herbs', {
     item: 'desert_herbs', has: (c) => (c.state.bag.desert_herbs || 0) >= 3,
@@ -139,10 +139,10 @@
   M.npc('researcher', 26, 12, 'scientist', 'left', null, { note: 'chore: the stolen journal', script: chore('journal', {
     item: 'field_journal', has: (c) => !!c.state.bag.field_journal,
     flavour: 'I study desert Kigu. Right now I\'m studying how much sand gets into a sandwich. The answer is "all of it".',
-    ask: 'Dr. Faro: A Jerbi stole my field journal! I put it down for one second to eat a biscuit, and she hopped off with it.\\pShe lives in the burrows on the south side of the Sun Flats. Please get it back. It\'s three months of notes!',
+    ask: 'Dr. Faro: A Dunehop stole my field journal! I put it down for one second to eat a biscuit, and she hopped off with it.\\pShe lives in the burrows on the south side of the Sun Flats. Please get it back. It\'s three months of notes!',
     thanks: 'Dr. Faro: My journal! It\'s only a little bit chewed. Thank you, thank you!',
     clue: 'Dr. Faro: Wait, look at my last page. I sketched this at dusk the night the first child went missing.\\pIt\'s a big Kigu in a woven scarf, walking towards the Echo Dune with something small on her back. I thought it was a bundle of herbs.',
-    after: 'Dr. Faro: I\'m writing a whole chapter on Jerbi now. Chapter title: "Why?"',
+    after: 'Dr. Faro: I\'m writing a whole chapter on Dunehop now. Chapter title: "Why?"',
   }) });
   M.npc('chief', 16, 8, 'elder_f', 'down', null, { note: 'Chief Weft (the sun-cloth quest)', script: function* (c) {
     if (c.flag('kids_home') || (c.state.bag.dust_scarf && !c.flag('sun_quest'))) { yield* c.sayT('canvas_rest.chief.after', 'Chief Weft: Our children play by the well again, and their big friend visits every evening. She brings herbs.\\pTravel safely, and keep your scarf up in the storm.'); return; }
