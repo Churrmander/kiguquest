@@ -123,7 +123,7 @@ Reveals in Loomhaven. Her line to the hero at the start: "Go and see Tsumugi. Me
 ### Mom, {rival}'s mum, the town
 Mom bakes and heals you with cocoa. {rival}'s mum has known you since you were both in nappies, and treats you like family. She worries about her husband's tidy letters. Neighbours are warm, nosy and slightly over-informed about other people's Kigu.
 
-### "Mr. Sharp" — the recurring peddler (spoiler: Sharps, the fourth Needle)
+### "Mr. Sharp" — the recurring peddler (spoiler: Sharps, the fourth Needle, who took Damask's old seat)
 A cheerful travelling seller in a different absurd disguise in every town (false moustache, a chef's hat, a sailor cap) who always insists he is "just a humble peddler,
 nothing suspicious." Everyone sees through him; he doesn't know. He is the Guild's scout, and it is his report that makes the Grand Tailor say *yes*.
 Catchphrase: "Keep your eyes sharp, friend!" (NPC id suggestion `peddler`, in Thimble, Hemline, Seamstead, the Quarry, Kite Hill, Woolen Peak, Loomhaven, the Last Seam.)
@@ -175,6 +175,13 @@ Unweaving**. Proposed: only Damask knows the whole of it; the Pleats each know o
 **The lie they were told.** The Unweaving's story, which the leadership believes and teaches, is that **the seamstresses are the bad
 ones**: they locked him in the tapestry to keep his power for themselves, and freeing him is a rescue. Damask believed it because it
 gave her fear a purpose. They have been lied to, and only the top of the Society is passing the lie on.
+
+**Damask is an ex-Needle (owner, 2026-10-26).** After the Snarl, Hester rose from Guildmistress to a seat among the Needles. Every Needle
+carries a needle threaded with **Everspool** silk as the badge of the office (proposed), which is why the Society has a piece of the
+Everspool at all. Proposed: she held the seat for about twenty years, then gave it up to run the Order of Ribbons full time, and kept her
+thread. Sharps, the youngest Needle, took her seat. Because the tapestry is woven of the same thread, the loose thread found her through
+it, and it is also how the Unweaving reached the other Needles. She had already left, so she did not vanish with them; she was simply the
+one he could still talk to. (Her Needle name is open, §15; proposed **Chenille**, a real needle like the others.)
 
 **Madame Damask.** Tall, iron-grey bun, steam-iron brooch, exquisitely polite ("Do mind the creases, dear"). Never raises her voice. Pours tea. Her weakness: she has not sewn a stitch since
 the Snarl (her mother's thimble is in Rue's drawer). Her plan: **re-weave Tsumugi as a plain weave** — over, under, over, under, no patterns — using the **Great Press** at the Starch Works and the
@@ -394,5 +401,6 @@ is a suggestion until the owner picks.
 7. The Needle called Tapestry and the magic tapestry share a name.
 8. Where and how the entity is faced, since it cannot be bonded or swayed.
 9. Whether the entity caused the Great Snarl.
-10. Whether Damask is the leader who was tricked (assumed here), and who else in the Society knows the real plan.
+10. ~~Whether Damask is the leader who was tricked~~ Answered: yes, and she is an ex-Needle. Still open: who else knows the real plan, her
+    Needle name (proposed Chenille), how long she sat and why she left.
 11. Types for the goddesses (Order as Dream/Ember and Nature as Dream/Tide still fit; Iron and Sprout are options).
