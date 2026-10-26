@@ -118,7 +118,13 @@ Elderly, round glasses, tape-measure scarf, lab coat full of pencils. Studies Ki
 searching for her tape measure (it is around her neck). Gives the starters and the Sketchbook. **Secret:** she is **Madame Damask's younger sister** (born
 Bobbin; Hester took the Guild's title "Damask" when she became Guildmistress). They have not spoken since the Snarl, each believing the other blames her.
 Seeds: a photo on her desk of two laughing girls, one tidy, one not; "my sister folded everything in thirds"; the Quarry is named for their family.
-Reveals in Loomhaven. Her line to the hero at the start: "Go and see Tsumugi. Meet the Masters. The threads will show you the rest."
+Reveals in Loomhaven.
+**The errand that starts the journey (owner pick, 2026-10-26).** Bobbin has been studying the Needles' disappearance and thinks they left
+a trail. Every Master Tailor's Button is sewn on with that Master's own thread, and she suspects the eight threads together matter
+somehow, though she cannot say why yet. So she sends the hero (and the rival) to collect each Master's thread along with the Button.
+Neither of them knows what it is for until the Great Loom, where the hero braids all eight and ties the twins together. This gives the
+early game a real goal while everyone knows the Needles are gone: becoming Weave Guardian is not the reason to set out, it is where the
+road ends up. Her line to the hero at the start: "Go and see Tsumugi. Meet the Masters. The threads will show you the rest."
 
 ### Mom, {rival}'s mum, the town
 Mom bakes and heals you with cocoa. {rival}'s mum has known you since you were both in nappies, and treats you like family. She worries about her husband's tidy letters. Neighbours are warm, nosy and slightly over-informed about other people's Kigu.
@@ -286,7 +292,7 @@ hero "little stitch." Taught both sisters to sew a straight line; "I forgot to t
 
 Scene ids are the `story.*` / `script.*` keys in `docs/text.md`. **Rival** = a friendly rival battle.
 
-**Ch. 0 — Button Town, the lab.** Morning. Laundry, sea breeze, a kid who wants a Kigu. Bobbin hands out the three starters (Konko / Ottopi / Sprubun); the rival takes the one that beats yours, as a dare; you get
+**Ch. 0 — Button Town, the lab.** Morning. Laundry, sea breeze, a kid who wants a Kigu. Bobbin's errand: bring back each Master's thread (§4). Bobbin hands out the three starters (Konko / Ottopi / Sprubun); the rival takes the one that beats yours, as a dare; you get
 5 Bond Spools, snack cakes, the Sketchbook. Mom's cocoa. *Scenes:* `lab_intro`, `starter`, `town_gate`, `mom`.
 **Ch. 1 — Meadow Lane → Thimble Village (Salon 1, Fluff).** Tailors on the lane; **Rival #1** at the top of the lane ("I'll be waiting in Thimble"). Mimi gives a Silk Spool. The bridge to Route 2 is closed: "inspectors in
 stiff white collars said the planks were uneven." Poppy's Salon. **Rival #2** outside the Salon (they lost; you didn't) - a conversation and a gift of snack cakes, NOT a battle, so there are never two rival fights back to back. Poppy gives Disc: Snip, cream thread, the 'D' handkerchief, and "go and see Tsumugi."
