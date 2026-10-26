@@ -10,7 +10,8 @@
  *                                 sits on the command panel; follow.hand = the open hand, where the spool leaves
  *   trainer(look)              -> { bmp, hand } a foe trainer's battle sprite (npc/battle; hero_m/hero_f = the heroes' ready
  *                                 stance, for the rival), anchor bottom-centre (w/2, h-2); hand = where the thrown spool leaves
- *   IDLE                       -> 6 idle frames: the upper body bobs 1px (the seam row is doubled, feet stay planted)
+ *   idleFrames(id)             -> idle frames for a Kigu: 24 (12 fps) when she has a paper-doll rig (rigs.js, played by
+ *                                 rig.js), else IDLE = 6: the upper body bobs 1px (the seam row is doubled, feet stay planted)
  *
  * The sprites are static, so motion is made here and in the battle scene. alt = the rare colourway: costume colours hue-rotated
  * by 150 degrees (skin, hair-dark and near-grey colours are kept). Results are cached; callers clone() before mutating. */
@@ -69,8 +70,23 @@
     return v;
   }
 
-  /** Place the crop in its cell: body axis on the centre column, feet on row h-2. Upper body lifted by `bob` px, seam doubled. */
+  const rigOf = (id, view) => (view !== 'pose' && NP.art.autospriteRigs && NP.art.autospriteRigs[id] && NP.art.autospriteRigs[id][view]) || null;
+
+  /** Place the crop in its cell: body axis on the centre column, feet on row h-2. A rigged view plays its paper-doll frame;
+   *  otherwise the upper body is lifted by `bob` px, seam doubled. */
   function cell(id, view, alt, frame) {
+    const rig = rigOf(id, view);
+    if (rig && NP.art.autospriteRig) {
+      const key = 'g|' + id + '|' + view + '|' + !!alt;
+      if (!cache.has(key)) {
+        const r = raw(id, view, alt), C = CELL[view];
+        cache.set(key, r ? NP.art.autospriteRig.player(rig, r.bmp, {
+          w: C.w, h: C.h, dx: Math.max(0, Math.min(C.w - r.bmp.w, Math.round(C.w / 2 - r.cx))), dy: C.h - 2 - r.bmp.h,
+        }) : null);
+      }
+      const pl = cache.get(key);
+      return pl ? pl.frame(frame | 0) : null;
+    }
     const bob = view === 'pose' ? 0 : BOB[((frame | 0) % IDLE + IDLE) % IDLE];
     const key = 'c|' + id + '|' + view + '|' + !!alt + '|' + bob;
     if (cache.has(key)) return cache.get(key);
@@ -128,6 +144,8 @@
     hasTrainer: (look) => !!(NP.art.autospriteTrainers && NP.art.autospriteTrainers[look]),
     hasHero: (look) => !!(NP.art.autospriteHeroes && NP.art.autospriteHeroes[look]),
     IDLE,
+    idleFrames: (id) => (rigOf(id, 'front') && NP.art.autospriteRig ? NP.art.autospriteRig.N : IDLE),
+    hasRig: (id, view) => !!rigOf(id, view || 'front'),
     ids: () => Object.keys(DATA()),
     has: (id, view) => !!(DATA()[id] && DATA()[id][view || 'front']),
     front: (id, o) => cell(id, 'front', o && o.alt, o && o.frame),
