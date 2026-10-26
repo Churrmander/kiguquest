@@ -59,7 +59,7 @@
   I('linen_thread', 'Linen Thread', 'key', 0, "A hank of Gusset's sand-coloured linen. It's rough, and it's very hard to break.");
   I('disc_shove', 'Disc: Shove', 'key', 0, 'Lets your Kigu shove big loose rocks. Walk into one and keep pushing.');
   // ---- Chapters 5 and 6 (Shibuyarn, the Spark Cellar, Kite Hill). Charms: held, +20% to one type's moves; Volt and Dusk Charms
-  //      are also what Coili and Neonki hold to evolve (kigu.js `held`).
+  //      are also what Boingo and Blinkeon hold to evolve (kigu.js `held`).
   const charm = (type) => ({ held: { modPower(c, p) { return c.move && c.move.type === type ? Math.floor(p * 1.2) : undefined; } } });
   I('sun_charm', 'Sun Charm', 'items', 0, 'Held: a warm brass charm. Powers up Ember moves.', null, charm('ember'));
   I('volt_charm', 'Volt Charm', 'items', 0, 'Held: it crackles faintly. Powers up Volt moves, and a certain springy Kigu loves it.', null, charm('volt'));

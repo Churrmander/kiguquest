@@ -55,10 +55,10 @@
   M.stamp('pc_terminal', 1, 11).interact(1, 12, L.panel(['g1'], 'A panel with a thick yellow lever. The tag on it says "FIRST BARRIER".'), 'panel 1 (opens g1)');
   M.stamp('pc_terminal', 10, 6).interact(10, 7, L.panel(['g2'], 'A panel with a thick yellow lever. The tag on it says "SECOND BARRIER".'), 'panel 2 (opens g2)');
   M.stamp('sewing_machine', 1, 7).stamp('mannequin', 8, 7).stamp('window', 4, 1).stamp('window', 7, 1).stamp('bookshelf', 0, 0).stamp('cloth_shelf', 9, 0).stamp('plant', 10, 12).stamp('plant', 10, 8);
-  M.trainer('sal3_t1', 2, 10, 'rocker', 'down', { cls: 'Busker', name: 'Kit', sight: 2, reward: 10, ai: 1, team: [['sparkin|mittsy', 18], ['sparkin|mittsy', 18]],
+  M.trainer('sal3_t1', 2, 10, 'rocker', 'down', { cls: 'Busker', name: 'Kit', sight: 2, reward: 10, ai: 1, team: [['scurrent|kittabra', 18], ['scurrent|kittabra', 18]],
     intro: 'Zip said no cheating the levers. I\'m the lever police!', win: 'The lever police have been outvoted.', after: 'Barrier two is just past the first one, and its lever\'s on the right.' });
-  M.trainer('sal3_t2', 9, 6, 'artist', 'down', { cls: 'Tailor', name: 'Lux', sight: 1, reward: 11, ai: 1, team: [['kumi|nibbi', 19], ['sparkin|mittsy', 19]],
+  M.trainer('sal3_t2', 9, 6, 'artist', 'down', { cls: 'Tailor', name: 'Lux', sight: 1, reward: 11, ai: 1, team: [['kumi|nibblit', 19], ['scurrent|kittabra', 19]],
     intro: 'I draw lightning bolts on everything, and that includes you!', win: 'Lightning does strike twice. It struck me twice.', after: 'Zip\'s just past the second barrier. Try not to flinch!' });
   M.npc('zip', 5, 3, 'zip|rocker', 'down', null, { script: 'zip', note: 'Master Tailor #3 (Volt)' });
-  M.reg().zipTeam = L.team([['sparkin|mittsy', 19], ['kumara|silkie', 20], ['voltessa|mittsy', 22]]);
+  M.reg().zipTeam = L.team([['scurrent|kittabra', 19], ['kumara|silkie', 20], ['arcorn|kittabra', 22]]);
 })(typeof globalThis !== 'undefined' ? globalThis : window);

@@ -5,8 +5,8 @@
   const D = K.define;
 
   const CAT = { main: '#eceef4', sub: '#ffffff', hair: '#9aa0b4', mitt: '#c7cbd8', foot: '#c7cbd8', eye: '#4aa0d8', inner: '#ffb7c5', acc: '#ffc940', gold: '#f4c542', patch: '#9aa0b4' };
-  D('mittsy', {
-    name: 'Mittsy', stage: 1, size: 64, rise: 9, pal: CAT,
+  D('kittabra', {
+    name: 'Kittabra', stage: 1, size: 64, rise: 9, pal: CAT,
     hood: { type: 'up', ears: { kind: 'tri', h: 7, w: 4.5, lean: 2 } },
     hair: { style: 'short', bangs: 'spiky' }, eyes: { style: 'sleepy' }, mouth: 'cat', face: ['whiskers'],
     arms: { mittMat: 'mitt', mittR: 3.6 }, footMat: 'foot',
@@ -16,8 +16,8 @@
       ['bell', { at: 'head', dy: 7, dx: 6, r: 2 }],
     ],
   });
-  D('meowtrice', {
-    name: 'Meowtrice', stage: 2, size: 80, rise: 11, pal: Object.assign({}, CAT, { main: '#33334a', sub: '#ffffff', hair: '#55556e', mitt: '#ffffff', foot: '#ffffff', acc: '#d8405a', eye: '#f0c030' }),
+  D('wiskedabra', {
+    name: 'Wiskedabra', stage: 2, size: 80, rise: 11, pal: Object.assign({}, CAT, { main: '#33334a', sub: '#ffffff', hair: '#55556e', mitt: '#ffffff', foot: '#ffffff', acc: '#d8405a', eye: '#f0c030' }),
     hood: { type: 'up', ears: { kind: 'tri', h: 8, w: 4.5, lean: 2, over: true } },
     hair: { style: 'short', bangs: 'part' }, mouth: 'cat', face: ['whiskers'],
     arms: { mittMat: 'mitt' }, footMat: 'foot',
@@ -30,8 +30,8 @@
     ],
   });
   const HAM = { main: '#ecc088', sub: '#fff4de', hair: '#c4622e', mitt: '#fff4de', foot: '#fff4de', eye: '#5a3020', inner: '#ffb7c5', acc: '#ffffff', seed: '#7a5a2a', apron: '#fff8f0', red: '#e0505a', bun: '#d99a52' };
-  D('nibbi', {
-    name: 'Nibbi', stage: 1, size: 62, rise: 4, pal: HAM,
+  D('nibblit', {
+    name: 'Nibblit', stage: 1, size: 62, rise: 4, pal: HAM,
     hood: { type: 'up', ears: { kind: 'round', h: 2, w: 3, lean: 1, dy: 1 } },
     hair: { style: 'twin', bangs: 'spiky', len: 8 }, mouth: 'nom', headW: 1.05,
     arms: { mittMat: 'mitt' }, footMat: 'foot',
@@ -55,8 +55,8 @@
   });
 
   const SPR = { main: '#e6b84a', sub: '#fff0c0', hair: '#c88a3a', mitt: '#c88a3a', foot: '#e89a3a', eye: '#3a2a20', inner: '#ffb7c5', acc: '#8a5a3a', acc2: '#4ea0e0', note: '#3a4a80', page: '#fff8e8' };
-  D('peepi', {
-    name: 'Peepi', stage: 1, size: 62, rise: 6, pal: SPR,
+  D('chirpadee', {
+    name: 'Chirpadee', stage: 1, size: 62, rise: 6, pal: SPR,
     hood: { type: 'up', ears: null },
     hair: { style: 'short', bangs: 'spiky', mat: 'hair' }, mouth: 'flat',
     arms: { type: 'wing', mat: 'mitt', tip: 'acc' }, footMat: 'foot',
@@ -66,8 +66,8 @@
       ['hat', { kind: 'tuft', n: 3, mat: 'hair' }],
     ],
   });
-  D('larkette', {
-    name: 'Larkette', stage: 2, size: 74, rise: 9, pal: Object.assign({}, SPR, { main: '#d8a240', hair: '#8a5a30' }),
+  D('lyripip', {
+    name: 'Lyripip', stage: 2, size: 74, rise: 9, pal: Object.assign({}, SPR, { main: '#d8a240', hair: '#8a5a30' }),
     hood: { type: 'band', mat: 'main' },
     hair: { style: 'bob', bangs: 'part' },
     arms: { type: 'wing', mat: 'hair', tip: 'sub' }, footMat: 'foot',
@@ -80,8 +80,8 @@
       ['shapes', { stage: 'front', at: 'handL', g: 'songbook', list: [['r', -3, -4, 7, 6, 'note'], ['r', -2, -3, 5, 4, 'page'], ['d', 0, -2, 'note']] }],
     ],
   });
-  D('larkessa', {
-    name: 'Larkessa', stage: 3, size: 85, rise: 11, pal: Object.assign({}, SPR, { main: '#c88a4a', hair: '#7a4a2a', sub: '#fff0c8', acc2: '#5ab0f0', gold: '#f4c542' }),
+  D('larkestra', {
+    name: 'Larkestra', stage: 3, size: 85, rise: 11, pal: Object.assign({}, SPR, { main: '#c88a4a', hair: '#7a4a2a', sub: '#fff0c8', acc2: '#5ab0f0', gold: '#f4c542' }),
     hood: { type: 'none' },
     hair: { style: 'long', bangs: 'part', drop: 3 },
     arms: { type: 'wing', mat: 'hair', tip: 'sub' }, footMat: 'foot',

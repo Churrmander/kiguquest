@@ -46,7 +46,7 @@
     if (!c.flag('yarn_basket')) {
       c.set('poppy_asked');
       yield* c.sayT('script.poppy.basket.1', 'Poppy: Oh, a challenger! How lovely, come in, come in!\\pBut, oh dear... I can\'t find my yarn basket anywhere.');
-      yield* c.sayT('script.poppy.basket.2', 'Poppy: My Kigu won\'t battle without their cardigans done up.\\pI last saw a little Mittsy batting my yarn about outside.');
+      yield* c.sayT('script.poppy.basket.2', 'Poppy: My Kigu won\'t battle without their cardigans done up.\\pI last saw a little Kittabra batting my yarn about outside.');
       yield* c.sayT('script.poppy.basket.3', 'Poppy: Would you be a dear and look for it? Try the flowers by the road.');
       return;
     }

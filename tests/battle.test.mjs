@@ -28,15 +28,15 @@ function fight(seed, a, b, wild) {
   assert.ok(bt.ended, 'battle ended');
   return bt;
 }
-const bt = fight(3, ['konko', 8], ['peepi', 4], true);
+const bt = fight(3, ['konko', 8], ['chirpadee', 4], true);
 assert.equal(bt.winner, 0);
 assert.ok(bt.sides[0].party[0].exp > 0);
-const bt2 = fight(5, ['nibbi', 3], ['konko', 9]);
+const bt2 = fight(5, ['nibblit', 3], ['konko', 9]);
 assert.equal(bt2.winner, 1);
 
 // status moves, stat stages, crit-free damage sanity
 {
-  const k1 = mk('konko', 10), k2 = mk('mittsy', 10);
+  const k1 = mk('konko', 10), k2 = mk('kittabra', 10);
   const bt = new B.Battle({ wild: true, rng: new NP.RNG(1), sides: [{ player: true, party: [k1] }, { party: [k2] }] });
   bt.begin();
   const a = bt.sides[0].active[0], d = bt.sides[1].active[0];
@@ -53,7 +53,7 @@ assert.equal(bt2.winner, 1);
 
 // spool: master always catches; weak sleepy foe is easier than full-hp awake one
 {
-  const foe = mk('peepi', 4);
+  const foe = mk('chirpadee', 4);
   const bt = new B.Battle({ wild: true, rng: new NP.RNG(9), cfg: {}, sides: [{ player: true, party: [mk('konko', 5)] }, { party: [foe] }] });
   bt.begin();
   const me = bt.sides[0].active[0];
@@ -86,7 +86,7 @@ console.log('battle ok');
 
 // Foxfire: burns AND lights a blue flame over the user's side that powers up every Ember move of that side for 5 turns, even after she switches out
 {
-  const bt = new B.Battle({ wild: false, rng: new NP.RNG(3), sides: [{ player: true, party: [mk('konko', 20), mk('kitsuri', 20)] }, { party: [mk('mittsy', 20)], ai: 1 }] });
+  const bt = new B.Battle({ wild: false, rng: new NP.RNG(3), sides: [{ player: true, party: [mk('konko', 20), mk('kitsuri', 20)] }, { party: [mk('kittabra', 20)], ai: 1 }] });
   bt.begin();
   const konko = bt.sides[0].active[0], foe = bt.sides[1].active[0];
   const hit = (user, mv) => B.calcDamage(bt, user, foe, NP.data.moves[mv], { crit: false, roll: 100 });

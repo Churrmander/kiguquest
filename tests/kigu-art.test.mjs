@@ -7,7 +7,7 @@ for (const f of files) assert.ok(fs.existsSync(f), 'manifest file missing: ' + f
 const { NP } = loadNP({ files: [...CORE, ...files] });
 const K = NP.art.kigu;
 const ids = K.ids();
-const PHASE1 = 'konko kitsuri kyuubelle ottopi ottelia ottomarine sprubun lapinlily lapinade mittsy meowtrice nibbi nibblenna peepi larkette larkessa silkie cocoona mothelia buzzlet hunnibloom webbi spindra daisip daisia ribbi lilyrana molli molluna'.split(' ');
+const PHASE1 = 'konko kitsuri kyuubelle ottopi ottelia ottomarine sprubun lapinlily lapinade kittabra wiskedabra nibblit nibblenna chirpadee lyripip larkestra silkie cocoona mothelia buzzlet hunnibloom spinnet spindra daisip daisia kerochapu lilyrana molli molluna'.split(' ');
 for (const id of PHASE1) assert.ok(K.has(id), 'missing phase 1 kigu ' + id);
 assert.ok(ids.length >= 58, 'expected full roster, got ' + ids.length);
 assert.equal(K.has('nope'), false);
@@ -55,7 +55,7 @@ for (const id of ids) {
 console.log('roster checked in', Date.now() - t0, 'ms');
 
 // idle animation: frames loop, differ from the rest pose, stay inside the cell and keep frame 0's palette
-for (const id of ['konko', 'kyuubelle', 'mothelia', 'sheetie', 'warpa', 'nibbi']) {
+for (const id of ['konko', 'kyuubelle', 'mothelia', 'hushroud', 'warpa', 'nibblit']) {
   const n = K.idleFrames(id);
   for (const view of ['front', 'back']) {
     const f0 = K[view](id), pal = new Set(f0.colors().keys());

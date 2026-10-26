@@ -8,7 +8,7 @@
   const AR = NP.arcade, K = AR.kit;
 
   const L = 16, R = 240, TOP = 16, PADY = 176, BW = 16, BH = 8, COLS = 14, ROWS = 12, BY = 24;
-  const PICS = ['konko', 'ottopi', 'sprubun', 'mittsy', 'lapinlily', 'sparkin', 'kumi', 'hunnibloom', 'molluna', 'kyuubelle'];
+  const PICS = ['konko', 'ottopi', 'sprubun', 'kittabra', 'lapinlily', 'scurrent', 'kumi', 'hunnibloom', 'molluna', 'kyuubelle'];
 
   // fabric patches: base, alt (pattern), dark edge
   const FABRICS = [

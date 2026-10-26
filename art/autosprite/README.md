@@ -2,7 +2,7 @@
 
 Approved concept sprites made with AutoSprite (October 2026). The Kigu views are **wired into battles**: `node tools/import-autosprite.mjs` turns them into `src/art/autosprite/data.js` (battle-size, palette-indexed), `NP.art.autosprite` serves them with the `NP.art.kigu` cells and anchors, and `NP.assets` prefers them, falling back to the generated art for any missing view. Re-run the tool after adding or fixing a PNG. The heroes' battle-start throw (`heroes/throw/v2` idle, wind-up and follow-through frames, cut at mid-thigh) plays in the battle scene as in the preview GIFs: dithered blends, the spool and thread fly off to the upper right, the trainer slides off left.
 
-In battle the foe shows `-base` (idle bob made in-engine) and switches to `-pose` while she attacks; the player's Kigu shows `-back`. Kigu in the game with no back view yet use the generated back sprite: Sparkin, Voltessa, Kumi, Kumara, Kumazen. Move, item and status animations are made in-engine in `src/game/battlefx.js`; `node tools/preview-battle.mjs OUTDIR` records a scripted battle to PNG frames.
+In battle the foe shows `-base` (idle bob made in-engine) and switches to `-pose` while she attacks; the player's Kigu shows `-back`. Kigu in the game with no back view yet use the generated back sprite: Scurrent, Arcorn, Kumi, Kumara, Kumazen. Move, item and status animations are made in-engine in `src/game/battlefx.js`; `node tools/preview-battle.mjs OUTDIR` records a scripted battle to PNG frames.
 
 ## What is here
 
@@ -34,12 +34,12 @@ All images are 1024x1024 on white, drawn on an 8px grid (128x128 sprites scaled 
 ## Open queue
 
 * Ottelia's back view was hand-fixed: her striped tail was repainted teal and her backwards foot cut to a heel. The heel is blunt, so a reroll is optional.
-* Mittsy's back view was hand-fixed: the paw pads were painted out.
-* Possible rerolls: Molli (reads as a bear), Sheetie (pose barely changed), Warpa (pupil-less eyes; maybe intended).
+* Kittabra's back view was hand-fixed: the paw pads were painted out.
+* Possible rerolls: Molli (reads as a bear), Hushroud (pose barely changed), Warpa (pupil-less eyes; maybe intended).
 * Back views for the Phase 2 families and the legendaries are not made yet.
 * NPC nits: Zip's overworld coat is purple/gold (battle is black/gold); the cook's overworld shows hair under his hat (battle is bald); elders' canes barely show; net kid's net is faint in overworld. Bryn is drawn as a woman per docs/STORY.md, while looks.js says male.
 * Overworld sprites are single standing frames per facing; walk-cycle frames are not made yet. The rival uses the other hero's sprites.
-* Drakonia, Voltessa and Webbi poses were rerolled to keep their effects in frame; `pose.png` is the fixed version.
+* Empyress, Arcorn and Spinnet poses were rerolled to keep their effects in frame; `pose.png` is the fixed version.
 * Done 2026-10-24: the battle-start spool is tossed high and lands on the player platform while the hero slides off; the Kigu grows out of it there (`heroThrowBW` in `src/game/battlescene.js`). The preview GIFs in `heroes/throw/v2` still show the older fly-off.
 * Done 2026-10-24: the `npc/battle` trainer sprites are the foe trainers in battle (`NP.assets.trainerFront`; the rival uses the other hero's `-ready` stance). They have no throw frames: the trainer dips, the spool leaves her hand and lands on the foe platform where her Kigu appears while she slides off right.
 

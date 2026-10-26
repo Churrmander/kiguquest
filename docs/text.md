@@ -55,7 +55,7 @@ a class, add `addBank` entries in `src/data/text/classes.js` (ask the Writer). A
 | var | meaning | var | meaning |
 |---|---|---|---|
 | `{player}` `{rival}` | names (defaults Dahlia and Draco; the rival is the other one) | `{kigu}` | a Kigu's display name |
-| `{mon}` | battle label: "Konko", "Wild Mittsy", "Foe Peepi" | `{foe}` | the opposing Kigu's label |
+| `{mon}` | battle label: "Konko", "Wild Kittabra", "Foe Chirpadee" | `{foe}` | the opposing Kigu's label |
 | `{trainer}` `{cls}` `{name}` | "Tailor Lia" / "Tailor" / "Lia" | `{item}` `{move}` `{old}` | item / move / forgotten-move name |
 | `{stat}` | Attack, Sp. Def, Speed, accuracy... | `{n}` `{lv}` `{hp}` `{exp}` `{money}` `{count}` | numbers (write `$` in the text) |
 | `{to}` `{from}` | evolution target / source species | `{place}` | a place name |
@@ -63,7 +63,7 @@ a class, add `addBank` entries in `src/data/text/classes.js` (ask the Writer). A
 | `{twin}` `{twin2}` | the twin you befriended / the other (Warpa, Weftie) | | |
 
 Rules: a `{var}` not in this table fails the test. Do not put a variable at the very start of a sentence if it could be
-"Wild Mittsy" vs "Konko" and read oddly; the `sys.*` lines are written so both forms work ("{mon} used {move}!").
+"Wild Kittabra" vs "Konko" and read oddly; the `sys.*` lines are written so both forms work ("{mon} used {move}!").
 
 ## Width budget (the box the text is shown in)
 

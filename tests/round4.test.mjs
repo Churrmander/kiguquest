@@ -51,7 +51,7 @@ console.log('>> Exp Share: benched Kigu get half, and only while it is switched 
   st.party.unshift(NP.Kigu.create('sprubun', 10, { ot: 'Ren', nature: 'hardy' }));
   const run = (share) => {
     const party = st.party.map((k) => Object.assign(NP.Kigu.create(k.species, 10, { ot: 'Ren', nature: 'hardy' })));
-    const foe = NP.Kigu.create('nibbi', 8);
+    const foe = NP.Kigu.create('nibblit', 8);
     const b = new NP.Battle.Battle({ wild: true, sides: [{ player: true, party }, { party: [foe] }], expShare: share });
     const fm = b.sides[1].mons[0], lead = b.sides[0].mons[0], bench = b.sides[0].mons[1];
     fm.participants = new Set([lead]);

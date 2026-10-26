@@ -146,7 +146,7 @@ t.mash(() => G.top() instanceof AR.PrizeScene, 3000);
 const ps = G.top();
 const tabs = AR.catalogue();
 assert.ok(tabs.find((x) => x.name === 'Type Pins').list.length === 17, '17 type pins');
-assert.equal(!!tabs.find((x) => x.name === 'Kigu'), !!NP.data.species[AR.CABBI], 'Cabbi listed only when the species exists');
+assert.equal(!!tabs.find((x) => x.name === 'Kigu'), !!NP.data.species[AR.CABBI], 'Cabriolet listed only when the species exists');
 const belt = tabs[0].list.findIndex((p) => p.id === 'expert_belt');
 for (let i = 0; i < belt; i++) t.tap('down');
 t.tap('a'); t.tick(2); t.tap('a'); // Yes

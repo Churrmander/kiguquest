@@ -1,5 +1,5 @@
 /* The Oasis — a shady pool in the south of the Dust Bowl (follow the green thread). Optional: a Hiker sheltering from the sun, a
- * palm with the Sun Charm in it, and Skorpi in the long grass. The storm never reaches the water, so it's clear here. */
+ * palm with the Sun Charm in it, and Stingle in the long grass. The storm never reaches the water, so it's clear here. */
 (function (root) {
   'use strict';
   const NP = root.NP, L = NP.levels;
@@ -23,8 +23,8 @@
   M.sign(10, 2, 'THE OASIS\\nFresh water. Please don\'t wash your socks in it.', 'oasis sign');
   M.spawn('north', 12, 2, 'down');
   M.edge('n', 11, 14, 'dust_bowl', 'south');
-  M.enc('grass', [['skorpi|peepi', 23, 25, 34], ['cactli|nibbi', 23, 25, 30], ['sandkit|mittsy', 22, 24, 24], ['peepi', 22, 24, 12]]);
-  M.trainer('oa_t1', 8, 7, 'hiker', 'right', { cls: 'Hiker', name: 'Ansel', sight: 4, reward: 14, ai: 2, team: [['slatli|kumi', 24], ['sandkit|mittsy', 24], ['cactara|nibbi', 25]],
+  M.enc('grass', [['stingle|chirpadee', 23, 25, 34], ['pricklepot|nibblit', 23, 25, 30], ['sandkit|kittabra', 22, 24, 24], ['chirpadee', 22, 24, 12]]);
+  M.trainer('oa_t1', 8, 7, 'hiker', 'right', { cls: 'Hiker', name: 'Ansel', sight: 4, reward: 14, ai: 2, team: [['tortile|kumi', 24], ['sandkit|kittabra', 24], ['saguarose|nibblit', 25]],
     intro: 'This is the only shade for miles, and I\'m not moving out of it. You\'ll have to battle me right here!', win: 'You were worth getting up for.', after: 'I lost my lucky charm up a palm tree. The one on the east side, if you\'re any good at climbing.' });
   M.npc('fisher', 15, 13, 'fisher', 'up', ['There aren\'t any fish in an oasis. I know that.\\pI just like sitting by water with a rod. It\'s very calming.'], { note: 'flavour' });
   M.pickup('cake', 4, 3, 'grand_cake|fancy_cake', 1);

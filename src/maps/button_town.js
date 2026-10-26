@@ -67,17 +67,17 @@
     yield* c.ow.fadeIn(24);
   }
 
-  // ---- Prof. Bobbin's parcel (padding beat 2): fetched from the pier after the starters. A sleepy wild Peepi is napping on it,
+  // ---- Prof. Bobbin's parcel (padding beat 2): fetched from the pier after the starters. A sleepy wild Chirpadee is napping on it,
   //      so the first wild battle is a little story moment instead of a random one. Any ending (win, flee, befriend) frees the parcel.
   function* parcel(c) {
     if (!c.flag('has_starter')) { yield* c.sayT('button_town.crate.0', 'There\'s a crate on the pier where the morning boat drops off the post.'); return; }
     if (c.flag('parcel_got') || c.flag('errand_done')) { yield* c.sayT('button_town.crate.after', 'The crate is empty now, though it still smells a little of the sea.'); return; }
     yield* c.sayT('button_town.crate.1', 'There\'s a parcel tied up with string sitting on the crate.\\p...And something fluffy is asleep on top of it!');
     yield* c.emote('player', 'exclaim');
-    yield* c.sayT('button_town.crate.2', 'It\'s a wild Peepi, and she won\'t budge from her warm spot.\\pWeaken her a little, or offer a Bond Spool if she looks curious.');
-    const res = yield* c.wildBattle('peepi', 3);
+    yield* c.sayT('button_town.crate.2', 'It\'s a wild Chirpadee, and she won\'t budge from her warm spot.\\pWeaken her a little, or offer a Bond Spool if she looks curious.');
+    const res = yield* c.wildBattle('chirpadee', 3);
     if (res && res.caught) yield* c.sayT('button_town.crate.3a', '{player} picked up the parcel, with a brand new friend along for the walk.');
-    else yield* c.sayT('button_town.crate.3b', 'The Peepi fluttered off to find a sunnier spot.\\p{player} picked up the parcel. It\'s addressed to Prof. Bobbin.');
+    else yield* c.sayT('button_town.crate.3b', 'The Chirpadee fluttered off to find a sunnier spot.\\p{player} picked up the parcel. It\'s addressed to Prof. Bobbin.');
     c.set('parcel_got');
   }
 

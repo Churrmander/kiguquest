@@ -38,13 +38,13 @@ console.log('slice part 1 ok', t.pos());
   const ow = t.ow;
   const party = NP.state.party;
   const before = party[0].exp;
-  ow.spawn((function* () { yield* ow.wildBattle('peepi', 3); })(), 'test');
+  ow.spawn((function* () { yield* ow.wildBattle('chirpadee', 3); })(), 'test');
   t.tick(2);
   assert.ok(t.mash(() => G.top() instanceof NP.BattleScene, 600), 'battle scene appears');
   const bs = G.top();
   assert.ok(t.mash(() => G.top() === ow && t.idle(), 12000), 'battle ends and control returns; top=' + G.top().constructor.name);
   assert.ok(party[0].exp > before || party[0].hp <= 0, 'exp or faint');
-  assert.ok(NP.state.dex.seen.peepi, 'seen registered');
+  assert.ok(NP.state.dex.seen.chirpadee, 'seen registered');
 }
 
 // ---- befriending: Bag -> Spools -> Bond Spool
@@ -54,7 +54,7 @@ console.log('slice part 1 ok', t.pos());
   NP.state.party[0].hp = 30; // plenty
   NP.state.bag.master_spool = 1;
   NP.state.items_before = NP.state.bag.master_spool;
-  ow.spawn((function* () { yield* ow.wildBattle('nibbi', 3); })(), 'test');
+  ow.spawn((function* () { yield* ow.wildBattle('nibblit', 3); })(), 'test');
   assert.ok(t.mash(() => G.top() instanceof NP.BattleScene, 600));
   // wait for the action menu: the menu is shown when menus array non-empty
   const bs = G.top();
@@ -72,8 +72,8 @@ console.log('slice part 1 ok', t.pos());
   for (let i = 0; i < idx; i++) t.tap('down');
   t.tap('a'); t.tick(4); t.tap('a'); // Use
   assert.ok(t.mash(() => G.top() === ow && t.idle(), 12000), 'befriend flow ends');
-  assert.ok(NP.state.party.some((k) => k.species === 'nibbi') || NP.state.box.some((k) => k.species === 'nibbi'), 'nibbi joined');
-  assert.ok(NP.state.dex.caught.nibbi);
+  assert.ok(NP.state.party.some((k) => k.species === 'nibblit') || NP.state.box.some((k) => k.species === 'nibblit'), 'nibblit joined');
+  assert.ok(NP.state.dex.caught.nibblit);
   assert.equal(NP.state.bag.master_spool || 0, 0);
 }
 console.log('battle flows ok');

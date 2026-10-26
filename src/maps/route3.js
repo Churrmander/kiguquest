@@ -26,15 +26,15 @@
   M.spawn('west', 2, 10, 'right').spawn('east', 29, 11, 'left');
   M.edge('w', 10, 11, 'hemline', 'east').edge('e', 10, 11, 'seamstead', 'west');
 
-  M.enc('grass', [['sparkin|mittsy', 13, 15, 25], ['kumi|nibbi', 13, 15, 20], ['peepi', 14, 16, 20], ['mittsy', 14, 16, 20], ['sparkin|mittsy', 15, 17, 10]]);
+  M.enc('grass', [['scurrent|kittabra', 13, 15, 25], ['kumi|nibblit', 13, 15, 20], ['chirpadee', 14, 16, 20], ['kittabra', 14, 16, 20], ['scurrent|kittabra', 15, 17, 10]]);
 
-  M.trainer('r3_t1', 13, 9, 'schoolgirl', 'down', { cls: 'Student', name: 'Bea', sight: 2, reward: 8, ai: 1, team: [['mittsy', 14], ['peepi', 14]],
+  M.trainer('r3_t1', 13, 9, 'schoolgirl', 'down', { cls: 'Student', name: 'Bea', sight: 2, reward: 8, ai: 1, team: [['kittabra', 14], ['chirpadee', 14]],
     intro: 'Pattern drafting class! Our teacher said to test everything, so let\'s battle!', win: 'That wasn\'t on the syllabus!', after: 'Seamstead has a whole street just for fabric. I mean a whole street!' });
-  M.trainer('r3_t2', 18, 12, 'camper', 'up', { cls: 'Hiker', name: 'Rolf', sight: 2, reward: 9, ai: 1, team: [['kumi|nibbi', 15], ['kumi|nibbi', 15]],
+  M.trainer('r3_t2', 18, 12, 'camper', 'up', { cls: 'Hiker', name: 'Rolf', sight: 2, reward: 9, ai: 1, team: [['kumi|nibblit', 15], ['kumi|nibblit', 15]],
     intro: 'I walked from Hemline in a straight line. Mostly straight!', win: 'Huh. I walked here straight and lost crooked.', after: 'The road only bends once. I counted.' });
-  M.trainer('r3_t3', 25, 9, 'rocker', 'down', { cls: 'Busker', name: 'Jax', sight: 2, reward: 10, ai: 1, team: [['sparkin|mittsy', 16], ['sparkin|mittsy', 16]],
+  M.trainer('r3_t3', 25, 9, 'rocker', 'down', { cls: 'Busker', name: 'Jax', sight: 2, reward: 10, ai: 1, team: [['scurrent|kittabra', 16], ['scurrent|kittabra', 16]],
     intro: 'Seamstead rocks and so do I! Check my amp... oh, it\'s a sewing machine.', win: 'My ears are still ringing! Nice one.', after: 'Zip taught me that tune. Zip teaches everyone that tune.' });
-  M.trainer('r3_t4', 27, 12, 'pleat', 'up', { cls: 'Presser', name: 'Hem', sight: 2, reward: 10, ai: 1, music: 'battle_society', team: [['mittsy', 15], ['silkie', 16]],
+  M.trainer('r3_t4', 27, 12, 'pleat', 'up', { cls: 'Presser', name: 'Hem', sight: 2, reward: 10, ai: 1, music: 'battle_society', team: [['kittabra', 15], ['silkie', 16]],
     intro: 'Seam Road rules: no dawdling, no wrinkles, and no unauthorised skipping.', win: 'Skipping is... apparently unregulated. I\'ll make a note of that.', after: 'I shall report that the road is satisfactory. ...Barely.' });
 
   M.npc('baker', 24, 16, 'grunt_f', 'left', ['I always wanted to be a baker. Warm bread on a cold morning, you know?\\pBut the Society told me it does more good than any bakery could.\\pMadame Damask never raises her voice. She never has to.\\pEveryone just gets... smoother.']);
