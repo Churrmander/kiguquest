@@ -16,9 +16,11 @@ roads". Warm, cosy, a little magical — festival lanterns, sewing-shop signs, p
 | **Tea House** | The heal station in every town (Kigu nap + cocoa). Has the storage terminal. |
 | **General Store** | Shops. |
 | **Salon** / **Master Tailor** | The eight gyms / gym leaders. Win a **Button** (badge). |
-| **The Four Needles** | The Elite Four. **The Grand Tailor** = Champion. The final hall is **the Grand Atelier**. |
-| **The Starch Society** | The villain team. Believes the world should be *pressed flat and uniform*: no wild Kigu, no wrinkles. Grunts wear stiff white uniforms with blue starch collars ("Pressers"); admins are "Pleats". Leader: **Madame Damask**. |
-| **Warpa & Weftie** | Twin guardian Kigu who "wove" the land (warp = vertical threads, weft = horizontal). The Society wants them. Player bonds with one; the leader's ace is the other. |
+| **Global Tailor's Association** | The authority over all Tailors, led by the Needles. The Tailors' Guild is its Tsumugi branch (proposed). |
+| **The Four Needles** | The Elite Four, and the leaders of the Global Tailor's Association. They vanished because of Datod's activity, which left a power vacuum the Starch Society filled (STORY §7b). **The Weave Guardian** = Champion. The final hall is **the Grand Atelier**. |
+| **The Starch Society** | The villain team. Believes the world should be *pressed flat and uniform*: no wild Kigu, no wrinkles. Grunts wear stiff white uniforms with blue starch collars ("Pressers"); admins are "Pleats". Leader: **Madame Damask**, an ex-Needle (which is how the Society has a piece of the Everspool). Mantra: *"Flat is fair."* Motto: *"Perfection is just the beginning."* Began as the **Order of Ribbons**, a respected Tailor organisation; its leader was tricked by the entity and reorganised it into the Society. Members think they are tidying the world; the real plan is to press Tsumugi flat and merge it with the tapestry to free him. |
+| **Datod the Weave-Eater** (owner, 2026-10-26; "DAH-tod", Welsh for "to undo") | The big bad, bound in a **magic tapestry**; the antithesis of the legendary Kigu seamstresses; he once threatened to consume the universe. **Not a Kigu**: it cannot be bonded with, and the Everspool cannot sway it. Name and look still open (STORY §7a). |
+| **Astara & Anwela** (owner names 2026-10-26, from Welsh *ystof* warp / *anwe* weft; were Warpa & Weftie; code ids still `warpa` / `weftie`) | The Goddesses of Order and Nature, twin guardian Kigu. They wove the magic tapestry to contain Datod, then wove the land as its opposite (warp = vertical threads, weft = horizontal). The legendary Kigu seamstresses; they speak through Kigu, which is how they talk to the player in the end-game. The Society wants them. Player bonds with one; the leader's ace is the other. |
 | **Paddle / Snip / Shove / Glide / Climb** | Field moves (HM-style): cross water / cut small trees / push boulders / fast-travel / climb waterfalls. |
 
 Species cry = a short sound-word shown in battle ("Kon!").
@@ -73,6 +75,9 @@ Every new or changed Kigu name must pass all of these, and **the owner approves 
 7. **One obvious reading.** A player who has never heard it said should stress it the way we mean (Pomisno was dropped).
 8. **10 letters or fewer**, so it fits the battle HP box and menus.
 
+**Owner's note on rule 4 (2026-10-26):** a stem only counts when it carries the same idea. Letters that line up by
+coincidence are fine (Astara has nothing to do with stars, so Amethystar is no clash).
+
 Old ids from the round 2 rename live in `src/data/renames.js` (saves migrate on load; cries keep their old sound).
 
 **Starters (P1)**
@@ -96,9 +101,9 @@ Old ids from the round 2 rename live in `src/data/renames.js` (saves migrate on 
 16. `larkestra` Larkestra — Fluff/Gale — 3/3 — famous singer lark: long wing-cape, tail-feather train, feather crown, note motifs; her song carries across three towns.
 
 **Gingham Woods / Seamstead (P1–P2)**
-17. `silkie` Silkie — Buzz — 1/3, →Lv10 `cocoona` — silkworm: white fuzzy segmented onesie, stubby nub antennae hood, pale lavender hair, sleepy.
-18. `cocoona` Cocoona — Buzz — 2/3, →Lv30 `mothelia` — girl curled in a pale-green cocoon sleeping bag (only head + hands out), half-lidded.
-19. `mothelia` Mothelia — Buzz/Gale — 3/3 — moth-wing dress-cape with big patterned wings, feathery antenna headband, sparkle scales.
+17. `silkie` **Acolarva** (was Silkie; owner 2026-10-26, acolyte + larva; id renames later) — Buzz — 1/3, →Lv10 `cocoona` — shrine initiate silkworm: white fuzzy segmented onesie, stubby nub antennae hood, pale lavender hair, sleepy; a little red shrine cord tied around her middle.
+18. `cocoona` **Vowspun** (was Cocoona; owner 2026-10-26, she takes her vows and spins her cocoon; id renames later) — Buzz — 2/3, →Lv30 `mothelia` — shrine trainee: girl curled in a pale-green cocoon sleeping bag (only head + hands out), half-lidded.
+19. `mothelia` **Mikoga** (was Mothelia; owner 2026-10-26, Japanese *miko* shrine maiden + *ga* moth, say MEE-ko-ga; id renames later) — Buzz/Gale — 3/3 — full shrine maiden: moth-wing dress-cape in shrine-maiden white and red with big patterned wings, feathery antenna headband, sparkle scales.
 20. `buzzlet` Buzzlet — Buzz — 1/2, →Lv20 `hunnibloom` — bee: yellow-black striped onesie, tiny antennae, honey pot, blonde bobbles.
 21. `hunnibloom` Hunnibloom — Buzz/Sprout — 2/2 — honeycomb dress, flower crown, translucent wings, honey-dipper wand.
 22. `spinnet` Spinnet — Buzz — 1/2, →Lv22 `spindra` — spider: dark-purple hoodie with four extra small sleeve-arms for knitting, eight tiny red eye-spots on the hood, yarn ball; shy.
@@ -135,11 +140,11 @@ Old ids from the round 2 rename live in `src/data/renames.js` (saves migrate on 
 51. `cordymime` Cordymime — Nettle/Sprout — 2/2 — cute+creepy mushroom mime: parasol cap, frilly gill skirt, mycelium threads on her fingers like gentle puppet strings; mimes pulling invisible ropes. Spooky-cute, never gory. *(Redesign still to do.)*
 52. `pilfurr` Pilfurr — Shade — 1/2, →Lv20 `prowlure` — black-cat highwayman: black cat hood, highwayman mask, cape, striped socks, stolen scarf; cheeky. *(Redesign still to do.)*
 53. `prowlure` Prowlure — Shade — 2/2 — swashbuckling musketeer thief: highwayman mask, rapier, cape, feathered musketeer cap (no top hat, so she does not twin with Wiskedabra), ribbon-lock tail. *(Redesign still to do.)*
-54. `smolava` Smolava — Drake — 1/3, →Lv50 `wyvrant` — little dragon onesie (crimson/black), tiny horns hood, stubby tail.
-55. `wyvrant` Wyvrant — Drake — 2/3, →Lv64 `empyress` — moody teen wyvern with a bad attitude (wyvern plus rant): dragon hoodie with wings and horns, long tail.
-56. `empyress` Empyress — Drake/Shade — 3/3 — composed dragon empress (empress plus pyre), grown out of her teen rants: three-horn crown, huge wing-cape, flowing gown.
-57. `warpa` Warpa — Dream/Ember — legendary, single stage — tall weaver-spirit in a white-and-crimson ceremonial robe, vertical threads streaming from her sleeves, a loom-comb crown.
-58. `weftie` Weftie — Dream/Tide — legendary, single stage — her twin, in white-and-blue, horizontal threads swirling around her like ribbons.
+54. `smolava` Smolava — Drake — 1/3, →Lv30 `wyvrant` (owner 2026-10-26, was Lv50) — little dragon onesie (crimson/black), tiny horns hood, stubby tail. **Personality (owner, 2026-10-26):** a little cutie who loves to help out. *Sketchbook (draft):* "A little dragon who follows people around asking for chores. She'll carry anything you hand her, even when it's bigger than she is."
+55. `wyvrant` Wyvrant — Drake — 2/3, →Lv55 `empyress` (owner 2026-10-26, was Lv64) — moody teen wyvern with a bad attitude (wyvern plus rant): dragon hoodie with wings and horns, long tail. **Personality (owner):** rebellious and rambunctious, hates taking orders and gets angry easily. Lore only: it has no gameplay effect for the player's own Wyvrant. *Sketchbook (draft):* "She hates being told what to do and loses her temper over almost anything. Tailors say the only way to work with one is to let her think it was her idea."
+56. `empyress` Empyress — Drake/Shade — 3/3 — composed dragon empress (empress plus pyre), grown out of her teen rants: three-horn crown, huge wing-cape, flowing gown. **Personality (owner):** proud and noble; only takes orders from Tailors she deems the best. *Sketchbook (draft):* "A proud dragon who only takes orders from a Tailor she judges to be the best. It's said that no Empyress has ever willingly chosen a Tailor." (Every Empyress with a Tailor chose them back when she was a Wyvrant, so the player's is the exception that proves the legend.)
+57. `warpa` **Astara** (was Warpa; id renames later) — Dream/Ember — legendary, single stage — tall weaver-spirit in a white-and-crimson ceremonial robe, vertical threads streaming from her sleeves, a loom-comb crown.
+58. `weftie` **Anwela** (was Weftie; id renames later) — Dream/Tide — legendary, single stage — her twin, in white-and-blue, horizontal threads swirling around her like ribbons.
 
 More families (Desert, Harbor, Airfield, Snow, League) get added as chapters are built — the generator must make adding a
 species a ~10-line look spec.
@@ -223,4 +228,4 @@ Button Town (start, Prof. Bobbin's lab) → **Route 1 Meadow Lane** → **Thimbl
 (Buzz/Sprout forest; Society shrine incident) → **Hemline** (town; Salon 2, Buzz) → **Seamstead City** (big city; Salon 3, Volt; Society "Crisp & Co." front)
 → Route 4 + **Dust Bowl Desert** → **Bobbin Quarry** (Salon 4, Terra) → Route 5/6 + Chargestone-style cave → **Kite Hill** (airfield; Salon 5, Gale) →
 **Woolen Peak** (snow town; Salon 6, Frost) → Society Starch Works base → **Loomhaven** (Salon 7, Drake? / final city, Salon 8) → Victory Road → **Grand Atelier**
-(Four Needles + Grand Tailor). Rival battles at roughly: Route 1 exit, Thimble, Seamstead, Quarry, Kite Hill, Loomhaven, Victory Road.
+(Four Needles + Weave Guardian). Rival battles at roughly: Route 1 exit, Thimble, Seamstead, Quarry, Kite Hill, Loomhaven, Victory Road.

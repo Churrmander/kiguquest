@@ -60,7 +60,7 @@ a class, add `addBank` entries in `src/data/text/classes.js` (ask the Writer). A
 | `{stat}` | Attack, Sp. Def, Speed, accuracy... | `{n}` `{lv}` `{hp}` `{exp}` `{money}` `{count}` | numbers (write `$` in the text) |
 | `{to}` `{from}` | evolution target / source species | `{place}` | a place name |
 | `{status}` | burned / poisoned / paralyzed / asleep / frozen | `{starter}` `{rstarter}` | player's / rival's starter species |
-| `{twin}` `{twin2}` | the twin you befriended / the other (Warpa, Weftie) | | |
+| `{twin}` `{twin2}` | the twin you befriended / the other (Astara, Anwela; ids `warpa`, `weftie`) | | |
 
 Rules: a `{var}` not in this table fails the test. Do not put a variable at the very start of a sentence if it could be
 "Wild Kittabra" vs "Konko" and read oddly; the `sys.*` lines are written so both forms work ("{mon} used {move}!").
@@ -81,7 +81,7 @@ Rules: a `{var}` not in this table fails the test. Do not put a variable at the 
 ## Branding / originality / all-ages (enforced by the test)
 
 Say **Kigu** (never monster/creature), **Tailor** (never trainer), **Salon** (gym), **Button** (badge), **Master Tailor** (gym leader),
-**the Four Needles / the Grand Tailor** (Elite Four / champion), **Sketchbook**, **Tea House**, **General Store**, **Bond Spool**,
+**the Four Needles / the Weave Guardian** (Elite Four / champion), **Sketchbook**, **Tea House**, **General Store**, **Bond Spool**,
 **Stitch Bond** / **befriend** (never catch/capture/tame). Kigu "fall asleep" ("too sleepy to go on"), nobody is hurt, nothing dies.
 Never use real-franchise names or terms (see the glossary in `docs/STORY.md` §14). Wholesome: no fanservice, no insults at the
 player, no swearing ("darn" and "drat" are the strongest words in Tsumugi).
