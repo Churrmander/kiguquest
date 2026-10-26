@@ -243,7 +243,7 @@
   /** Lazy player: frame(i) renders and caches frame i (the rest pose is worked out first, for its pinholes). */
   function player(rig, bmp, place) {
     const parts = build(rig, bmp), cache = [];
-    let rest = null;
+    let rest = null, restPx = null;
     const pose = (i) => {
       const o = {}; // offsets are whole pixels (a half twitch rounds to 0)
       for (const name in rig.anim || {}) { const t = rig.anim[name]; o[name] = [Math.round(track(t.dx, i)) || 0, Math.round(track(t.dy, i)) || 0, track(t.ang, i)]; }
@@ -251,13 +251,24 @@
     };
     const make = (i) => {
       const px = render(parts, pose(i), bmp.w, bmp.h, place);
-      if (!rest) rest = holes(px, place.w, place.h);
+      if (!rest) { rest = holes(px, place.w, place.h); restPx = px; }
       else { // new pinholes (not next to one the sprite already has) take their nearest neighbour's colour
         const W = place.w, hm = holes(px, place.w, place.h), near = rest.slice(), have = new Uint8Array(px.length);
         for (let k = 0; k < rest.length; k++) if (rest[k]) {
           if (k % W > 0) near[k - 1] = 1; if (k % W < W - 1) near[k + 1] = 1; if (k >= W) near[k - W] = 1; if (k + W < rest.length) near[k + W] = 1;
         }
         for (let k = 0; k < px.length; k++) { hm[k] = hm[k] && !near[k] ? 1 : 0; have[k] = px[k] >>> 24 ? 1 : 0; }
+        // pinholes, and holes that were mostly sprite at rest: a pocket of air two parts closed around stays air
+        for (let k = 0; k < hm.length; k++) if (hm[k] === 1) {
+          const blob = [k], st = [k];
+          hm[k] = 2;
+          while (st.length) {
+            const j = st.pop(), x = j % W;
+            for (const n of [x > 0 ? j - 1 : -1, x < W - 1 ? j + 1 : -1, j - W, j + W]) if (n >= 0 && n < hm.length && hm[n] === 1) { hm[n] = 2; st.push(n); blob.push(n); }
+          }
+          if (blob.length > 3 && blob.filter((j) => restPx[j] >>> 24).length * 2 < blob.length) for (const j of blob) hm[j] = 3;
+        }
+        for (let k = 0; k < hm.length; k++) hm[k] = hm[k] === 2 ? 1 : 0;
         nearestFill(px, place.w, place.h, hm, have);
       }
       const b = new NP.Bitmap(place.w, place.h);
