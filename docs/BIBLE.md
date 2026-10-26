@@ -101,9 +101,9 @@ Old ids from the round 2 rename live in `src/data/renames.js` (saves migrate on 
 16. `larkestra` Larkestra — Fluff/Gale — 3/3 — famous singer lark: long wing-cape, tail-feather train, feather crown, note motifs; her song carries across three towns.
 
 **Gingham Woods / Seamstead (P1–P2)**
-17. `silkie` Silkie — Buzz — 1/3, →Lv10 `cocoona` — silkworm: white fuzzy segmented onesie, stubby nub antennae hood, pale lavender hair, sleepy.
-18. `cocoona` Cocoona — Buzz — 2/3, →Lv30 `mothelia` — girl curled in a pale-green cocoon sleeping bag (only head + hands out), half-lidded.
-19. `mothelia` Mothelia — Buzz/Gale — 3/3 — moth-wing dress-cape with big patterned wings, feathery antenna headband, sparkle scales.
+17. `silkie` **Acolarva** (was Silkie; owner 2026-10-26, acolyte + larva; id renames later) — Buzz — 1/3, →Lv10 `cocoona` — shrine initiate silkworm: white fuzzy segmented onesie, stubby nub antennae hood, pale lavender hair, sleepy; a little red shrine cord tied around her middle.
+18. `cocoona` **Vowspun** (was Cocoona; owner 2026-10-26, she takes her vows and spins her cocoon; id renames later) — Buzz — 2/3, →Lv30 `mothelia` — shrine trainee: girl curled in a pale-green cocoon sleeping bag (only head + hands out), half-lidded.
+19. `mothelia` **Mikoga** (was Mothelia; owner 2026-10-26, Japanese *miko* shrine maiden + *ga* moth, say MEE-ko-ga; id renames later) — Buzz/Gale — 3/3 — full shrine maiden: moth-wing dress-cape in shrine-maiden white and red with big patterned wings, feathery antenna headband, sparkle scales.
 20. `buzzlet` Buzzlet — Buzz — 1/2, →Lv20 `hunnibloom` — bee: yellow-black striped onesie, tiny antennae, honey pot, blonde bobbles.
 21. `hunnibloom` Hunnibloom — Buzz/Sprout — 2/2 — honeycomb dress, flower crown, translucent wings, honey-dipper wand.
 22. `spinnet` Spinnet — Buzz — 1/2, →Lv22 `spindra` — spider: dark-purple hoodie with four extra small sleeve-arms for knitting, eight tiny red eye-spots on the hood, yarn ball; shy.
