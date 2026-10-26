@@ -197,9 +197,14 @@ one keeps folding your shirt while you battle. Class key `presser`. **Crisp & Co
 
 **The true beginning (owner, 2026-10-26; nobody alive tells it this way).** Warpa and Weftie were the **Goddesses of Order and Nature**
 (proposed: Warpa is Order, the steady straight thread; Weftie is Nature, the restless thread that wanders across). The Unweaving
-threatened to consume the universe, so they wove a **magic tapestry** to contain him. Then they wove **Tsumugi as the tapestry's
+threatened to consume the universe, so they wove a **magic tapestry** to contain him, using the **Everspool** (owner's words: "the Eternal
+Spool"; read here as the same spool, see §15). Then they wove **Tsumugi as the tapestry's
 opposite**, so he would be better contained: the tapestry is tight, flat and still, and Tsumugi is loose, patched and full of choices.
-As long as the two stay different, they cannot become one cloth, and he cannot get out. *That is why flattening Tsumugi matters:* the
+As long as the two stay different, they cannot become one cloth, and he cannot get out.
+
+**Why the goddesses are Kigu (owner, 2026-10-26).** They made the first Kigu by weaving spirits of nature into living costumes with the
+Everspool's thread. Doing that bound the goddesses to the same fate, and they became Kigu themselves. It is why they can speak through
+any Kigu: all Kigu are woven from the same thread they are. *That is why flattening Tsumugi matters:* the
 flatter and more uniform it gets, the more it looks like the tapestry, until the two can be merged. (New names for both goddesses are
 open, §15.)
 
@@ -235,7 +240,12 @@ thread can calm any heart that is able to choose, which is how the first Stitch 
 so the thread slides off.
 
 **The tapestry.** Before Tsumugi existed, the goddesses could not unmake him, so they wove a magic tapestry around him, and then wove
-Tsumugi as its opposite to keep him in (§7). The tapestry holds him, but he is not quiet. Its pull is what made the Needles vanish (proposed: they were drawn into the tapestry, §7 below).
+Tsumugi as its opposite to keep him in (§7). The tapestry is woven from Everspool thread, like the Kigu. The tapestry holds him, but he is not quiet.
+
+**How he speaks to the Society (owner, 2026-10-26).** One **loose thread** of the tapestry found its way out into Tsumugi. He talks through
+it, the same way the goddesses talk through Kigu, because it is the same thread. That loose thread is how he reached the Order's leader and
+how he still gives the Society its orders. (Proposed: Damask keeps it wound on a plain white spool in her brooch case, and the Society's
+interest in the Everspool in Chapter 2 is really an attempt to find more of the same thread.) Its pull is what made the Needles vanish (proposed: they were drawn into the tapestry, §7 below).
 
 **Name and look:** open, see §15. Working name in docs only: "the Unweaving". It must not look like a Kigu girl in a costume.
 
@@ -347,7 +357,7 @@ Dahlia and Draco are childhood friends from next-door houses in Button Town; the
 Nobody in the game dies. Pressed Kigu are cured by Soft Rinse (Mimi's invention) plus time. The hero's jacket ends with eight Buttons; Buttons are sewn on with the Master's thread. Kigu choose Tailors; the word "captured" is never used.
 Tea Houses everywhere serve cocoa. The Starch Society's mantra is "Flat is fair." and its motto is "Perfection is just the beginning." (verbatim).
 The Needles lead the Global Tailor's Association and vanished because of the entity; the Society filled the gap. The Society was benevolent
-before its leaders found the tapestry and were misled. The legendary seamstresses (Warpa and Weftie) speak through Kigu. The big bad is
+before its leaders found the tapestry and were misled. The legendary seamstresses (Warpa and Weftie) speak through Kigu; they became Kigu by weaving Kigu with the Everspool. The tapestry is Everspool thread, and the big bad speaks to the Society through one loose thread of it. The big bad is
 **not a Kigu**: it cannot be bonded with and the Everspool cannot sway it. The rival's dad stays pressed until Chapter 8. The hero's Mom knows more than she says (she has never mentioned why she stitches her hems with a double knot — the Loomhaven way).
 
 ## 14. Glossary: words the text must NEVER contain (enforced by `tests/text.test.mjs`)
@@ -373,7 +383,8 @@ is a suggestion until the owner picks.
 0. New names for Warpa and Weftie (the owner wants them replaced; proposals in the summary file, owner approves before anything changes).
 1. The entity's name and look.
 2. ~~Who trapped it~~ Answered 2026-10-26: the goddesses wove the tapestry to contain him.
-2a. How the Order's leader was tricked.
+2a. ~~How the Order's leader was tricked.~~ Answered 2026-10-26: through a loose thread of the tapestry. Still open: where it was found.
+2b. Is "the Eternal Spool" the Everspool (assumed), or a second, older spool? If it is the same, keep the name Everspool or rename it?
 3. How the vanished Needles square with the Four Needles fight and Mr. Sharp.
 4. When the Needles vanished.
 5. The Guild and the Association: one body or two.
