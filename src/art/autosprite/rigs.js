@@ -763,7 +763,7 @@
         ...breathe(50, 45, 61),
       ],
       anim: { upper: BOB, head: { dy: ['tab', 'NOD', 1, 0], ang: ['tab', 'SWAY', 1.5, 2] }, clawL: { dy: ['tab', 'NOD', 1, 2] }, clawR: { dy: ['tab', 'NOD', 1, 2] },
-        earL: { ang: ['twitch', -5, 8] }, earR: { ang: ['twitch', 5, 13] } },
+        earL: { dy: ['twitch', -1, 8] }, earR: { dy: ['twitch', -1, 13] } },
     },
     back: {
       parts: [
@@ -772,14 +772,14 @@
         { name: 'earR', polys: [[[33, 9], [33, 2], [48, 2], [48, 14], [38, 14]]], z: 4, pivot: [39, 13], parent: 'upper', comp: 'main', fill: [['upper', [box(32, 0, 44, 16)]]] },
         ...breathe(56, 59, 78),
       ],
-      anim: { upper: BOB, paw: { ang: ['tab', 'FLICK', 2, 0] }, earL: { ang: ['twitch', -5, 8] }, earR: { ang: ['twitch', 5, 13] } },
+      anim: { upper: BOB, paw: { ang: ['tab', 'FLICK', 2, 0] }, earL: { dy: ['twitch', -1, 8] }, earR: { dy: ['twitch', -1, 13] } },
     },
   };
 
   R.molluna = { // the pickaxe hand swings after the breath, the hard hat settles
     front: {
       parts: [
-        { name: 'arm', polys: [[[40, 33], [67, 33], [67, 62], [48, 62], [48, 57], [40, 57]]], z: 4, pivot: [43, 37], parent: 'upper', comp: 'main', fill: [['upper', [box(36, 33, 46, 58)]]] },
+        { name: 'arm', polys: [[[40, 33], [67, 33], [67, 62], [48, 62], [48, 57], [40, 57]]], z: 4, pivot: [43, 37], parent: 'upper', comp: 'main', fill: [['upper', [box(36, 33, 46, 58)]], ['lower', [box(40, 54, 50, 61)]]] },
         { name: 'mittL', polys: [box(0, 50, 20, 65)], z: 3, parent: 'upper', comp: 'main' },
         { name: 'hat', polys: [box(14, 0, 52, 18)], z: 4, comp: 'main', fill: [['upper', [box(14, 15, 52, 20)]]] },
         ...breathe(58, 67, 77),
@@ -824,7 +824,7 @@
   R.needlance = { // the lance sways in her grip, the head settles after the breath; the tail sways (back)
     front: {
       parts: [
-        { name: 'lance', polys: [[[0, 0], [10, 0], [10, 49], [13, 50], [13, 78], [9, 78], [7, 50], [6, 40], [0, 38]]], z: 1.5, pivot: [10, 45], parent: 'upper', extend: [box(7, 40, 16, 50)] },
+        { name: 'lance', polys: [[[0, 0], [9, 0], [9, 23], [10, 23], [10, 49], [12, 50], [12, 78], [9, 78], [7, 50], [6, 40], [0, 38]]], z: 1.5, pivot: [10, 45], parent: 'upper', extend: [box(7, 40, 16, 50)] },
         { name: 'head', polys: [box(8, 0, 46, 33)], z: 3, comp: 'main', fill: [['upper', [box(8, 31, 46, 35)]]] },
         ...breathe(58, 46, 78),
       ],
@@ -849,7 +849,7 @@
         { name: 'earR', polys: [[[37, 6], [39, 0], [49, 0], [49, 10], [39, 10]]], z: 4, pivot: [40, 10], parent: 'upper', comp: 'main', fill: [['upper', [box(34, 0, 49, 13)]]] },
         ...breathe(46, 49, 62),
       ],
-      anim: { upper: BOB, tailL: { ang: ['tab', 'SWAY', 1.5, 2] }, tailR: { ang: ['tab', 'SWAY', 1.5, 2] }, earL: { ang: ['twitch', -5, 8] }, earR: { ang: ['twitch', 5, 13] } },
+      anim: { upper: BOB, tailL: { ang: ['tab', 'SWAY', 1.5, 2] }, tailR: { ang: ['tab', 'SWAY', 1.5, 2] }, earL: { dy: ['twitch', -1, 8] }, earR: { dy: ['twitch', -1, 13] } },
     },
     back: {
       parts: [
@@ -859,7 +859,7 @@
         { name: 'earR', polys: [[[40, 6], [42, 0], [56, 0], [56, 10], [42, 10]]], z: 4, pivot: [43, 10], parent: 'upper', comp: 'main', fill: [['upper', [box(36, 0, 58, 13)]]] },
         ...breathe(60, 66, 83),
       ],
-      anim: { upper: BOB, tailL: { ang: ['tab', 'SWAY', 1.5, 2] }, tailR: { ang: ['tab', 'SWAY', 1.5, 2] }, earL: { ang: ['twitch', -5, 8] }, earR: { ang: ['twitch', 5, 13] } },
+      anim: { upper: BOB, tailL: { ang: ['tab', 'SWAY', 1.5, 2] }, tailR: { ang: ['tab', 'SWAY', 1.5, 2] }, earL: { dy: ['twitch', -1, 8] }, earR: { dy: ['twitch', -1, 13] } },
     },
   };
 
@@ -885,34 +885,35 @@
   };
 
   // ---------------------------------------------------------------- batch 7
-  R.ottelia = { // flipper sleeves flap (front); the tail sways and the raised flipper waves (back)
+  R.ottelia = { // flipper sleeves flap and the head rocks (front); the tail sways and the raised flipper waves (back)
     front: {
       parts: [
         { name: 'finL', polys: [box(0, 44, 9, 55)], z: 3, pivot: [10, 48], parent: 'upper', comp: 'main', fill: [['upper', [box(7, 44, 12, 55)]]] },
         { name: 'finR', polys: [box(43, 44, 52, 55)], z: 3, pivot: [42, 48], parent: 'upper', comp: 'main', fill: [['upper', [box(40, 44, 45, 55)]]] },
+        { name: 'head', polys: [box(0, 0, 53, 35)], z: 3, pivot: [26, 36], parent: 'upper', comp: 'main', fill: [['upper', [box(0, 33, 53, 38)]]] },
         ...breathe(60, 52, 77),
       ],
-      anim: { upper: BOB, finL: { ang: ['tab', 'OPEN', 2.5, 1] }, finR: { ang: ['tab', 'OPEN', -2.5, 1] } },
+      anim: { upper: BOB, head: { ang: ['tab', 'SWAY', 1.5, 2] }, finL: { ang: ['tab', 'OPEN', 5, 1] }, finR: { ang: ['tab', 'OPEN', -5, 1] } },
     },
     back: {
       parts: [
-        { name: 'tail', polys: [box(0, 62, 14, 80)], z: 3, pivot: [16, 72], comp: 'main', fill: [['lower', [box(10, 62, 20, 80)]]] },
+        { name: 'tail', polys: [[[0, 62], [10, 62], [10, 74], [14, 74], [14, 80], [0, 80]]], z: 3, pivot: [7, 80], comp: 'main', fill: [['lower', [box(10, 62, 20, 80), box(0, 77, 16, 82)]]] },
         { name: 'fin', polys: [box(55, 46, 66, 58)], z: 4, pivot: [56, 54], parent: 'upper', comp: 'main', fill: [['upper', [box(52, 48, 58, 58)]]] },
         ...breathe(66, 66, 102),
       ],
-      anim: { upper: BOB, tail: { ang: ['tab', 'SWAY', -2, 0] }, fin: { ang: ['tab', 'FLICK', 2, 0] } },
+      anim: { upper: BOB, tail: { ang: ['tab', 'SWAY', -3, 0] }, fin: { ang: ['tab', 'FLICK', 4, 0] } },
     },
   };
 
   R.ottomarine = { // the life ring swings after the breath, the cap settles, the fish tail sways
     front: {
       parts: [
-        { name: 'ring', polys: [box(46, 40, 66, 70)], z: 4, pivot: [50, 55], parent: 'upper', comp: 'main', fill: [['upper', [box(42, 40, 50, 70)]]] },
+        { name: 'ring', polys: [box(46, 40, 66, 70)], z: 4, pivot: [50, 55], parent: 'upper', comp: 'main', fill: [['upper', [box(42, 40, 50, 70)]], ['lower', [box(44, 63, 66, 72)]]] },
         { name: 'tail', polys: [box(0, 70, 18, 84)], z: 3, pivot: [20, 74], comp: 'main', fill: [['lower', [box(14, 68, 24, 84)]]] },
-        { name: 'hat', polys: [box(16, 0, 50, 16)], z: 4, comp: 'main', fill: [['upper', [box(16, 13, 50, 18)]]] },
+        { name: 'hat', polys: [box(17, 0, 53, 10), box(22, 10, 47, 17)], z: 4, comp: 'main', fill: [['upper', [box(16, 13, 50, 18)]]] },
         ...breathe(66, 66, 87),
       ],
-      anim: { upper: BOB, ring: { ang: ['tab', 'SWAY', 1, 2] }, tail: { ang: ['tab', 'SWAY', 2, 0] }, hat: { dy: ['tab', 'NOD', 1, 2] } },
+      anim: { upper: BOB, ring: { ang: ['tab', 'SWAY', 2, 2] }, tail: { ang: ['tab', 'SWAY', 2, 0] }, hat: { dy: ['tab', 'NOD', 1, 2] } },
     },
     back: {
       parts: [
@@ -921,7 +922,7 @@
         { name: 'hat', polys: [box(20, 0, 58, 22)], z: 4, comp: 'main', fill: [['upper', [box(20, 19, 58, 24)]]] },
         ...breathe(70, 69, 100),
       ],
-      anim: { upper: BOB, tail: { ang: ['tab', 'SWAY', -2, 0] }, hand: { ang: ['tab', 'FLICK', 2, 0] }, hat: { dy: ['tab', 'NOD', 1, 2] } },
+      anim: { upper: BOB, tail: { ang: ['tab', 'SWAY', -2.5, 0] }, hand: { ang: ['tab', 'FLICK', 4.5, 0] }, hat: { dy: ['tab', 'NOD', 1, 2] } },
     },
   };
 
@@ -929,38 +930,36 @@
     front: {
       parts: [
         { name: 'tail', polys: [box(30, 46, 38, 57)], z: 0.5, pivot: [30, 52], comp: 'main', extend: [box(26, 46, 32, 57)] },
-        { name: 'earL', polys: [box(0, 0, 8, 6)], z: 4, pivot: [6, 7], parent: 'head', comp: 'main', fill: [['head', [box(0, 5, 9, 8), box(6, 0, 10, 7)]]] },
-        { name: 'earR', polys: [box(29, 0, 38, 6)], z: 4, pivot: [31, 7], parent: 'head', comp: 'main', fill: [['head', [box(28, 5, 38, 8), box(27, 0, 31, 7)]]] },
-        { name: 'head', polys: [box(0, 0, 38, 34)], z: 3, pivot: [19, 34], comp: 'main', fill: [['upper', [box(0, 32, 38, 36)]]] },
+                        { name: 'head', polys: [box(0, 0, 38, 34)], z: 3, pivot: [19, 34], comp: 'main', fill: [['upper', [box(0, 32, 38, 36)]]] },
         ...breathe(52, 38, 67),
       ],
-      anim: { upper: BOB, head: { dy: ['tab', 'NOD', 1, 0], ang: ['tab', 'SWAY', 1.5, 2] }, tail: { ang: ['tab', 'SWAY', 2, 0] }, earL: { ang: ['twitch', -10, 8] }, earR: { ang: ['twitch', 10, 13] } },
+      anim: { upper: BOB, head: { dy: ['tab', 'NOD', 1, 0], ang: ['tab', 'SWAY', 1.5, 2] }, tail: { dy: ['tab', 'SWAY', 0.5, 0] } },
     },
     back: {
       parts: [
-        { name: 'tail', polys: [box(0, 54, 22, 72)], z: 3, pivot: [24, 62], comp: 'main', fill: [['upper', [box(18, 54, 28, 62)]], ['lower', [box(18, 62, 28, 72)]]] },
-        { name: 'paw', polys: [box(46, 44, 57, 56)], z: 4, pivot: [47, 52], parent: 'upper', comp: 'main', fill: [['upper', [box(43, 46, 49, 56)]]] },
+        { name: 'tail', polys: [[[0, 55], [11, 55], [11, 58], [22, 58], [22, 71], [0, 71]]], z: 3, pivot: [24, 62], comp: 'main', fill: [['upper', [box(18, 54, 28, 62)]], ['lower', [box(18, 62, 28, 72), box(0, 69, 24, 74)]]] },
+        { name: 'paw', polys: [box(46, 42, 57, 56)], z: 4, pivot: [47, 52], parent: 'upper', comp: 'main', fill: [['upper', [box(43, 44, 49, 56)]]] },
         ...breathe(62, 57, 89),
       ],
-      anim: { upper: BOB, tail: { ang: ['tab', 'SWAY', -2, 0] }, paw: { ang: ['tab', 'FLICK', 2, 0] } },
+      anim: { upper: BOB, tail: { ang: ['tab', 'SWAY', -2, 0] }, paw: { ang: ['tab', 'FLICK', 4.5, 0] } },
     },
   };
 
   R.pebblump = { // the stone hood rocks after the breath; the raised hand waves (back)
     front: {
       parts: [
-        { name: 'head', polys: [box(0, 0, 35, 31)], z: 3, pivot: [17, 31], comp: 'main', fill: [['upper', [box(0, 29, 35, 33)]]] },
+        { name: 'head', polys: [box(0, 0, 35, 31)], z: 3, pivot: [17, 33], parent: 'upper', comp: 'main', fill: [['upper', [box(2, 29, 25, 33)]]] },
         ...breathe(48, 35, 62),
       ],
-      anim: { upper: BOB, head: { dy: ['tab', 'NOD', 1, 0], ang: ['tab', 'SWAY', 1.5, 2] } },
+      anim: { upper: BOB, head: { ang: ['tab', 'SWAY', 1.5, 2] } },
     },
     back: {
       parts: [
-        { name: 'hand', polys: [box(40, 37, 48, 46)], z: 4, pivot: [41, 44], parent: 'upper', comp: 'main', fill: [['upper', [box(38, 39, 43, 46)]]] },
-        { name: 'head', polys: [box(0, 0, 40, 32), box(40, 0, 48, 36)], z: 3, pivot: [24, 32], comp: 'main', fill: [['upper', [box(0, 30, 48, 34)]]] },
+        { name: 'hand', polys: [box(39, 35, 48, 46)], z: 4, pivot: [41, 44], parent: 'upper', comp: 'main', fill: [['upper', [box(37, 37, 43, 46)]]] },
+        { name: 'head', polys: [box(0, 0, 40, 32), box(40, 0, 46, 34)], z: 3, pivot: [24, 32], comp: 'main', fill: [['upper', [box(0, 30, 48, 34)]]] },
         ...breathe(60, 48, 83),
       ],
-      anim: { upper: BOB, hand: { ang: ['tab', 'FLICK', 2, 0] }, head: { dy: ['tab', 'NOD', 1, 0], ang: ['tab', 'SWAY', 1, 2] } },
+      anim: { upper: BOB, hand: { ang: ['tab', 'FLICK', 5, 0] }, head: { dy: ['tab', 'NOD', 1, 0], ang: ['tab', 'SWAY', 1, 2] } },
     },
   };
 
@@ -969,19 +968,19 @@
       parts: [
         { name: 'wingL', polys: [box(0, 36, 12, 47)], z: 3, pivot: [13, 40], parent: 'upper', comp: 'main', fill: [['upper', [box(10, 36, 15, 47)]]] },
         { name: 'wingR', polys: [box(31, 36, 43, 47)], z: 3, pivot: [30, 40], parent: 'upper', comp: 'main', fill: [['upper', [box(28, 36, 33, 47)]]] },
-        { name: 'crest', polys: [box(15, 0, 28, 7)], z: 4, pivot: [21, 8], parent: 'upper', comp: 'main', fill: [['upper', [box(15, 6, 28, 9)]]] },
+        { name: 'crest', polys: [box(15, 0, 28, 6)], z: 4, pivot: [21, 8], parent: 'upper', comp: 'main', fill: [['upper', [box(15, 5, 28, 8)]]] },
         ...breathe(50, 43, 62),
       ],
-      anim: { upper: BOB, wingL: { ang: ['tab', 'OPEN', 2.5, 0] }, wingR: { ang: ['tab', 'OPEN', -2.5, 0] }, crest: { ang: ['tab', 'SWAY', 2, 2] } },
+      anim: { upper: BOB, wingL: { ang: ['tab', 'OPEN', 5, 0] }, wingR: { ang: ['tab', 'OPEN', -5, 0] }, crest: { ang: ['tab', 'SWAY', 3.5, 2] } },
     },
     back: {
       parts: [
-        { name: 'wingL', polys: [box(0, 38, 16, 54)], z: 3, pivot: [17, 44], parent: 'upper', comp: 'main', fill: [['upper', [box(14, 38, 20, 54)]]] },
-        { name: 'wingR', polys: [box(39, 38, 56, 57)], z: 3, pivot: [38, 44], parent: 'upper', comp: 'main', fill: [['upper', [box(35, 38, 41, 57)]]] },
+        { name: 'wingL', polys: [box(0, 38, 16, 54)], z: 3, pivot: [17, 44], parent: 'upper', comp: 'main', fill: [['upper', [box(12, 38, 20, 56)]]] },
+        { name: 'wingR', polys: [box(39, 38, 56, 57)], z: 3, pivot: [38, 44], parent: 'upper', comp: 'main', fill: [['upper', [box(35, 38, 41, 57), box(40, 52, 50, 58)]]] },
         { name: 'crest', polys: [box(26, 0, 38, 9)], z: 4, pivot: [31, 10], parent: 'upper', comp: 'main', fill: [['upper', [box(26, 8, 38, 11)]]] },
         ...breathe(60, 56, 83),
       ],
-      anim: { upper: BOB, wingL: { ang: ['tab', 'OPEN', 2, 0] }, wingR: { ang: ['tab', 'OPEN', -2, 1] }, crest: { ang: ['tab', 'SWAY', -2, 2] } },
+      anim: { upper: BOB, wingL: { ang: ['tab', 'OPEN', 4.5, 0] }, wingR: { ang: ['tab', 'OPEN', -4.5, 1] }, crest: { ang: ['tab', 'SWAY', -3.5, 2] } },
     },
   };
 
@@ -989,19 +988,134 @@
     front: {
       parts: [
         { name: 'leaves', polys: [box(18, 0, 34, 9)], z: 4, pivot: [25, 10], parent: 'head', comp: 'main', fill: [['head', [box(18, 7, 34, 11)]]] },
-        { name: 'head', polys: [box(0, 0, 51, 36)], z: 3, pivot: [25, 36], comp: 'main', fill: [['upper', [box(0, 34, 51, 38)]]] },
+        { name: 'head', polys: [box(0, 0, 51, 36)], z: 3, pivot: [25, 36], comp: 'main', fill: [['upper', [box(8, 34, 35, 38)]]] },
         ...breathe(52, 51, 62),
       ],
-      anim: { upper: BOB, head: { dy: ['tab', 'NOD', 1, 0], ang: ['tab', 'SWAY', 1.5, 2] }, leaves: { ang: ['tab', 'SWAY', 3, 2] } },
+      anim: { upper: BOB, head: { dy: ['tab', 'NOD', 1, 0], dx: ['tab', 'SWAY', 0.5, 2] }, leaves: { ang: ['tab', 'SWAY', 3, 2] } },
     },
     back: {
       parts: [
-        { name: 'hand', polys: [box(36, 53, 44, 61)], z: 4, pivot: [37, 58], parent: 'upper', comp: 'main', fill: [['upper', [box(34, 54, 39, 61)]]] },
+        { name: 'hand', polys: [box(30, 50, 45, 62)], z: 4, pivot: [31, 55], parent: 'upper', comp: 'main', fill: [['upper', [box(28, 50, 34, 62)]]] },
         { name: 'leaves', polys: [box(18, 0, 42, 10)], z: 4, pivot: [28, 11], parent: 'head', comp: 'main', fill: [['head', [box(18, 8, 42, 12)]]] },
-        { name: 'head', polys: [box(0, 0, 55, 38)], z: 3, pivot: [27, 38], comp: 'main', fill: [['upper', [box(0, 36, 55, 40)]]] },
+        { name: 'head', polys: [box(0, 0, 55, 39), box(18, 39, 34, 40)], z: 3, pivot: [27, 38], comp: 'main', fill: [['upper', [box(0, 37, 55, 41)]]] },
         ...breathe(62, 55, 83),
       ],
-      anim: { upper: BOB, hand: { ang: ['tab', 'FLICK', 2, 0] }, head: { dy: ['tab', 'NOD', 1, 0], ang: ['tab', 'SWAY', 1, 2] }, leaves: { ang: ['tab', 'SWAY', -2, 2] } },
+      anim: { upper: BOB, hand: { ang: ['tab', 'FLICK', 3, 0] }, head: { dy: ['tab', 'NOD', 1, 0], dx: ['tab', 'SWAY', 0.5, 2] }, leaves: { ang: ['tab', 'SWAY', -2, 2] } },
+    },
+  };
+
+  // ---------------------------------------------------------------- batch 8
+  R.wiskedabra = { // the top-hatted head rocks after the breath, the bowed tail sways
+    front: {
+      parts: [
+        { name: 'tail', polys: [[[42, 44], [54, 44], [54, 68], [37, 68], [37, 55], [42, 55]]], z: 0.5, pivot: [37, 64], comp: 'main', extend: [box(30, 58, 40, 70)] },
+        { name: 'head', polys: [box(0, 0, 41, 33)], z: 3, pivot: [20, 34], comp: 'main', fill: [['upper', [box(0, 31, 41, 36)]]] },
+        ...breathe(60, 54, 80),
+      ],
+      anim: { upper: BOB, head: { dy: ['tab', 'NOD', 1, 0], ang: ['tab', 'SWAY', 1.5, 2] }, tail: { ang: ['tab', 'SWAY', 2.5, 0] } },
+    },
+    back: {
+      parts: [
+        { name: 'tail', polys: [box(0, 46, 17, 69)], z: 3, pivot: [13, 70], parent: 'upper', comp: 'main', fill: [['lower', [box(5, 66, 18, 71)]]] },
+        { name: 'head', polys: [box(22, 0, 71, 38)], z: 3, pivot: [44, 39], comp: 'main', fill: [['upper', [box(22, 36, 71, 41)]]] },
+        ...breathe(68, 72, 84),
+      ],
+      anim: { upper: BOB, head: { dy: ['tab', 'NOD', 1, 0], ang: ['tab', 'SWAY', 1.5, 2] }, tail: { ang: ['tab', 'SWAY', -3, 0] } },
+    },
+  };
+
+  R.kittabra = { // the cat hood rocks after the breath, the striped tail sways
+    front: {
+      parts: [
+        { name: 'tail', polys: [[[34, 38], [45, 38], [45, 58], [30, 58], [30, 52], [32, 52], [32, 44]]], z: 0.5, pivot: [30, 55], comp: 'main', extend: [box(26, 50, 32, 58)] },
+        { name: 'head', polys: [box(0, 0, 40, 31)], z: 3, pivot: [19, 32], comp: 'main', fill: [['upper', [box(0, 29, 40, 34)]]] },
+        ...breathe(50, 44, 64),
+      ],
+      anim: { upper: BOB, head: { dy: ['tab', 'NOD', 1, 0], ang: ['tab', 'SWAY', 1.5, 2] }, tail: { ang: ['tab', 'SWAY', 3.5, 0] } },
+    },
+    back: {
+      parts: [
+        { name: 'tail', polys: [[[0, 46], [14, 46], [14, 63], [16, 64], [19, 67], [20, 72], [0, 72]]], z: 0.5, pivot: [17, 68], comp: 'main', extend: [box(12, 60, 26, 74)] },
+        { name: 'head', polys: [box(14, 0, 63, 37)], z: 3, pivot: [38, 40], comp: 'main', fill: [['upper', [box(14, 35, 63, 40)]]] },
+        ...breathe(66, 64, 85),
+      ],
+      anim: { upper: BOB, head: { dy: ['tab', 'NOD', 1, 0], ang: ['tab', 'SWAY', 1.5, 2] }, tail: { ang: ['tab', 'SWAY', -3, 0] } },
+    },
+  };
+
+  R.prowlure = { // the top-hatted head rocks after the breath, the bowed tail sways
+    front: {
+      parts: [
+        { name: 'tail', polys: [[[47, 38], [63, 38], [63, 62], [50, 62], [50, 58], [47, 58]]], z: 3, pivot: [53, 63], comp: 'main', fill: [['lower', [box(50, 60, 57, 65)]]] },
+        { name: 'head', polys: [box(0, 0, 50, 34)], z: 3, pivot: [26, 35], comp: 'main', fill: [['upper', [box(0, 32, 50, 37)]]] },
+        ...breathe(64, 62, 78),
+      ],
+      anim: { upper: BOB, head: { dy: ['tab', 'NOD', 1, 0], ang: ['tab', 'SWAY', 1.5, 2] }, tail: { ang: ['tab', 'SWAY', 2, 0] } },
+    },
+    back: {
+      parts: [
+        { name: 'tail', polys: [[[0, 26], [18, 26], [18, 42], [15, 44], [15, 51], [0, 51]]], z: 3, pivot: [9, 52], parent: 'upper', comp: 'main', fill: [['upper', [box(3, 49, 16, 54)]]] },
+        { name: 'head', polys: [box(24, 0, 66, 32)], z: 3, pivot: [45, 34], comp: 'main', fill: [['upper', [box(24, 30, 66, 35)]]] },
+        ...breathe(64, 66, 81),
+      ],
+      anim: { upper: BOB, head: { dy: ['tab', 'NOD', 1, 0], ang: ['tab', 'SWAY', 1.5, 2] }, tail: { ang: ['tab', 'SWAY', -2, 0] } },
+    },
+  };
+
+  R.pilfurr = { // the masked head rocks after the breath, the scarf end and tail sway
+    front: {
+      parts: [
+        { name: 'tail', polys: [[[32, 36], [40, 36], [40, 50], [27, 50], [27, 47], [30, 46], [31, 45], [32, 44]]], z: 0.5, pivot: [28, 48], comp: 'main', extend: [box(22, 44, 30, 50)] },
+        { name: 'scarf', polys: [box(28, 29, 36, 35)], z: 4, pivot: [28, 31], parent: 'upper', comp: 'main', fill: [['upper', [box(26, 29, 30, 36)]]] },
+        { name: 'head', polys: [box(0, 0, 33, 28)], z: 3, pivot: [15, 29], comp: 'main', fill: [['upper', [box(0, 26, 33, 31)]]] },
+        ...breathe(49, 40, 62),
+      ],
+      anim: { upper: BOB, head: { dy: ['tab', 'NOD', 1, 0], ang: ['tab', 'SWAY', 1.5, 2] }, scarf: { ang: ['tab', 'SWAY', 2, 2] }, tail: { ang: ['tab', 'SWAY', 3, 0] } },
+    },
+    back: {
+      parts: [
+        { name: 'tail', polys: [box(0, 47, 9, 61)], z: 3, pivot: [4, 61], parent: 'upper', comp: 'main', fill: [['upper', [box(0, 59, 10, 63)]]] },
+        { name: 'scarf', polys: [box(8, 37, 18, 48)], z: 4, pivot: [19, 40], parent: 'upper', comp: 'main', fill: [['upper', [box(16, 38, 22, 46)]]] },
+        { name: 'head', polys: [box(10, 0, 59, 33)], z: 3, pivot: [36, 35], comp: 'main', fill: [['upper', [box(10, 31, 59, 36)]]] },
+        ...breathe(66, 59, 83),
+      ],
+      anim: { upper: BOB, head: { dy: ['tab', 'NOD', 1, 0], ang: ['tab', 'SWAY', 1.5, 2] }, scarf: { ang: ['tab', 'SWAY', -2, 2] }, tail: { ang: ['tab', 'SWAY', -4, 0] } },
+    },
+  };
+
+  R.kerochapu = { // the lily-pad umbrella sways in her hand after the breath
+    front: {
+      parts: [
+        { name: 'brolly', polys: [[[0, 0], [30, 0], [30, 11], [22, 11], [14, 12], [13, 13], [13, 32], [9, 32], [9, 12], [0, 12]]], z: 4, pivot: [11, 33], parent: 'upper', comp: 'main', fill: [['upper', [box(12, 13, 15, 33)]]] },
+        ...breathe(50, 39, 62),
+      ],
+      anim: { upper: BOB, brolly: { ang: ['tab', 'SWAY', 2, 2] } },
+    },
+    back: {
+      parts: [
+        { name: 'brolly', polys: [[[20, 0], [61, 0], [61, 18], [46, 18], [46, 44], [38, 44], [38, 18], [20, 18]]], z: 4, pivot: [41, 46], parent: 'upper', comp: 'main' },
+        ...breathe(66, 61, 83),
+      ],
+      anim: { upper: BOB, brolly: { ang: ['tab', 'SWAY', -2, 2] } },
+    },
+  };
+
+  R.sandkit = { // the big-eared head rocks after the breath, the brush tail sways
+    front: {
+      parts: [
+        { name: 'tail', polys: [[[31, 41], [41, 41], [41, 57], [26, 57], [26, 45], [31, 44]]], z: 0.5, pivot: [27, 50], comp: 'main', extend: [box(22, 45, 28, 56)] },
+        { name: 'head', polys: [box(0, 0, 41, 31)], z: 3, pivot: [19, 33], comp: 'main', fill: [['upper', [box(0, 29, 41, 34)]]] },
+        ...breathe(54, 41, 62),
+      ],
+      anim: { upper: BOB, head: { dy: ['tab', 'NOD', 1, 0], ang: ['tab', 'SWAY', 1, 2] }, tail: { ang: ['tab', 'SWAY', 3, 0] } },
+    },
+    back: {
+      parts: [
+        { name: 'tail', polys: [[[0, 51], [16, 51], [16, 59], [18, 59], [18, 74], [0, 74]]], z: 0.5, pivot: [20, 64], comp: 'main', extend: [box(16, 55, 26, 74)] },
+        { name: 'head', polys: [box(0, 0, 49, 37)], z: 3, pivot: [28, 39], comp: 'main', fill: [['upper', [box(0, 35, 49, 40)]]] },
+        ...breathe(72, 49, 83),
+      ],
+      anim: { upper: BOB, head: { dy: ['tab', 'NOD', 1, 0], ang: ['tab', 'SWAY', 1.5, 2] }, tail: { ang: ['tab', 'SWAY', -2, 0] } },
     },
   };
 
