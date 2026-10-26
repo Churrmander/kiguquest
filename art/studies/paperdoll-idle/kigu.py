@@ -82,3 +82,63 @@ def jerbi():
     return r, frames
 
 KIGU = {'kyuubelle': kyuubelle, 'konko': konko, 'jerbi': jerbi}
+
+# ---- back views (128x128 cell, the player's side) ----
+def box(x0, y0, x1, y1): return [(x0,y0),(x1,y0),(x1,y1),(x0,y1)]
+
+def kyuubelle_back():
+    r = Rig(Image.open(D + 'kyuubelle-back.png'), cell=(128, 128))
+    wisps = {'w1': box(20,6,32,24), 'w2': box(7,21,19,39), 'w3': box(69,12,82,29), 'w4': box(79,30,89,47), 'w5': box(73,54,85,71), 'w6': box(12,82,25,97)}
+    for k, b in wisps.items(): r.part(k, [b], z=5, comp='floater')
+    r.part('ear', [box(58,3,69,15)], z=4, pivot=(62, 16), parent='upper', comp='main', fill=('upper', [box(57,12,70,17)]))
+    tails = [(0,25),(39,25),(39,33),(37,45),(45,52),(48,56),(50,64),(49,72),(46,80),(38,81),(30,84),(0,84)]
+    clip = lambda y0, y1: [[(x, min(max(y, y0), y1)) for x, y in tails]]
+    # seen from behind the tails overlap each other in depth, so the whole bunch lifts as one piece from the tailbone
+    r.part('tails', [tails], z=3, pivot=(47, 64), comp='main',
+           fill=[('upper', [box(28,22,52,66)]), ('lower', [box(30,66,52,82)])])
+    r.part('lower', [box(0,66,96,99)], z=1, comp='main')
+    r.part('upper', None, z=2, pivot=(55, 66), fill=('lower', [box(0,63,96,66)]))
+    r.build()
+    frames = []
+    for i in range(N):
+        pose = {'upper': (0, BOB[i], 0), 'ear': (0, 0, 8 * twitch(i, 3))}
+        pose['tails'] = (0, 0, -1.25 * at(OPEN, i))
+        for k, ph in zip(wisps, [0.5, 2.1, 4.2, 1.0, 3.1, 5.2]):
+            pose[k] = (0, bobber(i, ph), 0)
+        pose['w6'] = (0, min(0, pose['w6'][1]), 0)  # it sits on the ground line: only float up
+        frames.append(r.frame(pose))
+    return r, frames
+
+def konko_back():
+    r = Rig(Image.open(D + 'konko-back.png'), cell=(128, 128))
+    r.part('fire', [box(58,20,70,46)], z=5, comp='floater')
+    r.part('flame', [box(0,22,19,56)], z=4, pivot=(14, 55), parent='tail')
+    tail = [(0,30),(18,30),(20,48),(26,50),(31,56),(31,64),(24,68),(16,71),(8,70),(0,68)]
+    r.part('tail', [tail], z=3, pivot=(27, 58), comp='main', fill=[('upper', [box(16,46,34,62)]), ('lower', [box(16,62,34,72)])], extend=[box(0,30,19,58)])
+    r.part('ear', [box(45,0,56,12)], z=4, pivot=(49, 13), parent='upper', comp='main', fill=('upper', [box(44,9,57,14)]))
+    r.part('lower', [box(0,62,70,89)], z=1, comp='main')
+    r.part('upper', None, z=2, pivot=(35, 62), fill=('lower', [box(0,59,70,62)]))
+    r.build()
+    frames = []
+    for i in range(N):
+        pose = {'upper': (0, BOB[i], 0), 'tail': (0, 0, 2 * at(SWAY, i)), 'flame': (0, 0, 1.5 * at(SWAY, i, 2)),
+                'ear': (0, 0, 10 * twitch(i, 9)), 'fire': (0, bobber(i, 1.0), 0)}
+        frames.append(r.frame(pose))
+    return r, frames
+
+def jerbi_back():
+    r = Rig(Image.open(D + 'jerbi-back.png'), cell=(128, 128))
+    r.part('tuft', [box(0,60,9,75)], z=4, pivot=(7, 61), parent='tail', comp='main')
+    r.part('tail', [[(0,54),(19,54),(19,62),(9,62),(9,75),(0,75)]], z=3, pivot=(19, 58), comp='main',
+           extend=[box(0,60,9,64)])
+    r.part('ear', [box(24,0,34,10)], z=4, pivot=(28, 11), parent='upper', comp='main', fill=('upper', [box(23,8,35,12)]))
+    r.part('lower', [box(0,56,45,80)], z=1, comp='main')
+    r.part('upper', None, z=2, pivot=(25, 56), fill=('lower', [box(0,53,45,56)]))
+    r.build()
+    frames = []
+    for i in range(N):
+        pose = {'upper': (0, BOB[i], 0), 'tail': (0, 0, -1.5 * at(FLICK, i)), 'ear': (0, 0, 7 * twitch(i, 10))}
+        frames.append(r.frame(pose))
+    return r, frames
+
+KIGU.update({'kyuubelle-back': kyuubelle_back, 'konko-back': konko_back, 'jerbi-back': jerbi_back})

@@ -115,9 +115,10 @@ class Rig:
             p['layer'] = layer
         # holes: a part's `fill` polygon marks where the layer beneath it continues under it
         for p in self.parts:
-            if p['fill']:
-                tgt = next(q for q in self.parts if q['name'] == p['fill'][0])
-                region = poly_mask(self.w, self.h, p['fill'][1]) & p['mask']
+            fills = p['fill'] if isinstance(p['fill'], list) else [p['fill']] if p['fill'] else []
+            for name, polys in fills:
+                tgt = next(q for q in self.parts if q['name'] == name)
+                region = poly_mask(self.w, self.h, polys) & p['mask']
                 tgt['layer'] = nearest_fill(tgt['layer'], region, tgt['layer'][..., 3] > 0)
         return self
     def frame(self, pose):
