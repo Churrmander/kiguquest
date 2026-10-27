@@ -261,6 +261,7 @@
         { name: 'Battle style', vals: ['Shift', 'Set'], get: () => (o.battleStyle === 'set' ? 1 : 0), set: (v) => { o.battleStyle = v ? 'set' : 'shift'; NP.Game.opts.battleStyle = o.battleStyle; } },
         { name: 'Music', vals: ['Off', 'Low', 'Med', 'High'], get: () => (o.music === undefined ? 2 : o.music), set: (v) => { o.music = v; this.vol(); } },
         { name: 'Sound fx', vals: ['Off', 'Low', 'Med', 'High'], get: () => (o.sfx === undefined ? 2 : o.sfx), set: (v) => { o.sfx = v; this.vol(); } },
+        { name: 'Time of day', vals: ['Auto', 'Morning', 'Day', 'Evening', 'Night'], get: () => o.clock || 0, set: (v) => { o.clock = v; NP.Game.opts.clock = v; } },
         { name: 'Done', vals: [], get: () => 0, set: () => {} },
       ];
     }

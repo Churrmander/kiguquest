@@ -1,0 +1,87 @@
+/* NP.Clock — the day-night cycle (owner's call, 2026-10-27). Time comes from the real clock on the player's device, like the
+ * DS games; Options > Time of day can pin it to one phase instead (handy for testing, or for a player who only plays at night).
+ *  Phases: morning 5:00-9:59, day 10:00-16:59, evening 17:00-19:59, night 20:00-4:59.
+ *  - Outdoors the screen takes the phase's tint (NP.Clock.draw, after the map and before the weather); lamps glow at night.
+ *    Indoor maps (def.indoor) and dark maps (def.dark) are never tinted.
+ *  - Encounter entries can carry `time: 'night'` (or 'morning|evening', any '|' list of phases) to appear only then.
+ *  - Evolutions with `time: 'night'` count a dark map as night too (NP.Clock.night()).
+ *  - Grass battles fought outdoors at night use the 'night' battle background.
+ *  Tests: NP.Clock.fake = hour (0-23) overrides the device clock; null goes back to it. */
+(function (root) {
+  'use strict';
+  const NP = (root.NP = root.NP || {});
+  const C = (NP.Clock = { fake: null });
+  C.PHASES = ['morning', 'day', 'evening', 'night'];
+  C.LABEL = { morning: 'Morning', day: 'Day', evening: 'Evening', night: 'Night' };
+
+  // the Options setting: 0 Auto (device clock), 1-4 pin one phase
+  const opt = () => { const o = (NP.state && NP.state.opts) || (NP.Game && NP.Game.opts) || {}; return o.clock || 0; };
+  const PIN_HOUR = [null, 7, 12, 18, 22];
+
+  C.hour = function () {
+    if (C.fake !== null && C.fake !== undefined) return C.fake;
+    const pin = PIN_HOUR[opt()];
+    if (pin !== null && pin !== undefined) return pin;
+    return new Date().getHours();
+  };
+  C.minute = function () { return (C.fake !== null && C.fake !== undefined) || opt() ? 0 : new Date().getMinutes(); };
+  C.phaseAt = (h) => (h >= 5 && h < 10 ? 'morning' : h >= 10 && h < 17 ? 'day' : h >= 17 && h < 20 ? 'evening' : 'night');
+  C.phase = () => C.phaseAt(C.hour());
+  // night for evolutions and the like: the night phase, or anywhere dark (caves)
+  C.night = () => C.phase() === 'night' || !!(NP.Weather && NP.Weather.dark);
+  // does an encounter entry's `time` allow the current phase?
+  C.allows = (time) => !time || time.split('|').indexOf(C.phase()) >= 0;
+  C.filter = (list) => (list && list.some((e) => e.time) ? list.filter((e) => C.allows(e.time)) : list);
+  C.outdoors = (def) => !!def && !def.indoor && !def.dark && def.border !== 'void';
+  // the clock for menus: "9:04 PM"
+  C.text = function () {
+    const h = C.hour(), m = C.minute();
+    return ((h + 11) % 12 + 1) + ':' + (m < 10 ? '0' : '') + m + (h < 12 ? ' AM' : ' PM');
+  };
+
+  // ---- drawing
+  // per phase: multiply each channel by m, then add a (a multiply keeps colours rich instead of washing them out)
+  const TINT = {
+    morning: { m: [1, 0.97, 0.93], a: [8, 6, 10] },
+    day: null,
+    evening: { m: [1, 0.86, 0.74], a: [8, 0, 0] },
+    night: { m: [0.4, 0.46, 0.7], a: [4, 8, 28] },
+  };
+  function tint(fb, t) {
+    const d = fb.data, m = t.m, a = t.a;
+    for (let i = 0; i < d.length; i += 4) {
+      d[i] = d[i] * m[0] + a[0]; d[i + 1] = d[i + 1] * m[1] + a[1]; d[i + 2] = d[i + 2] * m[2] + a[2];
+    }
+  }
+  // a soft warm pool of light round a point (screen space), drawn over the night tint
+  function glow(fb, x, y, rad, a) {
+    x = Math.round(x); y = Math.round(y);
+    const d = fb.data, r2 = rad * rad;
+    for (let j = -rad; j <= rad; j++) {
+      const yy = y + j;
+      if (yy < 0 || yy >= fb.h) continue;
+      for (let i = -rad; i <= rad; i++) {
+        const xx = x + i, q = i * i + j * j;
+        if (xx < 0 || xx >= fb.w || q > r2) continue;
+        const k = a * (1 - q / r2), p = (yy * fb.w + xx) * 4;
+        d[p] += (255 - d[p]) * k; d[p + 1] += (226 - d[p + 1]) * k * 0.9; d[p + 2] += (150 - d[p + 2]) * k * 0.6;
+      }
+    }
+  }
+  C.draw = function (fb, def, cx, cy) {
+    if (!C.outdoors(def)) return;
+    const ph = C.phase(), t = TINT[ph];
+    if (t) tint(fb, t);
+    if (ph !== 'night' && ph !== 'evening') return;
+    const a = ph === 'night' ? 0.5 : 0.2;
+    for (const s of def.stamps || []) {
+      if (s.id !== 'lamp') continue;
+      // the lantern head sits on the top tile of the 1x2 stamp
+      const mx = s.x * 16 + 8, my = s.y * 16 + 6;
+      if (NP.view3d && NP.view3d.on) {
+        const q = NP.view3d.project(mx, s.y * 16 + 30);
+        if (q) glow(fb, q.x, q.y - 24 * q.scale, Math.round(22 * q.scale), a);
+      } else glow(fb, mx - cx, my - cy, 22, a);
+    }
+  };
+})(typeof globalThis !== 'undefined' ? globalThis : window);

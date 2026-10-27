@@ -533,7 +533,7 @@
       const music = o.music || 'battle_wild';
       yield* this.transitionToBattle(music);
       // noCatch: true, or { first, again } lines for a Kigu who won't take a spool yet; canLose: no blackout (the scene carries on)
-      const res = yield* this.runBattle({ wild: true, foe: [foe], bg: o.bg || this.map.def.battleBg || 'grass', music, mood: this.weather, noCatch: o.noCatch || false, canLose: !!o.canLose });
+      const res = yield* this.runBattle({ wild: true, foe: [foe], bg: o.bg || this.battleBg(), music, mood: this.weather, noCatch: o.noCatch || false, canLose: !!o.canLose });
       return res;
     }
 
@@ -542,7 +542,7 @@
       yield* this.transitionToBattle(def.music || (def.cls === 'Rival' ? 'battle_rival' : 'battle_tailor'));
       let res;
       try {
-        res = yield* this.runBattle({ wild: false, foe: party, trainer: { name: NP.fmt(def.name), cls: def.cls, look: def.look || 'tailor_f', ai: def.ai === undefined ? 1 : def.ai, reward: def.reward || 5, master: !!def.master, lose: def.lose }, bg: this.map.def.battleBg || 'grass', music: def.music, canLose: !!def.canLose, mood: this.weather });
+        res = yield* this.runBattle({ wild: false, foe: party, trainer: { name: NP.fmt(def.name), cls: def.cls, look: def.look || 'tailor_f', ai: def.ai === undefined ? 1 : def.ai, reward: def.reward || 5, master: !!def.master, lose: def.lose }, bg: this.battleBg(), music: def.music, canLose: !!def.canLose, mood: this.weather });
       } catch (e) { throw e; }
       if (res.winner === 0) {
         let money = (def.reward || 5) * Math.max.apply(null, def.team.map((t) => t.lv));
@@ -749,6 +749,8 @@
       // wild encounters
       let enc = m.def.encounters && m.def.encounters[kind];
       if (enc && m.def.encFilter) enc = m.def.encFilter(enc);   // e.g. Tumbleyarn only while the dust blows
+      if (enc && NP.Clock) enc = NP.Clock.filter(enc);   // entries with time: 'night' etc.
+      if (enc && !enc.length) enc = null;
       if (enc && st.repel <= 0 && this.stepsSinceMap > 2 && st.steps - this.lastBattleStep > 3 && NP.rng.chance(0.11)) {
         const pick = NP.rng.weighted(enc);
         const lv = NP.rng.range(pick.min, pick.max);
@@ -872,8 +874,18 @@
       if (this.gustSfx > 0) this.gustSfx--;
     }
 
+    // grass battles outdoors at night get the night background
+    battleBg() {
+      const def = this.map.def, bg = def.battleBg || 'grass';
+      return bg === 'grass' && NP.Clock && NP.Clock.outdoors(def) && NP.Clock.phase() === 'night' ? 'night' : bg;
+    }
+
     // ---- start menu
     *startMenu() {
+      this.showClock = true;
+      try { yield* this.startMenuLoop(); } finally { this.showClock = false; }
+    }
+    *startMenuLoop() {
       const st = NP.state;
       let cur = 0;
       for (;;) {
@@ -947,6 +959,7 @@
       if (!this.map.def.hidePlayer) list.push({ sortY: p.py + 16.5, x: p.px + 8, hero: true, draw: (f, X, Y) => p.draw(f, X, Y, fr) });
       this.map.draw(fb, cx, cy, fr, list);
       if (NP.Fishing && (this.bobber || this.contest)) NP.Fishing.draw(this, fb, cx, cy);
+      if (NP.Clock && !this.map.def.memory) NP.Clock.draw(fb, this.map.def, cx, cy);   // day-night tint + lamp glow (src/game/clock.js)
       if (this.weather) NP.Weather.draw(fb, this.weather, fr);
       // emotes
       for (const a of this.actors.concat([p])) {
@@ -965,6 +978,11 @@
         ui.text(fb, name, 12, y + 5, 'light');
       }
       this.drawUI(fb, frame);
+      if (this.showClock && NP.Clock) {   // the time, top left, while the start menu is open
+        const t = NP.Clock.LABEL[NP.Clock.phase()] + '  ' + NP.Clock.text(), w = NP.Font.width(t) + 16;
+        ui.frame(fb, 4, 4, w, 18, 'light');
+        ui.text(fb, t, 12, 9, 'light');
+      }
       if (this.map.def.memory) memoryTone(fb, this.msg.active ? NP.BOX_Y : fb.h);   // emotes and the text box go sepia too
     }
   }
