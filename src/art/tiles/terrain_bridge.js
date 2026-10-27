@@ -5,6 +5,7 @@
  * Cross-section (distance `w` from the near edge): rail 0-2, water gap 3-4, deck 5-10 (two plank strips), water gap 11-12, rail 13-15.
  * Along the span (`u`, period 16): a newel post at u 0-1, butt joints at u 0 (strip A) and u 8 (strip B) — bricklaid like planks.
  * Variants (picked by map position): 0 plain, 1 red cloth patch stitched onto a plank, 2 ribbon bow on the post + a knot in the wood.
+ * bridge_h_n/_s and bridge_v_w/_e are the two halves of a wide bridge (planks laid crosswise, one rail each, no gap between).
  * Registered in the 'water' group so neighbouring water tiles join up with the bridge instead of drawing a bank against it. */
 (function (root) {
   'use strict';
@@ -61,7 +62,39 @@
     return b;
   }
 
+  /** One half of a wide (2-tile) bridge: planks laid crosswise to the way you walk, so they read as boards under your feet, one
+   *  rail on the outer edge (`side` 'a' = north/west, 'b' = south/east) and no rail or water on the inner edge, where the other
+   *  half carries on. Along the span (`u`, period 16) every plank is 4 px wide: a seam, a lit edge, then two rows of body. */
+  function deck(vertical, side, frame, variant) {
+    const b = K.waterBase(frame);
+    const px = (u, w, c) => (vertical ? b.set(w, u, c) : b.set(u, w, c));
+    const outer = side === 'a' ? [0, 1, 2] : [15, 14, 13];       // outline, top face, front face of the rail
+    const railB = vertical ? RAIL_B_V : RAIL_B_H;
+    const railCols = side === 'a' ? RAIL_A : [railB[2], railB[0], railB[1]];
+    const deckW = side === 'a' ? [3, 15] : [0, 12];
+    for (let u = 0; u < 16; u++) {
+      // planks: seam, lit edge, body (alternate planks a shade darker so the boards read one by one)
+      const k = u & 3, dark = (u >> 2) & 1;
+      const c = k === 0 ? P.o4 : k === 1 ? P.o1 : dark ? P.o3 : P.o2;
+      for (let w = deckW[0]; w <= deckW[1]; w++) px(u, w, c);
+      // nails near the rail end of each plank
+      if (k === 2) px(u, side === 'a' ? 5 : 10, P.o5);
+      // the rail, with a post every 8 px, and the rail's shadow on the deck
+      for (let i = 0; i < 3; i++) px(u, outer[i], railCols[i]);
+      px(u, side === 'a' ? 3 : 12, P.o4);
+    }
+    for (const u0 of [0, 8]) for (let i = 0; i < 3; i++) { px(u0, outer[i], P.o5); px(u0 + 1, outer[i], i === 1 ? P.o0 : P.o3); }
+    if (variant === 1) px(6, 7, P.o4), px(7, 7, P.o4);   // a knot in the wood
+    else if (variant === 2) px(10, 9, P.o4), px(11, 9, P.o4), px(10, 10, P.o5);
+    return b;
+  }
+
   const common = { water: false, encounter: null, group: 'water', autotile: false, variants: 3, frames: 8, animSpeed: 12, step: 'wood' };
   K.terrain('bridge_h', Object.assign({ paint: (m, f, v) => bridge(false, f, v) }, common));
   K.terrain('bridge_v', Object.assign({ paint: (m, f, v) => bridge(true, f, v) }, common));
+  // a wide bridge, two tiles across: the north (west) half and the south (east) half
+  K.terrain('bridge_h_n', Object.assign({ paint: (m, f, v) => deck(false, 'a', f, v) }, common));
+  K.terrain('bridge_h_s', Object.assign({ paint: (m, f, v) => deck(false, 'b', f, v) }, common));
+  K.terrain('bridge_v_w', Object.assign({ paint: (m, f, v) => deck(true, 'a', f, v) }, common));
+  K.terrain('bridge_v_e', Object.assign({ paint: (m, f, v) => deck(true, 'b', f, v) }, common));
 })(typeof globalThis !== 'undefined' ? globalThis : window);

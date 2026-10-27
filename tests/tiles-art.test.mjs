@@ -93,7 +93,7 @@ ok(!NP.terrain.wall_wood.draw(0xff, 0, 0).equals(NP.terrain.wall_wood.draw(0xff 
 // ------------------------------------------------------------------------------------------------ chapter-2 additions
 // bridges: walkable, not water, wooden step, animated in sync with `water`, <=16 colours, opaque, identical left/right and top/bottom
 // seams (they must repeat end to end).
-for (const id of ['bridge_h', 'bridge_v']) {
+for (const id of ['bridge_h', 'bridge_v', 'bridge_h_n', 'bridge_h_s', 'bridge_v_w', 'bridge_v_e']) {
   const t = NP.terrain[id];
   ok(t, 'missing terrain ' + id);
   ok(!t.solid && !t.water && !t.encounter, id + ': walkable, not water, no encounters');
@@ -110,7 +110,7 @@ for (const id of ['bridge_h', 'bridge_v']) {
     // variants can sit next to each other, and the tile repeats on itself
     const base = t.draw(0, f, 0);
     for (let k = 0; k < 16; k++) {
-      const i = id === 'bridge_h' ? k * 16 + 15 : 15 * 16 + k;
+      const i = id.startsWith('bridge_h') ? k * 16 + 15 : 15 * 16 + k;
       ok(a.u32[i] === base.u32[i], id + ' v' + v + ' f' + f + ': far edge differs from variant 0 at ' + k);
     }
   }

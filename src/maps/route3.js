@@ -42,7 +42,7 @@
   const M = L.map({
     id: 'route3', name: 'Route 3  Seam Road', music: 'route_meadow', battleBg: 'grass', border: 'treeline', w: W, h: H,
     view: 'street',   // 3D camera preset (street | town | flat-ish), see src/engine/persp.js
-    legend: { '.': 'grass', T: 'treeline', c: 'cobble', ',': 'tallgrass', f: 'flowers', w: 'water', B: 'bridge_h', C: 'cliff_grass' },
+    legend: { '.': 'grass', T: 'treeline', c: 'cobble', ',': 'tallgrass', f: 'flowers', w: 'water', N: 'bridge_h_n', S: 'bridge_h_s', C: 'cliff_grass' },
     camera: 1,   // 3D view looks east along the seam road
   });
   M.rect(0, 0, W, 2, 'T').rect(0, 20, W, 2, 'T').rect(0, 2, 2, 18, 'T').rect(W - 2, 2, 2, 18, 'T');
@@ -51,8 +51,9 @@
   // ---- the river: in from the north, under the bridge, round a reedy islet and away south towards Hemline Lake
   M.rect(9, 0, 3, H, 'w').rect(8, 0, 1, 5, 'w').rect(12, 17, 1, 5, 'w');
   M.blob(10, 15, 2.4, 1.4, 'w').set(10, 15, '.');
-  M.rect(9, 10, 3, 2, 'B');
-  M.gate('bridge', { cells: [[10, 10], [10, 11]], closed: 'w', open: 'B', flag: MENDED, note: 'missing planks (mended after badge3)' });
+  M.rect(9, 10, 3, 1, 'N').rect(9, 11, 3, 1, 'S');
+  M.gate('bridge_n', { cells: [[10, 10]], closed: 'w', open: 'N', flag: MENDED, note: 'missing planks (mended after badge3)' });
+  M.gate('bridge_s', { cells: [[10, 11]], closed: 'w', open: 'S', flag: MENDED, note: 'missing planks (mended after badge3)' });
 
   // ---- grass: the Hemline bank, the near meadows past the river, and the wide meadows in the middle
   M.rect(3, 3, 5, 4, ',').rect(3, 15, 5, 3, ',').rect(13, 3, 4, 4, ',').rect(14, 14, 3, 4, ',').rect(22, 3, 6, 4, ',').rect(22, 14, 6, 4, ',');

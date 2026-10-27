@@ -27,6 +27,7 @@
     treeline: T('#1e6a2e', { solid: true }), fence: T('#a8783c', { solid: true }), hedge: T('#2e8a3a', { solid: true }),
     ledge_d: T('#5fae42', { ledge: 'down' }), ledge_l: T('#5fae42', { ledge: 'left' }), ledge_r: T('#5fae42', { ledge: 'right' }),
     cliff: T('#8a7a6a', { solid: true }), bridge_h: T('#b8884a'), bridge_v: T('#b8884a'),
+    bridge_h_n: T('#b8884a'), bridge_h_s: T('#b8884a'), bridge_v_w: T('#b8884a'), bridge_v_e: T('#b8884a'),
     cave_floor: T('#7a6a5a', { encounter: 'cave' }), cave_wall: T('#3a3030', { solid: true }),
     floor_wood: T('#c89858'), floor_tile: T('#e0dccc'), floor_stone: T('#9a98a0'), carpet_red: T('#b83838'), carpet_blue: T('#4860b8'), carpet_green: T('#3c9860'),
     wall_wood: T('#8a5a30', { solid: true }), wall_plaster: T('#e8dcc0', { solid: true }), wall_stone: T('#6a6870', { solid: true }),
