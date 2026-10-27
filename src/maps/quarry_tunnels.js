@@ -175,7 +175,7 @@
   } });
   M2.trainer('qt2_t1', 7, 12, 'hiker', 'left', { cls: 'Miner', name: 'Clem', sight: 4, reward: 13, ai: 2, team: [['tortile|kumi', 26], ['pebblump|kumi', 26]],
     intro: 'Down here, you either battle or you go back up. There\'s no third option!', win: 'All right, all right. Third option: you win.', after: 'The geodes down here grow in the darkest corners. Some say a Kigu sleeps in one.' });
-  M2.trainer('qt2_t2', 14, 15, 'grunt_m', 'down', { cls: 'Presser', name: 'Tack', sight: 2, reward: 14, ai: 2, music: 'battle_society', team: [['chiseltail|nibblit', 26], ['sandkit|kittabra', 26], ['silkie', 27]],
+  M2.trainer('qt2_t2', 14, 15, 'grunt_m', 'down', { cls: 'Presser', name: 'Tack', sight: 2, reward: 14, ai: 2, music: 'battle_society', team: [['chiseltail|nibblit', 26], ['sandkit|kittabra', 26], ['acolarva', 27]],
     intro: 'I\'m not lost. I\'m conducting a survey of what lost feels like.', win: 'Survey complete. Lost feels like losing.', after: 'If you see my team on the way out, tell them I said I\'m fine. Firmly.' });
   M2.pickup('spool', 12, 9, 'silk_spool', 2);
   M2.pickup('candy', 25, 6, 'wish_candy', 1);

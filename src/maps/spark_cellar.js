@@ -65,7 +65,7 @@
   M.trigger(Object.assign({ x: 5, y: 15, w: 3, h: 3 }, echo('echo1', 'Tuck: Hello? ...Hello? ...hello?\\pOh, it\'s just the echo. I knew that. I was testing it.')));
   M.trigger(Object.assign({ x: 19, y: 11, w: 3, h: 2 }, echo('echo2', 'Tuck: Something just went "glo" again. Did you hear it? It went "glo".\\p...If that was you, please tell me it was you.')));
   M.trigger(Object.assign({ x: 12, y: 3, w: 2, h: 3 }, echo('echo3', 'Tuck: You know, back in Thimble, I really did think that banner was crooked.\\pIt wasn\'t, though. I measured it later. It was perfectly fine.')));
-  M.trainer('sc1_t1', 14, 16, 'grunt_f', 'up', { cls: 'Presser', name: 'Static', sight: 3, reward: 16, ai: 2, music: 'battle_society', team: [['glowgrub', 29], ['boingo', 29], ['silkie', 30]],
+  M.trainer('sc1_t1', 14, 16, 'grunt_f', 'up', { cls: 'Presser', name: 'Static', sight: 3, reward: 16, ai: 2, music: 'battle_society', team: [['glowgrub', 29], ['boingo', 29], ['acolarva', 30]],
     intro: 'This cellar is closed for a tidiness survey. The survey says: you\'re untidy.', win: 'The survey has been... revised.', after: 'Please don\'t tell anyone about the jars. Especially not the jars.' });
   // the pressed Glowgrub: Mimi's rinse (with Mrs. Kasuri's salts) sets her right
   M.npc('pressed', 16, 8, 'glowgrub|cocoona_pressed', 'down', null, { hideIf: 'glowli_rinsed', note: 'a pressed Glowgrub (optional: rinse salts)', script: function* (c, n) {
@@ -216,7 +216,7 @@
     yield* c.sayT('spark_cellar_3.cal.2', 'Pleat Calender: Two minutes and ten seconds behind the Presser I sent to stop you. Right on schedule.\\pI am Pleat Calender, engineer of the Works. And you are an interruption.');
     yield* c.sayT('spark_cellar_3.cal.3', 'Pleat Calender: Do you know what runs late in this world? Ferries. Letters. People.\\pThe Works will never run late, and to run on time, it needs every spark in this cellar.');
     yield* c.sayT('spark_cellar_3.cal.4', 'Pleat Calender: I have a timetable to keep. Let\'s make this quick.');
-    const team = L.team([['teslaria|boingo', 31], ['glowmira|glowgrub', 31], ['vendox|kachunk', 32], ['silkie', 30]]);
+    const team = L.team([['teslaria|boingo', 31], ['glowmira|glowgrub', 31], ['vendox|kachunk', 32], ['acolarva', 30]]);
     const won = yield* c.trainerBattle({ cls: 'Pleat', name: 'Calender', look: 'pleat_calender', ai: 3, reward: 40, music: 'battle_admin', team });
     if (!won) { yield* c.sayT('spark_cellar_3.cal.lose', 'Pleat Calender: That took eleven seconds, which is very efficient. Now go and rest, and stay out of my timetable.'); return; }
     yield* c.sayT('spark_cellar_3.cal.5', 'Pleat Calender: ...Nine minutes. That took nine minutes, and that was not in the schedule.');

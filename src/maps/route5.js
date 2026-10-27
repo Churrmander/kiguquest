@@ -56,7 +56,7 @@
     intro: 'Yumi: Ami lost, so now it\'s me. I\'m the one who wins! ...Usually.', win: 'Yumi: Hmm. We both lost. That\'s also twins, I suppose.', after: 'Yumi: Ami gets the top bunk because she\'s three minutes older. Three minutes!' });
   M.trainer('r5_t5', 15, 10, 'picnicker', 'left', { cls: 'Picnicker', name: 'Hana', sight: 3, reward: 13, ai: 1, team: [['chirpadee', 28], ['pricklepot|nibblit', 28], ['glowgrub', 29]],
     intro: 'I came up here for the view of the city lights, but they keep going out! I\'ll battle you while I wait.', win: 'Okay, you can have my view. It\'s mostly dark anyway.', after: 'When the city lights up at night, it looks like someone spilled a jewellery box. I\'ve only seen it once.' });
-  M.trainer('r5_t6', 11, 27, 'grunt_m', 'left', { cls: 'Presser', name: 'Spool', sight: 3, reward: 15, ai: 2, music: 'battle_society', team: [['boingo', 28], ['silkie', 28], ['chiseltail|nibblit', 29]],
+  M.trainer('r5_t6', 11, 27, 'grunt_m', 'left', { cls: 'Presser', name: 'Spool', sight: 3, reward: 15, ai: 2, music: 'battle_society', team: [['boingo', 28], ['acolarva', 28], ['chiseltail|nibblit', 29]],
     intro: 'This cable is for maintenance. It\'s very boring maintenance, so there\'s nothing to see here. Please stop looking at it.', win: 'Fine, look at the cable all you like. It\'s just a cable.', after: 'It runs to the city, then down under the station. Why does it go under the station? That\'s classified. Also I don\'t know.' });
 
   M.npc('lineman', 20, 31, 'hiker', 'left', ['These pylons carry the power to Shibuyarn, and the city uses every bit of it.\\pLately, someone has been tapping into the line before it gets there.']);

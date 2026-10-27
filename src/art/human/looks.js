@@ -118,9 +118,9 @@
     face: { eyes: 'happy', mouth: 'smile', brows: 'worried' }, outfit: out('vest', 'plum', 'gold', 'cream'), bottom: { type: 'pants', color: 'slate' }, shoes: 'brown', acc: ['roundglasses:#c8a020', 'tape'] });
 
   // ---- story one-offs: the Spindle Shrine guardian, Pressed (bleached white, blue piping) and herself again (chapter 2)
-  def('cocoona_pressed', { name: 'Pressed Cocoona', build: 'child', sex: 'f', skin: 'pale', hair: hair('pigtails', 'white'), eyes: 'sky',
+  def('cocoona_pressed', { name: 'Pressed Vowspun', build: 'child', sex: 'f', skin: 'pale', hair: hair('pigtails', 'white'), eyes: 'sky',
     face: { eyes: 'normal', mouth: 'flat' }, outfit: out('hoodie', 'white', 'starch', 'white'), bottom: { type: 'shorts', color: 'white' }, legs: 'white', shoes: 'white' });
-  def('cocoona', { name: 'Cocoona', build: 'child', sex: 'f', skin: 'fair', hair: hair('pigtails', 'blonde'), eyes: 'amber',
+  def('vowspun', { name: 'Vowspun', build: 'child', sex: 'f', skin: 'fair', hair: hair('pigtails', 'blonde'), eyes: 'amber',
     face: { eyes: 'happy', mouth: 'grin', blush: true }, outfit: out('hoodie', 'cream', 'gold', 'white'), bottom: { type: 'shorts', color: 'khaki' }, legs: 'white', shoes: 'brown' });
   // ---- Chapters 4 to 6: Gusset (Bobbin Quarry), Mrs. Kasuri (Shibuyarn fabric shop), the Shibuyarn station master, Tuck again,
   // Pleat Calender (the Works engineer, with his pocket watch), Dart (Kite Hill's Master Tailor) and a courier

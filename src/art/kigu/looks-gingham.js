@@ -5,8 +5,8 @@
   const D = K.define;
 
   const SILK = { main: '#f4f0fa', sub: '#d8ccf0', hair: '#c9b4ea', mitt: '#f4f0fa', foot: '#d8ccf0', eye: '#7a5ab8', inner: '#ffcfe0', acc: '#a8e0b8', acc2: '#ffffff', sack: '#bfe8c4', wing: '#b48ae0', spark: '#fff6b0' };
-  D('silkie', {
-    name: 'Silkie', stage: 1, size: 62, rise: 6, pal: SILK,
+  D('acolarva', {
+    name: 'Acolarva', stage: 1, size: 62, rise: 6, pal: SILK,
     hood: { type: 'up', ears: null }, hair: { style: 'short', bangs: 'part' }, eyes: { style: 'sleepy' },
     arms: { mittMat: 'mitt' }, footMat: 'foot',
     parts: [
@@ -14,14 +14,14 @@
       ['hat', { kind: 'antennae', mat: 'main', tip: 'main', sp: 3, h: 5, ball: 1.4 }],
     ],
   });
-  D('cocoona', {
-    name: 'Cocoona', stage: 2, size: 71, rise: 3, pal: SILK, cocoon: true, bodyMat: 'sack',
+  D('vowspun', {
+    name: 'Vowspun', stage: 2, size: 71, rise: 3, pal: SILK, cocoon: true, bodyMat: 'sack',
     hood: { type: 'none' }, hair: { style: 'bob', bangs: 'part' }, eyes: { style: 'sleepy' },
     arms: { mittMat: 'main', pose: 'front', mittR: 2.4 },
     parts: [['stripes', { mat: 'sack', y0: 12, step: 5, th: 1 }], ['hat', { kind: 'antennae', mat: 'sub', tip: 'sub', sp: 3, h: 4 }]],
   });
-  D('mothelia', {
-    name: 'Mothelia', stage: 3, size: 84, rise: 14, pal: SILK,
+  D('mikoga', {
+    name: 'Mikoga', stage: 3, size: 84, rise: 14, pal: SILK,
     hood: { type: 'none' }, hair: { style: 'long', bangs: 'part', drop: 2 },
     arms: { mittMat: 'mitt' }, footMat: 'foot',
     parts: [

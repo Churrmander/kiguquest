@@ -1,18 +1,18 @@
 /* Ribbon Loop — the scenic way from Basting Green round to Thimble Village's east gate while the Tidy Day parade holds the main road
- * (padding beat 4). Four friendly Tailors, a wild Silkie snacking on leaves by the hay, and a few things to find. The loop itself is the
+ * (padding beat 4). Four friendly Tailors, a wild Acolarva snacking on leaves by the hay, and a few things to find. The loop itself is the
  * walk: east along the bottom, north up the side, west along the top into Thimble. */
 (function (root) {
   'use strict';
   const NP = root.NP, K = NP.mapkit;
   const team = (list) => list.map(([sp, lv]) => ({ sp, lv }));
 
-  // ---- the snacking Silkie: a one-off chance to meet her by the hay (optional, once)
-  function* silkie(c) {
+  // ---- the snacking Acolarva: a one-off chance to meet her by the hay (optional, once)
+  function* acolarva(c) {
     if (c.flag('rl_silkie')) { yield* c.sayT('ribbon_loop.hay.after', 'There are a few nibbled leaves by the hay. Someone had a lovely lunch here.'); return; }
-    yield* c.sayT('ribbon_loop.hay.1', 'A wild Silkie is happily munching leaves beside the hay.\\pShe hums a little between bites.');
-    if (!(yield* c.ask('Say hello to the Silkie?'))) return;
+    yield* c.sayT('ribbon_loop.hay.1', 'A wild Acolarva is happily munching leaves beside the hay.\\pShe hums a little between bites.');
+    if (!(yield* c.ask('Say hello to the Acolarva?'))) return;
     c.set('rl_silkie');
-    yield* c.wildBattle('silkie', 5);
+    yield* c.wildBattle('acolarva', 5);
   }
 
   const W = 30, H = 26;
@@ -23,7 +23,7 @@
   K.rect(g, 4, 7, 19, 12, '.');                                // the meadow inside the loop
   K.rect(g, 6, 8, 6, 4, ','); K.rect(g, 14, 14, 8, 4, ','); K.rect(g, 6, 15, 5, 3, ','); K.rect(g, 26, 10, 2, 6, ',');
   K.rect(g, 16, 8, 5, 3, 'w');                                  // pond
-  K.rect(g, 4, 2, 4, 2, ',');                                   // the Silkie's pocket at the top-left corner
+  K.rect(g, 4, 2, 4, 2, ',');                                   // the Acolarva's pocket at the top-left corner
   K.rect(g, 4, 6, 19, 1, 'T'); K.rect(g, 4, 19, 19, 1, 'T');    // hedges keep the meadow a meadow: in and out by its gaps
   K.rect(g, 12, 6, 2, 1, '.'); K.rect(g, 4, 19, 2, 1, '.'); K.rect(g, 22, 12, 2, 2, '.');
   K.rect(g, 8, 23, 3, 1, 'f'); K.rect(g, 18, 22, 4, 1, 'f');
@@ -42,7 +42,7 @@
     interact: [
       { x: 4, y: 22, say: 'RIBBON LOOP\\nThe long way round to Thimble Village.' },
       { x: 8, y: 3, say: 'RIBBON LOOP\\nWest: Thimble  South: Basting Green' },
-      { x: 5, y: 2, script: silkie }, { x: 6, y: 2, script: silkie }, { x: 5, y: 3, script: silkie }, { x: 6, y: 3, script: silkie },
+      { x: 5, y: 2, script: acolarva }, { x: 6, y: 2, script: acolarva }, { x: 5, y: 3, script: acolarva }, { x: 6, y: 3, script: acolarva },
     ],
     spawns: { west: { x: 2, y: 20, dir: 'right' }, north: { x: 2, y: 4, dir: 'right' } },
     warps: [
@@ -52,7 +52,7 @@
     encounters: {
       grass: [
         { sp: 'chirpadee', min: 3, max: 5, w: 25 }, { sp: 'nibblit', min: 3, max: 5, w: 25 },
-        { sp: 'kittabra', min: 4, max: 5, w: 25 }, { sp: 'silkie', min: 4, max: 5, w: 25 },
+        { sp: 'kittabra', min: 4, max: 5, w: 25 }, { sp: 'acolarva', min: 4, max: 5, w: 25 },
       ],
     },
     props: [
@@ -71,8 +71,8 @@
         trainer: { cls: 'Sailor', name: 'Oki', sight: 2, reward: 7, ai: 1, team: team([['kerochapu', 6]]),
           intro: 'Ahoy! My ship is in Seamstead, but my heart is in this pond.\\pShow me your sea legs!', win: 'Sunk! You sail a fine battle, matey.', after: 'Kerochapu loves this pond, and she says hello. Ribbit.' } },
       { id: 'rio', x: 14, y: 3, look: 'net_kid', dir: 'down',
-        trainer: { cls: 'Net Kid', name: 'Rio', sight: 2, reward: 5, ai: 0, team: team([['silkie', 4], ['kittabra', 5]]),
-          intro: 'I came all this way to befriend the leaf-munching Silkie.\\pShe won\'t stop eating. Battle me while I wait!', win: 'Even my Kittabra wants a snack now.', after: 'The Silkie hangs about by the hay in the corner. She really loves leaves.' } },
+        trainer: { cls: 'Net Kid', name: 'Rio', sight: 2, reward: 5, ai: 0, team: team([['acolarva', 4], ['kittabra', 5]]),
+          intro: 'I came all this way to befriend the leaf-munching Acolarva.\\pShe won\'t stop eating. Battle me while I wait!', win: 'Even my Kittabra wants a snack now.', after: 'The Acolarva hangs about by the hay in the corner. She really loves leaves.' } },
       { id: 'rl_gran', x: 23, y: 22, look: 'elder_m', dir: 'left',
         say: ['I walk Ribbon Loop every morning, round and round.\\pThey can fold up the main road all they like, but nobody can fold a loop!'] },
     ],

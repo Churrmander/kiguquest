@@ -31,7 +31,7 @@
   L.hasItem = (id) => !!(NP.data.items && NP.data.items[id]);
   L.hasMove = (id) => !!(NP.data.moves && NP.data.moves[id]);
 
-  /** team([['cocoona', 14, { moves:[..], item:'plum_treat', nature:'adamant' }], ['scurrent|nibblit', 12]]) */
+  /** team([['vowspun', 14, { moves:[..], item:'plum_treat', nature:'adamant' }], ['scurrent|nibblit', 12]]) */
   L.team = function (list) {
     return list.map((e) => {
       const o = e[2] || {};

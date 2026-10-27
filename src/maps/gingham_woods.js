@@ -45,7 +45,7 @@
 
   M.trainer('pete', 7, 26, 'camper', 'right', { cls: 'Camper', name: 'Pete', sight: 4, reward: 7, ai: 1, team: [['sprubun', 10], ['buzzlet', 10], ['molli', 11]],
     intro: 'Shh! You\'ll wake the trees! ...Oh, you want to battle? All right, but quietly.', win: 'That was a very polite way to lose.', after: 'Stick to the dirt paths. There are Kigu napping all through that grass.' });
-  M.trainer('tess', 25, 22, 'picnicker', 'left', { cls: 'Picnicker', name: 'Tess', sight: 5, reward: 8, ai: 1, team: [['daisip', 11], ['silkie', 11]],
+  M.trainer('tess', 25, 22, 'picnicker', 'left', { cls: 'Picnicker', name: 'Tess', sight: 5, reward: 8, ai: 1, team: [['daisip', 11], ['acolarva', 11]],
     intro: 'A picnic in the woods is the best picnic, and it\'s even better with a battle!', win: 'My sandwiches have gone all soft...', after: 'The Spindle Shrine is just past the north clearing. Everyone whispers up there.' });
   M.trainer('yuki', 17, 6, 'schoolgirl', 'down', { cls: 'Schoolgirl', name: 'Yuki', sight: 4, reward: 8, ai: 1, team: [['chirpadee', 11], ['sprubun', 11]],
     intro: 'We\'re not supposed to battle in the woods. ...But a quiet one is okay, right?', win: 'Teacher\'s going to ask why I\'m out of breath.', after: 'The Pressers came through here yesterday, measuring the paths. Rude!' });
@@ -70,7 +70,7 @@
   M.hidden('stump_cube', 8, 21, 'sugar_cube', 1, 'hidden Sugar Cube under the stump');
   M.hidden('stump_numb', 26, 17, 'numb_away', 1, 'hidden Numb Away under the stump');
 
-  M.enc('grass', [['buzzlet', 7, 9, 25], ['sprubun', 7, 9, 20], ['silkie', 8, 10, 15], ['spinnet', 8, 10, 15], ['daisip', 8, 10, 15], ['cocoona', 9, 11, 5]]);
+  M.enc('grass', [['buzzlet', 7, 9, 25], ['sprubun', 7, 9, 20], ['acolarva', 8, 10, 15], ['spinnet', 8, 10, 15], ['daisip', 8, 10, 15], ['vowspun', 9, 11, 5]]);
 
   M.reg();
 })(typeof globalThis !== 'undefined' ? globalThis : window);

@@ -19,7 +19,7 @@
     // owner's rule: the rival's starter is weak to yours, but one teammate hits your starter hard, so switching pays off
     // without being forced (a Tide Kigu against Ember, Volt against Tide, Gale against Sprout)
     const counter = { konko: 'kerochapu', ottopi: 'scurrent|kerochapu', sprubun: 'lyripip|chirpadee' }[c.state.starter] || 'scurrent|chirpadee';
-    const team = L.team([[L.evoStarter(c.state.rivalStarter), 18], [counter, 17], ['kumi|kittabra', 16], ['silkie', 16]]);
+    const team = L.team([[L.evoStarter(c.state.rivalStarter), 18], [counter, 17], ['kumi|kittabra', 16], ['acolarva', 16]]);
     const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'rival', ai: 2, reward: 18, canLose: true, team });
     c.set('rival3_done'); c.music('city_seamstead');
     if (won) yield* c.sayT('seamstead.rival3.win', '{rival}: ...Okay, okay! You beat me fair and square.\\pYou\'re really good, {player}. Really, really good.\\pBut Crisp & Co. isn\'t so bad, you\'ll see.\\pMy dad\'s been down in the basement for three weeks. He says it\'s "very restful".\\pHe sounds... far away, sometimes.\\pOh, and Dad says the whole city\'s power runs through that basement now.\\pEven the Salon lights. Funny, right? They\'ve been off all week.');

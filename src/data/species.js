@@ -86,11 +86,11 @@
     dex: 'An elegant lark with a long wing-cape. Her song can be heard across three towns.' });
 
   // ---- Gingham Woods / Seamstead
-  sp('silkie', 'Silkie', ['buzz'], [40, 35, 45, 20, 30, 50], { catch: 255, exp: 40, ab: ['shed_skin'], cry: 'Sii', evo: [{ to: 'cocoona', level: 10 }],
+  sp('acolarva', 'Acolarva', ['buzz'], [40, 35, 45, 20, 30, 50], { catch: 255, exp: 40, ab: ['shed_skin'], cry: 'Sii', evo: [{ to: 'vowspun', level: 10 }],
     ls: [[1, 'thread_shot'], [1, 'stinger'], [5, 'cocoon_up']], dex: 'A fuzzy white silkworm onesie. She is almost always sleepy.' });
-  sp('cocoona', 'Cocoona', ['buzz'], [55, 30, 75, 30, 55, 25], { catch: 120, exp: 72, ab: ['shed_skin'], cry: 'Coo', stage: 2, family: 'silkie', evo: [{ to: 'mothelia', level: 30 }],
+  sp('vowspun', 'Vowspun', ['buzz'], [55, 30, 75, 30, 55, 25], { catch: 120, exp: 72, ab: ['shed_skin'], cry: 'Coo', stage: 2, family: 'acolarva', evo: [{ to: 'mikoga', level: 30 }],
     ls: [[1, 'cocoon_up'], [1, 'thread_shot'], [10, 'nibble'], [20, 'snip_cutter']], dex: 'Curled up in a pale-green cocoon bag with only her head and hands showing.' });
-  sp('mothelia', 'Mothelia', ['buzz', 'gale'], [80, 70, 65, 100, 85, 75], { catch: 45, exp: 180, ab: ['compound_eyes'], cry: 'Moth', stage: 3, family: 'silkie',
+  sp('mikoga', 'Mikoga', ['buzz', 'gale'], [80, 70, 65, 100, 85, 75], { catch: 45, exp: 180, ab: ['compound_eyes'], cry: 'Moth', stage: 3, family: 'acolarva',
     ls: [[1, 'gust_puff'], [1, 'nibble'], [30, 'buzz_song'], [36, 'daydream'], [42, 'glide_strike']], dex: 'Patterned moth wings shimmer with sparkling scales.' });
   sp('buzzlet', 'Buzzlet', ['buzz'], [45, 55, 40, 40, 45, 60], { catch: 255, exp: 52, ab: ['swarm'], cry: 'Bzz', evo: [{ to: 'hunnibloom', level: 20 }],
     ls: [[1, 'stinger'], [1, 'tail_wag'], [6, 'thread_shot'], [10, 'nibble'], [16, 'sap_bite']], dex: 'A bee onesie with stripes and tiny antennae. Guards her honey pot fiercely.' });

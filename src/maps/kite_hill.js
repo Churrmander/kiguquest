@@ -74,7 +74,7 @@
     yield* c.sayT('kite_hangar.rival5.7', '{rival}: ...Thanks. I think I needed someone to tell me I was being silly.\\p{player}, battle me? I need to let off some steam before I do anything else.');
     c.music('battle_rival');
     const counter = { konko: 'ottelia|kerochapu', ottopi: 'arcorn|scurrent', sprubun: 'lyripip|chirpadee' }[c.state.starter] || 'scurrent|chirpadee';
-    const team = L.team([[L.evoStarter(c.state.rivalStarter), 35], [counter, 33], ['aviatrix|whirligig', 33], ['mossgable|tortile', 34], ['kumara|silkie', 33]]);
+    const team = L.team([[L.evoStarter(c.state.rivalStarter), 35], [counter, 33], ['aviatrix|whirligig', 33], ['mossgable|tortile', 34], ['kumara|acolarva', 33]]);
     const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'rival', ai: 2, reward: 30, canLose: true, team });
     c.music(c.map.def.music);
     if (won) yield* c.sayT('kite_hangar.rival5.win', '{rival}: Ha! You\'re still ahead. Somehow that makes me feel better, like things are how they should be.');

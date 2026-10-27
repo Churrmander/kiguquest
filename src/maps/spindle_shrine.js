@@ -1,4 +1,4 @@
-/* Spindle Shrine — the clearing where the Everspool lives. The Society shrine incident (Pleat Crease, two Pressers, a Pressed Cocoona)
+/* Spindle Shrine — the clearing where the Everspool lives. The Society shrine incident (Pleat Crease, two Pressers, a Pressed Vowspun)
  * and Mimi's first Soft Rinse. The shrine stamp looks "pressed" until `shrine1_done`. Exit east to Hemline. */
 (function (root) {
   'use strict';
@@ -8,7 +8,7 @@
   function* walkAndHide(c, id, steps, spd) { yield* c.walk(id, steps, spd); c.hideNpc(id); }
 
   function* incident(c) {
-    const crease = c.npc('crease'), pin = c.npc('pin'), welt = c.npc('welt'), coco = c.npc('cocoona');
+    const crease = c.npc('crease'), pin = c.npc('pin'), welt = c.npc('welt'), coco = c.npc('vowspun');
     const k = (s) => 'spindle_shrine.' + s;
     const px = c.player.x;
     yield* c.face('player', 'up');
@@ -20,8 +20,8 @@
     yield* c.sayT(k('inc.2'), 'Pin: Flat is fair! Please stay behind the line, Tailor.');
     yield* c.sayT(k('inc.3'), 'Crease: I\'m Pleat Crease, of the Starch Society for Tidy Living.\\pI\'m here to measure the Everspool, a silk spool that never runs out.\\pIt\'s the straightest thread in the world. Do you know how rare that is?');
     yield* c.sayT(k('inc.4'), 'Crease: The guardian kept fussing at us, so we pressed her.\\pSee how calm she is now? Aren\'t you, dear?');
-    yield* c.sayT(k('inc.5'), 'Cocoona: ...Yes, Tailor.');
-    yield* c.sayT(k('inc.6'), '{player} stared. The Cocoona had been bleached white, with neat blue piping.\\pShe didn\'t even blink.');
+    yield* c.sayT(k('inc.5'), 'Vowspun: ...Yes, Tailor.');
+    yield* c.sayT(k('inc.6'), '{player} stared. The Vowspun had been bleached white, with neat blue piping.\\pShe didn\'t even blink.');
     yield* c.sayT(k('inc.7'), 'Crease: A shrine can\'t be kept tidy with its guardian fussing at every visitor.\\pSo really, we\'re helping.\\pYou, though, are a little crooked at the hem. Pin! Welt! Iron this one out.');
     // the two Pressers step up to the player
     const tp = c.ow.spawn(c.walk(pin, ['down', 3], 2), 'walk');
@@ -37,7 +37,7 @@
     }
     if (!c.flag('shrine_welt')) {
       yield* c.sayT(k('welt.intro'), 'Welt: Excuse me, your collar is a little untidy. May I? ...There.\\pNow, where were we? Right. Battle!');
-      yield* c.trainerBattle({ cls: 'Presser', name: 'Welt', look: 'grunt_f', ai: 1, reward: 8, music: 'battle_society', team: L.team([['chirpadee', 10], ['silkie', 11]]) });
+      yield* c.trainerBattle({ cls: 'Presser', name: 'Welt', look: 'grunt_f', ai: 1, reward: 8, music: 'battle_society', team: L.team([['chirpadee', 10], ['acolarva', 11]]) });
       c.set('shrine_welt');
       c.music('society_theme');
       yield* c.sayT(k('welt.win'), 'Welt: I keep folding things, and I can\'t stop. Is that normal?');
@@ -50,7 +50,7 @@
     yield* c.walk(crease, ['left', 1, 'down', 3, 'right', 1], 2);
     crease.dir = 'down';
     yield* c.sayT(k('crease.intro'), 'Crease: You beat both of my Pressers? Hm. It was messy, but it was brisk,\\pand I do like brisk. I\'ll measure you myself, then.');
-    yield* c.trainerBattle({ cls: 'Pleat', name: 'Crease', look: 'pleat', ai: 2, reward: 14, music: 'battle_admin', team: L.team([['chirpadee', 12], ['silkie', 13], ['spinnet', 14]]) });
+    yield* c.trainerBattle({ cls: 'Pleat', name: 'Crease', look: 'pleat', ai: 2, reward: 14, music: 'battle_admin', team: L.team([['chirpadee', 12], ['acolarva', 13], ['spinnet', 14]]) });
     c.music('society_theme');
     yield* c.sayT(k('crease.win.1'), 'Crease: A crease. ...One single crease, right on my own sleeve.\\pI hate that.');
     yield* c.walk(crease, ['left', 1, 'up', 2], 2);
@@ -78,16 +78,16 @@
     yield* c.sayT(k('rinse.1'), 'Mimi: {player}! Wait up! I followed you all the way from Thimble!');
     yield* c.sayT(k('rinse.2'), 'Mimi: Seeing those white collars on the bridge got me thinking!\\pStarch is just a stiff coating, right? So the opposite of starch must be...\\p...water, lavender, and a little bit of nerve!');
     yield* c.sayT(k('rinse.3'), 'Mimi: I call it Soft Rinse. I\'ve only ever tried it on a handkerchief!\\pHold her steady, {player}.');
-    yield* c.sayT(k('rinse.4'), 'Mimi dabbed the Cocoona gently with the Soft Rinse.');
+    yield* c.sayT(k('rinse.4'), 'Mimi dabbed the Vowspun gently with the Soft Rinse.');
     yield* c.ow.fadeOut(10, '#ffffff');
     yield* c.jingleWait('j_heal');
-    coco.look = 'cocoona';
+    coco.look = 'vowspun';
     yield* c.ow.fadeIn(10);
     yield* c.sayT(k('rinse.5'), 'The blue piping washed right out of her costume.\\pThen her colour came back, a little at a time.');
     yield* c.emote(coco, 'exclaim');
-    yield* c.sayT(k('rinse.6'), 'Cocoona: Coco!');
+    yield* c.sayT(k('rinse.6'), 'Vowspun: Coco!');
     yield* c.sayT(k('rinse.7'), 'Mimi: It WORKED! Soft Rinse really works!\\p...I need to write all of this down. Every single bit of it, right now.');
-    yield* c.sayT(k('rinse.8'), 'The Cocoona bowed to {player}, and then to the Everspool.\\pIt looked very much like a thank-you.');
+    yield* c.sayT(k('rinse.8'), 'The Vowspun bowed to {player}, and then to the Everspool.\\pIt looked very much like a thank-you.');
     yield* c.sayT(k('rinse.9'), 'Mimi: Hemline\'s just up the road, and Bryn runs the Salon there.\\pShe\'s the Warden of these woods too, so I\'ll run ahead and tell her.\\pMeet me there!');
     yield* c.walk(mimi, ['right', 19 - mimi.x], 2);
     c.hideNpc('mimi_s');
@@ -125,14 +125,14 @@
   M.npc('crease', 9, 7, 'pleat', 'down', ['Crease: Not one crease out of place!'], { hideIf: 'shrine1_done' });
   M.npc('pin', 8, 8, 'grunt_m', 'right', ['Pin: Flat is fair!'], { hideIf: 'shrine1_done' });
   M.npc('welt', 10, 8, 'grunt_f', 'left', ['Welt: Stay in line, please.'], { hideIf: 'shrine1_done' });
-  const coco = { id: 'cocoona', x: 9, y: 9, dir: 'up', say: null, script: function* (c) {
-    if (!c.flag('shrine1_done')) { yield* c.sayT('spindle_shrine.cocoona.1', 'Cocoona: ...Yes, Tailor.'); return; }
-    yield* c.sayT('spindle_shrine.cocoona.2', 'Cocoona: Coco! Coco!\\pShe wrapped {player}\'s Kigu in warm silk for a moment.');
+  const coco = { id: 'vowspun', x: 9, y: 9, dir: 'up', say: null, script: function* (c) {
+    if (!c.flag('shrine1_done')) { yield* c.sayT('spindle_shrine.vowspun.1', 'Vowspun: ...Yes, Tailor.'); return; }
+    yield* c.sayT('spindle_shrine.vowspun.2', 'Vowspun: Coco! Coco!\\pShe wrapped {player}\'s Kigu in warm silk for a moment.');
     NP.snd.sfx('save');
     NP.State.healAll();
-    yield* c.sayT('spindle_shrine.cocoona.3', 'Your Kigu feel rested and snug.');
+    yield* c.sayT('spindle_shrine.vowspun.3', 'Your Kigu feel rested and snug.');
   } };
-  L.lookByFlag(coco, 'shrine1_done', 'cocoona_pressed', 'cocoona');
+  L.lookByFlag(coco, 'shrine1_done', 'cocoona_pressed', 'vowspun');
   M.def.npcs.push(coco);
   M.npc('mimi_s', 9, 16, 'mimi', 'up', ['Mimi: Soft Rinse! Patent pending!'], { hidden: true });
   M.def.props.push({ id: 'everspool', x: 9, y: 8, icon: 'item:silk_spool', note: 'the Everspool', script: function* (c) {
