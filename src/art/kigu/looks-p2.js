@@ -10,7 +10,7 @@
   const PEB = { main: '#a8a49c', sub: '#d8d2c4', hair: '#6a6660', mitt: '#8a867e', foot: '#6a6660', eye: '#6a8a4a', inner: '#d8d2c4', gem: '#6fd8f0', gem2: '#c070e0', dark: '#5a564e' };
   D('pebblump', { name: 'Pebblump', stage: 1, size: 62, rise: 3, pal: PEB, hood: { type: 'up', ears: null }, hair: { style: 'short', bangs: 'spiky' }, mouth: 'flat', arms: G.hand, footMat: 'foot',
     parts: [['spots', { mat: 'sub', pts: [[-5, 1, 1.5], [4, 4, 1.2], [-2, 9, 1.2], [6, -2, 1]] }], ['shapes', { stage: 'headgear', at: 'head', m: true, g: 'clips', list: [['e', 9, 6, 1.6, 1.6, 'gem']] }]] });
-  D('boulderina', { name: 'Boulderina', stage: 2, size: 75, rise: 4, pal: PEB, hood: { type: 'none' }, hair: { style: 'twin', bangs: 'part', len: 10 }, mouth: 'flat', arms: G.hand, footMat: 'foot',
+  D('bouldame', { name: 'Bouldame', stage: 2, size: 75, rise: 4, pal: PEB, hood: { type: 'none' }, hair: { style: 'twin', bangs: 'part', len: 10 }, mouth: 'flat', arms: G.hand, footMat: 'foot',
     parts: [['belly', { kind: 'bib', mat: 'sub' }], ['shapes', { stage: 'arms', at: 'shL', m: true, g: 'pauldron', list: [['e', -2, 0, 5, 4, 'main'], ['d', -3, -1, 'sub']] }], ['shapes', { stage: 'headgear', at: 'head', m: true, g: 'crystals', list: [['p', [[8, 6], [10, 0], [12, 6]], 'gem']] }]] });
   D('craggoth', { name: 'Craggoth', stage: 3, size: 85, rise: 10, pal: PEB, hood: { type: 'none' }, hair: { style: 'long', bangs: 'part', drop: 3 }, mouth: 'flat', arms: { mittMat: 'mitt', mittR: 4 }, footMat: 'foot',
     parts: [['skirt', { mat: 'main', len: 5, flare: 6, up: 9, trim: 'sub' }], ['belly', { kind: 'v', mat: 'gem' }], ['shapes', { stage: 'arms', at: 'shL', m: true, g: 'pauldron', list: [['e', -3, 0, 6, 5, 'main'], ['p', [[-3, -5], [-1, -10], [1, -5]], 'gem']] }],

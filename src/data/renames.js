@@ -66,6 +66,8 @@
     silkie: 'acolarva',
     cocoona: 'vowspun',
     mothelia: 'mikoga',
+    // round 4 (2026-10-26): Pebblump's herd leader
+    boulderina: 'bouldame',
   });
   const from = (NP.data.renamedFrom = {});
   Object.keys(R).forEach((o) => (from[R[o]] = o));

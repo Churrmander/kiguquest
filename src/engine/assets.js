@@ -252,7 +252,7 @@
   /** Foe-side battle pose (same cell as the front) shown while she attacks; null when there is none. */
   A.kiguPose = (id, alt) => (asHas(id, 'pose') ? tryit(() => as().pose(id, { alt: !!alt }), null) : null);
   /** Number of idle frames for a species (1 for the placeholder). */
-  A.kiguFrames = (id) => (asHas(id, 'front') ? as().IDLE : A.kiguHas(id) && art().kigu.idleFrames ? tryit(() => art().kigu.idleFrames(id), 1) : 1);
+  A.kiguFrames = (id) => (asHas(id, 'front') ? as().idleFrames(id) : A.kiguHas(id) && art().kigu.idleFrames ? tryit(() => art().kigu.idleFrames(id), 1) : 1);
   /** Bottom-centre anchor of a battle sprite bitmap (feet on the second-to-last row). */
   A.anchorOf = (bmp) => ({ x: bmp.w >> 1, y: bmp.h - 2 });
   A.kiguIcon = function (id, frame) {

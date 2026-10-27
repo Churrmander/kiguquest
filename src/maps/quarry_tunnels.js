@@ -1,6 +1,6 @@
 /* Bobbin Quarry tunnels (2 floors) and Gusset's hut. The pre-Salon quest: the herd.
  * Pressers dug too fast and spooked a Pebblump herd, which now fills the cart tunnels. Floor 1: Pebblump sit across the side tunnels and
- * shuffle aside once their leader settles; two Pressers and a Hiker. Floor 2: the lead Boulderina has planted herself across the
+ * shuffle aside once their leader settles; two Pressers and a Hiker. Floor 2: the lead Bouldame has planted herself across the
  * last tunnel, with Gusset stuck behind her. You battle her; she sits down and settles, the herd follows her lead, and she picks you.
  * Then Gusset climbs out, and has tea with you in his hut: the slab orders show the slabs are Press plates.
  * After the Salon (Disc: Shove): a loose rock on floor 2 hides a crystal alcove with a Rockabye in it.
@@ -32,7 +32,7 @@
   M.stamp('rock', 12, 5).stamp('rock', 19, 13).stamp('lamp', 22, 15);
   M.sign(5, 15, 'TUNNEL 1 / CART LINE\\nMind the carts. Mind your head. Mind the Pebblump.', 'tunnel sign');
   M.enc('grass', [['pebblump|kumi', 24, 26, 34], ['tortile|kumi', 24, 26, 26], ['chiseltail|nibblit', 24, 25, 22], ['rockabye|kumi', 25, 26, 6], ['stingle|chirpadee', 24, 26, 12]]);
-  // the herd: Pebblump sitting across the tunnels until Boulderina settles (each one a little joke)
+  // the herd: Pebblump sitting across the tunnels until Bouldame settles (each one a little joke)
   const pebblump = (id, x, y, dir, line) => M.npc(id, x, y, 'pebblump|child_f', dir, [line], { hideIf: 'herd_done', note: 'Pebblump of the herd (gone once herd_done)' });
   // three of them sit across the side tunnel (a short cut, open once the herd goes home); the way on is round by the east line
   pebblump('peb1', 8, 7, 'down', 'A Pebblump is sitting right across the tunnel. She stares at you, very firmly.\\pShe isn\'t moving until her leader says so.');
@@ -106,23 +106,23 @@
   } });
   M.reg();
 
-  // ---- floor 2: the deep tunnel, Boulderina, Gusset, and (later) the geode alcove behind a loose rock
-  function* boulderina(c, n) {
+  // ---- floor 2: the deep tunnel, Bouldame, Gusset, and (later) the geode alcove behind a loose rock
+  function* bouldame(c, n) {
     if (c.flag('herd_done')) return;
-    yield* c.sayT('quarry_tunnels_2.boul.1', 'A huge Boulderina has planted herself right across the tunnel.\\pThe whole herd is huddled behind her, and every one of them is watching you.');
+    yield* c.sayT('quarry_tunnels_2.boul.1', 'A huge Bouldame has planted herself right across the tunnel.\\pThe whole herd is huddled behind her, and every one of them is watching you.');
     yield* c.sayT('quarry_tunnels_2.boul.2', 'Gusset: (from somewhere behind the herd) ...Careful. She\'s scared, not cross.\\pShow her you mean it, and she\'ll listen.');
     yield* c.emote(n, 'exclaim');
-    const res = yield* c.wildBattle('boulderina', 26);
-    if (res && res.fled) { yield* c.sayT('quarry_tunnels_2.boul.fled', 'Boulderina hasn\'t budged an inch.'); return; }
+    const res = yield* c.wildBattle('bouldame', 26);
+    if (res && res.fled) { yield* c.sayT('quarry_tunnels_2.boul.fled', 'Bouldame hasn\'t budged an inch.'); return; }
     c.set('herd_done');
     yield* c.ow.fadeOut(8);
     c.hideNpc(n.id);
     yield* c.ow.fadeIn(8);
-    if (res && res.caught) yield* c.sayT('quarry_tunnels_2.boul.kept', 'Boulderina sat down with a thump, right in the middle of the tunnel.\\pOne by one, the Pebblump of the herd sat down beside her, and the tunnel went quiet.');
+    if (res && res.caught) yield* c.sayT('quarry_tunnels_2.boul.kept', 'Bouldame sat down with a thump, right in the middle of the tunnel.\\pOne by one, the Pebblump of the herd sat down beside her, and the tunnel went quiet.');
     else {
-      yield* c.sayT('quarry_tunnels_2.boul.3', 'Boulderina sat down with a thump, right in the middle of the tunnel.\\pOne by one, the Pebblump of the herd sat down beside her, and the tunnel went quiet.');
-      yield* c.sayT('quarry_tunnels_2.boul.4', 'After a while, Boulderina got up, dusted off her shoulders, and walked over to you.\\pShe stood at your side, as if she\'d always meant to.');
-      yield* c.giveKigu('boulderina', 26);
+      yield* c.sayT('quarry_tunnels_2.boul.3', 'Bouldame sat down with a thump, right in the middle of the tunnel.\\pOne by one, the Pebblump of the herd sat down beside her, and the tunnel went quiet.');
+      yield* c.sayT('quarry_tunnels_2.boul.4', 'After a while, Bouldame got up, dusted off her shoulders, and walked over to you.\\pShe stood at your side, as if she\'d always meant to.');
+      yield* c.giveKigu('bouldame', 26);
     }
     yield* gussetOut(c);
   }
@@ -164,7 +164,7 @@
   M2.spawn('up', 4, 4, 'right');
   M2.stamp('ore_cart', 21, 16, 'empty').stamp('rock', 17, 5).stamp('lamp', 22, 3);
   M2.enc('grass', [['pebblump|kumi', 25, 27, 34], ['tortile|kumi', 25, 27, 26], ['rockabye|kumi', 25, 27, 14], ['stingle|chirpadee', 25, 27, 14], ['chiseltail|nibblit', 25, 26, 12]]);
-  M2.npc('boulderina', 20, 6, 'boulderina|elder_f', 'down', null, { script: boulderina, hideIf: 'herd_done', note: 'the lead Boulderina: battle her to settle the herd' });
+  M2.npc('bouldame', 20, 6, 'bouldame|elder_f', 'down', null, { script: bouldame, hideIf: 'herd_done', note: 'the lead Bouldame: battle her to settle the herd' });
   for (const [i, x, y] of [[1, 21, 6], [2, 22, 6], [3, 19, 4], [4, 23, 5]]) M2.npc('herd' + i, x, y, 'pebblump|child_f', 'down', ['A Pebblump peeks out from behind her leader. "Tok?"'], { hideIf: 'herd_done' });
   M2.npc('gusset_t', 24, 4, 'gusset|hiker', 'down', null, { hidden: true });
   M2.npc('geode', 10, 4, 'rockabye|child_f', 'left', null, { hideIf: 'geode_met', gate: 'shove', note: 'the crystal alcove Kigu (static encounter, behind the loose rock)', script: function* (c, n) {

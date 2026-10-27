@@ -47,7 +47,7 @@ function readPNG(file) {
 /** Sample the centre of every grid cell, drop the white background (flood fill from the border, plus from `gaps`: seed points in
  *  source pixels inside enclosed background, such as the space between the legs), crop to the bounding box.
  *  -> { w, h, cx (frame centre x inside the crop), pal: ['rrggbb', ...], idx: Uint8Array (0 = transparent, else pal index + 1) } */
-function convert(file, grid = GRID, gaps = [], clear = []) {
+function convert(file, grid = GRID, gaps = [], clear = [], keep = []) {
   const im = readPNG(file);
   if (im.w !== im.h || im.w < 1000) throw new Error(file + ': expected a square ~1024px sheet');
   const N = Math.floor(im.w / grid), rgb = new Array(N * N);
@@ -55,8 +55,20 @@ function convert(file, grid = GRID, gaps = [], clear = []) {
     const o = ((y * grid + (grid >> 1)) * im.w + x * grid + (grid >> 1)) * im.bpp;
     rgb[y * N + x] = [im.px[o], im.px[o + 1], im.px[o + 2]];
   }
+  // keep polygons [[x, y], ...] in source px: white cells whose centre is inside are figure, not background (white fur behind a
+  // broken outline that the border flood would otherwise leak into)
+  const kept = new Uint8Array(N * N);
+  for (const poly of keep) for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+    const px = x * grid + (grid >> 1), py = y * grid + (grid >> 1);
+    let inside = false;
+    for (let a = 0, b = poly.length - 1; a < poly.length; b = a++) {
+      const [ax, ay] = poly[a], [bx, by] = poly[b];
+      if ((ay > py) !== (by > py) && px < ((bx - ax) * (py - ay)) / (by - ay) + ax) inside = !inside;
+    }
+    if (inside) kept[y * N + x] = 1;
+  }
   const bg = new Uint8Array(N * N), stack = [];
-  const white = (i) => rgb[i].every((v) => v >= WHITE);
+  const white = (i) => !kept[i] && rgb[i].every((v) => v >= WHITE);
   for (let i = 0; i < N; i++) stack.push(i, (N - 1) * N + i, i * N, i * N + N - 1);
   for (const [x, y] of gaps) stack.push(Math.floor(y / grid) * N + Math.floor(x / grid));
   while (stack.length) {
@@ -143,10 +155,17 @@ function encode(s) {
 const { NP } = loadNP({ only: /src\/(core|art\/kigu)\//, quiet: true });
 const looks = NP.art.kigu.looks;
 const views = { base: 'front', pose: 'pose', back: 'back' };
+// white fur the border flood leaks into through a dotted outline: keep polygons in source px (see convert)
+const KIGU_KEEP = {
+  'kuurlace-back': [
+    [[400, 92], [436, 92], [456, 116], [472, 148], [484, 168], [490, 204], [400, 204], [396, 112]], // left ear
+    [[660, 124], [688, 120], [688, 200], [672, 232], [648, 252], [560, 252], [560, 212], [576, 200], [600, 176], [632, 150]], // right ear
+  ],
+};
 const native = {};
 for (const f of fs.readdirSync(SRC).sort()) {
   const m = /^([a-z]+)-(base|pose|back)\.png$/.exec(f);
-  if (m) (native[m[1]] = native[m[1]] || {})[views[m[2]]] = convert(path.join(SRC, f));
+  if (m) (native[m[1]] = native[m[1]] || {})[views[m[2]]] = convert(path.join(SRC, f), GRID, [], [], KIGU_KEEP[f.slice(0, -4)]);
 }
 const out = {}, scaled = {};
 let count = 0;
