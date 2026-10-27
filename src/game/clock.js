@@ -42,7 +42,7 @@
   // ---- drawing
   // per phase: multiply each channel by m, then add a (a multiply keeps colours rich instead of washing them out)
   const TINT = {
-    morning: { m: [1, 0.97, 0.93], a: [8, 6, 10] },
+    morning: { m: [0.92, 0.86, 0.9], a: [22, 10, 24] },
     day: null,
     evening: { m: [1, 0.86, 0.74], a: [8, 0, 0] },
     night: { m: [0.4, 0.46, 0.7], a: [4, 8, 28] },
