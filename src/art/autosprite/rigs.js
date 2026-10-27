@@ -148,7 +148,7 @@
     },
   };
 
-  R.boulderina = { // the head settles after the breath, the heavy rock pauldrons a beat after that
+  R.bouldame = { // the head settles after the breath, the heavy rock pauldrons a beat after that
     front: {
       parts: [
         { name: 'padL', polys: [[[0, 24], [4, 24], [4, 23], [11, 23], [11, 37], [0, 37]]], z: 3, comp: 'main', fill: [['upper', [box(0, 21, 13, 38)]]] },
