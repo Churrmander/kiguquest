@@ -20,13 +20,13 @@
   }
 
   // ---- Pebble line: the quarry herd
-  sp('pebblump', 'Pebblump', ['pebble'], [50, 60, 80, 30, 45, 25], { catch: 190, exp: 60, ab: ['sturdy_soul'], cry: 'Tok-tok!', evo: [{ to: 'boulderina', level: 25 }],
+  sp('pebblump', 'Pebblump', ['pebble'], [50, 60, 80, 30, 45, 25], { catch: 190, exp: 60, ab: ['sturdy_soul'], cry: 'Tok-tok!', evo: [{ to: 'bouldame', level: 25 }],
     ls: [[1, 'pounce'], [1, 'fluff_up'], [5, 'pebble_toss'], [9, 'dust_up'], [13, 'gravel_spray'], [17, 'rock_roll'], [22, 'stone_wall']],
     dex: 'A stoic little Kigu in a pebble-patterned onesie. Pebblump live in herds and follow the biggest one.' });
-  sp('boulderina', 'Boulderina', ['pebble'], [75, 90, 110, 45, 65, 40], { catch: 90, exp: 140, ab: ['sturdy_soul'], cry: 'Bould-ah!', stage: 2, family: 'pebblump',
+  sp('bouldame', 'Bouldame', ['pebble'], [75, 90, 110, 45, 65, 40], { catch: 90, exp: 140, ab: ['sturdy_soul'], cry: 'Bould-ah!', stage: 2, family: 'pebblump',
     evo: [{ to: 'craggoth', level: 40 }],
     ls: [[1, 'pounce'], [1, 'pebble_toss'], [1, 'rock_roll'], [17, 'rock_roll'], [22, 'stone_wall'], [28, 'earth_thump'], [34, 'slab_slam']],
-    dex: 'She wears boulder shoulder-guards and leads the herd. Once she plants her feet, nobody gets past her.' });
+    dex: 'Wild Pebblump herds always follow a Bouldame. She wears boulder shoulder-guards, and once she plants her feet, nobody gets past her.' });
   sp('craggoth', 'Craggoth', ['pebble', 'terra'], [95, 120, 135, 60, 80, 45], { catch: 45, exp: 240, ab: ['sturdy_soul'], cry: 'Craaag!', stage: 3, family: 'pebblump',
     ls: [[1, 'pebble_toss'], [1, 'rock_roll'], [1, 'slab_slam'], [40, 'quarry_quake'], [46, 'crystal_glint']],
     dex: 'A crystal-crowned queen with boulder gauntlets. A whole quarry hums when she walks through it.' });

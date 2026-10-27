@@ -5,7 +5,7 @@
  *  L.leverStamp(M, x, y, a)     the lever stamp, leaning left or right with gate `a`.
  *  L.hideStamps(c)              re-apply `goneIf` / `showIf` stamps after a script sets their flag (the slab cart moving).
  *  Flags: east_gate_open, r4_*, dust_scarf (bag), mimi_camp_done, cart_pushed, oasis_*, quarry_reached, rival4_done,
- *         herd_done (Boulderina settled), gusset_back (tea in the hut), badge4. */
+ *         herd_done (Bouldame settled), gusset_back (tea in the hut), badge4. */
 (function (root) {
   'use strict';
   const NP = root.NP, L = NP.levels;
