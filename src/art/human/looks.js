@@ -156,4 +156,11 @@
   def('courier', { name: 'Courier', build: 'teen', sex: 'm', skin: 'tan', hair: hair('spiky', 'black'), eyes: 'dark',
     face: { eyes: 'sharp', mouth: 'grin' }, outfit: out('jacket', 'red', 'white', 'black'), bottom: { type: 'shorts', color: 'charcoal' }, legs: 'white', shoes: 'red',
     acc: ['cap:#d8363a/#f6f4f0', 'bag:#3a3a44'] });
+  // the Seam Road bridge crew (Route 3): hi-vis vests with reflective stripes and yellow hard hats
+  def('builder_m', { name: 'Builder', build: 'stout', sex: 'm', skin: 'warm', hair: hair('cropped', 'brown'), eyes: 'dark', facial: 'mustache',
+    face: { eyes: 'normal', mouth: 'flat', brows: 'normal' }, outfit: out('vest', 'orange', 'orange', 'white'), bottom: { type: 'pants', color: 'denim' }, shoes: 'chocolate',
+    acc: ['hardhat:#f2cc40/#fff3b0', 'hivis:#f4f0c8', 'belt:#7c4e30'] });
+  def('builder_f', { name: 'Builder', build: 'adult', sex: 'f', skin: 'tan', hair: hair('bun', 'black'), eyes: 'brown',
+    face: { eyes: 'normal', mouth: 'smile' }, outfit: out('vest', 'orange', 'orange', 'white'), bottom: { type: 'pants', color: 'olive' }, shoes: 'chocolate',
+    acc: ['hardhat:#f2cc40/#fff3b0', 'hivis:#f4f0c8', 'belt:#7c4e30'] });
 })(typeof globalThis !== 'undefined' ? globalThis : window);

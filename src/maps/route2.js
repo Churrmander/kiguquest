@@ -43,7 +43,7 @@
   const M = L.map({
     id: 'route2', name: 'Route 2  Plankwater', music: 'route_meadow', battleBg: 'grass', border: 'treeline', w: 24, h: 46,
     view: 'street',   // 3D camera preset (street | town | flat-ish), see src/engine/persp.js
-    legend: { '.': 'grass', T: 'treeline', p: 'path', ',': 'tallgrass', f: 'flowers', w: 'water', B: 'bridge_v', d: 'ledge_d' },
+    legend: { '.': 'grass', T: 'treeline', p: 'path', ',': 'tallgrass', f: 'flowers', w: 'water', B: 'bridge_v_w', E: 'bridge_v_e', d: 'ledge_d' },
     onEnter: function* (c) { L.syncStamps(c); },
   });
   const W = 24, H = 46;
@@ -59,7 +59,7 @@
   M.path([[10, 44], [10, 34], [6, 34], [6, 29], [10, 29], [10, 27]], 2, 'p');
   M.path([[10, 17], [10, 12], [14, 12], [14, 6], [10, 6], [10, 0]], 2, 'p');
   M.rect(2, 18, 20, 9, 'w');
-  M.rect(10, 18, 2, 9, 'B');
+  M.rect(10, 18, 1, 9, 'B').rect(11, 18, 1, 9, 'E');   // one wide bridge: planks laid across the way you walk
   // one-way ledges (hop down, never climb) funnel the walk north through each trainer's line of sight (owner's rule: no skipping)
   M.rect(2, 36, 8, 1, 'd').rect(12, 36, 10, 1, 'd');    // Reed: only the road at x10-11
   M.rect(2, 33, 4, 1, 'd').rect(8, 33, 14, 1, 'd');     // Mina: only the road at x6-7

@@ -132,7 +132,7 @@ for (const id of ids) {
   if (!tm) continue;
   for (const p of tm.placements) {
     if (p.id !== 'lamp') continue;
-    for (let yy = 0; yy < p.h; yy++) if (p.def.solid[yy][0] === '#' && ['cobble', 'path', 'rock_path', 'bridge_h', 'bridge_v'].includes(tm.idAt(p.x, p.y + yy))) bad(id, 'lamp@' + p.x + ',' + p.y + ' blocks the road at ' + p.x + ',' + (p.y + yy));
+    for (let yy = 0; yy < p.h; yy++) if (p.def.solid[yy][0] === '#' && ['cobble', 'path', 'rock_path', 'bridge_h', 'bridge_v', 'bridge_h_n', 'bridge_h_s', 'bridge_v_w', 'bridge_v_e'].includes(tm.idAt(p.x, p.y + yy))) bad(id, 'lamp@' + p.x + ',' + p.y + ' blocks the road at ' + p.x + ',' + (p.y + yy));
   }
 }
 

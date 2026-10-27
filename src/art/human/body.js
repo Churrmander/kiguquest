@@ -604,6 +604,18 @@
     if (R.view === 'down') { const g = P.m('#e8c870'); P.px(rnd(R.cx - 0.5), y, g, 3); if (R.t === 'tr') { P.px(rnd(R.cx + 0.5), y, g, 2); P.px(rnd(R.cx - 0.5), y + 1, g, 2); P.px(rnd(R.cx + 0.5), y + 1, g, 1); } }
   });
 
+  // hi-vis stripes: two pale reflective bands right round the torso (chest and lower back), for the bridge crew's vests
+  reg('hivis', (P, R, a, ph) => {
+    if (ph !== 'body') return;
+    const m = mc(P, a, '#f4f0c8'), hemY = R.hipY - R.g.hipRows;
+    P.begin('hivis');
+    for (const y of [R.shY + (R.t === 'ow' ? 2 : 4), hemY - (R.t === 'ow' ? 1 : 3)]) {
+      const hw = R.tw[Math.min(R.tw.length - 1, y - R.shY)];
+      if (R.view === 'left') P.run(y, rnd(R.cx - (R.t === 'ow' ? 1 : 3)), rnd(R.cx + (R.t === 'ow' ? 3 : 6) - 0.5), m, 2);
+      else P.run(y, R.L(hw), R.Rt(hw), m, 2);
+    }
+  });
+
   reg('spools', (P, R, a, ph) => {
     if (ph !== 'body' || R.view !== 'down') return;
     const y = R.hipY - R.g.hipRows + 1;

@@ -309,7 +309,7 @@
     }
   }
 
-  const HATS = ['cap', 'flatcap', 'hat', 'beret', 'bandana'];
+  const HATS = ['cap', 'flatcap', 'hat', 'hardhat', 'beret', 'bandana'];
   function topExtras(P, R, st, h) {
     const u = R.u, U = R.U, view = R.view;
     const hatted = R.S.acc.some((a) => HATS.includes(a.type));
@@ -612,6 +612,26 @@
     const bw = R.hw + (R.t === 'ow' ? 2.5 : U(3.5)), bh = R.t === 'ow' ? 1.5 : 2.6;
     if (R.view === 'left') { P.ellipse(R.cx - U(0.5), brimY + 0.5, bw - 1, bh * 0.7, m, 2); }
     else P.ellipse(R.cx, brimY + (R.view === 'down' ? 1 : 0), bw, bh, m, 2);
+  });
+
+  // a builder's hard hat: a rounded shell that sits snug on the head, a raised ridge down the middle, and a short peak at the
+  // front only (no brim round the sides or back), so it can't be mistaken for a sun hat
+  reg('hardhat', (P, R, a, ph) => {
+    if (ph !== 'head') return;
+    const m = mc(P, a, '#f2cc40'), m2 = mc2(P, a, '#fff3b0'), h = R.hairInfo, U = R.U;
+    const yEnd = (h ? h.fdy : R.hy + 3) - (R.t === 'ow' ? 2 : 2);
+    P.begin('hardhat');
+    const d = dome(P, R, m, R.t === 'ow' ? 1 : 1, yEnd, 0, 2.2);
+    P.begin('hardhat:ridge');
+    if (R.view === 'left') P.run(d.top + 1, rnd(R.cx - U(1)), rnd(R.cx + U(1)), m2, 2);
+    else for (let y = d.top + 1; y <= yEnd - 1; y++) P.px(rnd(R.cx - 0.5), y, m2, 2);
+    if (R.view === 'down') {
+      P.begin('hardhat:peak');
+      P.run(yEnd + 1, R.L(R.hw - U(1.5)), R.Rt(R.hw - U(1.5)), m, 1);
+    } else if (R.view === 'left') {
+      P.begin('hardhat:peak');
+      P.run(yEnd + 1, rnd(R.cx - R.hw) - U(1), rnd(R.cx - R.hw) + U(1), m, 1);
+    }
   });
 
   reg('maidcap', (P, R, a, ph) => {

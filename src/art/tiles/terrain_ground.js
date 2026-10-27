@@ -477,7 +477,7 @@
   const cobbleTex = texFn(COBBLE, { 1: 'c1', 2: 'c2', 3: 'c3', k: 'c4' }, 'c2');
   const COB_PX = K.profile('cob', 0.0, [1]);
   K.terrain('cobble', {
-    autotile: true, variants: 1, step: 'stone',
+    autotile: true, variants: 1, step: 'stone', meetsBridge: true,
     paint: (m, f, v) => {
       const fl = K.field(m, 5);
       const b = K.B(T, T);
