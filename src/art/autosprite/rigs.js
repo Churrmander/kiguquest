@@ -273,7 +273,7 @@
     },
   };
 
-  R.cocoona = { // a pupa: the cocoon breathes and her head settles a beat later
+  R.vowspun = { // a pupa: the cocoon breathes and her head settles a beat later
     front: {
       parts: [
         { name: 'head', polys: [box(8, 8, 35, 31)], z: 3, comp: 'main', fill: [['upper', [box(6, 6, 37, 33)]]] },
@@ -797,7 +797,7 @@
     },
   };
 
-  R.mothelia = { // big moth wings open on the in-breath, dust motes drift
+  R.mikoga = { // big moth wings open on the in-breath, dust motes drift
     front: {
       parts: [
         { name: 'dust', polys: [box(0, 0, 72, 84)], z: 5, comp: 'floater' },
@@ -1213,7 +1213,7 @@
     },
   };
 
-  R.silkie = { // the hood rocks after the breath, the antenna knobs bob
+  R.acolarva = { // the hood rocks after the breath, the antenna knobs bob
     front: {
       parts: [
         { name: 'antL', polys: [box(3, 0, 11, 4)], z: 4, parent: 'head', comp: 'main', fill: [['head', [box(4, 3, 11, 6)]]] },
@@ -1510,7 +1510,7 @@
     },
   };
 
-  R.warpa = { // the crowned head sways after the breath; loose threads drift (front), the sleeve cords swing (back)
+  R.astara = { // the crowned head sways after the breath; loose threads drift (front), the sleeve cords swing (back)
     front: {
       parts: [
         { name: 'f1', polys: [box(0, 50, 1, 82)], z: 5, comp: 'floater' },
@@ -1550,7 +1550,7 @@
     },
   };
 
-  R.weftie = { // her ribbons stream and curl after the breath
+  R.anwela = { // her ribbons stream and curl after the breath
     front: {
       parts: [
         { name: 'ribL', polys: [box(5, 17, 16, 19), box(5, 20, 15, 23), box(5, 24, 16, 27)], z: 3, parent: 'upper', comp: 'main', fill: [['upper', [box(9, 25, 16, 27)]]] },
