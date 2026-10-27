@@ -91,11 +91,14 @@
    * (outside counts as the same group, per the contract).
    */
   tiles.computeMask = function (idAt, x, y) {
-    const g = tiles.groupOf(idAt(x, y));
+    const id = idAt(x, y), g = tiles.groupOf(id);
+    // a road that `meetsBridge` runs straight onto a bridge (no curb or grass margin at the end of the planks)
+    const toBridge = !!(NP.terrain[id] && NP.terrain[id].meetsBridge);
     let m = 0;
     for (const [dx, dy, bit] of DIRS) {
       const n = idAt(x + dx, y + dy);
       if (n === null || n === undefined || tiles.groupOf(n) === g) m |= bit;
+      else if (toBridge && NP.terrain[n] && NP.terrain[n].bridge) m |= bit;
     }
     return m;
   };

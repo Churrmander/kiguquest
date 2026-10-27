@@ -12,7 +12,7 @@ Object.assign(st.flags, { intro_done: true, has_starter: true, tomo_left_lab: tr
 st.starter = 'konko'; st.rivalStarter = 'sprubun';
 st.badges = [true, true];
 st.party.push(NP.Kigu.create('konko', 55, { ot: 'Ren' }), NP.Kigu.create('ottopi', 55, { ot: 'Ren' }), NP.Kigu.create('sprubun', 55, { ot: 'Ren' }));
-st.bag.bond_spool = 5; st.bag.snack_cake = 5;
+st.bag.bond_spool = 5; st.bag.snack_cake = 5; st.bag.disc_paddle = 1;   // Bryn's reward
 st.healPoint = { map: 'tea_house', spawn: 'door' };
 ow.msg.close(); ow.tasks = [];
 ow.loadMap('hemline', 25, 12, 'right', { noEnter: true });
@@ -28,8 +28,18 @@ assert.ok(t.travel(26, 11, 200), 'east edge of Hemline; ' + t.pos());
 t.go('right'); t.go('right');
 t.mash(() => t.idle(), 3000);
 at('route3');
-assert.ok(t.travel(30, 11, 1500), 'cross Route 3; ' + t.pos());
-t.go('right'); t.mash(() => t.idle(), 4000);
+// the bridge is out: the crew, the Pressers and Mimi's hint play as you reach the bank, then you paddle across
+assert.ok(t.travel(7, 10, 200), 'to the bridge; ' + t.pos());
+assert.ok(t.mash(() => t.idle() && st.flags.r3_bridge_seen, 20000), 'bridge scene; flags ' + JSON.stringify(st.flags));
+assert.ok(t.ow.map.solid(10, 10) && t.ow.find('plumb') && !t.ow.find('plumb').hidden, 'the bridge is broken and guarded before Zip');
+assert.ok(t.travel(8, 8, 50), 'to the bank; ' + t.pos());
+t.tap('right'); t.tick(6); t.tap('a');
+assert.ok(t.mash(() => t.idle() && t.ow.paddling(), 4000), 'paddle out; ' + t.pos());
+for (let i = 0; i < 3; i++) { t.go('right'); t.mash(() => t.idle(), 60000); }
+assert.equal(t.ow.player.x, 12, 'landed on the far bank; ' + t.pos());
+assert.ok(!t.ow.paddling(), 'on dry land again');
+assert.ok(t.travel(37, 11, 1500), 'cross Route 3; ' + t.pos());
+t.go('right'); t.go('right'); t.mash(() => t.idle(), 4000);
 at('seamstead');
 
 // ---- Rival #3 on the plaza
