@@ -64,7 +64,7 @@
   // ---- Meadow Lane / Thimble
   sp('kittabra', 'Kittabra', ['fluff'], [48, 50, 40, 35, 40, 65], { catch: 190, exp: 55, ab: ['cuddly', 'run_away'], cry: 'Mya', evo: [{ to: 'wiskedabra', level: 18 }],
     ls: [[1, 'paw_swipe'], [1, 'tail_wag'], [5, 'sweet_talk'], [9, 'quick_dash'], [13, 'flurry_swipe'], [18, 'pillow_slam']],
-    dex: 'A playful kitten with huge mitten paws. She bats at yarn and hides whatever she finds in her mittens.' });
+    dex: 'A playful tuxedo kitten with huge white mitten paws. She bats at yarn and hides whatever she finds in her mittens.' });
   sp('wiskedabra', 'Wiskedabra', ['fluff'], [70, 74, 60, 58, 62, 100], { catch: 75, exp: 140, ab: ['cuddly', 'run_away'], cry: 'Meowl', stage: 2, family: 'kittabra',
     ls: [[1, 'paw_swipe'], [1, 'sweet_talk'], [9, 'quick_dash'], [13, 'flurry_swipe'], [18, 'pillow_slam'], [24, 'sly_nip'], [30, 'sprint']],
     dex: 'A tuxedo stage magician in a little top hat. She tips it to everyone she meets, and a ribbon pops out.' });

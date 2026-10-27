@@ -92,7 +92,7 @@ Old ids from the round 2 rename live in `src/data/renames.js` (saves migrate on 
 9. `lapinade` Lapinade — Sprout — 3/3 — flower crown, ears flowing like a blossoming cape, petal skirt, watering-can wand, floating petals.
 
 **Meadow Lane / Thimble Village (P1)**
-10. `kittabra` Kittabra — Fluff — 1/2, →Lv18 `wiskedabra` — playful kitten: tuxedo-cat onesie (black body and hood, white bib, white blaze down the nose, white mitten paws, black tail, yellow-green eyes), bell on the hood. Bats at yarn and hides things in her big mittens, so she visibly grows into the stage magician. "Mya" *(Recolour from white-and-grey is still to do.)*
+10. `kittabra` Kittabra — Fluff — 1/2, →Lv18 `wiskedabra` — playful kitten: tuxedo-cat onesie (black body and hood, white bib, white blaze down the nose, white mitten paws, black tail, yellow-green eyes), bell on the hood. Bats at yarn and hides things in her big mittens, so she visibly grows into the stage magician. "Mya"
 11. `wiskedabra` Wiskedabra — Fluff — 2/2 — tuxedo stage magician: bow tie, little top hat with ears poking out, cane, ribboned tail; pulls ribbons out of her hat.
 12. `nibblit` Nibblit — Fluff — 1/2, →Lv15 `nibblenna` — hamster in cream-caramel onesie, puffed seed-stuffed cheeks, tiny round ears, rust twin tails. "Nom!"
 13. `nibblenna` Nibblenna — Fluff — 2/2 — baker hamster: apron, chef hat with ears, basket of buns.
@@ -119,7 +119,7 @@ Old ids from the round 2 rename live in `src/data/renames.js` (saves migrate on 
 30. `pebblump` Pebblump — Pebble — 1/3, →Lv25 `bouldame` — pebble-patterned grey onesie, rock hair-clips, stoic.
 31. `bouldame` Bouldame — Pebble — 2/3, →Lv40 `craggoth` — boulder shoulder-guards, crystal chips in hair.
 32. `craggoth` Craggoth — Pebble — 3/3 — crystal-crowned gem queen with boulder gauntlets.
-33. `scurrent` Scurrent — Volt — 1/2, →Lv26 `arcorn` — red squirrel: copper-gold onesie, long ear tufts, zigzag-stripe tail, static-fluffed hair; zapped so often she twitches, and zaps everything she touches. "Zip!" *(Recolour from yellow and ear tufts still to do.)*
+33. `scurrent` Scurrent — Volt — 1/2, →Lv26 `arcorn` — red squirrel: copper-gold onesie, long ear tufts, zigzag-stripe tail, static-fluffed hair; zapped so often she twitches, and zaps everything she touches. "Zip!" *(Ear tufts still to do.)*
 34. `arcorn` Arcorn — Volt — 2/2 — gadget inventor: bolt-shaped tail cape, spark-plug hair clips (not tesla-coil buns, so she does not twin with Teslaria), goggles, fingerless gloves; builds gadgets from acorns and wire. *(Hair clips still to draw.)*
 35. `kumi` Kumi — Brawl — 1/3, →Lv25 `kumara` — bear cub: brown onesie, bandage-wrapped mitt paws, determined pout.
 36. `kumara` Kumara — Brawl — 2/3, →Lv40 `kumazen` — boxing gloves, headband, braid.

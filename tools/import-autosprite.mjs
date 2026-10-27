@@ -101,8 +101,9 @@ const luma = (hex) => { const [r, g, b] = rgbOf(hex); return (0.299 * r + 0.587 
 
 /** Area-weighted downscale that keeps pixel-art colours: every output pixel takes the colour covering most of its footprint
  *  (dark colours count 1.7x so eyes and line work survive), it is transparent when the background covers over half of it,
- *  and the silhouette edge is redrawn in the source's own outline colour so the sprite keeps a closed 1px outline. */
-function downscale(s, k) {
+ *  and the silhouette edge is redrawn in the source's own outline colour so the sprite keeps a closed 1px outline (except the
+ *  `glow` colours, hex strings: outline-free effects like floating sparks keep their own colour). */
+function downscale(s, k, glow = []) {
   if (k >= 0.999) return s;
   const W = Math.max(1, Math.round(s.w * k)), H = Math.max(1, Math.round(s.h * k)), kx = s.w / W, ky = s.h / H;
   const dark = s.pal.map((c) => luma(c) < 0.22), out = new Uint8Array(W * H), wt = new Float64Array(s.pal.length + 1);
@@ -132,7 +133,7 @@ function downscale(s, k) {
   const t1 = (x, y) => x < 0 || y < 0 || x >= W || y >= H || !out[y * W + x];
   for (let Y = 0; Y < H; Y++) for (let X = 0; X < W; X++) {
     const v = out[Y * W + X];
-    if (v && !dark[v - 1] && (t1(X - 1, Y) || t1(X + 1, Y) || t1(X, Y - 1) || t1(X, Y + 1))) res[Y * W + X] = ol;
+    if (v && !dark[v - 1] && !glow.includes(s.pal[v - 1]) && (t1(X - 1, Y) || t1(X + 1, Y) || t1(X, Y - 1) || t1(X, Y + 1))) res[Y * W + X] = ol;
   }
   return { w: W, h: H, cx: s.cx * (W / s.w), pal: s.pal, idx: res };
 }
@@ -162,6 +163,8 @@ const KIGU_KEEP = {
     [[660, 124], [688, 120], [688, 200], [672, 232], [648, 252], [560, 252], [560, 212], [576, 200], [600, 176], [632, 150]], // right ear
   ],
 };
+// colours that are drawn without an outline (floating sparks): the edge redraw would turn them into black flecks
+const KIGU_GLOW = { scurrent: ['edbd16', 'c18919'] };
 const native = {};
 for (const f of fs.readdirSync(SRC).sort()) {
   const m = /^([a-z]+)-(base|pose|back)\.png$/.exec(f);
@@ -178,7 +181,7 @@ for (const id of Object.keys(native)) {
     // poses were often padded before posing (to keep effects in frame), so their figure is smaller in the 128 frame:
     // hold the pose between 85% and 100% of the standing height, and inside the 96px foe cell
     const kp = Math.min(Math.max(k, (look.size * 0.85) / v[view].h), look.size / v[view].h, 94 / v[view].w);
-    scaled[id][view] = downscale(v[view], view === 'back' ? Math.min(1, (look.size * 4) / 3 / v.back.h) : view === 'pose' ? kp : k);
+    scaled[id][view] = downscale(v[view], view === 'back' ? Math.min(1, (look.size * 4) / 3 / v.back.h) : view === 'pose' ? kp : k, KIGU_GLOW[id]);
     count++;
   }
   out[id] = {};
