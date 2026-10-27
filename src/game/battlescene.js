@@ -655,7 +655,8 @@
     idleFrame(d, side) {
       const n = A().kiguFrames(d.species);
       if (n <= 1 || d.status === 'frz') return 0;
-      const rate = d.status === 'slp' ? 18 : d.hp / Math.max(1, d.maxhp) < 0.25 ? 13 : 9;
+      // a 24-frame paper-doll idle plays at 12 fps (one breath every 2 s); the old 6-frame bob at about 7
+      const fast = n >= 24, rate = d.status === 'slp' ? (fast ? 10 : 18) : d.hp / Math.max(1, d.maxhp) < 0.25 ? (fast ? 7 : 13) : fast ? 5 : 9;
       return Math.floor((this.clock + side * 23) / rate) % n;
     }
 
