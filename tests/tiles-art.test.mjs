@@ -93,7 +93,7 @@ ok(!NP.terrain.wall_wood.draw(0xff, 0, 0).equals(NP.terrain.wall_wood.draw(0xff 
 // ------------------------------------------------------------------------------------------------ chapter-2 additions
 // bridges: walkable, not water, wooden step, animated in sync with `water`, <=16 colours, opaque, identical left/right and top/bottom
 // seams (they must repeat end to end).
-for (const id of ['bridge_h', 'bridge_v', 'bridge_h_n', 'bridge_h_s', 'bridge_v_w', 'bridge_v_e']) {
+for (const id of ['bridge_h', 'bridge_v', 'bridge_h_n', 'bridge_h_s', 'bridge_v_w', 'bridge_v_e', 'bridge_h_n_cut_e', 'bridge_h_s_cut_e', 'bridge_h_n_cut_w', 'bridge_h_s_cut_w']) {
   const t = NP.terrain[id];
   ok(t, 'missing terrain ' + id);
   ok(!t.solid && !t.water && !t.encounter, id + ': walkable, not water, no encounters');
