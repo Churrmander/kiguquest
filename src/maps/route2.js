@@ -104,7 +104,7 @@
   M.pickup('spray', 4, 9, 'scent_spray', 1);
   M.hidden('stump_sugar', 3, 17, 'sugar_cube', 1, 'hidden Sugar Cube under the stump');
 
-  M.enc('grass', [['nibblit', 5, 7, 25], ['chirpadee', 5, 7, 25], ['kittabra', 5, 8, 20], ['kerochapu', 6, 8, 15], ['daisip|sprubun', 6, 8, 10], ['acolarva', 6, 7, 5]]);
+  M.enc('grass', [['nibblit', 5, 7, 25], ['chirpadee', 5, 7, 25], ['kittabra', 5, 8, 20], ['kerochapu', 6, 8, 15], ['daisip', 6, 8, 10], ['acolarva', 6, 7, 5]]);
 
   // the inspectors wait on the middle of the bridge until the scene removes them (cast defs)
   M.npc('insp_a', 10, 21, 'grunt_m', 'down', ['Tally: Plank twelve... level.'], { hideIf: 'route2_insp_done' });

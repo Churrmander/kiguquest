@@ -21,7 +21,7 @@
     yield* c.sayT('bobbin_quarry.rival4.3', '{rival}: Dad always measured the flour twice before he baked anything.\\pI used to think that was boring. Now I sort of get it.');
     c.music('battle_rival');
     // owner's rule: the rival's starter is weak to yours, with one teammate that hits your starter hard (switching pays, never forced)
-    const counter = { konko: 'ottelia|kerochapu', ottopi: 'arcorn|scurrent', sprubun: 'lyripip|chirpadee' }[c.state.starter] || 'scurrent|chirpadee';
+    const counter = { konko: 'lilyrana|kerochapu', ottopi: 'arcorn|scurrent', sprubun: 'lyripip|chirpadee' }[c.state.starter] || 'scurrent|chirpadee';
     const team = L.team([[L.evoStarter(c.state.rivalStarter), 26], [counter, 24], ['kumara|acolarva', 24], ['tortile|kumi', 25]]);
     const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'rival', ai: 2, reward: 20, canLose: true, team });
     c.set('rival4_done');

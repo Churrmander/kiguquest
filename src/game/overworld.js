@@ -613,7 +613,7 @@
       if (p.moving) return;
       if (Input.pressed.start) { this.runMenu(); return; }
       if (Input.pressed.a) { this.interact(); return; }
-      if (Input.pressed.select && NP.Fishing && NP.Fishing.quick(this)) return;   // Select: cast the best rod you carry
+      if (Input.pressed.select && this.useRegistered()) return;   // Select: the key item registered in the Bag (a rod; bikes later)
       const v3 = NP.view3d;
       if (v3 && v3.on) v3.q = v3.quarterFor(this.map, p.x, p.y);
       // a held key keeps its map direction while the camera swings (a camera zone turning mid-walk must not bend your path)
@@ -624,6 +624,20 @@
       if (d !== p.dir && this.turnT === 0) { p.dir = d; this.turnT = 6; return; }
       if (this.turnT > 0) { this.turnT--; if (this.turnT > 0) return; }
       this.tryMove(d);
+    }
+
+    /** Select uses the key item registered to it in the Bag (NP.state.registered) */
+    useRegistered() {
+      const id = NP.state.registered, d = id && NP.data.items[id];
+      if (!d || !NP.State.count(id)) {
+        if (Object.keys(NP.state.bag).some((k) => NP.data.items[k] && NP.data.items[k].register)) {
+          this.runScript(function* (c) { yield* c.sayT('field.select.none', 'You can register a key item to Select. Choose it in the Bag and pick "Register".'); });
+          return true;
+        }
+        return false;
+      }
+      if (d.use && d.use.rod) { const rod = d.use.rod; this.runScript(function* (c) { yield* NP.Fishing.cast(c, rod); }); return true; }
+      return false;
     }
 
     runMenu() { NP.snd.sfx('menu_open'); this.spawn(this.startMenu(), 'menu'); }

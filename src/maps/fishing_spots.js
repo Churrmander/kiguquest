@@ -53,6 +53,7 @@
     yield* c.sayT(k('1'), 'Gus: You battle like the river runs. Fast, and every which way!\\pHere, take my old rod. I\'ve got three more at home, and my wife says that\'s three too many.');
     c.set('got_old_rod');
     yield* c.giveItem('old_rod');
+    NP.Fishing.registerRod('old_rod');   // ready on Select straight away
     yield* c.sayT(k('2'), 'Gus: And you\'ll want this. It\'s a Fishing Log. Every fish you land goes in it: how many, and how big.');
     yield* c.giveItem('fishing_log');
     yield* c.sayT(k('3'), 'Gus: Now hand me your bag a moment. ...There!\\pI sewed a Fish Pocket onto it. Your fish go in there and stay nice and fresh.');
@@ -74,6 +75,7 @@
       yield* c.sayT(k('2'), 'Here, take my Good Rod. Pupfish are tiny, so I\'m going to need a tiny rod.\\pYou\'ll catch far bigger things with this one than I ever did.');
       c.set('got_good_rod');
       yield* c.giveItem('good_rod');
+      NP.Fishing.registerRod('good_rod');
       yield* c.sayT(k('3'), 'Bigger fish and rarer Kigu bite on a Good Rod. Go on, the whole world\'s full of water!');
       return;
     }

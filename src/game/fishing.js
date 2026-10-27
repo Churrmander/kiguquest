@@ -107,12 +107,10 @@
   // ------------------------------------------------------------------------------------------ casting
   F.canFish = function (ow) { return !!F.target(ow); };
 
-  /** Select in the field: cast the best rod you carry */
-  F.quick = function (ow) {
-    const rod = F.rodTier();
-    if (!rod) return false;
-    ow.runScript(function* (c) { yield* F.cast(c, rod); });
-    return true;
+  /** a newly given rod takes over the Select slot if it's empty or holds a weaker rod (Gus, the Oasis fisher) */
+  F.registerRod = function (id) {
+    const st = NP.state, cur = st.registered && NP.data.items[st.registered];
+    if (!cur || (cur.use && cur.use.rod && cur.use.rod < NP.data.items[id].use.rod)) st.registered = id;
   };
 
   F.cast = function* (c, rod) {

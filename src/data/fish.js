@@ -53,9 +53,9 @@
     NP.reg(it, id, Object.assign({ name, pocket, price, desc, use: use || null, inBattle: false, inField: false }, x || {}));
   }
   const F_ = { inField: true }, BF = { inBattle: true, inField: true };
-  I('old_rod', 'Old Rod', 'key', 0, 'Gus\'s old rod. Face any water and use it to fish. You can also press Select.', { rod: 1 }, F_);
-  I('good_rod', 'Good Rod', 'key', 0, 'A sturdy rod with a proper reel. Bigger fish and rarer Kigu bite on it.', { rod: 2 }, F_);
-  I('super_rod', 'Super Rod', 'key', 0, 'The best rod there is. The biggest fish in Tsumugi bite on this.', { rod: 3 }, F_);
+  I('old_rod', 'Old Rod', 'key', 0, 'Gus\'s old rod. Face any water and use it to fish. Register it to Select for quick casting.', { rod: 1 }, Object.assign({ register: true }, F_));
+  I('good_rod', 'Good Rod', 'key', 0, 'A sturdy rod with a proper reel. Bigger fish and rarer Kigu bite on it.', { rod: 2 }, Object.assign({ register: true }, F_));
+  I('super_rod', 'Super Rod', 'key', 0, 'The best rod there is. The biggest fish in Tsumugi bite on this.', { rod: 3 }, Object.assign({ register: true }, F_));
   I('fishing_log', 'Fishing Log', 'key', 0, 'Records every fish you reel in: how many, your biggest, and where you first landed it.', { fishlog: true }, F_);
   I('gold_scale', 'Gold Scale', 'items', 0, 'Held: a scale from the first Ryukoi. Gilfin evolves holding it at Lv30. Others get more critical hits with Tide moves.', null, {
     held: {

@@ -70,7 +70,7 @@
   M.hidden('stump_cube', 8, 21, 'sugar_cube', 1, 'hidden Sugar Cube under the stump');
   M.hidden('stump_numb', 26, 17, 'numb_away', 1, 'hidden Numb Away under the stump');
 
-  M.enc('grass', [['buzzlet', 7, 9, 25], ['sprubun', 7, 9, 20], ['acolarva', 8, 10, 15], ['spinnet', 8, 10, 15], ['daisip', 8, 10, 15], ['vowspun', 9, 11, 5]]);
+  M.enc('grass', [['buzzlet', 7, 9, 25], ['daisip', 7, 10, 35], ['acolarva', 8, 10, 15], ['spinnet', 8, 10, 15], ['vowspun', 9, 11, 5]]);   // no starters in the wild (owner, 2026-10-27)
 
   M.reg();
 })(typeof globalThis !== 'undefined' ? globalThis : window);

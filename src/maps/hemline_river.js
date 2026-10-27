@@ -1,6 +1,6 @@
 /* Hemline Riverside — south out of Hemline to Hemline Lake and its fishing contest. Optional, and Tide's big moment: every Tailor
  * on the bank is a Tide Tailor, either hoping to win this year's contest or still sore about losing last year's.
- *  - First, a long strip of tall grass you can't avoid, with only Daisip, Sprubun and Scurrent in it, so a player who picked
+ *  - First, a long strip of tall grass you can't avoid, with only Daisip and Scurrent in it, so a player who picked
  *    Konko meets a Sprout or Volt Kigu before the Tide Tailors (owner's call, 2026-10-26).
  *  - The river runs too fast to paddle (sea terrain: water you can fish but not cross), so it can't be used to skip anyone.
  *  - Natural pinches, never fences (owner's rule): copses reach from the trees to the river's edge, each with one 3-wide gap and
@@ -19,7 +19,7 @@
   M.ascii(0, 0, [
     'TTTTTTTTTTpppTTTTTTTTTTT',   // 0  north: up to Hemline
     'TTTTTTTTTTpppTTTTTTTTTTT',
-    'TTTTTTTT,,,,,,,TTTTTTTTT',   // 2  the counter grass: Daisip, Sprubun, Scurrent only
+    'TTTTTTTT,,,,,,,TTTTTTTTT',   // 2  the counter grass: Daisip and Scurrent only
     'TTTTTTTT,,,,,,,TTTTTTTTT',
     'TTTTTTTT,,,,,,,TTTTTTTTT',
     'TTTTTTTT,,,,,,,TTTTTTTTT',
@@ -72,8 +72,8 @@
   M.spawn('north', 11, 1, 'down').spawn('south', 11, 44, 'up');
   M.edge('n', 10, 12, 'hemline', 'south').edge('s', 10, 12, 'hemline_lake', 'north');
 
-  // the counter grass: only Sprout and Volt Kigu (40 / 30 / 30), so a Konko team gets the chance of an answer to Tide
-  M.enc('grass', [['daisip', 11, 14, 40], ['sprubun', 11, 14, 30], ['scurrent', 11, 14, 30]]);
+  // the counter grass: only a Sprout and a Volt Kigu (55 / 45), so a Konko team gets the chance of an answer to Tide
+  M.enc('grass', [['daisip', 11, 14, 55], ['scurrent', 11, 14, 45]]);   // no starters in the wild (owner, 2026-10-27)
   M.def.fishing = {
     water: 'fresh', river: true,
     kigu: { 1: [['gilfin', 8, 12, 60], ['kiskat', 9, 12, 40]], 2: [['kiskat', 15, 20, 40], ['zeel', 15, 20, 30], ['gilfin', 15, 20, 30]], 3: [['slickish', 30, 35, 40], ['zeel', 30, 35, 40], ['gilfin', 30, 35, 20]] },

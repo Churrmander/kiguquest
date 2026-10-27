@@ -46,6 +46,12 @@ const run = (t, ow, fn) => { ow.runScript(fn); settle(t); };
     assert.ok(F.fishFor(Object.assign({ water: f.water }, f), id, 3, false).length, id + ' has fish to land');
   }
   assert.ok(spots >= 11, 'fishing spots: ' + spots);
+  // the three starter lines never turn up in the wild: grass, Paddling, puddles or rods (owner, 2026-10-27)
+  const STARTERS = new Set(['konko', 'kitsuri', 'kyuubelle', 'ottopi', 'ottelia', 'ottomarine', 'sprubun', 'lapinlily', 'lapinade']);
+  for (const [id, def] of Object.entries(NP.maps)) {
+    for (const [kind, list] of Object.entries(def.encounters || {})) for (const e of list) assert.ok(!STARTERS.has(e.sp), id + ' ' + kind + ': starter ' + e.sp + ' in the wild');
+    for (const r of Object.keys((def.fishing && def.fishing.kigu) || {})) for (const [sp] of def.fishing.kigu[r]) assert.ok(!STARTERS.has(sp), id + ': starter ' + sp + ' on a rod');
+  }
   // fresh and salt never mix; the oasis only has pupfish; the oasis pupfish takes an Old Rod (the Good Rod's payoff)
   assert.ok(F.fishFor({ water: 'salt' }, 'button_town', 3, false).every((f) => f.water === 'salt'));
   assert.equal(F.fishFor(NP.maps.dust_oasis.fishing, 'dust_oasis', 1, false).map((f) => f.id).join(), 'desert_pupfish');
@@ -69,6 +75,10 @@ const run = (t, ow, fn) => { ow.runScript(fn); settle(t); };
   assert.ok(st.flags.fish_pocket, 'and sewed on the Fish Pocket');
   assert.ok(lines.some((l) => l === '...Don\'t ask how that works.'));
   assert.equal(F.rodTier(), 1);
+  assert.equal(st.registered, 'old_rod', 'the Old Rod goes on Select');
+  F.registerRod('good_rod'); assert.equal(st.registered, 'good_rod', 'a better rod takes over Select');
+  F.registerRod('old_rod'); assert.equal(st.registered, 'good_rod', 'a weaker one does not');
+  st.registered = 'old_rod';
 
   assert.ok(t.travel(10, 22, 300), 'onto the bridge');
   t.tap('left'); t.tick(8);   // face the river

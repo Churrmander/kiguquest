@@ -73,7 +73,7 @@
     yield* c.sayT('kite_hangar.rival5.6', 'Dart: I\'m Dart. I run the Salon, and I fly the fastest balloon on the hill, when I\'m allowed to fly it.\\pGet my balloon patched up, and I\'ll fly you both over the pass myself. That\'s a promise.');
     yield* c.sayT('kite_hangar.rival5.7', '{rival}: ...Thanks. I think I needed someone to tell me I was being silly.\\p{player}, battle me? I need to let off some steam before I do anything else.');
     c.music('battle_rival');
-    const counter = { konko: 'ottelia|kerochapu', ottopi: 'arcorn|scurrent', sprubun: 'lyripip|chirpadee' }[c.state.starter] || 'scurrent|chirpadee';
+    const counter = { konko: 'lilyrana|kerochapu', ottopi: 'arcorn|scurrent', sprubun: 'lyripip|chirpadee' }[c.state.starter] || 'scurrent|chirpadee';
     const team = L.team([[L.evoStarter(c.state.rivalStarter), 35], [counter, 33], ['aviatrix|whirligig', 33], ['mossgable|tortile', 34], ['kumara|acolarva', 33]]);
     const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'rival', ai: 2, reward: 30, canLose: true, team });
     c.music(c.map.def.music);

@@ -242,9 +242,16 @@
       // held items (Expert Belt, type pins...) are given to a Kigu to hold instead of used
       // (an evolution item like the Starlit Thread has no held effect of its own, but its description says "Held:")
       const give = !!((it.d.held || /^Held:/.test(it.d.desc || '')) && !u && !battle);
-      const m = new ui.Menu({ items: [give ? 'Give' : 'Use', 'Cancel'], theme: 'light', x: 160, y: 70 });
+      const reg = !!(it.d.register && !battle), isReg = NP.state.registered === it.id;
+      const m = new ui.Menu({ items: [give ? 'Give' : 'Use'].concat(reg ? [isReg ? 'Unregister' : 'Register'] : [], ['Cancel']), theme: 'light', x: 160, y: 70 });
       m.x = NP.W - m.w - 4; m.y = 100;
       const r = yield* this.menu(m);
+      if (r.type === 'select' && reg && r.index === 1) {   // a key item for the Select button (a rod; bikes later)
+        NP.state.registered = isReg ? null : it.id;
+        NP.snd.sfx(isReg ? 'cancel' : 'select');
+        this.note = isReg ? it.d.name + ' is no longer on Select.' : 'Press Select to use the ' + it.d.name + '.';
+        return false;
+      }
       if (r.type !== 'select' || r.index !== 0) return false;
       if (give) {
         const s = new PartyScene({ mode: 'pick', prompt: 'Give to which Kigu?' });
@@ -332,6 +339,7 @@
         const it = items[top + i], y = 32 + i * 12;
         if (top + i === cur) ui.cursor(fb, 10, y, 'light');
         ui.text(fb, it.d.name, 20, y, 'light');
+        if (NP.state.registered === it.id) ui.text(fb, 'SEL', 148 - Font.width('SEL'), y, 'light', { color: '#d83838', shadow: null });
         if (it.d.pocket !== 'key' && !it.fish) ui.text(fb, 'x' + it.n, 148 - Font.width('x' + it.n), y, 'light');
       }
       ui.frame(fb, 158, 26, NP.W - 162, 124, 'light');
