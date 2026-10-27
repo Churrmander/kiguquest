@@ -9,6 +9,7 @@ function fresh(seed) {
   const st = NP.state;
   Object.assign(st.flags, { intro_done: true, has_starter: true, tomo_left_lab: true, route2_open: true, route2_insp_done: true });
   st.party.push(NP.Kigu.create('konko', 20, { ot: 'Ren' }));
+  st.repel = 9999;   // water has Paddling encounters now (fishing, 2026-10-26): keep wild Kigu out of the walking checks
   ow.msg.close(); ow.tasks = [];
   return { t, NP, ow, st };
 }

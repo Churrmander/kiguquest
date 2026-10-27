@@ -97,7 +97,9 @@
     const foe = mon.foes[0];
     if (!foe) return;
     if (battle.cfg.noCatch) {   // a story battle with a wild Kigu who has somewhere she needs to be
-      battle.msg(foe.label() + ' batted the spool away! She has other things on her mind.');
+      const nc = battle.cfg.noCatch;   // true, or { first, again } lines of her own (Ryukoi at Hemline Lake)
+      if (typeof nc === 'object') battle.msg(battle.spoolTries++ ? nc.again : nc.first);
+      else battle.msg(foe.label() + ' batted the spool away! She has other things on her mind.');
       return;
     }
     const sp = d.use.spool;

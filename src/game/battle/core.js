@@ -141,6 +141,7 @@
   class Battle {
     constructor(cfg) {
       this.cfg = cfg;
+      this.spoolTries = 0;
       this.format = cfg.format === 'double' ? 'double' : 'single';
       this.slots = this.format === 'double' ? 2 : 1;
       this.rng = cfg.rng || NP.rng;
@@ -613,6 +614,8 @@
       if (!(o && o.initial)) this.runHazards(mon);
       if (mon.fainted) return;
       this.fire('onSwitchIn', mon, { initial: !!(o && o.initial) });
+      const meal = mon.kigu.meal;   // a Tea House dish (src/data/fish.js): its boosts last until the start of her next battle
+      if (meal) { delete mon.kigu.meal; this.msg(mon.label() + ' is still full of energy from her meal!'); this.boost(mon, meal, mon, null); }
       this.checkItems(mon);
       for (const f of mon.foes) this.fire('onFoeSwitchIn', f, { foe: mon });
     }

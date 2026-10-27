@@ -98,6 +98,32 @@
     },
   });
 
+  // ---- puddles: the cave's tall grass (Ryukoi's cave under Hemline Lake). Shallow, so you walk through them, and wild Kigu
+  //      splash out of them (encounter 'puddle'; no Paddle needed).
+  K.terrain('puddle', {
+    variants: 2, step: 'water', encounter: 'puddle', frames: 4, animSpeed: 16,
+    paint: (m, f, v) => {
+      const b = K.B(T, T);
+      for (let i = 0; i < 256; i++) {
+        const x = i & 15, y = i >> 4;
+        const n = hf(x >> 1, y >> 1, 301 + v) * 0.5 + hf(x, y, 303 + v) * 0.5;
+        b.u32[i] = n > 0.86 ? P.cf0 : n > 0.3 ? P.cf1 : P.cf2;
+        const d = ((x - 7.5) / 7) ** 2 + ((y - 8.5 - v) / 5.2) ** 2;   // a wide oval of water, darker at its rim
+        if (d < 1) b.u32[i] = d > 0.78 ? P.cf4 : d > 0.6 ? P.w4 : P.w3;
+      }
+      const r = (f + v) & 3;   // a ripple ring that comes and goes
+      if (r < 3) for (let x = 5 - r; x <= 10 + r; x++) { b.set(x, 7 + v - (r >> 1), P.w2); }
+      b.set(4 + v * 6, 8, P.w1);
+      return b;
+    },
+  });
+  // ---- the cave pool: deep water with rock banks. You can't paddle it, but you can fish it (fishable).
+  const CAVE_BANK = { lip: 2, fill: () => P.cf1, line: P.cf4, faceHi: P.cv2, face: P.cv3, faceDk: P.cv4 };
+  K.terrain('cave_pool', {
+    water: true, fishable: true, autotile: true, frames: 8, animSpeed: 12, step: 'water',
+    paint: (m, f) => K.shore(m, f, CAVE_BANK),
+  });
+
   // ---- rails: two steel rails on wooden sleepers over packed dirt (rail_h runs east-west, rail_v north-south). Both are one
   //      autotiled group, so a run turns its corners with a curve and a crossing shows both ways (owner's note: the rails didn't
   //      join up). A lone tile keeps its own direction.

@@ -528,10 +528,12 @@
     }
 
     *wildBattle(sp, lv, o) {
-      const foe = NP.Kigu.create(sp, lv);
-      const st = NP.state;
-      yield* this.transitionToBattle('battle_wild');
-      const res = yield* this.runBattle({ wild: true, foe: [foe], bg: this.map.def.battleBg || 'grass', music: 'battle_wild', mood: this.weather, noCatch: !!(o && o.noCatch) });
+      o = o || {};
+      const foe = NP.Kigu.create(sp, lv, o.kigu);   // o.kigu: Kigu.create options (the gold Ryukoi's colourway and IVs)
+      const music = o.music || 'battle_wild';
+      yield* this.transitionToBattle(music);
+      // noCatch: true, or { first, again } lines for a Kigu who won't take a spool yet; canLose: no blackout (the scene carries on)
+      const res = yield* this.runBattle({ wild: true, foe: [foe], bg: o.bg || this.battleBg(), music, mood: this.weather, noCatch: o.noCatch || false, canLose: !!o.canLose });
       return res;
     }
 
@@ -540,7 +542,7 @@
       yield* this.transitionToBattle(def.music || (def.cls === 'Rival' ? 'battle_rival' : 'battle_tailor'));
       let res;
       try {
-        res = yield* this.runBattle({ wild: false, foe: party, trainer: { name: NP.fmt(def.name), cls: def.cls, look: def.look || 'tailor_f', ai: def.ai === undefined ? 1 : def.ai, reward: def.reward || 5, master: !!def.master, lose: def.lose }, bg: this.map.def.battleBg || 'grass', music: def.music, canLose: !!def.canLose, mood: this.weather });
+        res = yield* this.runBattle({ wild: false, foe: party, trainer: { name: NP.fmt(def.name), cls: def.cls, look: def.look || 'tailor_f', ai: def.ai === undefined ? 1 : def.ai, reward: def.reward || 5, master: !!def.master, lose: def.lose }, bg: this.battleBg(), music: def.music, canLose: !!def.canLose, mood: this.weather });
       } catch (e) { throw e; }
       if (res.winner === 0) {
         let money = (def.reward || 5) * Math.max.apply(null, def.team.map((t) => t.lv));
@@ -597,6 +599,7 @@
     // ---- player control
     update() {
       NP.state.frames++;
+      if (NP.Fishing) NP.Fishing.tick(this);   // the contest clock at Hemline Lake
       this.stepTasks();
       if (this.popup > 0) this.popup--;
       const p = this.player;
@@ -610,6 +613,7 @@
       if (p.moving) return;
       if (Input.pressed.start) { this.runMenu(); return; }
       if (Input.pressed.a) { this.interact(); return; }
+      if (Input.pressed.select && this.useRegistered()) return;   // Select: the key item registered in the Bag (a rod; bikes later)
       const v3 = NP.view3d;
       if (v3 && v3.on) v3.q = v3.quarterFor(this.map, p.x, p.y);
       // a held key keeps its map direction while the camera swings (a camera zone turning mid-walk must not bend your path)
@@ -620,6 +624,20 @@
       if (d !== p.dir && this.turnT === 0) { p.dir = d; this.turnT = 6; return; }
       if (this.turnT > 0) { this.turnT--; if (this.turnT > 0) return; }
       this.tryMove(d);
+    }
+
+    /** Select uses the key item registered to it in the Bag (NP.state.registered) */
+    useRegistered() {
+      const id = NP.state.registered, d = id && NP.data.items[id];
+      if (!d || !NP.State.count(id)) {
+        if (Object.keys(NP.state.bag).some((k) => NP.data.items[k] && NP.data.items[k].register)) {
+          this.runScript(function* (c) { yield* c.sayT('field.select.none', 'You can register a key item to Select. Choose it in the Bag and pick "Register".'); });
+          return true;
+        }
+        return false;
+      }
+      if (d.use && d.use.rod) { const rod = d.use.rod; this.runScript(function* (c) { yield* NP.Fishing.cast(c, rod); }); return true; }
+      return false;
     }
 
     runMenu() { NP.snd.sfx('menu_open'); this.spawn(this.startMenu(), 'menu'); }
@@ -731,6 +749,8 @@
       // wild encounters
       let enc = m.def.encounters && m.def.encounters[kind];
       if (enc && m.def.encFilter) enc = m.def.encFilter(enc);   // e.g. Tumbleyarn only while the dust blows
+      if (enc && NP.Clock) enc = NP.Clock.filter(enc);   // entries with time: 'night' etc.
+      if (enc && !enc.length) enc = null;
       if (enc && st.repel <= 0 && this.stepsSinceMap > 2 && st.steps - this.lastBattleStep > 3 && NP.rng.chance(0.11)) {
         const pick = NP.rng.weighted(enc);
         const lv = NP.rng.range(pick.min, pick.max);
@@ -784,6 +804,7 @@
         if (won) {
           NP.state.flags[key] = true;
           yield* this.ctx.sayT(tk + '.win', tr.win);
+          if (tr.then) yield* this.resolveScript(tr.then)(this.ctx, a);   // a trainer with more to say once beaten (Gus gives you a rod)
         }
       } catch (e) { if (e !== ABORT) throw e; }
     }
@@ -807,7 +828,7 @@
           a.dir = OPP[p.dir];
           const tr = d.trainer;
           if (tr) {
-            if (NP.state.flags['tr_' + m.id + '_' + a.id]) this.runScript(function* (c) { yield* c.sayT(m.id + '.' + a.id + '.after', tr.after); });
+            if (NP.state.flags['tr_' + m.id + '_' + a.id]) this.runScript(tr.then || function* (c) { yield* c.sayT(m.id + '.' + a.id + '.after', tr.after); }, a);
             else this.spawn(this.trainerEncounter(a, false), 'trainer');
             return;
           }
@@ -853,8 +874,18 @@
       if (this.gustSfx > 0) this.gustSfx--;
     }
 
+    // grass battles outdoors at night get the night background
+    battleBg() {
+      const def = this.map.def, bg = def.battleBg || 'grass';
+      return bg === 'grass' && NP.Clock && NP.Clock.outdoors(def) && NP.Clock.phase() === 'night' ? 'night' : bg;
+    }
+
     // ---- start menu
     *startMenu() {
+      this.showClock = true;
+      try { yield* this.startMenuLoop(); } finally { this.showClock = false; }
+    }
+    *startMenuLoop() {
       const st = NP.state;
       let cur = 0;
       for (;;) {
@@ -872,6 +903,7 @@
         } else if (k === 'bag') {
           const s = new NP.BagScene({ mode: 'field' }); NP.Game.push(s); yield* this.waitFor(() => s.finished);
           if (s.result && s.result.escape) { yield* this.useEscape(); break; }
+          if (s.result && s.result.rod) { const rod = s.result.rod; this.runScript(function* (c) { yield* NP.Fishing.cast(c, rod); }); break; }
         } else if (k === 'dex') {
           const s = new NP.DexScene(); NP.Game.push(s); yield* this.waitFor(() => s.finished);
         } else if (k === 'card') {
@@ -926,6 +958,8 @@
       p.swim = this.paddling();
       if (!this.map.def.hidePlayer) list.push({ sortY: p.py + 16.5, x: p.px + 8, hero: true, draw: (f, X, Y) => p.draw(f, X, Y, fr) });
       this.map.draw(fb, cx, cy, fr, list);
+      if (NP.Fishing && (this.bobber || this.contest)) NP.Fishing.draw(this, fb, cx, cy);
+      if (NP.Clock && !this.map.def.memory) NP.Clock.draw(fb, this.map.def, cx, cy);   // day-night tint + lamp glow (src/game/clock.js)
       if (this.weather) NP.Weather.draw(fb, this.weather, fr);
       // emotes
       for (const a of this.actors.concat([p])) {
@@ -944,6 +978,11 @@
         ui.text(fb, name, 12, y + 5, 'light');
       }
       this.drawUI(fb, frame);
+      if (this.showClock && NP.Clock) {   // the time, top left, while the start menu is open
+        const t = NP.Clock.LABEL[NP.Clock.phase()] + '  ' + NP.Clock.text(), w = NP.Font.width(t) + 16;
+        ui.frame(fb, 4, 4, w, 18, 'light');
+        ui.text(fb, t, 12, 9, 'light');
+      }
       if (this.map.def.memory) memoryTone(fb, this.msg.active ? NP.BOX_Y : fb.h);   // emotes and the text box go sepia too
     }
   }

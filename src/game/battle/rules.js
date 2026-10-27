@@ -106,7 +106,8 @@
     if (eff === 0) return { dmg: 0, eff: 0, crit: false, stab: false };
     if (move.fixed === 'level') return { dmg: atk.level, eff, crit: false, stab: false };
     const phys = move.category === 'physical';
-    const crit = o.crit !== undefined ? o.crit : battle.rng.ratio(1, [16, 8, 4, 3, 2][Math.min(4, move.crit || 0)]);
+    const stage = battle.chain('modCritStage', atk, move.crit || 0, { move, target: def });   // Focus Energy, the Gold Scale
+    const crit = o.crit !== undefined ? o.crit : battle.rng.ratio(1, [16, 8, 4, 3, 2][Math.max(0, Math.min(4, stage))]);
     const aKey = phys ? 'atk' : 'spa', dKey = phys ? 'def' : 'spd';
     let power = battle.chain('modPower', atk, move.power, { move, target: def });
     const A = battle.getStat(atk, aKey, crit ? { ignoreNeg: true } : {});

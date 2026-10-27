@@ -188,29 +188,38 @@
   }
 
   // ===================================================================================== BagScene
-  const POCKETS = [['items', 'Items'], ['spools', 'Spools'], ['key', 'Key Items']];
+  // the Fish pocket appears once Gus has sewn it on (src/game/fishing.js keeps the fish themselves in NP.state.fish.pocket)
+  const POCKETS0 = [['items', 'Items'], ['spools', 'Spools'], ['key', 'Key Items']];
+  const pockets = () => (NP.state && NP.state.flags.fish_pocket ? POCKETS0.concat([['fish', 'Fish']]) : POCKETS0);
   class BagScene extends Scene {
     constructor(o) {
       super('light');
       this.o = Object.assign({ mode: 'field' }, o || {});
       this.pocket = 0;
-      this.cur = [0, 0, 0];
+      this.cur = [0, 0, 0, 0];
       this.result = null;
       this.note = '';
     }
     enter() { this.spawn(this.run(), 'bag'); }
     list() {
-      const id = POCKETS[this.pocket][0];
+      const id = pockets()[this.pocket][0];
+      if (id === 'fish') return NP.Fishing.st().pocket.map((e) => ({ fish: e, id: e.id, n: 1, d: { name: NP.Fishing.label(e), pocket: 'fish', desc: this.fishDesc(e) } }));
       return Object.keys(NP.state.bag).filter((k) => NP.data.items[k] && NP.data.items[k].pocket === id).map((k) => ({ id: k, n: NP.state.bag[k], d: NP.data.items[k] }));
+    }
+    fishDesc(e) {
+      const f = NP.data.fish[e.id], F = NP.Fishing;
+      if (f.rare) return 'A rare ' + f.name + ', ' + e.cm + ' cm long. Show it to the Fishing Master at Hemline Lake!';
+      return (F.isLunker(e) ? 'A LUNKER! ' : '') + 'A ' + e.cm + ' cm ' + f.name + (e.contest ? ', from the contest' : '') + '. ' +
+        (f.dish ? 'A Tea House cook can make it into a dish. ' : '') + 'Shops buy fish too.';
     }
     *run() {
       yield;
       for (;;) {
         const items = this.list();
-        const p = this.pocket;
+        const p = this.pocket, np = pockets().length;
         const d = Input.menuDir();
-        if (d === 'left' || Input.pressed.l) { this.pocket = (this.pocket + 2) % 3; NP.snd.sfx('cursor'); }
-        else if (d === 'right' || Input.pressed.r) { this.pocket = (this.pocket + 1) % 3; NP.snd.sfx('cursor'); }
+        if (d === 'left' || Input.pressed.l) { this.pocket = (this.pocket + np - 1) % np; NP.snd.sfx('cursor'); }
+        else if (d === 'right' || Input.pressed.r) { this.pocket = (this.pocket + 1) % np; NP.snd.sfx('cursor'); }
         else if (d === 'up' && items.length) { this.cur[p] = (this.cur[p] + items.length - 1) % items.length; NP.snd.sfx('cursor'); }
         else if (d === 'down' && items.length) { this.cur[p] = (this.cur[p] + 1) % items.length; NP.snd.sfx('cursor'); }
         if (this.cur[p] >= items.length) this.cur[p] = Math.max(0, items.length - 1);
@@ -229,11 +238,20 @@
       const o = this.o, u = it.d.use;
       const battle = o.mode === 'battle';
       this.note = '';
+      if (it.fish) { this.note = 'Cook it, sell it or trade it. It can\'t be used here.'; NP.snd.sfx('error'); return false; }
       // held items (Expert Belt, type pins...) are given to a Kigu to hold instead of used
-      const give = !!(it.d.held && !u && !battle);
-      const m = new ui.Menu({ items: [give ? 'Give' : 'Use', 'Cancel'], theme: 'light', x: 160, y: 70 });
+      // (an evolution item like the Starlit Thread has no held effect of its own, but its description says "Held:")
+      const give = !!((it.d.held || /^Held:/.test(it.d.desc || '')) && !u && !battle);
+      const reg = !!(it.d.register && !battle), isReg = NP.state.registered === it.id;
+      const m = new ui.Menu({ items: [give ? 'Give' : 'Use'].concat(reg ? [isReg ? 'Unregister' : 'Register'] : [], ['Cancel']), theme: 'light', x: 160, y: 70 });
       m.x = NP.W - m.w - 4; m.y = 100;
       const r = yield* this.menu(m);
+      if (r.type === 'select' && reg && r.index === 1) {   // a key item for the Select button (a rod; bikes later)
+        NP.state.registered = isReg ? null : it.id;
+        NP.snd.sfx(isReg ? 'cancel' : 'select');
+        this.note = isReg ? it.d.name + ' is no longer on Select.' : 'Press Select to use the ' + it.d.name + '.';
+        return false;
+      }
       if (r.type !== 'select' || r.index !== 0) return false;
       if (give) {
         const s = new PartyScene({ mode: 'pick', prompt: 'Give to which Kigu?' });
@@ -259,6 +277,12 @@
       if (battle && !it.d.inBattle) { this.note = 'It cannot be used in battle.'; NP.snd.sfx('error'); return false; }
       if (!battle && !it.d.inField) { this.note = 'It cannot be used here.'; NP.snd.sfx('error'); return false; }
       if (u.escape) { NP.State.removeItem(it.id, 0); this.result = { escape: true }; return true; }
+      if (u.rod) {   // fishing: the overworld casts once the Bag closes (src/game/fishing.js)
+        if (!NP.Fishing.canFish(NP.Game.find(NP.Overworld))) { this.note = 'Face some water first, then use it.'; NP.snd.sfx('error'); return false; }
+        this.result = { rod: u.rod };
+        return true;
+      }
+      if (u.fishlog) { const s = new NP.FishLogScene(); NP.Game.push(s); yield* this.waitFor(() => s.finished); return false; }
       if (u.toggle) {   // an on/off key item (Exp Share): the flag holds "off", so a new item starts switched on
         const off = !NP.state.flags[u.toggle];
         NP.state.flags[u.toggle] = off;
@@ -300,9 +324,9 @@
     draw(fb, frame) {
       bgFill(fb, '#f4ecd8', '#ece2c8');
       ui.frame(fb, 4, 4, 232, 18, 'light');
-      const p = this.pocket;
-      POCKETS.forEach((pk, i) => {
-        const x = 12 + i * 70;
+      const p = this.pocket, PK = pockets();
+      PK.forEach((pk, i) => {
+        const x = 12 + i * (PK.length > 3 ? 56 : 70);
         ui.text(fb, pk[1], x + 4, 9, 'light', { color: i === p ? '#d83838' : '#9098b0', shadow: i === p ? undefined : null });
       });
       ui.text(fb, '<', 8, 9, 'light', { color: '#9098b0' }); ui.text(fb, '>', 228, 9, 'light', { color: '#9098b0' });
@@ -315,11 +339,12 @@
         const it = items[top + i], y = 32 + i * 12;
         if (top + i === cur) ui.cursor(fb, 10, y, 'light');
         ui.text(fb, it.d.name, 20, y, 'light');
-        if (it.d.pocket !== 'key') ui.text(fb, 'x' + it.n, 148 - Font.width('x' + it.n), y, 'light');
+        if (NP.state.registered === it.id) ui.text(fb, 'SEL', 148 - Font.width('SEL'), y, 'light', { color: '#d83838', shadow: null });
+        if (it.d.pocket !== 'key' && !it.fish) ui.text(fb, 'x' + it.n, 148 - Font.width('x' + it.n), y, 'light');
       }
       ui.frame(fb, 158, 26, NP.W - 162, 124, 'light');
       if (items[cur]) {
-        fb.blit(A().itemIcon(items[cur].id), 158 + ((NP.W - 162 - 24) >> 1), 32);
+        fb.blit(items[cur].fish ? A().fishIcon(items[cur].id) : A().itemIcon(items[cur].id), 158 + ((NP.W - 162 - 24) >> 1), 32);
         const lines = Font.wrap(items[cur].d.desc, NP.W - 174);
         lines.slice(0, 8).forEach((l, i) => ui.text(fb, l, 164, 62 + i * 10, 'light', { color: '#505870', shadow: null }));
       }
@@ -344,10 +369,11 @@
     *run() {
       yield;
       for (;;) {
-        const m = new ui.Menu({ items: ['Buy', 'Sell', 'Leave'], theme: 'light', x: 4, y: 4 });
+        const fish = NP.state.fish && NP.state.fish.pocket.length;   // shops buy fish from the Fish Pocket too (bigger pays more)
+        const m = new ui.Menu({ items: fish ? ['Buy', 'Sell', 'Sell fish', 'Leave'] : ['Buy', 'Sell', 'Leave'], theme: 'light', x: 4, y: 4 });
         const r = yield* this.menu(m);
-        if (r.type === 'cancel' || r.index === 2) { NP.Game.pop(); return; }
-        if (r.index === 0) yield* this.buy(); else yield* this.sell();
+        if (r.type === 'cancel' || r.item.label === 'Leave') { NP.Game.pop(); return; }
+        if (r.index === 0) yield* this.buy(); else if (r.index === 1) yield* this.sell(); else yield* this.sellFish();
       }
     }
     *qty(max, unit, verb) {
@@ -386,6 +412,21 @@
           NP.snd.sfx('select');
           this.note = 'Bought ' + n + ' ' + d.name + '. Thank you!';
         }
+      }
+    }
+    *sellFish() {
+      const F = NP.Fishing;
+      for (;;) {
+        const P = F.st().pocket;
+        if (!P.length) { this.note = 'You have no fish left.'; return; }
+        const m = new ui.Menu({ items: P.map((e) => ({ label: F.label(e), right: '$' + F.price(e), e })), theme: 'light', x: 64, y: 6, visible: 7 });
+        this.shown = m;
+        const r = yield* this.menu(m);
+        this.shown = null;
+        if (r.type === 'cancel') return;
+        const e = r.item.e, $ = F.price(e);
+        F.take(e); NP.state.money += $; NP.snd.sfx('select');
+        this.note = 'Sold the ' + NP.data.fish[e.id].name + ' for $' + $ + '.';
       }
     }
     *sell() {

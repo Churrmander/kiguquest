@@ -234,6 +234,7 @@
       ui.text(fb, 'Money  $' + st.money, 70, 46, 'light');
       ui.text(fb, 'Friends ' + Object.keys(st.dex.caught).length + ' (seen ' + Object.keys(st.dex.seen).length + ')', 70, 60, 'light');
       ui.text(fb, 'Time   ' + NP.State.timeString(), 70, 74, 'light');
+      if (st.flags.stamp_fishing_master && NP.Fishing) NP.Fishing.drawStamp(fb, 202, 12);   // shown a rare fish to the Fishing Master
       // Button case: two rows of four 32 px Buttons (NP.art.icons badges.js); an empty stitched slot until the Salon is won
       ui.text(fb, 'Buttons', 78, 88, 'light', { color: '#707890' });
       // recessed felt tray: dark lip top-left, light lip bottom-right
@@ -260,6 +261,7 @@
         { name: 'Battle style', vals: ['Shift', 'Set'], get: () => (o.battleStyle === 'set' ? 1 : 0), set: (v) => { o.battleStyle = v ? 'set' : 'shift'; NP.Game.opts.battleStyle = o.battleStyle; } },
         { name: 'Music', vals: ['Off', 'Low', 'Med', 'High'], get: () => (o.music === undefined ? 2 : o.music), set: (v) => { o.music = v; this.vol(); } },
         { name: 'Sound fx', vals: ['Off', 'Low', 'Med', 'High'], get: () => (o.sfx === undefined ? 2 : o.sfx), set: (v) => { o.sfx = v; this.vol(); } },
+        { name: 'Time of day', vals: ['Auto', 'Morning', 'Day', 'Evening', 'Night'], get: () => o.clock || 0, set: (v) => { o.clock = v; NP.Game.opts.clock = v; } },
         { name: 'Done', vals: [], get: () => 0, set: () => {} },
       ];
     }

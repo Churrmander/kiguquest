@@ -76,6 +76,9 @@ forced('quarry_tunnels_2', [4, 4], [[19, 6], [20, 7], [21, 7]], 'the herd');
 NP.state.flags = { badge4: true, cellar_arc1: true, cellar_arc2: true, cellar_arc3: true, cellar_arc4: true };
 forced('spark_cellar_2', [4, 3], [[7, 9]], 'the stairs down (past Fuse and Volta)');
 forced('spark_cellar_3', [4, 3], [[15, 8], [16, 8], [17, 8]], 'the siphon (past Ohm)');
+// Hemline Riverside (fishing, 2026-10-26): every Tide Tailor on the bank watches a gap in a copse; the river is too fast to paddle
+NP.state.flags = {};
+forced('hemline_river', [11, 1], [[10, 45], [11, 45], [12, 45]], 'Hemline Lake (the riverside path)');
 NP.state.flags = { sal4_a1: true, sal4_a2: true };
 forced('quarry_salon', [5, 14], [[10, 5], [11, 6]], 'lever 3 (past Mica)', ['sal4_t2']);
 console.log('routing ok');

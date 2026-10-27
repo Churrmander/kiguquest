@@ -51,7 +51,7 @@
   // ------------------------------------------------------------------------------------------ actors and pickups
   L.trainerDef = function (id, x, y, look, dir, o) {
     const tr = { cls: o.cls, name: o.name, sight: o.sight || 3, reward: o.reward || 10, ai: o.ai === undefined ? 1 : o.ai, team: L.team(o.team) };
-    for (const k of ['intro', 'win', 'lose', 'after', 'music', 'jingle', 'master', 'bg']) if (o[k] !== undefined) tr[k] = o[k];
+    for (const k of ['intro', 'win', 'lose', 'after', 'music', 'jingle', 'master', 'bg', 'then']) if (o[k] !== undefined) tr[k] = o[k];
     return { id, x, y, look: L.look(look, 'tailor_f'), dir: dir || 'down', trainer: tr, note: o.note };
   };
 
@@ -298,6 +298,7 @@
       .stamp('window', 2, 1).stamp('window', 7, 1).stamp('plant', 1, 3).stamp('plant', 9, 6);
     M.interact(4, 3, 'tea').interact(5, 3, 'tea').interact(9, 3, 'pc');
     M.npc('maid', 4, 2, 'tea_maid', 'down', null, { script: 'tea', note: 'Tea House healer (shared script "tea")' });
+    M.npc('cook', 9, 4, 'cook', 'left', null, { script: 'tea_cook', note: 'Tea House cook: turns a fish into a dish (src/game/fishing.js)' });
     for (const gst of o.guests || []) M.npc(gst.id, gst.x, gst.y, gst.look, gst.dir, gst.say, { note: gst.note });
     return M;
   };

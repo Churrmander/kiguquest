@@ -89,6 +89,8 @@ For example, `M.building('tea_house', 4, 6, ...)` has its door at x6, so the lan
 * Terrain `paddle: true` (set on `water` only, not `sea`): with Disc: Paddle in the bag, the player can face it, press A and paddle over it. `water: true` alone still blocks.
 * The `bush` stamp is snippable (Disc: Snip): A on it removes it and its collision; the cut is stored as flag `snip:<map>:<x>,<y>`. Any other stamp is a plain obstacle.
 * Props with `gate: 'paddle' | 'snip'` (see `tests/maps.test.mjs`) must be unreachable on foot but reachable once those moves are allowed.
+* Fishing (`src/game/fishing.js`): a rod casts at any tile with `water: true` or `fishable: true` in front of the player, if the map has a `def.fishing` table. `sea` is the fast, unpaddleable water (Hemline Riverside uses it so the river can't be used to skip trainers).
+* `puddle` (cave floor with a shallow pool): walkable, `encounter: 'puddle'`, the cave's tall grass (Ryukoi's cave). `cave_pool`: deep cave water with rock banks, `water: true` + `fishable: true`, not paddleable.
 
 ## Battle backgrounds (`NP.art.tiles.battleBg(id)`)
 

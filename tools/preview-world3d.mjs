@@ -1,6 +1,7 @@
 // Headless previews of the pseudo-3D overworld (NP.view3d): renders real game frames to PNG.
 //
 //   node tools/preview-world3d.mjs <mapId> <x> <y> [dir] [outName] [--flat] [--preset=town] [--cfg=f:150,hz:4] [--scale=3] [--time]
+//   ... [--hour=22] time of day for the day-night tint (default midday)
 //   ... [--q=2] camera quarter turns for the map, [--yaw=0.8] fixed heading in radians
 //   node tools/preview-world3d.mjs set            # a fixed set of views (street, plaza, route, woods, ...) side by side
 //
@@ -23,6 +24,7 @@ ow.msg.close(); ow.tasks = [];
 const G = NP.Game;
 const V = NP.view3d;
 const fb = new NP.Bitmap(NP.W, NP.H);
+if (flags.hour !== undefined) NP.Clock.fake = +flags.hour;
 
 function tick(n) { for (let i = 0; i < n; i++) { G.tick(); G.render(); } }
 

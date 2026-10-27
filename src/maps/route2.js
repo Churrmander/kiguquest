@@ -86,7 +86,8 @@
   M.trainer('mina', 4, 32, 'schoolgirl', 'right', { cls: 'Schoolgirl', name: 'Mina', sight: 3, reward: 6, ai: 0, team: [['nibblit', 8], ['chirpadee', 9]],
     intro: 'I walked all the way from Hemline for a field trip.\\pSo I\'m going to battle everyone on the way home!', win: 'Teacher says to learn from every loss. This is a lot of learning.', after: 'Hemline is past the woods. They hem everything there, even the curtains.' });
   M.trainer('gus', 13, 17, 'fisher', 'left', { cls: 'Fisher', name: 'Gus', sight: 3, reward: 8, ai: 1, team: [['kerochapu', 8], ['kerochapu', 9]],   // was Kerochapu 10 + Ottopi 10: a wall for a Konko start
-    intro: 'The fish aren\'t biting today, so you\'ll have to do.', win: 'There goes my supper...', after: 'The river\'s calm today. The Pressers upstream keep measuring how wide it is.' });
+    intro: 'The fish aren\'t biting today, so you\'ll have to do.', win: 'There goes my supper...', after: 'The river\'s calm today. The Pressers upstream keep measuring how wide it is.',
+    then: 'gus_rod' });   // once beaten, Gus gives you the Old Rod and the Fishing Log, and sews a Fish Pocket on your bag (src/maps/fishing_spots.js)
   M.trainer('kei', 7, 16, 'net_kid', 'right', { cls: 'Net Kid', name: 'Kei', sight: 4, reward: 6, ai: 1, team: [['spinnet', 9], ['acolarva', 10]],
     intro: 'Shh! Don\'t scare the webs! ...Oh. Battle? Okay!', win: 'My webs got tangled up in yours.', after: 'There are webs all over the woods, and they\'re stronger than they look.' });
   M.trainer('brock', 17, 9, 'hiker', 'left', { cls: 'Hiker', name: 'Brock', sight: 4, reward: 9, ai: 0, team: [['molli', 9], ['kumi', 8]],   // was Molli 10 + Kumi 10 + Molli 11 with smart AI: a wall 1 Button in (round 4)
@@ -103,7 +104,7 @@
   M.pickup('spray', 4, 9, 'scent_spray', 1);
   M.hidden('stump_sugar', 3, 17, 'sugar_cube', 1, 'hidden Sugar Cube under the stump');
 
-  M.enc('grass', [['nibblit', 5, 7, 25], ['chirpadee', 5, 7, 25], ['kittabra', 5, 8, 20], ['kerochapu', 6, 8, 15], ['daisip|sprubun', 6, 8, 10], ['acolarva', 6, 7, 5]]);
+  M.enc('grass', [['nibblit', 5, 7, 25], ['chirpadee', 5, 7, 25], ['kittabra', 5, 8, 20], ['kerochapu', 6, 8, 15], ['daisip', 6, 8, 10], ['acolarva', 6, 7, 5]]);
 
   // the inspectors wait on the middle of the bridge until the scene removes them (cast defs)
   M.npc('insp_a', 10, 21, 'grunt_m', 'down', ['Tally: Plank twelve... level.'], { hideIf: 'route2_insp_done' });

@@ -26,7 +26,7 @@
   M.enc('grass', [['stingle|chirpadee', 23, 25, 34], ['pricklepot|nibblit', 23, 25, 30], ['sandkit|kittabra', 22, 24, 24], ['chirpadee', 22, 24, 12]]);
   M.trainer('oa_t1', 8, 7, 'hiker', 'right', { cls: 'Hiker', name: 'Ansel', sight: 4, reward: 14, ai: 2, team: [['tortile|kumi', 24], ['sandkit|kittabra', 24], ['saguarose|nibblit', 25]],
     intro: 'This is the only shade for miles, and I\'m not moving out of it. You\'ll have to battle me right here!', win: 'You were worth getting up for.', after: 'I lost my lucky charm up a palm tree. The one on the east side, if you\'re any good at climbing.' });
-  M.npc('fisher', 15, 13, 'fisher', 'up', ['There aren\'t any fish in an oasis. I know that.\\pI just like sitting by water with a rod. It\'s very calming.'], { note: 'flavour' });
+  M.npc('fisher', 15, 13, 'fisher', 'up', null, { script: 'oasis_fisher', note: 'gives the Good Rod once you show him a Desert Pupfish from the pool (src/maps/fishing_spots.js)' });
   M.pickup('cake', 4, 3, 'grand_cake|fancy_cake', 1);
   M.reg();
 })(typeof globalThis !== 'undefined' ? globalThis : window);

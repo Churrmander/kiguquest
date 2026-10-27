@@ -312,6 +312,8 @@
       return b;
     });
   };
+  /** a real fish from the Fishing Log (src/data/fish.js): icons are registered as items named 'fish_<id>' */
+  A.fishIcon = function (id) { return A.itemIcon('fish_' + id); };
   A.emote = function (name) {
     const v = A.icon('emote', name);
     if (v) return v;
