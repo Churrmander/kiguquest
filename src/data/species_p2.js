@@ -27,7 +27,7 @@
   sp('scurrent', 'Scurrent', ['volt'], [45, 50, 43, 70, 50, 65], { catch: 190, exp: 63, ab: ['run_away'], cry: 'Zip!',
     evo: [{ to: 'arcorn', level: 26 }],
     ls: [[1, 'pounce'], [1, 'quick_dash'], [5, 'volt_surge'], [10, 'gust_puff'], [15, 'lullaby'], [20, 'feather_dance']],
-    dex: 'A squirrel who has been zapped so often that she twitches. She zaps everything she touches.' });
+    dex: 'A red squirrel who has been zapped so often that she twitches. She zaps everything she touches.' });
   sp('arcorn', 'Arcorn', ['volt'], [65, 70, 58, 95, 68, 85], { catch: 75, exp: 161, ab: ['run_away'], cry: 'Zzzt!', stage: 2, family: 'scurrent',
     ls: [[1, 'pounce'], [1, 'quick_dash'], [1, 'volt_surge'], [8, 'gust_puff'], [16, 'daydream'], [24, 'feather_dance'], [32, 'buzz_song'], [38, 'pillow_slam']],
     dex: 'An inventor who builds gadgets out of acorns and wire. Her fingerless gloves spark when she has an idea.' });
