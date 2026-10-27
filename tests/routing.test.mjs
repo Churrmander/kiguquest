@@ -58,6 +58,14 @@ forced('crisp_1', [7, 10], [[14, 2]], 'the stairs up (past Fold)');
 forced('crisp_2', [1, 3], [[14, 2]], 'the stairs up (past Pinch and Lint)');
 forced('crisp_3', [1, 3], [[6, 6], [7, 6], [12, 6]], 'the Staff door and the manager (past Brim)');
 
+// Route 3 (the Seam Road): the river can only be crossed by paddling until Zip's Button mends the bridge; from wherever you land
+// on the far bank, the road to Seamstead still passes every Tailor
+NP.state.flags = {};
+assert.ok(!reach('route3', [2, 10], [[12, 10]], false), 'route3: the broken bridge can be walked across');
+forced('route3', [12, 10], [[39, 10], [39, 11]], 'Seamstead (the Seam Road)');
+NP.state.flags = { badge3: true };
+assert.ok(reach('route3', [2, 10], [[12, 10]], false), 'route3: the mended bridge cannot be walked across');
+
 // Chapters 4-6 (owner's rule: route trainers can't be skipped; a trainer in an optional side nook may be)
 NP.state.flags = { badge4: true, qt_rockfall: true };
 forced('route4', [2, 10], [[43, 10], [43, 11]], 'Canvas Rest (the Slab Road)');
