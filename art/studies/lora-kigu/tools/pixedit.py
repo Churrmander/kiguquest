@@ -338,3 +338,44 @@ def stone_points(a, xs, y, light, mid, length=4, glint=None, outline=True):
         if glint:
             a[y, x] = glint
     return a
+
+
+def cols_where(a, box, pred):
+    """Colours inside box whose (hue deg, sat, val) satisfy pred - handy as the `only` list for nearest()/replace()."""
+    import colorsys
+    x0, y0, x1, y1 = box
+    out = set()
+    for c in {tuple(int(v) for v in p) for p in a[y0:y1, x0:x1].reshape(-1, 3)}:
+        if c in (INK, WHITE):
+            continue
+        h, s, v = colorsys.rgb_to_hsv(*(np.array(c) / 255))
+        if pred(h * 360, s, v):
+            out.add(c)
+    return sorted(out)
+
+
+def stars(a, pts, col=(240, 200, 60), on=None):
+    """1 px gold stars (a plus of 1 centre + 4 arms in a darker gold) at the given points, only over colours in `on`."""
+    dim = tuple(int(c * 0.75) for c in col)
+    for x, y in pts:
+        for dx, dy, c in ((0, 0, col), (1, 0, dim), (-1, 0, dim), (0, 1, dim), (0, -1, dim)):
+            if on is None or tuple(a[y + dy, x + dx]) in on:
+                a[y + dy, x + dx] = c
+    return a
+
+
+CURL = [" oo ", "o  o", "o oo", " oo "]
+
+
+def curl(a, x, y, col, dark):
+    """A 4x4 spiral curl (light ring, dark core) at (x, y), inked where it meets the background."""
+    for j, row in enumerate(CURL):
+        for i, ch in enumerate(row):
+            a[y + j, x + i] = col if ch == 'o' else dark
+    for j in range(-1, 5):
+        for i in range(-1, 5):
+            if 0 <= j < 4 and 0 <= i < 4:
+                continue
+            if tuple(a[y + j, x + i]) == WHITE:
+                a[y + j, x + i] = INK
+    return a
