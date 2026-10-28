@@ -1,34 +1,52 @@
-/* Button Town (start) + Prof. Bobbin's lab + the two houses. */
+/* Button Town (start) + Prof. Bobbin's lab + the two houses + the tree house clearing.
+ * Layout: plan "Button Town v13" (approved 2026-10-27), 32 x 24. Row letters are y (A = 0), column numbers are x + 1. */
 (function (root) {
   'use strict';
-  const NP = root.NP, K = NP.mapkit;
+  const NP = root.NP, K = NP.mapkit, L = NP.levels;
 
   // ------------------------------------------------------------------------------------------ town
-  const W = 26, H = 22;
-  const g = K.grid(W, H, '.');
-  K.rect(g, 0, 0, W, 2, 'T'); K.rect(g, 0, 0, 2, H, 'T'); K.rect(g, W - 2, 0, 2, H, 'T');
-  K.rect(g, 0, 19, W, 3, 'w');                              // the sea to the south
-  K.rect(g, 12, 0, 2, 2, 'p');                              // gap north to Route 1
-  K.rect(g, 12, 0, 2, 19, 'p');                             // main road
-  K.rect(g, 6, 9, 16, 1, 'p');                              // lane past the lab & player house (from the house door, not the trees)
-  K.rect(g, 6, 17, 17, 1, 'p');                             // lower lane
-  K.rect(g, 20, 16, 3, 1, 'p');                             // the neighbour's front walk, centred on the door
-  K.rect(g, 12, 18, 2, 1, 'c');
-  K.rect(g, 12, 19, 2, 2, 'B');                             // the pier, where the morning boat drops the post
-  K.rect(g, 9, 11, 3, 2, 'f'); K.rect(g, 15, 11, 3, 2, 'f'); K.rect(g, 3, 11, 2, 1, 'f');
-  K.rect(g, 2, 2, 2, 17, 'T');                             // western wood
-  K.rect(g, 22, 2, 2, 7, 'T');
+  // plan rows verbatim. p path, c cobbles, f the flower strip (column 12), m park mulch, d shipyard boards, B pier / jetty,
+  // w the sea (and the pond, repainted below), e worn grass, h the hidden path (looks like trees), k the pond grotto
+  const ROWS = [
+    'TTTTTTTTTTTTppTTTTTTTTTTTTTTTTTT',
+    'TTTTTTTTTTTTppTTTTTTTTTTTTTTTTTT',
+    'TTTT.......fpp................TT',
+    'TTTT.......fppmmmmmmm.........TT',
+    'TTTT.......fppmmmmmmm.........TT',
+    'TTTT.......fppmmmmmmm.........TT',
+    'TTTT.......fppmmmmmmm.........TT',
+    'TTTT.......fppmmmmmmm.........TT',
+    'TTTT........ppmmmmmmm...ppp...TT',
+    'TTTT..ppppppppppppppppppppp...TT',
+    'hhhhee.....fpp..........p.....TT',
+    'TTTT.......fpp..........p.wwwwTT',
+    'TTTT.......fpp..........p.wwwwTT',
+    'TTTT.......fpp..........p.wwwkkT',
+    'TTTT.......fpp..........p.wwwkkT',
+    'TTTT.......fpp..........p.wwwwTT',
+    'TTTT........pp..........p.wwwwTT',
+    'TTTT..ppppppppppppppppppp.wwwwTT',
+    'TTTT........ccdddddddddd......TT',
+    'TTTT........ccdddddddddd......TT',
+    'wwwwwwwwwwwwBBwwwwBwwwwwwwwwwwww',
+    'wwwwwwwwwwwwBBwwwwBwwwwwwwwwwwww',
+    'wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww',
+    'wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww',
+  ];
+
+  // dir from actor a to the player (so the rival turns to whichever side you came up on)
+  const toward = (a, p) => (p.y < a.y ? 'up' : p.y > a.y ? 'down' : p.x < a.x ? 'left' : 'right');
 
   // ---- the first morning (padding beat 1): Mom asks you to peg out the sheets; {rival}'s kite is tangled in the washing line out back.
   //      Untangling it brings back the tree house promise, then the race to the lab. Nothing is locked: the lab just "is not open yet".
   function* morning(c) {
     if (c.flag('morning_done')) { yield* c.sayT('button_town.sheets.after', 'The sheets are flapping in the sea breeze. They\'re nearly dry already.'); return; }
     let t = c.npc('tomo_bt');
-    yield* c.face(t, 'down');
+    yield* c.face(t, toward(t, c.player));
     yield* c.sayT('button_town.morning.1', '{rival}: {player}! Thank goodness. My kite went straight into your washing line.\\pIt\'s all tangled up in the pegs. I only touched the sheets a little.');
     yield* c.ow.fadeOut(10);
-    c.placeNpc('player', 7, 4, 'up');
-    c.placeNpc(t, 7, 3, 'down');
+    c.placeNpc('player', 7, 2, 'down');   // the row behind the washing line (the taller house fills the old spot at 7,4)
+    c.placeNpc(t, 7, 3, 'up');
     yield* c.wait(10);
     yield* c.ow.fadeIn(10);
     yield* c.sayT('button_town.morning.2', '{player} and {rival} pegged up the sheets and teased the kite string free.');
@@ -36,8 +54,11 @@
     yield* treehouseMemory(c);
     t = c.npc('tomo_bt');   // the town was reloaded behind the memory, so this is a fresh actor
     yield* c.sayT('button_town.morning.7', '{rival}: It still counts, you know. Every single Salon.\\pNow come on! Professor Bobbin said nine sharp. ...It IS nine.');
+    // the hint for the hidden path at K1-K4 (plan v13, exact sentence)
+    yield* c.sayT('button_town.morning.hint', '{rival}: Our old shortcut\'s still there, you know. Through the trees, west of your house.');
     yield* c.sayT('button_town.morning.8', '{rival}: Race you to the lab!');
-    yield* c.walk(t, ['right', 2, 'down', 6, 'right', 8, 'up', 1]);
+    // (7,3) east along row D past the tree and the flower strip, down the main road, along row J, up the lab's lane to its door (25,7)
+    yield* c.walk(t, ['right', 5, 'down', 6, 'right', 13, 'up', 2]);
     c.hideNpc('tomo_bt');
     NP.snd.sfx('door');
     c.set('morning_done');
@@ -61,8 +82,8 @@
     yield* c.sayT('button_town.morning.6', 'Two small pinkies hooked together, and that made it official.\\p"Every Salon, together."');
     yield* c.wait(30);
     yield* c.ow.fadeOut(30, '#fff4e0');
-    c.ow.loadMap('button_town', 7, 4, 'up', { noEnter: true });
-    c.placeNpc(c.npc('tomo_bt'), 7, 3, 'down');
+    c.ow.loadMap('button_town', 7, 2, 'down', { noEnter: true });
+    c.placeNpc(c.npc('tomo_bt'), 7, 3, 'up');
     yield* c.wait(16);
     yield* c.ow.fadeIn(24);
   }
@@ -81,50 +102,12 @@
     c.set('parcel_got');
   }
 
-  K.reg({
-    id: 'button_town', name: 'Button Town', music: 'home_town', battleBg: 'grass', border: 'treeline',
+  const M = L.map({
+    id: 'button_town', name: 'Button Town', music: 'home_town', battleBg: 'grass', border: 'treeline', w: 32, h: 24,
     view: 'street',   // 3D camera preset (street | town | flat-ish), see src/engine/persp.js
-    legend: { '.': 'grass', T: 'treeline', p: 'path', c: 'cobble', w: 'water', f: 'flowers', F: 'fence', B: 'bridge_v' },
-    rows: K.rows(g),
-    stamps: [
-      { id: 'house_m', x: 4, y: 5, variant: 'red', name: 'home', to: 'player_house' },
-      { id: 'lab', x: 14, y: 4, name: 'lab', to: 'lab' },
-      { id: 'house_m', x: 4, y: 13, variant: 'blue', name: 'tomo', to: 'tomo_house' },
-      { id: 'house_s', x: 19, y: 13, variant: 'green', name: 'neighbor', to: 'neighbor_house' },
-      { id: 'tree', x: 10, y: 3 }, { id: 'tree', x: 15, y: 2 }, { id: 'tree', x: 21, y: 10 }, { id: 'tree', x: 8, y: 17 }, { id: 'tree', x: 17, y: 14 },
-      { id: 'sign', x: 11, y: 10, name: 'sign_town' }, { id: 'sign', x: 21, y: 8, name: 'sign_lab' },
-      { id: 'mailbox', x: 9, y: 8 }, { id: 'flowerbed', x: 6, y: 11 }, { id: 'bench', x: 16, y: 10 }, { id: 'lamp', x: 14, y: 10 },
-      { id: 'cloth_line', x: 5, y: 3 }, { id: 'crate', x: 13, y: 20 }, { id: 'barrel', x: 11, y: 18 },
-    ],
-    interact: [
-      { x: 11, y: 10, say: 'BUTTON TOWN\\nA friendly harbour town. Please mind the washing lines!' },
-      { x: 21, y: 8, say: "PROF. BOBBIN'S LAB\\nKigu research and tailoring." },
-      { x: 5, y: 3, script: morning }, { x: 6, y: 3, script: morning },
-      { x: 13, y: 20, script: parcel },
-    ],
-    spawns: { south: { x: 12, y: 17, dir: 'up' }, north: { x: 12, y: 2, dir: 'down' } },
-    warps: [{ xs: [12, 13], y: 0, to: 'route1', spawn: 'south', sound: 'none' }],
-    npcs: [
-      { id: 'villager_a', x: 9, y: 12, look: 'villager_f1', dir: 'down', move: 'wander', range: 2,
-        say: ['Oh, good morning! The sea breeze dries sheets in ten minutes.\\pI have never once needed a clothes peg. Don\'t tell the peg.'] },
-      { id: 'kid_a', x: 16, y: 13, look: 'child_m', dir: 'left', move: 'turn',
-        say: ['Is that {player}? Are you getting a Kigu today?\\pI\'m going to have one someday. Mom says I must be taller first.'] },
-      { id: 'elder_a', x: 11, y: 15, look: 'elder_f', dir: 'right',
-        say: ['A Kigu chooses the people she trusts, you know.\\pYou can\'t force it, and you shouldn\'t try.'] },
-      { id: 'tomo_bt', x: 7, y: 3, look: 'rival', dir: 'left', hideIf: 'morning_done', script: morning },
-    ],
-    triggers: [
-      {
-        x: 12, y: 2, w: 2, h: 1, id: 'north_block',
-        when: (c) => !c.flag('errand_done'),
-        script: function* (c) {
-          if (!c.flag('has_starter')) yield* c.sayT('button_town.north.0', 'Wait, {player}!\\pProfessor Bobbin asked to see you at her lab first.');
-          else if (!c.flag('parcel_got')) yield* c.sayT('button_town.north.1', 'Wait, {player}! Did you fetch the Professor\'s parcel?\\pIt\'s on the crate at the end of the pier, south of town.');
-          else yield* c.sayT('button_town.north.2', 'That parcel looks heavy, {player}!\\pProfessor Bobbin will want it before you set off.');
-          yield* c.walk('player', ['down', 2]);
-        },
-      },
-    ],
+    town: true,       // no tree shaking in town (src/game/treeshake.js)
+    legend: { '.': 'grass', T: 'treeline', p: 'path', c: 'cobble', f: 'flowers', w: 'sea', o: 'water', '<': 'bridge_v_w', '>': 'bridge_v_e', B: 'bridge_v',
+      d: 'boardwalk', m: 'mulch', e: 'worn_grass', h: 'treeline_secret', k: 'grotto_floor' },
     onEnter: function* (c) {
       // saves from before the morning and parcel beats existed carry on as if both had happened
       if (c.flag('has_starter')) c.set('morning_done');
@@ -135,6 +118,142 @@
         yield* c.sayT('button_town.kite_call', 'Someone is calling from behind the house...\\p"{player}! Round the back! Help!"');
       }
     },
+  });
+  M.ascii(0, 0, ROWS);
+  // the sea (rows U-X) can't be paddled; the pond (L27-R30) can, and the grotto mouth (N30-O30) is only reached across it
+  M.rect(26, 11, 4, 7, 'o').set(29, 13, 'k').set(29, 14, 'k');
+  // the pier (U13-V14) is a 2-wide deck; the jetty at x18 stays a single plank walk
+  M.rect(12, 20, 1, 2, '<').rect(13, 20, 1, 2, '>');
+
+  // -- buildings
+  M.building('house_home', 4, 4, 'red', 'home', 'player_house');        // A: two storeys, 2-tile front door I7-I8 (both cells warp)
+  M.building('lab', 22, 3, null, 'lab', 'lab');                          // B: D23-H29, door H26
+  M.building('house_tall', 4, 12, 'blue', 'tomo', 'tomo_house');         // C: the rival's house, door Q7
+  M.stamp('rowhouse_shop', 14, 14, 'post');                              // R1 post office (closed, no interior)
+  M.building('rowhouse', 16, 14, null, 'neighbor', 'neighbor_house');    // R2 the neighbour's house, door Q17
+  M.stamp('rowhouse_shop', 18, 14, 'bakery');                            // R3
+  M.stamp('rowhouse_shop', 20, 14, 'tackle');                            // R4
+  M.stamp('rowhouse_shop', 22, 14, 'haberdashery');                      // R5
+
+  // -- the west side: washing line, kite scrap, Mom's planters, picnic table, well, firewood
+  M.stamp('cloth_line', 5, 3);
+  M.stamp('kite_snag', 8, 1);                                            // a scrap of old kite string on the branch at C9 (walk-over)
+  M.stamp('herb_planter', 9, 5, 'herbs').stamp('herb_planter', 9, 6, 'tomato');
+  M.stamp('picnic_table', 7, 10).stamp('well', 9, 11).stamp('flowerbed', 6, 11).stamp('firewood', 9, 16);
+  M.stamp('mailbox', 9, 8);
+
+  // -- street furniture: lamps on the corners where the side roads meet the main road, the bench beside row J
+  M.stamp('lamp', 11, 7).stamp('lamp', 11, 15).stamp('lamp', 14, 10);
+  M.stamp('bench', 16, 10);
+  M.sign(10, 10, 'BUTTON TOWN\\nA friendly harbour town. Please mind the washing lines!', 'town sign');
+  M.sign(27, 8, "PROF. BOBBIN'S LAB\\nKigu research and tailoring.", 'lab sign');
+  M.trees([[10, 3], [21, 10], [8, 17]]);
+
+  // -- Kigu Park (D15-I21): no fence, mulch underfoot, a big shade tree in the middle
+  M.stamp('swing_set', 14, 3).stamp('slide', 20, 3);
+  M.stamp('spring_rider', 14, 7, 'konko').stamp('spring_rider', 16, 7, 'ottopi').stamp('spring_rider', 15, 8, 'sprubun');
+  M.stamp('obstacle_course', 19, 7);
+  M.tree(17, 5);
+
+  // -- the harbour: the pier crate (Bobbin's parcel), a barrel, and the little shipyard on rows S-T with two boats moored below
+  M.stamp('crate', 13, 21).stamp('barrel', 11, 18);
+  M.stamp('crate', 14, 18).stamp('crate', 15, 18).stamp('winch', 17, 18).stamp('net_rack', 19, 18).stamp('barrel', 22, 18).stamp('barrel', 23, 18);
+  M.stamp('mooring_post', 16, 19).stamp('lobster_pots', 21, 19);
+  M.stamp('boat_fishing', 15, 20).stamp('boat_cargo', 19, 20);
+
+  // -- story interactions
+  M.interact(5, 3, morning, 'washing line: the first morning').interact(6, 3, morning, 'washing line: the first morning');
+  M.interact(13, 21, parcel, 'pier crate: Bobbin\'s parcel');
+
+  // -- people
+  M.npc('tomo_bt', 7, 3, 'rival', 'left', null, { hideIf: 'morning_done', script: morning });
+  M.npc('villager_a', 9, 13, 'villager_f1', 'up', 'Oh, good morning! The sea breeze dries sheets in ten minutes.\\pI have never once needed a clothes peg. Don\'t tell the peg.', { move: 'wander', range: 1 });
+  M.npc('kid_a', 16, 13, 'child_m', 'left', 'Is that {player}? Are you getting a Kigu today?\\pI\'m going to have one someday. Mom says I must be taller first.', { move: 'turn' });
+  M.npc('elder_a', 10, 15, 'elder_f', 'right', 'A Kigu chooses the people she trusts, you know.\\pYou can\'t force it, and you shouldn\'t try.');
+  M.npc('park_kid_tag', 15, 4, 'child_f', 'down', 'Tag! You\'re it! ...Oh, you\'ve got a Kigu now? Okay, she can be it too.', { move: 'turn', showIf: 'has_starter' });
+  M.npc('park_kid_beam', 19, 6, 'child_m', 'down', 'I did the balance beam without falling off! Well, I fell off once. Twice.', { move: 'turn' });
+  M.npc('park_kid_shake', 16, 6, 'net_kid', 'right', 'I shook a tree on Meadow Lane once and a Chirpadee fell right on my head! I think she was even more surprised than I was.', { note: 'tree-shake hint' });
+  M.npc('sailor_bt', 16, 18, 'sailor', 'down', 'We ship lanterns to Loomhaven every year for the Lantern Festival. This year\'s order is the biggest I\'ve ever seen.');
+  M.npc('dockhand', 19, 19, 'builder_m', 'down', 'Half the crates on the cargo boat lately are white uniforms from Crisp & Co. in Seamstead. Who needs that many uniforms?');
+  M.npc('pier_fisher', 12, 20, 'fisher', 'left', 'There\'s an old angler at Hemline Lake who swears a golden fish Kigu lives under the water there. Nobody believes him.');
+  M.npc('old_sailor', 25, 12, 'elder_m', 'right', 'Something shines in that little cave across the pond. You\'d need a Kigu who can paddle to find out what.');
+  // the shopkeepers wait in their own recessed doorways (row R is the only lane past the rowhouses, so they stay off it)
+  M.npc('postmaster', 14, 16, 'courier', 'down', 'We\'re waiting on the morning boat like everyone else. Nothing to sort until it\'s unloaded.');
+  M.npc('baker', 18, 16, 'cook', 'down', 'The oven\'s still heating up. Come back after your adventure and I\'ll have buns. Don\'t tell your mum I said mine are better.');
+  M.npc('tackle_owner', 20, 16, 'shopkeeper', 'down', 'No rods until the new stock comes in. Gus on Route 2 has a spare, if you can beat him.');
+  M.npc('haberdasher', 22, 16, 'lady', 'down', 'Nobody buys ribbon any more since Tidy Day started. Buttons, though? Buttons always sell.');
+
+  // -- the secret: a Wish Candy glinting in the pond grotto, visible from the shore, reached only by paddling
+  M.pickup('wish_candy', 30, 13, 'wish_candy', 1, 'glinting in the pond grotto, Paddle only');
+  Object.assign(M.def.props[M.def.props.length - 1], { gate: 'paddle', glint: true });
+
+  // -- ways in and out
+  // the nudge sits on row B (inside the tree gap), not row C, so walking along row C past the road behind your house is never stopped
+  M.trigger({
+    x: 12, y: 1, w: 2, h: 1, id: 'north_block',
+    when: (c) => !c.flag('errand_done'),
+    script: function* (c) {
+      if (!c.flag('has_starter')) yield* c.sayT('button_town.north.0', 'Wait, {player}!\\pProfessor Bobbin asked to see you at her lab first.');
+      else if (!c.flag('parcel_got')) yield* c.sayT('button_town.north.1', 'Wait, {player}! Did you fetch the Professor\'s parcel?\\pIt\'s on the crate at the end of the pier, south of town.');
+      else yield* c.sayT('button_town.north.2', 'That parcel looks heavy, {player}!\\pProfessor Bobbin will want it before you set off.');
+      yield* c.walk('player', ['down', 2]);
+    },
+  });
+  M.spawn('south', 12, 17, 'up').spawn('north', 12, 2, 'down').spawn('west', 4, 10, 'right');
+  M.edge('n', 12, 13, 'route1', 'south');
+  M.edge('w', 10, 10, 'treehouse_clearing', 'east');                    // the hidden path K1-K4
+  M.reg();
+
+  // ---------------------------------------------------------------------------- the tree house clearing
+  // A small map of its own (plan "clear", 14 x 12), through the hidden path. You come in from the east. One change from the plan:
+  // a dirt tile under the ladder (6,6), since every outdoor door needs a path tile under it.
+  const C = L.map({
+    id: 'treehouse_clearing', name: 'Tree House Clearing', music: 'home_town', battleBg: 'forest', border: 'treeline', w: 14, h: 12,
+    view: 'street', town: true,
+    legend: { T: 'treeline', '.': 'grass', f: 'flowers', h: 'treeline_secret', p: 'dirt' },
+  });
+  C.ascii(0, 0, [
+    'TTTTTTTTTTTTTT',
+    'TTTTTTTTTTTTTT',
+    'TTTT......TTTT',
+    'TTT......ffTTT',
+    'TT..........TT',
+    'TT..........hh',
+    'TT....p.....TT',
+    'TT..........TT',
+    'TTTff......TTT',
+    'TTTT......TTTT',
+    'TTTTTTTTTTTTTT',
+    'TTTTTTTTTTTTTT',
+  ]);
+  C.building('treehouse', 5, 3, null, 'treehouse', 'treehouse');        // D6-F8, ladder at F7
+  C.stamp('tyre_swing', 9, 6);
+  C.sign(8, 6, 'SECRET BASE. No grown-ups allowed (except Mom, if she brings snacks).', 'hand-painted sign');
+  C.stamp('stump', 3, 5).stamp('stump', 3, 6);                           // the two stumps you used as chairs
+  C.spawn('east', 11, 5, 'left');
+  C.edge('e', 5, 5, 'button_town', 'west');                              // the way back to town (F13-F14)
+  C.reg();
+
+  // the tree house itself, the same room as the memory but in the present day (no sepia, no little kids): up the ladder and back down
+  K.reg({
+    id: 'treehouse', name: 'The Tree House', music: 'home_town', battleBg: 'indoor', border: 'treeline', indoor: true,
+    legend: { T: 'treeline', W: 'wall_wood', b: 'floor_wood' },
+    rows: [
+      'TTTTTTTTTT',
+      'TWWWWWWWWT',
+      'TWWWWWWWWT',
+      'TbbbbbbbbT',
+      'TbbbbbbbbT',
+      'TbbbbbbbbT',
+      'TbbbbbbbbT',
+      'TTTTTTTTTT',
+    ],
+    stamps: [{ id: 'window', x: 2, y: 1 }, { id: 'window', x: 4, y: 1 }, { id: 'window', x: 6, y: 1 }, { id: 'table_s', x: 7, y: 3 },
+      { id: 'tree', x: 0, y: 4 }, { id: 'tree', x: 9, y: 5 }, { id: 'tree_big', x: 0, y: 0 }, { id: 'tree_big', x: 8, y: 0 },
+      { id: 'plant', x: 1, y: 3 }, { id: 'ladder', x: 8, y: 4 }],
+    npcs: [], props: [], triggers: [], interact: [],
+    warps: [{ x: 8, y: 6, to: 'treehouse_clearing', door: 'treehouse', sound: 'door' }],   // the ladder hole
+    spawns: { door: { x: 7, y: 6, dir: 'left' } },
   });
 
   // -------------------------------------------------------------------------------------- the lab
@@ -228,7 +347,7 @@
         // too early: the lab "is not open yet", which points you at the washing line without a locked door
         yield* c.wait(10);
         yield* c.sayT('lab.early', 'Prof. Bobbin: Oh! {player}, you\'re early, dear. I\'m still dusting the spools.\\pDid your mother not ask you to peg out the sheets? Go on, I\'ll be ready.');
-        yield* c.warp('button_town', 17, 9, 'down');
+        yield* c.warp('button_town', 25, 8, 'down');
         return;
       }
       c.set('intro_done');

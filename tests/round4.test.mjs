@@ -23,7 +23,7 @@ console.log('>> the tree house memory is a sepia room with the two of you as kid
   const st = NP.state;
   Object.assign(st.flags, { woke: true, kite_call: true });
   const ow = new NP.Overworld(); G.reset(ow);
-  ow.loadMap('button_town', 7, 4, 'up', { noEnter: true });
+  ow.loadMap('button_town', 7, 2, 'down', { noEnter: true });
   t.tick(3); t.tap('a');
   let inMemory = false, kids = null, toned = false;
   for (let i = 0; i < 6000 && !st.flags.morning_done; i++) {
