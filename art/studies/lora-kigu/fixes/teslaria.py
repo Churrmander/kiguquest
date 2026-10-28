@@ -1,6 +1,6 @@
 import sys; sys.path.insert(0, '.')
 from pixedit import *
-picks = {'base': 'out/m-teslaria-base-s215_00001_-px.png', 'pose': 'out/m-teslaria-pose-s233_00001_-px.png', 'back': 'out/m-teslaria-back-s234_00001_-px.png'}
+picks = {'base': 'out/m2-teslaria-base-s246_00001_-px.png', 'pose': 'out/m2-teslaria-pose-s254_00001_-px.png', 'back': 'out/m2-teslaria-back-s254_00001_-px.png'}
 out = {}
 for v, f in picks.items():
     a = drop_floating(load(f), keep_min=150)

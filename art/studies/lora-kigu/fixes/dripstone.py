@@ -47,3 +47,25 @@ for x, n in ((47, 3), (55, 5), (64, 4), (73, 5), (83, 3)):
 drip_stripes(k, [(52, 62, 84), (64, 64, 92), (73, 62, 86), (81, 64, 84)], {(129, 127, 125), (143, 145, 139), (109, 110, 108)}, (81, 74, 73), width=2)
 for v, a in (('base', b), ('pose', p), ('back', k)):
     save(a, f'study/dripstone/dripstone-{v}-1x.png', f'study/dripstone/dripstone-{v}.png')
+
+# Slacker caught it: on the back the rope tail hung from her arm. Take it off and hang it from the tailbone instead.
+k = load('study/dripstone/dripstone-back-1x.png')
+for y in range(78, 110):
+    for x in range(20, 49):
+        k[y, x] = WHITE
+k = reoutline(k)
+rope(k, [(66, 90), (60, 96), (53, 101), (46, 104)], cols=((109, 110, 108), (63, 62, 54)))
+TUFT = ["  LD  ",                                                                         # frayed rope-end tuft, like the front's
+        " LLDD ",
+        "LLLDDD",
+        "LLLDDD",
+        "L LD D",
+        "L L D "]
+cells = {(40 + i, 104 + j): ((143, 145, 139) if ch == 'L' else (92, 93, 92)) for j, row in enumerate(TUFT) for i, ch in enumerate(row) if ch != ' '}
+for (x, y) in cells:
+    for dx, dy in ((-1, 0), (1, 0), (0, 1), (0, -1)):
+        if (x + dx, y + dy) not in cells and tuple(k[y + dy, x + dx]) == WHITE:
+            k[y + dy, x + dx] = INK
+for (x, y), c in cells.items():
+    k[y, x] = c
+save(k, 'study/dripstone/dripstone-back-1x.png', 'study/dripstone/dripstone-back.png')

@@ -282,7 +282,7 @@ def skin_like(a, box, skin, tol=60):
     return a
 
 
-def rope(a, pts, cols=((150, 150, 162), (98, 98, 110)), tassel=None):
+def rope(a, pts, cols=((150, 150, 162), (98, 98, 110)), tassel=None, tsize=4):
     """A 2 px rope through the points (light left column, dark right), inked on both sides, with an optional tassel
     (a 4x4 block in the light colour) at the end."""
     cells = {}
@@ -293,9 +293,13 @@ def rope(a, pts, cols=((150, 150, 162), (98, 98, 110)), tassel=None):
             cells[(x, y)] = cols[0]; cells[(x + 1, y)] = cols[1]
     if tassel:
         tx, ty = tassel
-        for yy in range(ty, ty + 4):
-            for xx in range(tx, tx + 4):
-                cells[(xx, yy)] = cols[0] if (xx + yy) % 2 else cols[1]
+        for yy in range(ty, ty + tsize):
+            for xx in range(tx, tx + tsize):
+                if (yy - ty, xx - tx) in ((0, 0), (0, tsize - 1)):
+                    continue                                       # rounded top corners
+                cells[(xx, yy)] = cols[0] if (xx - tx) < tsize // 2 else cols[1]
+        for xx in range(tx + 1, tx + tsize - 1):
+            cells[(xx, ty + tsize)] = cols[1]                      # rounded bottom
     for (x, y) in cells:
         for dx, dy in ((-1, 0), (1, 0), (0, 1), (0, -1)):
             if (x + dx, y + dy) not in cells:

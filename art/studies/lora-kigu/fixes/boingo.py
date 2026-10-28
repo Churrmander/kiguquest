@@ -1,6 +1,6 @@
 import sys; sys.path.insert(0, '.')
 from pixedit import *
-picks = {'base': 'out/bo2-base-s182_00001_-px.png', 'pose': 'out/bo3-pose-s191_00001_-px.png', 'back': 'out/bo4-back-s221_00001_-px.png'}
+picks = {'base': 'out/bo2-base-s182_00001_-px.png', 'pose': 'out/bo3-pose-s191_00001_-px.png', 'back': 'out/bo5-back-s276_00001_-px.png'}
 out = {}
 for v, f in picks.items():
     a = drop_floating(load(f), keep_min=150)
@@ -47,12 +47,8 @@ p = mode_filter(p, protect=[(0, 0, 128, 94)], need=4, passes=2)                 
 coils(p, (48, 70, 82, 96), 72, SUIT | {(241, 133, 8), (249, 163, 45)})
 out['pose'] = p
 k = out['back']
-k = replace(k, {(190, 191, 201): (250, 250, 250), (138, 142, 149): (224, 219, 228), (112, 126, 128): (187, 200, 209)}, box=(44, 18, 92, 52))   # hood = base white
-k = mode_filter(k, protect=[(0, 0, 128, 56)], need=5, passes=1)
-coils(k, (36, 60, 92, 120), 62, {(239, 132, 4), (206, 112, 18), (188, 77, 35)})
-for cx, cy in ((44, 47), (46, 54), (80, 47), (78, 54)):                            # copper spiral curls under the hood
-    curl(k, cx, cy, (239, 132, 4), (123, 57, 11))
-k = mode_filter(k, protect=[(0, 0, 128, 60), (50, 0, 74, 128), (0, 86, 128, 128)], need=4)   # mottled arms
+k = replace(k, {(193, 169, 160): (250, 250, 250), (139, 138, 136): (224, 219, 228), (95, 100, 102): (187, 200, 209)}, box=(44, 14, 86, 56))
+k = replace(k, {c: (250, 250, 250) if sum(c) > 560 else (224, 219, 228) if sum(c) > 420 else (187, 200, 209) for c in cols_where(k, (44, 14, 86, 56), lambda h, s, v: s < 0.12 and v > 0.45)}, box=(44, 14, 86, 56))   # hood = base white
 out['back'] = k
 for v, a in out.items():
     a = reoutline(a)

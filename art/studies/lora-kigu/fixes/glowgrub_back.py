@@ -47,3 +47,17 @@ put(a, [(95, 51), (95, 52), (95, 53), (95, 54)], INK)                 # thumb
 antenna4(a, 66, 17, 2)
 antenna4(a, 79, 19, 2)
 save(a, 'study/glowgrub/glowgrub-back-1x.png', 'study/glowgrub/glowgrub-back.png')
+
+# the tail root sat on her hip edge; carry it in to the middle of her seat so it comes from the tailbone
+k = load('study/glowgrub/glowgrub-back-1x.png')
+for y in range(89, 99):
+    for x in range(52, 61):
+        k[y, x] = (40, 188, 107) if y < 95 else (48, 143, 58)
+for x in range(52, 61):
+    k[88, x] = INK; k[99, x] = INK
+for y in range(90, 98):
+    k[y, 61] = INK
+k[89, 61] = INK; k[98, 61] = INK
+for y in range(89, 99):
+    k[y, 56] = (9, 88, 44)                                                              # one more segment seam
+save(k, 'study/glowgrub/glowgrub-back-1x.png', 'study/glowgrub/glowgrub-back.png')
