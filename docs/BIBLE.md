@@ -74,6 +74,9 @@ Every new or changed Kigu name must pass all of these, and **the owner approves 
    could be misread as a rude word (Pricklepot, not Prickpot; Peepi was renamed).
 7. **One obvious reading.** A player who has never heard it said should stress it the way we mean (Pomisno was dropped).
 8. **10 letters or fewer**, so it fits the battle HP box and menus.
+9. **One theme per line (owner, 2026-10-28).** Every stage of an evolution line carries the same idea, and the line grows it
+   from first stage to last: Clawdet → Crabmiral (navy: cadet, then admiral). Snipsnap → Crabmiral failed this (no navy
+   in the first stage) and was renamed. Check the names, the costumes and the Sketchbook lines.
 
 **Owner's note on rule 4 (2026-10-26):** a stem only counts when it carries the same idea. Letters that line up by
 coincidence are fine (Astara has nothing to do with stars, so Amethystar is no clash).
