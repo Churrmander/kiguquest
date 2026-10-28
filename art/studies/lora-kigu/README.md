@@ -13,8 +13,11 @@ Study for drawing the undrawn Kigu (76-151) locally with the retrained Kigu LoRA
 
 `tools/spark_cellar.sh` makes first drafts (4 seeds x 3 views) for the rest of the Spark Cellar group.
 
+**Better consistency (found later):** pick one master view, then render the other two from it (`--ref <master raw render> --denoise 0.88` for the pose, `0.9` for the back, same prompt). The design carries across views far better than starting each view from a different house sprite. Clean txt2img fronts work as masters for onesie Kigu (`tools/prompts.sh` holds the locked looks). `tools/transfer_ref.py` (copy a front's colours onto a house pose/back) was a halfway step.
+
 ## Results
 
 | Kigu | Front | Pose | Back | Notes |
 |---|---|---|---|---|
 | 76 Glowgrub | 8 | 8 | 8 | from Stingle; 6 critic rounds (5-6 → 7 → 8) |
+| 82 Dripstone | 8 | 8 | 8 | pose was the master; front/back rendered from it; stalactite points and drip stripes added by hand |

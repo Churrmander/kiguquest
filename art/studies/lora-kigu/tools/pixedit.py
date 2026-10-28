@@ -178,3 +178,163 @@ def inner_ink(a, box, fill):
             if tuple(src[y, x]) == INK and not bg[y - 1:y + 2, x - 1:x + 2].any():
                 a[y, x] = fill
     return a
+
+
+def drop_floating(a, keep_min=60):
+    """Remove pieces not joined to the figure (stray sparkles, specks): every 8-connected non-background part smaller than
+    keep_min pixels goes, except the largest part."""
+    fg = ~is_col(a, WHITE)
+    H, W = fg.shape
+    seen = np.zeros_like(fg)
+    parts = []
+    for y0, x0 in zip(*np.where(fg)):
+        if seen[y0, x0]:
+            continue
+        stack, comp = [(y0, x0)], []
+        seen[y0, x0] = True
+        while stack:
+            y, x = stack.pop(); comp.append((y, x))
+            for dy in (-1, 0, 1):
+                for dx in (-1, 0, 1):
+                    ny, nx = y + dy, x + dx
+                    if 0 <= ny < H and 0 <= nx < W and fg[ny, nx] and not seen[ny, nx]:
+                        seen[ny, nx] = True; stack.append((ny, nx))
+        parts.append(comp)
+    parts.sort(key=len, reverse=True)
+    for comp in parts[1:]:
+        if len(comp) < keep_min:
+            for y, x in comp:
+                a[y, x] = WHITE
+    return a
+
+
+def requantize(a, n=16):
+    """Cut the figure to n colours (plus ink and background) to calm speckled pastel noise; run unspeckle() after."""
+    fig = ~(is_col(a, WHITE) | is_col(a, INK))
+    px = a[fig]
+    side = int(np.ceil(np.sqrt(len(px))))
+    buf = np.resize(px, (side * side, 3)).reshape(side, side, 3).astype(np.uint8)
+    q = Image.fromarray(buf).quantize(n, method=Image.MEDIANCUT, kmeans=3)
+    pal = np.array(q.getpalette()[:n * 3]).reshape(-1, 3)
+    idx = ((px[:, None].astype(int) - pal[None]) ** 2).sum(-1).argmin(1)
+    out = a.copy()
+    out[fig] = pal[idx]
+    return out
+
+
+def mode_filter(a, protect=(), need=5, passes=1):
+    """Each figure pixel takes the commonest colour of its 3x3 window when that colour fills at least `need` of the 9 cells
+    (ink and background never spread). Smooths blotchy 2x2 noise that unspeckle() leaves."""
+    H, W, _ = a.shape
+    keepm = is_col(a, INK) | is_col(a, WHITE)
+    for x0, y0, x1, y1 in protect:
+        keepm[y0:y1, x0:x1] = True
+    for _ in range(passes):
+        b = a.copy()
+        for y in range(1, H - 1):
+            for x in range(1, W - 1):
+                if keepm[y, x]:
+                    continue
+                win = [tuple(a[y + dy, x + dx]) for dy in (-1, 0, 1) for dx in (-1, 0, 1)]
+                win = [c for c in win if c not in (INK, WHITE)]
+                if win:
+                    c = max(set(win), key=win.count)
+                    if win.count(c) >= need:
+                        b[y, x] = c
+        a = b
+    return a
+
+
+GLOW = ((200, 240, 255), (140, 210, 245), (250, 250, 250))  # pale-blue glow drop: fill, shade, glint
+
+
+def drop_at(a, x, y, glow=GLOW):
+    """A glowing drop hanging from (x, y) (its top pixel), 1-2-3-2 wide, inked all round."""
+    cells = {(x, y): glow[0], (x, y + 1): glow[2], (x + 1, y + 1): glow[0],
+             (x - 1, y + 2): glow[0], (x, y + 2): glow[0], (x + 1, y + 2): glow[1], (x, y + 3): glow[1], (x + 1, y + 3): glow[1]}
+    for (cx, cy) in list(cells):
+        for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+            n = (cx + dx, cy + dy)
+            if n not in cells and is_col(a[n[1]:n[1] + 1, n[0]:n[0] + 1], WHITE).all():
+                a[n[1], n[0]] = INK
+    for (cx, cy), c in cells.items():
+        a[cy, cx] = c
+    return a
+
+
+def hem_drops(a, xs, glow=GLOW, max_y=128):
+    """Hang a drop under the lowest figure pixel (above max_y) of each column in xs."""
+    for x in xs:
+        col = np.where(~is_col(a[:max_y, x:x + 1], WHITE)[:, 0])[0]
+        if len(col):
+            drop_at(a, x, col.max() + 1, glow)
+    return a
+
+
+def skin_like(a, box, skin, tol=60):
+    """Pull orange-ish skin pixels in box toward the face's skin colour."""
+    x0, y0, x1, y1 = box
+    for y in range(y0, y1):
+        for x in range(x0, x1):
+            c = a[y, x].astype(int)
+            if c[0] > 150 and c[0] > c[2] + 40 and abs(c - np.array(skin)).sum() < 3 * tol + 120:
+                a[y, x] = skin
+    return a
+
+
+def rope(a, pts, cols=((150, 150, 162), (98, 98, 110)), tassel=None):
+    """A 2 px rope through the points (light left column, dark right), inked on both sides, with an optional tassel
+    (a 4x4 block in the light colour) at the end."""
+    cells = {}
+    for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
+        n = max(abs(x1 - x0), abs(y1 - y0))
+        for i in range(n + 1):
+            x = round(x0 + (x1 - x0) * i / n); y = round(y0 + (y1 - y0) * i / n)
+            cells[(x, y)] = cols[0]; cells[(x + 1, y)] = cols[1]
+    if tassel:
+        tx, ty = tassel
+        for yy in range(ty, ty + 4):
+            for xx in range(tx, tx + 4):
+                cells[(xx, yy)] = cols[0] if (xx + yy) % 2 else cols[1]
+    for (x, y) in cells:
+        for dx, dy in ((-1, 0), (1, 0), (0, 1), (0, -1)):
+            if (x + dx, y + dy) not in cells:
+                a[y + dy, x + dx] = INK
+    for (x, y), c in cells.items():
+        a[y, x] = c
+    return a
+
+
+def drip_stripes(a, stripes, main, dark, width=1):
+    """Vertical drip stripes: for each (x, y0, y1), pixels of the main suit colour on that column turn dark, ending in a
+    2 px rounded tip at y1. `main` may be one colour or a set of suit colours."""
+    mains = {tuple(c) for c in main} if isinstance(main, (set, list)) else {tuple(main)}
+    for x, y0, y1 in stripes:
+        for y in range(y0, y1 + 1):
+            for xx in range(x, x + width):
+                if tuple(a[y, xx]) in mains:
+                    a[y, xx] = dark
+        for yy, xs in ((y1 + 1, range(x - 1, x + width + 1)), (y1 + 2, range(x, x + width))):   # rounded drop at the end
+            for xx in xs:
+                if tuple(a[yy, xx]) in mains:
+                    a[yy, xx] = dark
+    return a
+
+
+def stone_points(a, xs, y, light, mid, length=4, glint=None, outline=True):
+    """Little stalactite points hanging from row y: 2 px wide for half the length, then 1 px, inked around."""
+    for x in xs:
+        cells = {}
+        for i in range(length):
+            cells[(x, y + i)] = light if i < length // 2 else mid
+            if i < length // 2:
+                cells[(x + 1, y + i)] = mid
+        for (cx, cy) in cells if outline else ():
+            for dx, dy in ((-1, 0), (1, 0), (0, 1)):
+                if (cx + dx, cy + dy) not in cells:
+                    a[cy + dy, cx + dx] = INK
+        for (cx, cy), c in cells.items():
+            a[cy, cx] = c
+        if glint:
+            a[y, x] = glint
+    return a
