@@ -273,35 +273,6 @@
 
   // --------------------------------------------------------------------------------- the houses
   K.room({
-    id: 'player_house', name: 'Your House', w: 10, h: 9, doorX: 4, exit: { to: 'button_town', door: 'home' },
-    stamps: [{ id: 'bed', x: 7, y: 2 }, { id: 'tv', x: 2, y: 2 }, { id: 'table_s', x: 4, y: 4 }, { id: 'window', x: 4, y: 1 }, { id: 'plant', x: 8, y: 6 }, { id: 'rug_a', x: 3, y: 6 }],
-    npcs: [{
-      id: 'mom', x: 3, y: 4, look: 'mom', dir: 'down',
-      script: function* (c) {
-        if (!c.flag('morning_done')) { yield* c.sayT('player_house.mom.sheets', 'Sheets first, love! The washing line is round the back of the house.'); return; }
-        if (!c.flag('has_starter')) { yield* c.say('{player}! Professor Bobbin is expecting you.\\pHer lab is just up the road. Go on, shoo!'); return; }
-        if (!c.flag('mom_gift')) {
-          c.set('mom_gift');
-          yield* c.say('{player}! I heard you have a Kigu now. I\'m so proud!\\pHere, I baked these for you. Make sure you share them!');
-          yield* c.giveItem('fancy_cake', 2);
-        }
-        yield* c.say('Your Kigu look tired, love. Sit down and have some cocoa.');
-        yield* c.heal('It was a warm cup of cocoa. Your Kigu feel refreshed!');
-      },
-    }],
-    // a new game starts here, beside the bed, on the morning of the big day
-    onEnter: function* (c) {
-      if (c.flag('woke') || c.flag('has_starter')) return;
-      c.set('woke');
-      yield* c.wait(30);
-      yield* c.face(c.npc('mom'), 'right');
-      yield* c.sayT('player_house.wake.1', 'Mom: {player}! Up you get, sleepyhead. Today is your big day!\\pProfessor Bobbin is expecting you at nine.');
-      yield* c.sayT('player_house.wake.2', 'Mom: Before you go, would you peg the sheets out for me?\\pThe washing line is round the back of the house. Thank you, love!');
-      yield* c.face(c.npc('mom'), 'down');
-    },
-  });
-
-  K.room({
     id: 'tomo_house', name: "{rival}'s House", w: 9, h: 8, doorX: 3, exit: { to: 'button_town', door: 'tomo' },
     stamps: [{ id: 'bookshelf', x: 1, y: 0 }, { id: 'table_s', x: 4, y: 4 }, { id: 'bed', x: 6, y: 2 }, { id: 'plant', x: 7, y: 5 }],
     npcs: [{ id: 'tomo_mom', x: 3, y: 3, look: 'elder_f', dir: 'down',
