@@ -123,7 +123,9 @@ Old ids from the round 2 rename live in `src/data/renames.js` (saves migrate on 
 **Phase 2 (art after P1)**
 30. `pebblump` Pebblump — Pebble — 1/3, →Lv25 `bouldame` — pebble-patterned grey onesie, rock hair-clips, stoic.
 31. `bouldame` Bouldame — Pebble — 2/3, →Lv40 `craggoth` — boulder shoulder-guards, crystal chips in hair.
-32. `craggoth` Craggoth — Pebble — 3/3 — crystal-crowned gem queen with boulder gauntlets.
+32. `craggoth` Craggoth — Pebble — 3/3 — goth queen of the crags (owner 2026-10-28, so the look matches the name): obsidian
+    gown, crown of black jet, a veil of dark crystal chips, boulder gauntlets, dark lips, a cool unsmiling stare. *(AutoSprite art still shows
+    the old gem queen; redraw needed.)*
 33. `scurrent` Scurrent — Volt — 1/2, →Lv26 `arcorn` — red squirrel: copper-gold onesie, long ear tufts, zigzag-stripe tail, static-fluffed hair; zapped so often she twitches, and zaps everything she touches. "Zip!" *(Ear tufts still to do.)*
 34. `arcorn` Arcorn — Volt — 2/2 — gadget inventor: bolt-shaped tail cape, spark-plug hair clips (not tesla-coil buns, so she does not twin with Teslaria), goggles, fingerless gloves; builds gadgets from acorns and wire. *(Hair clips still to draw.)*
 35. `kumi` Kumi — Brawl — 1/3, →Lv25 `kumara` — bear cub: brown onesie, bandage-wrapped mitt paws, determined pout.
