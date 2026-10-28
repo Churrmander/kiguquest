@@ -427,55 +427,76 @@
     },
   });
 
-  // A heap of measured autumn leaves (about 12 px tall, so it fills the hedge gap it plugs): a cluster of round leafy lobes like
-  // `bush`, each lit from the top left (a pale crown, mid orange, a shaded edge where it tucks under the lobe in front), so the
-  // outline is lumpy, with single pointed leaf tips poking out of it. A dark-brown underside band runs along the foot. A few
-  // readable 3x2 leaves lie on top in rust, mustard and pale orange, each with a dark underside, and two loose leaves lie on the
-  // grass a little way off the pile, each with its own outline.
+  // A heap of measured autumn leaves (about 12 px tall, so it fills the hedge gap it plugs), built leaf by leaf: a dark-brown mound
+  // (the shadowed gaps deep in the pile) covered back to front with small pointed leaves, each a lens with a lit top edge, its own
+  // fill and a 1 px dark underside, in clearly different colours (orange, red-rust, mustard, a dried tan and a brown) so separate
+  // leaves read at 1x. Light comes from the top left: a pale yellow leaf on the top-left crest, a spike of leaves on top, and
+  // leaf tips poke out of the west and east sides and the lower edge so the outline is ragged, notched between leaves. Two loose
+  // leaves lie on the grass a little way off the pile, each with a dark outline pixel.
   const LEAF_O = ['#ffdca8', '#ffb468', '#f48c40', '#cc6430', '#944424', '#5a2818'].map(col);
-  const LEAF_RUST = ['#e8784c', '#b04a34', '#6c2a24'].map(col), LEAF_MUSTARD = ['#fff098', '#f0c040', '#a86c24'].map(col);
+  // leaf colour families [lit, fill, underside], sharing tones with the pile's orange ramp and each other to stay inside the
+  // 16-colour budget: orange, mustard, red-rust, dried tan, brown, and a pale yellow for the lit crest
+  const LEAF_Y = ['#fff098', '#f0c040', '#a86c24'].map(col), LEAF_R = ['#f07850', '#b8402c', '#6c2420'].map(col);
+  const LEAF_FAM = {
+    o: [LEAF_O[1], LEAF_O[2], LEAF_O[4]], y: LEAF_Y, r: LEAF_R, t: [col('#f4dcaa'), col('#c8a06c'), LEAF_Y[2]],
+    b: [LEAF_O[3], LEAF_O[4], LEAF_O[5]], l: [col('#fffbe0'), LEAF_Y[0], LEAF_Y[1]],
+  };
+  const LEAF_SHAPE = {
+    R: ['.hh.', 'hmmm', '.dd.'],                                        // lying flat, pointing east or west
+    A: ['..hh', '.hmm', 'hmd.', 'd...'],                                // slanting up to the north-east
+    B: ['hh..', 'hmm.', '.mmd', '...d'],                                // slanting up to the north-west
+    T: ['.h', 'hm', 'md'],                                              // a short tip standing up on the crest
+    D: ['.hm', 'hmd', 'md.', 'd..'],                                    // pointing down and out at the foot
+  };
   K.stamp('leaf_heap', {
     w: 1, h: 1, rise: 6,
     paint: () => {
       const b = K.B(16, 22), L = K.B(16, 22), o = LEAF_O;
-      // lobes, back to front: [cx, cy, rx, ry]; the last is the wide front mound the others sit behind
-      const lobes = [[8.2, 9.7, 3.2, 2.9], [4.3, 11, 3.2, 3], [11.8, 11, 3, 2.9], [5.2, 14.6, 4.6, 3.3], [10.8, 14.8, 4.4, 3.1]];
+      // the pile's form: round leafy lobes, back to front ([cx, cy, rx, ry]), each a sphere lit from the top left in the orange
+      // ramp, with a dark crease where a front lobe tucks under the one behind it, so the top outline is notched between lobes
+      const lobes = [[8.4, 9.6, 3, 2.8], [4.4, 11, 3.2, 3], [12, 11.2, 2.9, 2.8], [5.4, 14.6, 4.6, 3.3], [10.8, 14.8, 4.3, 3.1]];
       const own = new Int8Array(16 * 22).fill(-1);
       lobes.forEach(([cx, cy, rx, ry], i) => {
         for (let y = 0; y < 19; y++) for (let x = 0; x < 16; x++) {
           const dx = (x + 0.5 - cx) / rx, dy = (y + 0.5 - cy) / ry;
           if (dx * dx + dy * dy > 1 || y > 17) continue;
-          const l = -(dx * 0.6 + dy * 0.8);                                                           // a sphere lit from the top left
-          L.set(x, y, l > 0.62 ? o[0] : l > 0.12 ? o[1] : l > -0.38 ? o[2] : o[3]); own[y * 16 + x] = i;
+          const l = -(dx * 0.6 + dy * 0.8);
+          L.set(x, y, l > 0.62 ? o[1] : l > 0.12 ? o[2] : l > -0.38 ? o[3] : o[4]); own[y * 16 + x] = i;
         }
-        // where this lobe sits in front of one drawn before it, that lobe's tucked-under edge shows as a dark crease along its top
         for (let y = 1; y < 19; y++) for (let x = 0; x < 16; x++) {
           const a = own[(y - 1) * 16 + x];
           if (own[y * 16 + x] === i && a >= 0 && a !== i) L.set(x, y - 1, o[4]);
         }
       });
-      // the dark underside band along the foot
-      for (let x = 0; x < 16; x++) { if (L.u32[17 * 16 + x] >>> 24) L.set(x, 17, o[4]); if (L.u32[16 * 16 + x] >>> 24 && x > 8) L.set(x, 16, o[4]); }
-      // single pointed leaf tips poking out of the outline: up off the crown, out to the west and the east
-      for (const [x, y, c] of [[8, 6, o[1]], [7, 5, o[1]], [0, 10, o[1]], [15, 12, o[2]]]) L.set(x, y, c);
-      // readable leaves lying on the heap: a lit top row and a dark underside
-      const leaf = (x, y, t, flip) => K.stick(L, x, y, flip ? ['mhh', 'dd.'] : ['hhm', '.dd'], { h: t[0], m: t[1], d: t[2] });
-      leaf(6, 8, LEAF_RUST); leaf(2, 10, LEAF_MUSTARD); leaf(11, 10, LEAF_MUSTARD, true); leaf(3, 13, LEAF_RUST); leaf(9, 13, [o[0], o[1], o[4]], true);
+      for (let x = 0; x < 16; x++) if (L.u32[17 * 16 + x] >>> 24) L.set(x, 17, o[4]);
+      // separate leaves lying over it, back to front: [shape, x, y, family]. Pale yellow and mustard on the lit top-left crest,
+      // tan and red-rust across the middle, brown and rust low on the shaded side; tips poke out west, east and at the foot
+      const leaves = [
+        ['T', 8, 5, 'r'], ['B', 3, 8, 'l'], ['A', 8, 7, 'y'], ['R', 11, 10, 't'],
+        ['B', 0, 10, 'o'], ['A', 5, 11, 'r'], ['A', 11, 12, 'r'], ['R', 1, 14, 'y'],
+        ['B', 7, 13, 'b'], ['R', 12, 15, 'o'], ['D', 0, 15, 'r'], ['R', 6, 16, 't'],
+      ];
+      for (const [sh, x, y, fam] of leaves) {
+        const t = LEAF_FAM[fam];
+        K.stick(L, x, y, LEAF_SHAPE[sh], { h: t[0], m: t[1], d: t[2] });
+      }
       K.outer(L, o[5]);
       K.shadow(b, 8, 18, 7, 1, 90);
       b.blit(L, 0, 0);
-      // two loose leaves on the grass a little way off the pile, each with its own dark underside edge
-      K.stick(b, 0, 19, ['hm.', '.dd'], { h: o[1], m: o[2], d: o[4] });
-      K.stick(b, 13, 20, ['.mh', 'dd.'], { h: LEAF_MUSTARD[0], m: LEAF_MUSTARD[1], d: LEAF_MUSTARD[2] });
+      // two loose leaves on the grass, out past the foot of the pile, each with a dark tip pixel
+      K.stick(b, 0, 19, ['hm.', 'xdd'], { h: LEAF_FAM.o[0], m: LEAF_FAM.o[1], d: LEAF_FAM.o[2], x: o[5] });
+      K.stick(b, 13, 20, ['.mh', 'ddx'], { h: LEAF_FAM.y[0], m: LEAF_FAM.y[1], d: LEAF_FAM.y[2], x: o[5] });
       return b;
     },
   });
 
   // ============================================================================================ Thimble
   // The Big Thimble (2x2, 4 frames): a giant brass thimble standing the way a thimble rests on a table, open end down: a thick
-  // rolled rim band at the foot, nearly straight dimpled sides tapering a little as they rise, and a broad round dimpled dome on top.
-  // It stands in a low round stone basin as a fountain: a thin jet shoots up from the top of the dome and falls back in arcing
-  // drops, two broken trickles run down its sides, and it splashes into the basin.
+  // rolled rim band at the foot, dimpled sides that taper inwards as they rise (wider at the rim than at the crown), a short rounded
+  // shoulder (3 px) and a broad, nearly flat crown seen from above as a lighter ellipse with two rows of dimples, the thimble's cap.
+  // The dimples are a staggered grid of pits: a dark pixel with a lit lip under it. It stands in a low round stone basin as a
+  // fountain: a thin jet shoots up from the crown and falls back in arcing drops, a few droplets run down its sides, and it splashes
+  // into the basin.
   // brass, a step more ochre than the gold palette so it matches the plaque's metal: hi, lit, base, shade, deep, outline
   const BRASS = ['#fff0c0', '#f2cc6c', '#d8a444', '#b07c2c', '#7c5420'].map(col);
   K.stamp('big_thimble', {
@@ -488,31 +509,46 @@
       b.fillRect(1, 37, 30, 5, P.n3); b.hline(1, 37, 30, P.n2); b.hline(2, 41, 28, P.n4);
       b.ellipse(16, 36, 15, 7, P.n1, false); b.fillRect(1, 36, 1, 5, P.n2); b.fillRect(30, 36, 1, 5, P.n4);
       b.fillRect(12, 38, 8, 4, P.gd4); b.fillRect(13, 39, 6, 2, P.gd3); b.hline(14, 39, 4, P.gd1);   // plaque, set into a darker inset
-      // the thimble: a broad, low round dome cap (y 7..14), straight sides (no steps or shoulders: the one-pixel bulge of the rim
-      // is all the widening there is), and a thick rolled rim band at the foot (y 29..33) that does not flare
-      const DT = 7, DS = 14, RIM = 29, BOT = 33, cx = 16;
-      const half = (y) => y < DS ? 9 * Math.sqrt(Math.max(0, 1 - ((DS - y) / (DS - DT + 1)) ** 2)) : 9;
+      // the thimble. The crown is an ellipse seen from above (centre row CY, half-height 2); the sides start at its middle row and
+      // taper outwards from 8 px a side to 9 px at the waist, then run straight down to the thick rolled rim band (RIM..BOT)
+      const CY = 10, DT = CY - 2, RIM = 29, BOT = 33, cx = 16, TOPW = 8;
+      const half = (y) => y < 17 ? TOPW : 9;
       const toneAt = [], u = [];
-      for (let y = DT; y < RIM; y++) {
+      for (let y = CY; y < RIM; y++) {
         const hw = half(y), x0 = Math.round(cx - hw), x1 = Math.round(cx + hw) - 1;
-        for (let x = x0; x <= x1; x++) {
+        // the short rounded shoulder: in the 3 rows under the crown, the outermost pixel each side is cut away on the first row
+        const cut = y === CY ? 1 : 0;
+        for (let x = x0 + cut; x <= x1 - cut; x++) {
           const l = (x + 0.5 - (x0 + x1 + 1) / 2) / Math.max(1, hw);                                   // -1 west edge .. 1 east edge
-          let k = l < -0.82 ? 1 : l < -0.3 ? 0 : l < 0.15 ? 1 : l < 0.55 ? 2 : l < 0.85 ? 3 : 4;      // a cylinder lit from the left
-          if (y < DS && (DS - y) / (DS - DT) > 0.5 && k > 0 && l < 0.4) k--;                            // the dome's crown catches more light
+          const k = l < -0.82 ? 1 : l < -0.3 ? 0 : l < 0.15 ? 1 : l < 0.55 ? 2 : l < 0.85 ? 3 : 4;    // a cylinder lit from the left
           b.set(x, y, g[k]); toneAt[y * W + x] = k; u[y * W + x] = l;
         }
       }
-      // dimples: a clean staggered grid (every 3 px across, every 3 rows down) over the dome and the sides. Each is a pit: a dark
-      // pixel with a lit pixel under it across the middle; towards the edges, where the surface turns away, only the dark pixel
-      for (let r = 0, y = DT + 2; y < RIM - 1; y += 3, r++) for (let x = cx - 9 + (r & 1) * 1.5; x < cx + 9; x += 3) {
+      // dimples on the sides: a staggered grid (every 3 px across, every 3 rows down). Each is a pit: a deep pixel, and a lit lip
+      // under it; at the very edges, where the surface turns away, only the pit
+      for (let r = 0, y = CY + 4; y < RIM - 1; y += 3, r++) for (let x = cx - 9 + (r & 1) * 1.5; x < cx + 9; x += 3) {
         const X = Math.round(x), k = toneAt[y * W + X], l = u[y * W + X];
-        if (k === undefined || toneAt[y * W + X - 1] === undefined || toneAt[y * W + X + 1] === undefined || toneAt[(y - 1) * W + X] === undefined) continue;
-        b.set(X, y, g[Math.min(4, k + 1)]);
+        if (k === undefined || toneAt[y * W + X - 1] === undefined || toneAt[y * W + X + 1] === undefined) continue;
+        b.set(X, y, g[Math.min(4, k + 2)]);
         const kb = toneAt[(y + 1) * W + X];
-        if (Math.abs(l) < 0.5 && kb !== undefined && y + 1 < RIM) b.set(X, y + 1, g[Math.max(0, kb - 1)]);
+        if (Math.abs(l) < 0.7 && kb !== undefined && y + 1 < RIM) b.set(X, y + 1, g[Math.max(0, kb - 2)]);
       }
-      // a curved highlight on the dome's lit shoulder
-      for (const [x, y] of [[13, 8], [12, 8], [11, 9], [10, 10]]) if (toneAt[y * W + x] !== undefined) b.set(x, y, g[0]);
+      // the crown: a lighter ellipse (the flat cap seen from above), its front edge a lit lip where it rounds over into the sides,
+      // with two staggered rows of dimples (a shaded pit with a pale lip under it)
+      const lowest = [];
+      for (let y = CY - 3; y <= CY + 3; y++) for (let x = 0; x < W; x++) {
+        const dx = (x + 0.5 - cx) / (TOPW - 0.4), dy = (y + 0.5 - CY) / 2.4;
+        if (dx * dx + dy * dy > 1) continue;
+        const front = dy > 0.3 && dx * dx + (dy + 0.42) ** 2 > 1;                                       // the rounded front lip
+        const k = front ? (dx < -0.25 ? 0 : dx < 0.5 ? 1 : 2) : (dx + dy * 0.7 < 0.15 ? 0 : 1);
+        b.set(x, y, g[k]); toneAt[y * W + x] = k; lowest[x] = y;
+      }
+      // a dark crease under the lip, curving with it, so the cap reads as a separate top face over the sides
+      for (let x = 0; x < W; x++) if (lowest[x] !== undefined) {
+        const y = lowest[x] + 1, k = toneAt[y * W + x];
+        if (k !== undefined) { b.set(x, y, g[Math.min(4, k + 2)]); toneAt[y * W + x] = Math.min(4, k + 2); }
+      }
+      for (const [x, y] of [[11, 9], [14, 9], [17, 9], [20, 9], [12, 10], [15, 10], [18, 10]]) b.set(x, y, g[3]);
       // the thick rolled rim band: a groove where it meets the sides, a lit roll, its shaded underside, all 1 px wider than the foot
       const rx0 = Math.round(cx - 10.6), rx1 = Math.round(cx + 10.6) - 1;
       for (let x = rx0; x <= rx1; x++) {
@@ -531,13 +567,15 @@
       // (after the outline, so they stay crisp) the water: a thin jet straight up out of the top of the dome, breaking into drops
       // that arc out to both sides and fall on the dome's shoulders; then two broken trickles running down the sides into the basin
       b.vline(cx - 1, DT - 4, 4, P.w1); b.set(cx - 1, DT - 5, P.w0); b.set(cx, DT - 3, P.w2); b.set(cx - 1, DT - 1, P.w2);
-      const ARC = [[-1, -5], [-3, -6], [-5, -5], [-6, -3], [-7, -1]];                                  // one side's arc, from the jet's head down
+      const ARC = [[-1, -5], [-3, -6], [-5, -5], [-6, -3], [-6, -1]];                                  // one side's arc, from the jet's head down
       for (let i = 0; i < ARC.length; i++) if ((i + f) % 2 === 0 || i === ARC.length - 1 - (f & 1)) {
         const [dx, dy] = ARC[i];
         b.set(cx - 1 + dx, DT + dy, i < 2 ? P.w0 : P.w1); b.set(cx - dx, DT + dy, i < 2 ? P.w0 : P.w2);
       }
-      for (const [l, ph, c] of [[-0.55, 0, P.w1], [0.5, 2, P.w2]]) {
-        for (let y = DT + 5; y < RIM; y++) if ((y + f * 2 + ph) % 7 < 3) b.set(Math.round(cx - 0.5 + l * half(y)), y, c);
+      // a few droplets running down the sides, each a 1x2 bead with a pale highlight on top, sliding down a row a frame
+      for (const [l, y0] of [[-0.6, 14], [-0.35, 22], [0.45, 17], [0.62, 25]]) {
+        const y = y0 + f, x = Math.round(cx - 0.5 + l * half(y));
+        if (y + 1 < RIM) { b.set(x, y, P.w0); b.set(x, y + 1, P.w2); }
       }
       b.set(6 + f, 34, P.w0); b.set(25 - f, 34, P.w0); b.set(9 + f, 33, P.w1); b.set(22 - f, 33, P.w1);   // splashes in the basin
       return b;

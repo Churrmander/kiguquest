@@ -4,33 +4,85 @@
   const K = root.NP.art.kigu;
   const D = K.define;
 
-  // Kittabra's 32 px overworld back view, rows 7-30 (see owBack below)
-  const KITTABRA_BACK = [
-      '...........O.OOOOOO.O...........',
-      '..........OLOHHHHHHOSO..........',
-      '.........OLLHHHHHHHHHSO.........',
-      '.........OLHHHHHSHHHHSO.........',
-      '.........OLHHHHHSHHHHSO.........',
-      '.........OLHHHHHSHHHHSO.........',
-      '........OLHHHHHHSHHHHHSO........',
-      '........OLHHHHHHSHHHHSSO........',
-      '.........OLHHHHHSHHHHSO.........',
-      '.........OSSSSSSSSSSSSO.........',
-      '..........OSSSSSSSSSSO....O.....',
-      '.........ODDDDDDDDDDDDO..OSO....',
-      '........OWWJWWWWWWWDJDGO.OHO....',
-      '........OWWJWWWWWWWDJDGO.OHO....',
-      '........OWWJWWWWWWDDJDGOOHO.....',
-      '........OWWJGGGGGGGGJDGOHO......',
-      '.......OMMWJWWWWWWDDJJJGO.......',
-      '........OMMOWWWWWWDDOJGO........',
-      '.........OOWWWWWWDDDDOO.........',
-      '..........OOOOOOOOOOOO..........',
-      '...........ODDDOODDGO...........',
-      '...........ODDGGDDDGO...........',
-      '...........OGGGOOGGGO...........',
-      '............OOO..OOO............',
-  ];
+  // Kittabra's 32 px overworld views, drawn by hand from her battle sprite (rows 4-30, feet outline on row 30): a pale lilac-white
+  // hood in 3 tones lit from the top left with two tall pointed cat ears (4 px, pink inside from the front, a shaded crease from
+  // behind), dark grey hair framing the face, small blue sleepy eyes with blush, a gold bell on the collar, the white belly patch,
+  // arms down at her sides ending in round grey-lilac mitts, and her grey tail with a darker tip curling up on her right. From
+  // behind, a dark rim band at the neck separates the hood from the onesie and the tail starts at the tailbone, runs out to the
+  // right past her hip (behind the mitt) and curls up.
+  const KITTABRA_OW = {
+    down: [
+      '.........OO..........OO.........',
+      '.........OLO........OSO.........',
+      '.........OLPO......OPSO.........',
+      '........OLLPPOOOOOOPPHSO........',
+      '........OLLLHHHHHHHHHHSO........',
+      '.......OLLHHHHHHHHHHHHHSO.......',
+      '.......OLHGGGGGGGGGGGGHSO.......',
+      '.......OLGGgGGGgGGGgGGGSO.......',
+      '.......OLGGKgKKKKgKKKGGSO.......',
+      '.......OLGGKKOKKKKOKKGGSO.......',
+      '.......OLGGKKeKKKKeKKGGSO.......',
+      '.......OLGgKBBKkkKBBKgGSO..OO...',
+      '.......OHGgkKKKKKKKKkgGSO.ORRO..',
+      '........OSHRRRRYYRRRRHSO..ORTO..',
+      '........OLLHHHHHHHHHHHSO..OTTO..',
+      '.......OLLOHHWWWWWWHSOHSO.OTTO..',
+      '.......OLLOHWWWWWWWWSOHSOOTTO...',
+      '.......OLLOHWWWWWWWWSOHSOTTO....',
+      '.......OLLOHWWWWWWWWSOHSOTO.....',
+      '......OMMMOHWWWWWWWWSOMMRO......',
+      '......OMMROHHWWWWWWHSOMRRO......',
+      '.......ORROHHHWWWWHHSORRO.......',
+      '........OOOSHHHHHHHHSOOO........',
+      '..........OMMMROOMMMRO..........',
+      '..........OMMMROOMMMRO..........',
+      '.........OMMMMROOMMMMRO.........',
+      '.........OOOOOO..OOOOOO.........',
+    ],
+    up: [
+      '.........OO..........OO.........',
+      '.........OLO........OSO.........',
+      '.........OLRO......ORSO.........',
+      '........OLLHHOOOOOOHHHSO........',
+      '........OLLLHHHHHHHHHHSO........',
+      '.......OLLLHHHHHHHHHHHHSO.......',
+      '.......OLLHHHHHHHHHHHHHSO.......',
+      '.......OLHHHHHHHHHHHHHHSO.......',
+      '.......OLHHHHHHHHHHHHHSSO.......',
+      '.......OLHHHHHHHHHHHHHSSO.......',
+      '.......OHHHHHHHHHHHHHHSSO.......',
+      '.......OHHHHHHHHHHHHHSSSO.OO....',
+      '........OHHHHHHHHHHHSSSO.ORRO...',
+      '........ORRRRRRRRRRRRRRO.ORTO...',
+      '........OLLHHHHHHHHHHHSO.OTTO...',
+      '.......OLLOHHHHHHHHHSOHSOOTTO...',
+      '.......OLLOHHHHHHHHHSOHSOOTTO...',
+      '.......OLLOHHHHHHHHSSOHSOOTTO...',
+      '.......OLLOHHHHHHHHSSOHSOOTTO...',
+      '......OMMMOHHHHHHHHSSOMMROTTO...',
+      '......OMMROHHHHOOOOOOOMRROTTO...',
+      '.......ORROHHHOTTTTTTORROTTTO...',
+      '........OOOSHHHOOOOOOOOOOOOO....',
+      '..........OMMMROOMMMRO..........',
+      '..........OMMMROOMMMRO..........',
+      '.........OMMMMROOMMMMRO.........',
+      '.........OOOOOO..OOOOOO.........',
+    ],
+  };
+  // letter -> colour; costume colours rotate for the alt colourway the same way makePalette does (hue +150, hair +75)
+  const KITTABRA_COL = { O: '#232238', L: '#ffffff', H: '#dcd8ee', S: '#b2acd0', R: '#8a84ac', P: '#f4a8bc', G: '#62627a', g: '#44445a',
+    K: '#ffe2cc', k: '#f0bca2', B: '#f79ab2', e: '#4a90d8', Y: '#f4c542', W: '#ffffff', M: '#c8c4de', T: '#a4a2be' };
+  const KITTABRA_KEEP = 'OPKkBeY';
+  const kittabraOw = (view) => (b, col, alt) => {
+    const rows = KITTABRA_OW[view], W = b.w, Cl = root.NP.Color, map = {};
+    for (const k in KITTABRA_COL) {
+      const deg = !alt || KITTABRA_KEEP.includes(k) ? 0 : 'Gg'.includes(k) ? 75 : 150;
+      map[k] = col(deg ? Cl.hex(Cl.adjust(KITTABRA_COL[k], { h: deg })) : KITTABRA_COL[k]);
+    }
+    b.u32.fill(0);
+    rows.forEach((r, i) => { for (let x = 0; x < r.length && x < W; x++) if (map[r[x]]) b.u32[(4 + i) * W + x] = map[r[x]]; });
+  };
   const CAT = { main: '#eceef4', sub: '#ffffff', hair: '#9aa0b4', mitt: '#c7cbd8', foot: '#c7cbd8', eye: '#4aa0d8', inner: '#ffb7c5', acc: '#ffc940', gold: '#f4c542', patch: '#9aa0b4' };
   D('kittabra', {
     name: 'Kittabra', stage: 1, size: 64, rise: 9, pal: CAT,
@@ -42,21 +94,8 @@
       ['belly', { mat: 'sub' }],
       ['bell', { at: 'head', dy: 7, dx: 6, r: 2 }],
     ],
-    // the 32 px back view, drawn by hand so it matches the front view: the hood in the front's grey ramp (only the lit left edge
-    // pale), the same tiny ear tips on rows 7-8 and the head top on row 7, a 1 px centre seam down the back of the hood and the
-    // darker rim band along its bottom, the onesie back in light mid-greys with one dark belt, the tail curling up on her right
-    // and one outline colour throughout. The alt colourway is mapped through the front view's own normal -> alt colours.
-    owBack: (b, col, alt) => {
-      const rows = KITTABRA_BACK, W = b.w;
-      const map = { O: '#181829', H: '#9ca5b5', S: '#73739c', L: '#bdbdc6', W: '#efeff7', D: '#cecee7', J: '#c6cede', G: '#9ca5c6', M: '#e7e7e7' };
-      let swap = null;
-      if (alt) {
-        const f = K.ow('kittabra', 'down'), fa = K.ow('kittabra', 'down', { alt: true });
-        swap = new Map(); for (let i = 0; i < f.u32.length; i++) if (f.u32[i] >>> 24 && !swap.has(f.u32[i])) swap.set(f.u32[i], fa.u32[i]);
-      }
-      b.u32.fill(0);
-      rows.forEach((r, i) => { for (let x = 0; x < r.length && x < W; x++) if (map[r[x]]) { const c = col(map[r[x]]); b.u32[(7 + i) * W + x] = swap && swap.has(c) ? swap.get(c) : c; } });
-    },
+    // the 32 px overworld views are drawn by hand (KITTABRA_OW above)
+    owFront: kittabraOw('down'), owBack: kittabraOw('up'),
   });
   D('wiskedabra', {
     name: 'Wiskedabra', stage: 2, size: 80, rise: 11, pal: Object.assign({}, CAT, { main: '#33334a', sub: '#ffffff', hair: '#55556e', mitt: '#ffffff', foot: '#ffffff', acc: '#d8405a', eye: '#f0c030' }),

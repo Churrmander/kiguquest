@@ -674,10 +674,13 @@
     if (view === 'owf' || view === 'owb') {
       // overworld walking sprite (32x32 cell, feet outline on row 30): the battle renderer at walking size, whole body
       // a look may simplify itself at this size (`ow`: fields that replace the look's own, e.g. smaller wings and no held prop) and
-      // touch up the 32 px back view (`owBack(b, col)`: paint over the finished sprite, col(hex) -> a packed colour)
+      // touch up the 32 px back or front view (`owBack(b, col, alt)` / `owFront(b, col, alt)`: paint over the finished sprite,
+      // col(hex) -> a packed colour)
       const Q = P.ow ? Object.assign({}, P, P.ow) : P;
       b = paint(Q, { view: view === 'owb' ? 'back' : 'front', H: fitOw(P), cell: 32, alt, pose: view === 'owb' ? undefined : pose });
-      if (view === 'owb' && P.owBack) P.owBack(b, (hex) => NP.Color.q15(NP.Color.parse(hex)), alt);
+      const ownCol = (hex) => NP.Color.q15(NP.Color.parse(hex));
+      if (view === 'owb' && P.owBack) P.owBack(b, ownCol, alt);
+      if (view === 'owf' && P.owFront) P.owFront(b, ownCol, alt);
       cache.set(key, b);
       return b;
     }
