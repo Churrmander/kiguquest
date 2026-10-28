@@ -101,7 +101,7 @@
   NP.scripts.seamstead_east_gate = eastGateScene;
 
   const M = L.map({
-    id: 'seamstead', name: 'Seamstead City', music: 'city_seamstead', battleBg: 'city', border: 'treeline', w: W, h: H,
+    id: 'seamstead', name: 'Seamstead City', music: 'city_seamstead', battleBg: 'city', border: 'treeline', w: W, h: H, town: true,
     view: 'street',   // 3D camera preset (street | town | flat-ish), see src/engine/persp.js
     legend: { '.': 'grass', T: 'treeline', c: 'cobble', f: 'flowers', F: 'fence', p: 'path' },
     onEnter: function* (c) {
