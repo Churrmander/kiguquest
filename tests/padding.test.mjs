@@ -19,13 +19,18 @@ ow.loadMap(p0.map, p0.x, p0.y, p0.dir);
 const st = NP.state;
 const begin = ow.msg.begin.bind(ow.msg);
 ow.msg.begin = (txt, o) => { said.push(txt); return begin(txt, o); };
-at('player_house');
+at('player_room');
 settle();
-assert.ok(st.flags.woke, 'Mom woke us up');
+assert.ok(st.flags.woke, 'Nibblenna woke us up');
+// down the stairs: Mom asks for help with the sheets
+assert.ok(t.travel(12, 3), 'down the stairs');
+settle();
+at('player_house');
 assert.ok(said.some((s) => /peg the sheets/.test(s)), 'Mom asks for help with the sheets');
 
-// out of the door: someone calls from behind the house
-assert.ok(t.travel(4, 8), 'out of the house');
+// out of the door: someone calls from behind the house (the hall first: the bot's path-finder does not know the thin room walls)
+assert.ok(t.travel(4, 7), 'into the hall');
+assert.ok(t.travel(4, 14), 'out of the house');
 settle();
 at('button_town');
 assert.ok(st.flags.kite_call && said.some((s) => /Round the back/.test(s)), 'the rival calls from the washing line');

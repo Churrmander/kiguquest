@@ -37,7 +37,7 @@
       return {
         v: 1, name: name || defaultName(gender), gender: gender || 'm', rival: rivalNameFor(name || defaultName(gender), gender || 'm'),
         party: [], box: [], bag: {}, money: 1000, flags: {}, badges: [], steps: 0, frames: 0, repel: 0,
-        pos: { map: 'player_house', x: 6, y: 3, dir: 'down' },
+        pos: { map: 'player_room', x: 5, y: 10, dir: 'down' },   // asleep in bed upstairs (src/maps/home.js)
         healPoint: { map: 'player_house', spawn: 'door' },
         visited: {},
         dex: { seen: {}, caught: {} }, starter: null, rivalStarter: null,
