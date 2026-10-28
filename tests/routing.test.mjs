@@ -58,6 +58,9 @@ forced('crisp_1', [7, 10], [[14, 2]], 'the stairs up (past Fold)');
 forced('crisp_2', [1, 3], [[14, 2]], 'the stairs up (past Pinch and Lint)');
 forced('crisp_3', [1, 3], [[6, 6], [7, 6], [12, 6]], 'the Staff door and the manager (past Brim)');
 
+// Route 1 (Meadow Lane): the ledge rows funnel the walk north past Lia, Bo and Suzu
+forced('route1', [12, 38], [[12, 0], [13, 0]], 'Basting Green (the north exit)');
+
 // Route 3 (the Seam Road): the river can only be crossed by paddling until Zip's Button mends the bridge; from wherever you land
 // on the far bank, the road to Seamstead still passes every Tailor
 NP.state.flags = {};
