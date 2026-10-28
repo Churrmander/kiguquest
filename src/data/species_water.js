@@ -1,7 +1,7 @@
 /* Species for fishing and Paddling (docs: the fishing design, 2026-10-26). Same shape as species.js.
  *  Rods catch only fish-based Tide Kigu, and only in the water their fish lives in: Kiskat (catfish, fresh), Zeel (electric eel,
  *  fresh), Gilfin (koi, fresh: our "weak until she evolves" Kigu), Fugubun (pufferfish, salt), Kelpony (seahorse, salt).
- *  Paddling finds the non-fish water Kigu: Waddlecoat (duck), Jellybob (jellyfish), Clawdet (crab).
+ *  Paddling finds the non-fish water Kigu: Waddlecoat (duck), Jellybob (jellyfish), Clawdet (crab), Alligrunt (crocodile).
  *  Gilfin only becomes Ryukoi while holding a Gold Scale at Lv30+ (the legend of the first Ryukoi; see src/game/fishing.js).
  *  Names approved by the owner (Kiskat, Slickish and Zeel on 2026-10-26; the rest are roster names from round 2). */
 (function (root) {
@@ -70,4 +70,15 @@
   sp('crabmiral', 'Crabmiral', ['tide', 'brawl'], [80, 105, 100, 45, 60, 55], { catch: 75, exp: 166, ab: ['sturdy_soul'], cry: 'CLACK-clack!', stage: 2, family: 'clawdet',
     ls: [[1, 'pinch_clamp'], [1, 'shell_guard'], [24, 'mitt_punch'], [30, 'paddle_slap'], [38, 'tide_wave']],
     dex: 'A sailor-crab coat with an anchor-shaped shield and a whistle on a cord. She runs the rock pools like a ship.' });
+
+  // ---- crocodile (Paddling, rivers and lakes): the army line, recruit to captain to the river's tyrant-general (owner, 2026-10-28)
+  sp('alligrunt', 'Alligrunt', ['tide', 'pebble'], [55, 66, 62, 34, 42, 41], { growth: 'mediumSlow', catch: 120, exp: 64, ab: ['torrent'], cry: 'Hup-hup!', evo: [{ to: 'snaptain', level: 18 }],
+    ls: [[1, 'pounce'], [1, 'bubble_pop'], [5, 'pebble_toss'], [9, 'aqua_dash'], [13, 'rock_roll'], [17, 'mud_shot']],
+    dex: 'A little alligator recruit in an army helmet a size too big. She marches everywhere and repeats every order at the top of her voice.' });
+  sp('snaptain', 'Snaptain', ['tide', 'pebble'], [70, 88, 82, 44, 56, 55], { growth: 'mediumSlow', catch: 45, exp: 150, ab: ['torrent'], cry: 'Ten-HUT!', stage: 2, family: 'alligrunt', evo: [{ to: 'tyranodile', level: 36 }],
+    ls: [[1, 'pounce'], [1, 'pebble_toss'], [1, 'aqua_dash'], [18, 'stone_wall'], [22, 'paddle_slap'], [27, 'shade_bite'], [32, 'slab_slam']],
+    dex: 'An army captain with bars on her helmet and the strap done up tight. She gives orders with a snap of her jaw-hood, and the whole riverbank listens.' });
+  sp('tyranodile', 'Tyranodile', ['tide', 'pebble'], [92, 120, 102, 58, 70, 68], { growth: 'mediumSlow', catch: 45, exp: 236, ab: ['torrent'], cry: 'HRRAAH!', stage: 3, family: 'alligrunt',
+    ls: [[1, 'shade_bite'], [1, 'stone_wall'], [1, 'slab_slam'], [36, 'mitt_punch'], [42, 'tide_wave']],
+    dex: 'The tyrant-general of the river, in a crocodile greatcoat covered in medals. Nobody crosses her river without saluting first.' });
 })(typeof globalThis !== 'undefined' ? globalThis : window);

@@ -2,7 +2,7 @@
  * (Hemline Riverside, Hemline Lake and Ryukoi's cave set their own; see src/maps/hemline_river.js and hemline_lake.js.)
  *  - Rods only hook fish-based Tide Kigu, and only in the water their fish lives in: Kiskat, Zeel and Gilfin in fresh water,
  *    Fugubun and Kelpony in the sea at Button Town. Paddling finds the other water Kigu (Kerochapu, Waddlecoat, Jellybob,
- *    Clawdet). You can't paddle until Bryn's Disc in Hemline, so Paddling levels start at about 12.
+ *    Clawdet, Alligrunt). You can't paddle until Bryn's Disc in Hemline, so Paddling levels start at about 12.
  *  - The Old Rod comes from Gus on Route 2 (with the Fishing Log and the Fish Pocket); the Good Rod from the fisher at the
  *    Oasis, once you show him there are fish in an oasis after all (Desert Pupfish, Old Rod). The Super Rod is in Loomhaven
  *    (Chapter 8, not built yet). def.fishing format: src/game/fishing.js. */
@@ -29,10 +29,10 @@
     button_town: [['clawdet', 12, 16, 50], ['jellybob', 12, 16, 25], ['waddlecoat', 12, 16, 25]],
     route1: [['kerochapu', 12, 15, 60], ['waddlecoat', 12, 15, 40]],
     ribbon_loop: [['kerochapu', 12, 15, 60], ['waddlecoat', 12, 15, 40]],
-    route2: [['kerochapu', 13, 16, 50], ['waddlecoat', 13, 16, 30], ['jellybob', 13, 16, 20]],
+    route2: [['kerochapu', 13, 16, 45], ['waddlecoat', 13, 16, 25], ['jellybob', 13, 16, 20], ['alligrunt', 13, 15, 10]],
     sun_flats: [['kerochapu', 21, 24, 100]],
     dust_oasis: [['kerochapu', 22, 25, 100]],
-    bobbin_quarry: [['kerochapu', 24, 27, 50], ['lilyrana', 25, 28, 20], ['waddlecoat', 24, 27, 30]],
+    bobbin_quarry: [['kerochapu', 24, 27, 40], ['lilyrana', 25, 28, 20], ['waddlecoat', 24, 27, 25], ['alligrunt', 24, 27, 15]],
     route5: [['waddlecoat', 26, 29, 50], ['kerochapu', 26, 29, 30], ['jellybob', 26, 29, 20]],
   };
   for (const id of Object.keys(SPOTS)) {

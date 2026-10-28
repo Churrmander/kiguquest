@@ -64,4 +64,13 @@
     parts: [['belly', { mat: 'sub' }], ['spots', { mat: 'dark', pts: [[-5, 1, 0.8], [5, 1, 0.8]] }], ['hat', { kind: 'cap', mat: 'acc' }]] });   // a cadet's sailor cap, a size too big
   D('crabmiral', { name: 'Crabmiral', stage: 2, size: 78, rise: 6, pal: CRB, hood: { type: 'up', ears: { kind: 'round', h: 2, w: 3, lean: 2, dy: -2 } }, hair: { style: 'bob', bangs: 'spiky' }, mouth: 'flat', arms: G.hand, footMat: 'foot', bodyW: 1.25,
     parts: [['belly', { kind: 'jacket', mat: 'cape', trim: 'gold', len: 6 }], ['hat', { kind: 'cap', mat: 'cape' }], ['collar', { mat: 'acc' }]] });
+
+  // ---- crocodile (Paddling): army green, khaki helmets and coats, brass bars and medals
+  const CRC = { main: '#5a8a4a', sub: '#e4dca0', hair: '#2e4a2a', mitt: '#5a8a4a', foot: '#3e6034', eye: '#e8c040', acc: '#7a7a4a', dark: '#3e6034', cape: '#6a6a3a', gold: '#f4c542', spike: '#3e6034' };
+  D('alligrunt', { name: 'Alligrunt', stage: 1, size: 60, rise: 5, pal: CRC, hood: { type: 'up', ears: null }, hair: { style: 'short', bangs: 'spiky' }, mouth: 'cat', arms: G.hand, footMat: 'foot', bodyW: 1.15,
+    parts: [['belly', { mat: 'sub' }], ['hat', { kind: 'hard', mat: 'acc' }], ['tail', { kind: 'dragon', len: 14, r: 3, angle: 35, spike: 'spike' }]] });   // helmet a size too big
+  D('snaptain', { name: 'Snaptain', stage: 2, size: 74, rise: 6, pal: CRC, hood: { type: 'up', ears: null }, hair: { style: 'bob', bangs: 'spiky' }, mouth: 'flat', arms: G.hand, footMat: 'foot', bodyW: 1.2,
+    parts: [['belly', { kind: 'jacket', mat: 'cape', trim: 'gold', len: 5 }], ['hat', { kind: 'hard', mat: 'acc' }], ['tail', { kind: 'dragon', len: 17, r: 3.6, angle: 38, spike: 'spike' }]] });
+  D('tyranodile', { name: 'Tyranodile', stage: 3, size: 86, rise: 6, pal: CRC, hood: { type: 'up', ears: null }, hair: { style: 'long', bangs: 'spiky' }, mouth: 'flat', arms: G.hand, footMat: 'foot', bodyW: 1.3,
+    parts: [['belly', { kind: 'jacket', mat: 'cape', trim: 'gold', len: 8 }], ['spots', { mat: 'gold', pts: [[-5, 3, 0.9], [-3, 3, 0.9], [-5, 6, 0.9]] }], ['hat', { kind: 'cap', mat: 'cape' }], ['tail', { kind: 'dragon', len: 20, r: 4.4, angle: 40, spike: 'spike' }]] });
 })(typeof globalThis !== 'undefined' ? globalThis : window);
