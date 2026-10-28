@@ -24,13 +24,14 @@
   };
 
   const c3 = new Map();
-  tiles.stamp3d = function (id, variant, frame) {
+  tiles.stamp3d = function (id, variant, frame, deco) {
     const def = NP.stamps[id];
     if (!def) throw new Error('NP.art.tiles.stamp3d: unknown stamp "' + id + '"');
     const v = norm(def, variant), f = def.frames > 1 ? ((frame | 0) % def.frames + def.frames) % def.frames : 0;
-    const key = id + '|' + v + '|' + f;
+    const dk = deco && K.DECO && K.DECO[deco] ? deco : '';
+    const key = id + '|' + v + '|' + f + (dk ? '|' + dk : '');
     let b = c3.get(key);
-    if (!b) { b = def.draw3d(v, f); c3.set(key, b); }
+    if (!b) { b = def.draw3d(v, f); if (dk) b = K.DECO[dk](b.clone(), def, v, '3d').quantize15(); c3.set(key, b); }
     return b;
   };
 
@@ -136,10 +137,10 @@
   tiles.hasVolume = (id) => !!(NP.stamps[id] && (NP.stamps[id].vol || EXTRA[id]));
 
   const cache = new Map();
-  tiles.volume = function (id, variant) {
+  tiles.volume = function (id, variant, deco) {
     const def = NP.stamps[id];
     if (!def || !(def.vol || EXTRA[id])) return null;
-    const v = norm(def, variant), key = id + '|' + v;
+    const v = norm(def, variant), key = id + '|' + v + (deco ? '|' + deco : '');
     let o = cache.get(key);
     if (o) return o;
     const d = def.vol ? def.vol(v) : EXTRA[id](v), depth = d.h * T - 8, Hw = d.Hw, slope = Math.max(2, Math.round(Math.hypot(d.inset, d.Ztop - Hw)));
@@ -153,7 +154,7 @@
     });
     o = {
       d, depth, slope, capW,
-      front: tiles.stamp3d(id, v, 0),
+      front: tiles.stamp3d(id, v, 0, deco),
       back: shadeBmp(d.backFlip ? tiles.stamp3d(id, v, 0).flippedX() : backTex(d), 0.64),
       wallW: shadeBmp(sw, 1.04), wallE: shadeBmp(sw, 0.72),
       roofW: shadeBmp(rf, 1.08), roofE: shadeBmp(rf, 0.74),

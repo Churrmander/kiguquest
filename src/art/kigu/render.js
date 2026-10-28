@@ -563,7 +563,7 @@
   function paint(P0, o) {
     const icon = !!o.icon, view = o.view || 'front';
     const P = o.pose === 'sleep' ? sleepSpec(P0) : P0;
-    const cw = icon ? 32 : CELL[view] || 96;
+    const cw = o.cell || (icon ? 32 : CELL[view] || 96);
     const L = layout(P, cw, cw, icon ? { icon: true, H: o.H, hb: o.hb, clipY: o.clipY || 29 } : { H: o.H, anim: o.anim });
     L.view = view;
     const pal = makePalette(P, o.alt);
@@ -652,12 +652,31 @@
   const idleN = (P) => (P.idle && P.idle.n) || 6;
   const idleAmp = (P) => (P.idle && P.idle.amp !== undefined ? P.idle.amp : P.legend ? 2 : 1);
 
+  /** Overworld body height: about a third of the battle size (a little smaller than a person), shrunk until ears, tails and
+   *  wings fit inside the 32x32 cell with a 1px margin. */
+  function fitOw(P) {
+    const key = 'ow:' + P.id;
+    if (fitCache.has(key)) return fitCache.get(key);
+    let H = Math.round(Math.min(25, Math.max(19, (P.size || 60) * 0.33)));
+    for (; H > 14; H--) {
+      const ok = ['front', 'back'].every((v) => { const bb = paint(P, { view: v, H, cell: 32, measure: true }); return bb.y >= 1 && bb.x >= 1 && bb.x + bb.w <= 31; });
+      if (ok) break;
+    }
+    fitCache.set(key, H);
+    return H;
+  }
   function get(id, view, alt, pose, frame) {
     const key = id + '|' + view + '|' + (alt ? 1 : 0) + '|' + (pose || '') + '|' + (frame || 0);
     let b = cache.get(key);
     if (b) return b;
     const P = K.looks[id];
     if (!P) throw new Error('kigu: unknown id ' + id);
+    if (view === 'owf' || view === 'owb') {
+      // overworld walking sprite (32x32 cell, feet outline on row 30): the battle renderer at walking size, whole body
+      b = paint(P, { view: view === 'owb' ? 'back' : 'front', H: fitOw(P), cell: 32, alt, pose: view === 'owb' ? undefined : pose });
+      cache.set(key, b);
+      return b;
+    }
     if (view === 'icon') {
       const k = fitIcon(P), hb = (P.icon && P.icon.hb) || ICON_HB;
       b = paint(P, { view: 'front', icon: true, H: 44 * k, hb: frame ? hb - 1 : hb, alt, pose });
@@ -677,6 +696,8 @@
   K.front = (id, opts) => get(id, 'front', !!(opts && opts.alt), opts && opts.pose, (opts && opts.frame) || 0);
   /** back(id, {alt, frame}) -> Bitmap 128x128 (drawn 4/3 larger, natively), anchor bottom-centre (64, 126). */
   K.back = (id, opts) => get(id, 'back', !!(opts && opts.alt), undefined, (opts && opts.frame) || 0);
+  /** ow(id, 'down'|'up', {alt}) -> Bitmap 32x32: the overworld walking sprite (front for down, back for up), feet outline on row 30. */
+  K.ow = (id, view, opts) => get(id, view === 'up' ? 'owb' : 'owf', !!(opts && opts.alt), undefined, 0);
   K.icon = (id, frame, opts) => get(id, 'icon', !!(opts && opts.alt), opts && opts.pose, frame ? 1 : 0);
   /** Number of idle-animation frames (they loop; frame 0 = rest pose). */
   K.idleFrames = (id) => idleN(K.looks[id] || {});

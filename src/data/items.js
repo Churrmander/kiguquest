@@ -38,6 +38,11 @@
     held: { onResidual(c) { const m = c.holder; if (m.hp > 0 && m.hp < m.maxhp) { c.battle.msg(m.name + ' nibbled from its Snack Bag.'); c.battle.heal(m, Math.max(1, Math.floor(m.maxhp / 16)), { cause: 'item' }); } } },
   });
 
+  // Poppy's ace holds it in Thimble (name approved by the owner 2026-10-28)
+  I('lucky_thimble', 'Lucky Thimble', 'items', 0, 'Held: A lucky brass thimble. When its holder uses a move that hits two to five times, it always hits four or five times.', null, {
+    held: { modMultiHits(c, n) { return c.move && c.move.multi && c.move.multi[0] <= 2 && c.move.multi[1] >= 5 ? (c.battle.rand(2) ? 5 : 4) : undefined; } },
+  });
+
   I('sketchbook', 'Sketchbook', 'key', 0, 'Records the Kigu you meet.');
   I('tailor_license', 'Tailor License', 'key', 0, 'Proof that you are an apprentice Tailor.');
   I('button_case', 'Button Case', 'key', 0, 'Holds the Buttons you earn.');

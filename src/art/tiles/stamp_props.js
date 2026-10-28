@@ -50,9 +50,20 @@
 
   // ============================================================================================ bench (2x1)
   K.stamp('bench', {
-    w: 2, h: 1,
-    paint: () => {
+    // `back`: the same bench seen from behind (backrest towards the camera), for benches that face away, e.g. towards a statue
+    w: 2, h: 1, variants: ['default', 'back'],
+    paint: (v) => {
       const b = K.B(32, 16);
+      if (v === 'back') {
+        for (const x of [3, 26]) { b.fillRect(x, 12, 3, 3, P.o4); b.fillRect(x, 12, 1, 3, P.o3); }   // back legs
+        b.fillRect(1, 3, 30, 3, P.o2); b.fillRect(1, 3, 30, 1, P.o0); b.fillRect(1, 5, 30, 1, P.o4);    // the seat behind
+        for (const x of [3, 26]) { b.fillRect(x, 5, 3, 8, P.o3); b.fillRect(x, 5, 1, 8, P.o2); }       // back posts
+        b.fillRect(3, 7, 26, 2, P.o2); b.fillRect(3, 7, 26, 1, P.o1); b.fillRect(3, 9, 26, 1, P.o5);   // two backrest slats
+        b.fillRect(3, 10, 26, 2, P.o3); b.fillRect(3, 10, 26, 1, P.o2); b.fillRect(3, 12, 26, 1, P.o5);
+        K.outer(b, WOOD_OUT);
+        K.shadow(b, 16, 14, 14, 2);
+        return b;
+      }
       // legs and back posts
       for (const x of [3, 26]) { b.fillRect(x, 10, 3, 4, P.o4); b.fillRect(x, 10, 1, 4, P.o3); }
       for (const x of [3, 26]) { b.fillRect(x, 2, 3, 8, P.o3); b.fillRect(x, 2, 1, 8, P.o2); }

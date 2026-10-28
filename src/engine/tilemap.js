@@ -33,24 +33,26 @@
       const A = NP.assets;
       for (const s of def.stamps || []) {
         const sd = A.stampDef(s.id);
-        const p = { id: s.id, x: s.x, y: s.y, variant: s.variant, def: sd, name: s.name, w: sd.w, h: sd.h, over: sd.over || 0, layer: sd.layer || 'obj', goneIf: s.goneIf, showIf: s.showIf, roll: !!s.roll };
+        // deco: a per-placement decoration painted onto the stamp's art (`boxes: true` = window flower boxes beside the door)
+        const p = { id: s.id, x: s.x, y: s.y, variant: s.variant, def: sd, name: s.name, w: sd.w, h: sd.h, over: sd.over || 0, layer: sd.layer || 'obj', goneIf: s.goneIf, showIf: s.showIf, roll: !!s.roll, deco: s.boxes ? 'boxes' : null };
         this.placements.push(p);
-        let door = null;
+        // every 'D' cell is a door (a double front door has two); the stamp's `name` points at the first (west) one
+        const doorCells = [];
         for (let yy = 0; yy < sd.h; yy++) {
           for (let xx = 0; xx < sd.w; xx++) {
             const ch = sd.solid[yy][xx];
             const gx = s.x + xx, gy = s.y + yy;
             if (gx < 0 || gy < 0 || gx >= this.w || gy >= this.h) continue;
             if (ch === '#') this.blocked[gy * this.w + gx] = 1;
-            if (ch === 'D') door = { x: gx, y: gy };
+            if (ch === 'D') doorCells.push({ x: gx, y: gy });
           }
         }
-        if (!door && s.to) door = sd.door ? { x: s.x + sd.door[0], y: s.y + sd.door[1] } : { x: s.x + (sd.w >> 1), y: s.y + sd.h - 1 };
-        if (door) {
+        if (!doorCells.length && s.to) doorCells.push(sd.door ? { x: s.x + sd.door[0], y: s.y + sd.door[1] } : { x: s.x + (sd.w >> 1), y: s.y + sd.h - 1 });
+        for (const door of doorCells) {
           this.blocked[door.y * this.w + door.x] = 0;
-          if (s.name) this.doors[s.name] = door;
           if (s.to) this.warps.set(door.x + ',' + door.y, { x: door.x, y: door.y, to: s.to, spawn: s.spawn || 'door', door: s.toDoor, door_: true, stamp: p });
         }
+        if (doorCells.length && s.name) this.doors[s.name] = doorCells[0];
       }
       for (const w of def.warps || []) {
         const xs = w.xs || (Array.isArray(w.x) ? w.x : [w.x]);
@@ -59,7 +61,19 @@
       }
       this.objs = this.placements.filter((p) => p.layer !== 'floor');
       this.floors = this.placements.filter((p) => p.layer === 'floor');
+      // thin interior walls on tile EDGES (def.edgeWalls): { h: N, x0, x1 } = the edge between rows N-1 and N for columns x0..x1;
+      // { v: N, y0, y1 } = the edge between columns N-1 and N for rows y0..y1. They block moving across that edge (edgeBlocked).
+      this.edges = new Set();
+      for (const e of def.edgeWalls || []) {
+        if (e.h !== undefined) for (let x = e.x0; x <= e.x1; x++) { this.edges.add(x + ',' + (e.h - 1) + ',down'); this.edges.add(x + ',' + e.h + ',up'); }
+        else for (let y = e.y0; y <= e.y1; y++) { this.edges.add((e.v - 1) + ',' + y + ',right'); this.edges.add(e.v + ',' + y + ',left'); }
+      }
     }
+
+    /** true when a thin wall stands on the edge you'd cross leaving (x, y) in direction dir ('up'|'down'|'left'|'right') */
+    edgeBlocked(x, y, dir) { return this.edges.size > 0 && this.edges.has(x + ',' + y + ',' + dir); }
+    /** can something step from (x, y) to the neighbouring tile in `dir` without crossing an edge wall? (terrain not checked) */
+    static dirTo(x, y, nx, ny) { return nx > x ? 'right' : nx < x ? 'left' : ny > y ? 'down' : 'up'; }
 
     inBounds(x, y) { return x >= 0 && y >= 0 && x < this.w && y < this.h; }
     idAt(x, y) { return this.inBounds(x, y) ? this.grid[y * this.w + x] : null; }
@@ -187,7 +201,7 @@
       }
       for (const p of this.floors) {
         if (p.x + p.w <= x0 - 1 || p.x >= x1 + 1 || p.y + p.h <= y0 - 1 || p.y >= y1 + 1) continue;
-        fb.blit(A.stamp(p.id, p.variant, A.frameAt(p.def, tick)), p.x * T - camX, p.y * T - camY);
+        fb.blit(A.stamp(p.id, p.variant, A.frameAt(p.def, tick), p.deco), p.x * T - camX, p.y * T - camY);
       }
       return overlays;
     }
@@ -207,10 +221,12 @@
       const list = [];
       for (const p of this.objs) if (visible(p)) list.push({ sortY: (p.y + p.h) * T, order: 0, p });
       for (const a of actors || []) list.push({ sortY: a.sortY, order: 1, a });
+      if (this.edges.size) for (const w of this.edgeArt()) list.push({ sortY: w.sortY, order: 0, w });
       list.sort((a, b) => a.sortY - b.sortY || a.order - b.order);
       for (const e of list) {
         if (e.a) { e.a.draw(fb, camX, camY); continue; }
-        const p = e.p, bmp = A.stamp(p.id, p.variant, A.frameAt(p.def, tick));
+        if (e.w) { if (e.w.bmp) fb.blit(e.w.bmp, e.w.x - camX, e.w.y - camY); continue; }
+        const p = e.p, bmp = A.stamp(p.id, p.variant, A.frameAt(p.def, tick), p.deco);
         const dx = p.x * T - camX, dy = p.y * T - camY - (p.def.rise || 0);   // rise: tall art stands up past the footprint
         if (p.over > 0 && p.over < p.h) fb.blit(bmp, dx, dy + p.over * T, { sx: 0, sy: p.over * T, sw: bmp.w, sh: bmp.h - p.over * T });
         else if (!p.over) fb.blit(bmp, dx, dy);
@@ -218,13 +234,45 @@
       }
       for (const p of this.objs) {
         if (!p.over || !visible(p)) continue;
-        const bmp = A.stamp(p.id, p.variant, A.frameAt(p.def, tick));
+        const bmp = A.stamp(p.id, p.variant, A.frameAt(p.def, tick), p.deco);
         fb.blit(bmp, p.x * T - camX, p.y * T - camY, { sx: 0, sy: 0, sw: bmp.w, sh: Math.min(bmp.h, p.over * T) });
       }
       for (const [id, tx, ty, frame] of overlays) {
         const o = A.overlay(id, frame);
         if (o) fb.blit(o, tx * T - camX, ty * T - camY);
       }
+      // terrain drawn above actors (`overActors`, e.g. treeline_secret: a walkable gap that still looks like the tree wall)
+      this.drawOverTerrain(fb, camX, camY, tick, x0, y0, x1, y1);
+    }
+
+    drawOverTerrain(fb, camX, camY, tick, x0, y0, x1, y1) {
+      if (this._over === undefined) {
+        this._over = [];
+        for (let y = 0; y < this.h; y++) for (let x = 0; x < this.w; x++) if (NP.assets.terrainDef(this.grid[y * this.w + x]).overActors) this._over.push([x, y]);
+      }
+      const A = NP.assets;
+      for (const [tx, ty] of this._over) {
+        if (tx < x0 - 1 || tx > x1 || ty < y0 - 1 || ty > y1) continue;
+        const id = this.grid[ty * this.w + tx], def = A.terrainDef(id);
+        fb.blit(A.terrain(id, this.maskAt(tx, ty), def.frames > 1 ? A.frameAt(def, tick) : 0, def.variants > 1 ? A.variantAt(id, tx, ty) : 0), tx * T - camX, ty * T - camY);
+      }
+    }
+
+    /** the edge walls as y-sorted pieces: [{ x, y, sortY, bmp }] in map px (art: NP.art.tiles.edgeWall, else a plain strip) */
+    edgeArt() {
+      if (this._edgeArt) return this._edgeArt;
+      const out = [], tiles = NP.art && NP.art.tiles, wall = this.def.edgeWallTerrain || 'wall_wood';
+      const art = (k) => (tiles && tiles.edgeWall ? tiles.edgeWall(k, wall) : null);
+      for (const e of this.def.edgeWalls || []) {
+        if (e.h !== undefined) {
+          // a wall-top cap 3px above the edge and the wall face hanging 5px below it, over the south tile
+          for (let x = e.x0; x <= e.x1; x++) out.push({ x: x * T, y: e.h * T - 3, sortY: e.h * T + 5, bmp: art(x === e.x0 ? 'hw' : x === e.x1 ? 'he' : 'h') });
+        } else {
+          for (let y = e.y0; y <= e.y1; y++) out.push({ x: e.v * T - 2, y: y * T, sortY: (y + 1) * T, bmp: art('v') });
+          out.push({ x: e.v * T - 2, y: (e.y1 + 1) * T, sortY: (e.y1 + 1) * T + 5, bmp: art('vend') });
+        }
+      }
+      return (this._edgeArt = out);
     }
   }
 

@@ -61,7 +61,7 @@
     const R = sc.R, W = tm.w + 2 * R, H = tm.h + 2 * R, depth = new Uint8Array(W * H);
     const forest = (x, y) => {
       const id = tm.idAt(x, y);
-      return id === null ? border === 'treeline' : id === 'treeline';
+      return id === null ? border === 'treeline' : id === 'treeline' || id === 'treeline_secret';
     };
     const q = [];
     for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
@@ -168,7 +168,7 @@
     if (sc._tileFn) return sc._tileFn;
     const A = NP.assets, tiles = art();
     sc._tileFn = (id, tx, ty) => {
-      if (id === 'treeline' && tiles.floor3d) {
+      if ((id === 'treeline' || id === 'treeline_secret') && tiles.floor3d) {
         const d = sc.depthAt(tx, ty);
         return tiles.floor3d(d <= DEPTH_TREES + 1 ? 'forest' : 'canopy', h32(tx, ty, 3) & 1);
       }
@@ -275,8 +275,8 @@
   S.addVolume = function (sc, p) {
     const tiles = art();
     if (!tiles.hasVolume || !tiles.hasVolume(p.id)) return false;
-    const tex = tiles.volume(p.id, p.variant), d = tex.d;
-    const x0 = p.x * T, yF = (p.y + p.h) * T - 8, D = tex.depth, yB = yF - D;
+    const tex = tiles.volume(p.id, p.variant, p.deco), d = tex.d;
+    const x0 = p.x * T, yF = (p.y + p.h) * T - 8 - (d.setback || 0), D = tex.depth - (d.setback || 0), yB = yF - D;   // setback: a recessed front (rowhouse_shop's doorway)
     const W = d.W, H = d.H, wl = d.wl, wr = d.wr, Hw = d.Hw, Zt = d.Ztop, ins = d.inset, rL = d.roofL, rR = d.roofR, sl = tex.slope, cw = tex.capW;
     const rn = Math.hypot(Zt - Hw, ins);
     const faces = [
@@ -313,7 +313,7 @@
     for (let i = 0; i < vols.length; i++) {
       const it = vols[i];
       if (it.variant !== it.p.variant) {                           // a story flag re-coloured it (variantByFlag): fetch the new art
-        const t = art().volume(it.p.id, it.p.variant);
+        const t = art().volume(it.p.id, it.p.variant, it.p.deco);
         it.tex = t; it.variant = it.p.variant;
         S.gradeVolume(it);
         it.faces[0].uv = it.faces[0].uv;
@@ -413,7 +413,7 @@
     for (let i = 0; i < bills.length; i++) {
       const o = bills[i], p = o.p;
       if (!proj(st, o.x, o.y)) continue;
-      const bmp = A.stamp(p.id, p.variant, A.frameAt(p.def, tick)), s = P3.s;
+      const bmp = A.stamp(p.id, p.variant, A.frameAt(p.def, tick), p.deco), s = P3.s;
       if (P3.X + bmp.w * s * 0.5 < 0 || P3.X - bmp.w * s * 0.5 > SW || P3.Y - bmp.h * s >= SH || P3.Y <= 0) continue;
       const fogT = V.fogAt(P3.v);
       if (fogT >= 0.99) continue;

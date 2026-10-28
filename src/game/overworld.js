@@ -70,7 +70,13 @@
         if (d.icon === 'spool') bmp = A().spool('bond', (frame >> 3) & 3);
         else if (d.icon && d.icon.indexOf('item:') === 0) { bmp = A().itemIcon(d.icon.slice(5)); dx = -4; dy = -6; }
         if (bmp) fb.blit(bmp, X + dx, Y + dy);
+        if (d.glint) drawGlint(fb, X + 8, Y + 2, frame);   // a periodic sparkle so a far-off item catches the eye
         return;
+      }
+      // asleep in bed (the opening): just the head on the pillow, eyes closed, centred on a 2-wide bed (+8 px), no shadow
+      if (this.pose === 'asleep') {
+        const z = A().humanAsleep(this.look);
+        if (z) { fb.blit(z, X + ((16 - z.w) >> 1) + 8, Y - 3); return; }
       }
       const spr = A().human(this.look);
       const vd = NP.view3d ? NP.view3d.viewDir(this.dir) : this.dir;
@@ -96,6 +102,20 @@
       fb.blit(bmp, sx, sy - Math.round(this.hop));
     }
   }
+
+  /** A four-point sparkle that blooms for 24 frames out of every 96 (props with `glint: true`, e.g. an item across the water). */
+  function drawGlint(fb, cx, cy, frame) {
+    const t = frame % 96;
+    if (t >= 24) return;
+    const r = t < 12 ? (t >> 2) + 1 : ((23 - t) >> 2) + 1;
+    for (let i = -r; i <= r; i++) {
+      const a = 1 - Math.abs(i) / (r + 1);
+      fb.blendRect(cx + i, cy, 1, 1, '#ffffff', 0.35 + 0.65 * a);
+      fb.blendRect(cx, cy + i, 1, 1, '#ffffff', 0.35 + 0.65 * a);
+    }
+    fb.blendRect(cx - 1, cy - 1, 3, 3, '#fff8c0', 0.5);
+  }
+  NP.drawGlint = drawGlint;
 
   // ----------------------------------------------------------------------------------------- scripts
   class Ctx {
@@ -217,7 +237,7 @@
       const [x, y] = q.shift();
       for (const [d, dx, dy] of D) {
         const nx = x + dx, ny = y + dy, k = nx + ',' + ny;
-        if (prev.has(k) || !m.inBounds(nx, ny) || m.solid(nx, ny) || m.ledge(nx, ny) || ow.actorAt(nx, ny, a)) continue;
+        if (prev.has(k) || !m.inBounds(nx, ny) || m.solid(nx, ny) || m.ledge(nx, ny) || m.edgeBlocked(x, y, d) || ow.actorAt(nx, ny, a)) continue;
         prev.set(k, [x + ',' + y, d]);
         if (goals.has(k)) { const out = []; for (let c = k; prev.get(c); c = prev.get(c)[0]) out.unshift(prev.get(c)[1]); return out; }
         q.push([nx, ny]);
@@ -482,7 +502,8 @@
     nearestTeaHouse() {
       const vis = NP.state.visited || {};
       const next = (id) => Array.from(this.tileMap(id).warps.values()).map((w) => w.to).filter((t) => NP.maps[t]);
-      const unlocked = (id) => !!vis[id] || next(id).some((n) => vis[n]);
+      // an indoor Tea House counts once its town has been visited; an outdoor one (Basting Green's tea patio) only once you've been there
+      const unlocked = (id) => !!vis[id] || (!!NP.maps[id].indoor && next(id).some((n) => vis[n]));
       const seen = new Set([this.map.id]);
       for (let ring = [this.map.id]; ring.length;) {
         const nxt = [];
@@ -591,6 +612,7 @@
     canEnter(a, nx, ny, dir) {
       const swim = a === this.player && this.paddling();
       if (this.map.solid(nx, ny, swim)) return false;
+      if (this.map.edgeBlocked(a.x, a.y, dir || NP.TileMap.dirTo(a.x, a.y, nx, ny))) return false;   // a thin wall on the tile edge
       if (swim && this.map.tdef(nx, ny).water && !this.map.tdef(nx, ny).paddle) return false; // the open sea stays a coastline
       const o = this.actorAt(nx, ny, a);
       return !o;
@@ -647,6 +669,7 @@
       const [dx, dy] = DIRV[d];
       const nx = p.x + dx, ny = p.y + dy;
       const run = NP.Game.opts.run === 'hold' ? Input.held.b : true;
+      if (this.map.edgeBlocked(p.x, p.y, d)) { this.bump(); return; }   // a thin wall on the tile edge
       const led = this.map.ledge(nx, ny);
       if (led) {
         if (led === d && !this.map.solid(nx + dx, ny + dy) && !this.actorAt(nx + dx, ny + dy)) { NP.snd.sfx('ledge'); p.hopStep(d, 2); this.followStep(nx, ny, 1); return; }
@@ -771,6 +794,7 @@
       const [dx, dy] = DIRV[a.dir];
       for (let i = 1; i <= range; i++) {
         const x = a.x + dx * i, y = a.y + dy * i;
+        if (this.map.edgeBlocked(x - dx, y - dy, a.dir)) return false;
         if (x === p.x && y === p.y) return true;
         if (this.map.solid(x, y) || this.actorAt(x, y, a)) return false;
       }
@@ -841,7 +865,7 @@
         }
       }
       for (const e of m.def.interact || []) {
-        if (e.x === x && e.y === y) {
+        if (e.x === x && e.y === y && (!e.when || e.when(this.ctx))) {   // `when`: the entry only answers while it returns true
           NP.snd.sfx('select');
           if (e.script) this.runScript(e.script);
           else this.runScript(function* (c) { yield* c.sayT(m.id + '@' + e.x + ',' + e.y, e.say); });
@@ -850,7 +874,10 @@
       }
       // field move: a bush in front of you can be snipped away
       const bush = m.placements.find((q) => q.id === 'bush' && q.x === x && q.y === y);
-      if (bush) { NP.snd.sfx('select'); this.runScript(function* (c) { yield* c.snip(bush); }); }
+      if (bush) { NP.snd.sfx('select'); this.runScript(function* (c) { yield* c.snip(bush); }); return; }
+      // shake a tree in the wild: maybe a bird Kigu drops out (NP.TreeShake, src/game/treeshake.js)
+      const tree = NP.TreeShake && NP.TreeShake.treeAt(m, x, y);
+      if (tree) { NP.snd.sfx('select'); this.runScript(function* (c) { yield* NP.TreeShake.shake(c, tree); }); }
     }
 
     npcAI() {
@@ -867,7 +894,7 @@
         const nx = a.x + dx, ny = a.y + dy;
         const r = d.range || 2;
         if (Math.abs(nx - a.homeX) > r || Math.abs(ny - a.homeY) > r) { a.dir = dir; continue; }
-        if (this.map.solid(nx, ny) || this.map.ledge(nx, ny) || this.map.warpAt(nx, ny) || this.actorAt(nx, ny, a)) { a.dir = dir; continue; }
+        if (this.map.solid(nx, ny) || this.map.ledge(nx, ny) || this.map.warpAt(nx, ny) || this.map.edgeBlocked(a.x, a.y, dir) || this.actorAt(nx, ny, a)) { a.dir = dir; continue; }
         a.step(dir, 1, true);
       }
       if (this.bumpT > 0) this.bumpT--;
@@ -933,6 +960,19 @@
     }
 
     // ---- drawing
+    /** a handful of leaves fluttering down from the tree you just shook (NP.TreeShake) */
+    drawShake(fb, cx, cy) {
+      const t = this.shakeT, k = 16 - t.n--;
+      const v3 = NP.view3d && NP.view3d.on;
+      for (let i = 0; i < 5; i++) {
+        const mx = t.x * 16 + 2 + ((i * 5) % 13) + Math.round(Math.sin((k + i * 3) * 0.7) * 2), my = t.y * 16 - 10 + i * 2 + k;
+        let X = mx - cx, Y = my - cy;
+        if (v3) { const q = NP.view3d.project(mx, t.y * 16 + 14); if (!q) continue; X = q.x - 8 + ((i * 5) % 13); Y = q.y - (26 - k - i * 2) * q.scale; }
+        fb.blendRect(Math.round(X), Math.round(Y), 2, 1, i & 1 ? '#5cb44c' : '#88d860', 0.95);
+        fb.blendRect(Math.round(X) + 1, Math.round(Y) + 1, 1, 1, '#2c6e40', 0.9);
+      }
+    }
+
     camera() {
       const p = this.player, m = this.map;
       let cx = Math.round(p.px + 8 - NP.W / 2), cy = Math.round(p.py + 8 - NP.H / 2);
@@ -959,6 +999,7 @@
       if (!this.map.def.hidePlayer) list.push({ sortY: p.py + 16.5, x: p.px + 8, hero: true, draw: (f, X, Y) => p.draw(f, X, Y, fr) });
       this.map.draw(fb, cx, cy, fr, list);
       if (NP.Fishing && (this.bobber || this.contest)) NP.Fishing.draw(this, fb, cx, cy);
+      if (this.shakeT && this.shakeT.n > 0) this.drawShake(fb, cx, cy);   // leaves falling from a shaken tree
       if (NP.Clock && !this.map.def.memory) NP.Clock.draw(fb, this.map.def, cx, cy);   // day-night tint + lamp glow (src/game/clock.js)
       if (this.weather) NP.Weather.draw(fb, this.weather, fr);
       // emotes

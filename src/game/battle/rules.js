@@ -175,6 +175,8 @@
       const r = battle.rand(8);
       hits = lo + (hi > lo ? (r < 3 ? 0 : r < 6 ? 1 : r < 7 ? 2 : 3) : 0);
       hits = Math.min(hi, hits);
+      // held items and abilities may change the count (the Lucky Thimble makes a 2-5 hit move land 4 or 5 times)
+      hits = Math.max(lo, Math.min(hi, battle.chain('modMultiHits', mon, hits, { move, target })));
     }
     let total = 0, n = 0;
     for (let i = 0; i < hits && !target.fainted && !mon.fainted; i++) {

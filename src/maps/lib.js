@@ -27,7 +27,13 @@
   }
   L.sp = (s, d) => pick('species', NP.data.species, s, d || 'nibblit');
   L.item = (s, d) => pick('item', NP.data.items, s, d || 'snack_cake');
-  L.look = (s, d) => (/^(rival|player_kid|rival_kid)$/.test(String(s).split('|')[0]) ? String(s).split('|')[0] : pick('look', NP.art && NP.art.human && NP.art.human.looks, s, d || 'villager_m1'));
+  L.look = (s, d) => {
+    const want = String(s).split('|')[0];
+    if (/^(rival|player_kid|rival_kid)$/.test(want)) return want;
+    // a Kigu walking about: 'kigu:<species>' (NP.assets.kiguOverworld draws it from the Kigu art)
+    if (want.indexOf('kigu:') === 0) return NP.data.species[want.slice(5)] ? want : pick('look', {}, s, d || 'villager_m1');
+    return pick('look', NP.art && NP.art.human && NP.art.human.looks, s, d || 'villager_m1');
+  };
   L.hasItem = (id) => !!(NP.data.items && NP.data.items[id]);
   L.hasMove = (id) => !!(NP.data.moves && NP.data.moves[id]);
 
@@ -112,6 +118,13 @@
     Object.defineProperty(stampDef, 'variant', { enumerable: true, configurable: true, get() { return (NP.state && NP.state.flags[flag]) ? after : before; } });
     return stampDef;
   };
+  /** A stamp whose variant is whatever fn() returns (read on map build and on L.syncStamps). E.g. the wall map in the player's room:
+   *  L.variantBy(M.def.stamps[i], () => 'pins' + L.badges()). fn gets (NP.state) and should return one of the stamp's variants. */
+  L.variantBy = function (stampDef, fn) {
+    stampDef.dyn = true;
+    Object.defineProperty(stampDef, 'variant', { enumerable: true, configurable: true, get() { return NP.state ? fn(NP.state) : undefined; } });
+    return stampDef;
+  };
   L.syncStamps = function (c) {
     const tm = c.map;
     for (const s of tm.def.stamps || []) {
@@ -120,10 +133,55 @@
       if (p) p.variant = s.variant;
     }
   };
+  /** Mid-scene refresh after setting story flags: stamps with goneIf/showIf come and go, flag-driven variants update. */
+  L.refresh = function (c) {
+    c.map.syncSnips(NP.state.flags);
+    L.syncStamps(c);
+  };
+
+  // ------------------------------------------------------------------------------------------ the lead Kigu
+  /** the lead Kigu (first one who can battle, else the first in the party) or null; L.leadName(c) her name ('your Kigu' if none).
+   *  In text, {kigu} gives the same name and {starter} the party Kigu of the starter's family (state.js). */
+  L.lead = () => (NP.leadKigu ? NP.leadKigu() : null);
+  L.leadName = () => { const k = L.lead(); return k ? NP.Kigu.displayName(k) : 'your Kigu'; };
+  /** The lead Kigu steps out beside you and dances (Thimble's yarn basket and the like): she pops out next to the player (on the
+   *  first open side), hops twice with a note emote, says her cry, then goes back. Works with any species that has Kigu art. */
+  L.leadDance = function* (c, o) {
+    o = o || {};
+    const k = L.lead();
+    if (!k) return;
+    const ow = c.ow, p = ow.player, m = c.map;
+    const spots = [[1, 0, 'left'], [-1, 0, 'right'], [0, 1, 'up'], [0, -1, 'down']];
+    const spot = spots.find(([dx, dy]) => !m.solid(p.x + dx, p.y + dy) && !ow.actorAt(p.x + dx, p.y + dy) && !m.edgeBlocked(p.x, p.y, dx > 0 ? 'right' : dx < 0 ? 'left' : dy > 0 ? 'down' : 'up'));
+    if (!spot) return;
+    const a = new NP.Actor({ id: '_lead', kind: 'npc', x: p.x + spot[0], y: p.y + spot[1], dir: spot[2], look: 'kigu:' + k.species, solid: true });
+    ow.actors.push(a);
+    NP.snd.sfx('sparkle');
+    if (NP.snd.cry) NP.snd.cry(k.species);
+    for (let i = 0; i < (o.hops || 2); i++) {
+      for (const d of ['left', 'down', 'right', 'up']) { a.dir = d; yield* c.wait(5); }
+      a.hop = 3; yield* c.wait(4); a.hop = 0; yield* c.wait(2);
+    }
+    yield* c.emote(a, o.emote || 'note');
+    if (o.stay) return a;
+    ow.actors.splice(ow.actors.indexOf(a), 1);
+    return null;
+  };
   /** An NPC definition whose look follows a flag. */
   L.lookByFlag = function (npcDef, flag, before, after) {
     Object.defineProperty(npcDef, 'look', { enumerable: true, configurable: true, get() { return (NP.state && NP.state.flags[flag]) ? after : before; } });
     return npcDef;
+  };
+
+  /** run a script given as a generator function or a shared-script name */
+  L.run = function* (c, script) { const f = typeof script === 'string' ? NP.scripts[script] : script; if (f) yield* f(c); };
+
+  /** stairs: one terrain cell ('stairs_up'|'stairs_down' via legend chars u/d) plus the warp. */
+  L.stairs = (M, x, y, dir, to, spawn) => {
+    M.legend('u', 'stairs_up').legend('d', 'stairs_down');
+    M.set(x, y, dir === 'up' ? 'u' : 'd');
+    M.warp({ x, y, to, spawn, sound: 'door' });
+    return M;
   };
 
   // ------------------------------------------------------------------------------------------ the builder
@@ -226,6 +284,13 @@
       return M;
     };
     M.trigger = (t) => { def.triggers.push(t); return M; };
+    /** one-time step trigger: fires the first time the player walks onto any tile of the rect, then never again (flag `flag`).
+     *  o.when = extra condition (c) => bool. The flag is set before the script runs, so a lost battle inside it does not repeat it. */
+    M.once = (flag, x, y, w, h, script, o) => {
+      const extra = o && o.when;
+      def.triggers.push({ x, y, w, h, id: flag, when: (c) => !c.flag(flag) && (!extra || extra(c)), script: function* (c) { c.set(flag); yield* L.run(c, script); } });
+      return M;
+    };
     M.enc = (kind, list) => {
       def.encounters = def.encounters || {};
       def.encounters[kind] = list.map((e) => ({ sp: L.sp(e[0]), min: e[1], max: e[2], w: e[3] }));

@@ -96,9 +96,9 @@
     return FALLBACK_STAMPS[id] || S(1, 1, { color: hashColor(id) });
   };
   A.hasStampArt = (id) => !!(NP.stamps && NP.stamps[id] && art().tiles && art().tiles.stamp);
-  A.stamp = function (id, variant, frame) {
+  A.stamp = function (id, variant, frame, deco) {
     if (A.hasStampArt(id)) {
-      const b = tryit(() => art().tiles.stamp(id, variant, frame), null);
+      const b = tryit(() => art().tiles.stamp(id, variant, frame, deco), null);
       if (b) return b;
     }
     const d = A.stampDef(id);
@@ -148,12 +148,53 @@
   };
   A.human = function (look) {
     look = rl(look);
+    if (typeof look === 'string' && look.indexOf('kigu:') === 0) { const k = A.kiguOverworld(look.slice(5)); if (k) return k; }
     const h = art().human;
     if (h && h.has && h.overworld) {
       const v = tryit(() => (h.has(look) ? memo('ho|' + look, () => h.overworld(look)) : null), null);
       if (v) return v;
     }
     return fallbackHuman(look || 'npc');
+  };
+  /** Is `look` something A.human can draw for real (a human look, or 'kigu:<species>' with Kigu art)? Tests use it. */
+  A.hasLook = (look) => {
+    if (/^(rival|player_kid|rival_kid)$/.test(look)) return true;
+    if (typeof look === 'string' && look.indexOf('kigu:') === 0) return !!(NP.data && NP.data.species[look.slice(5)]) && A.kiguHas(look.slice(5));
+    const h = art().human;
+    return !!(h && h.has && h.has(look));
+  };
+  /** The asleep-in-bed frame (head on the pillow, eyes closed; 32x32, head at the top), or null for looks without one. */
+  A.humanAsleep = function (look) {
+    look = rl(look);
+    const h = art().human;
+    return h && h.asleep && h.has && h.has(look) ? tryit(() => memo('hz|' + look, () => h.asleep(look)), null) : null;
+  };
+  /** Overworld sprite set for a Kigu walking about ('kigu:<species>' looks): the same { w, h, frames } shape as a human look.
+   *  down = front view, up = back view; the side views are the front view leaning one pixel into the walk (mirrored for right).
+   *  Walk frames: the body drops a pixel and one foot lifts, like the people. */
+  A.kiguOverworld = function (sp) {
+    const K = art().kigu;
+    if (!K || !K.ow || !A.kiguHas(sp)) return null;
+    return tryit(() => memo('kow|' + sp, () => {
+      const down = K.ow(sp, 'down'), up = K.ow(sp, 'up');
+      const feetTop = (b) => { let y1 = 0; for (let y = 0; y < b.h; y++) for (let x = 0; x < b.w; x++) if (b.u32[y * b.w + x] >>> 24) y1 = y; return y1 - 3; };
+      // frame: body rows (above the feet) move by bodyDy; the foot on side `lift` (-1 left half, +1 right half) rises a pixel
+      const step = (b, lift, lean) => {
+        const out = new Bitmap(b.w, b.h), ft = feetTop(b), cx = b.w >> 1;
+        for (let y = 0; y < b.h; y++) for (let x = 0; x < b.w; x++) {
+          const c = b.u32[y * b.w + x];
+          if (!(c >>> 24)) continue;
+          let X = x, Y = y;
+          if (y < ft) { Y = y + (lift ? 1 : 0); if (lean && y < ft - 6) X = x + lean; }
+          else if (lift && (lift < 0 ? x < cx : x >= cx)) Y = y - 1;
+          if (X >= 0 && X < b.w && Y >= 0 && Y < b.h && !(out.u32[Y * b.w + X] >>> 24 && y >= ft)) out.u32[Y * b.w + X] = c;
+        }
+        return out;
+      };
+      const set = (b, lean) => [step(b, 0, lean), step(b, -1, lean), step(b, 1, lean)];
+      const left = set(down, -1);
+      return { w: 32, h: 32, kigu: sp, frames: { down: set(down, 0), up: set(up, 0), left, right: left.map((f) => f.flippedX()) } };
+    }), null);
   };
   function portrait(kind, look) {
     look = rl(look);

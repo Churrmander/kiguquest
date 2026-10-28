@@ -32,6 +32,38 @@ decisions BIBLE left open (sizes, solid rows, variants). `solid` rows are writte
 | `neon_sign` | 2x1 | `##` | 0 | `default off`; 2 frames. Wall decor (a neon spool and thread) for a wall row |
 | `gate_house` | 5x3 | `##.##` `##.##` `##.##` | 2 | `default pressed`. Stone-and-timber gatehouse: the centre column is an open arch you walk straight through north-south (all three rows walkable); roof, tie-beam and arch (rows 0-1) draw above actors. `default` has a hanging sign, a shuttered window and a red pennant; `pressed` adds the Starch Society banner (white, blue piping, flat stripes, collar crest) over the window and a white-and-blue pennant. No `D`: do not give it `to`/`name` |
 
+| `house_home` | 5x5 | `#####` x4, `##DD#` | 0 | two storeys, double front door on both `D` cells (every `D` cell is a door warp; the door name points at the first). Roofs `red blue green yellow pink gray` (default `red`). Has a 3D `vol`. `rise` 16 |
+| `house_tall` | 5x5 | `#####` x4, `##D##` | 0 | steep roof with a dormer, three rows of windows. Roofs `blue red green yellow pink gray` (default `blue`). 3D `vol`, `rise` 24 |
+| `rowhouse` | 2x3 | `##` `##` `D#` | 0 | one terraced house, door in the west column. Side walls and roof run to the stamp edge so a row of them reads as one terrace. 3D `vol` (flush walls) |
+| `rowhouse_shop` | 2x3 | `##` `##` `.#` | 0 | `post bakery tackle haberdashery`: shopfront with awning and trade sign; the bottom-left cell is a recessed doorway (walkable, no warp) for the shopkeeper to stand in. 3D `vol` with `setback: 8`, so whoever stands in the doorway stays in front of the face |
+| `treehouse` | 3x3 | `###` `###` `#D#` | 0 | plank hut on a platform in an oak; the ladder in the bottom middle is the door |
+| `statue` | 4x4 | all `#` | 1 | `wrapped ribbons`: Astara (west, crimson sash) and Anwela (east, leaning, blue ribbons) holding the Everspool on a grey plinth with a bronze plaque (south face, read from below). `wrapped` = under a folded white sheet tied with string, with a tag |
+| `boat_fishing` / `boat_cargo` | 2x2 / 5x3 | all `.` | 0 | walk-over boats for the `sea` (the sea blocks), 2 frames of bob. Fishing boat: bow north. Cargo boat: bow east, wheelhouse, crates |
+| `kite_snag` / `kite` | 1x2 | `.` `.` | 2 | walk-over. `kite_snag`: a kite caught in the treeline with its string hanging into the tile below. `kite`: flying, 4 frames, string runs to the bottom of the stamp (the kid stands below it) |
+| `winch` `lobster_pots` `mooring_post` `firewood` `tyre_swing` `spring_rider` `herb_planter` `storage_kiosk` `patio_table` `picnic_bench` `fountain_s` `leaf_heap` `notice_board` `hay_bale` `watering_can` `scarecrow` `wheelbarrow` `birdbath` `yarn_basket` | 1x1 | `#` | 0 | `spring_rider`: `konko ottopi sprubun`. `herb_planter`: `herbs tomato flowers`. `fountain_s`: 4 frames. `wheelbarrow`: `carrots`. `yarn_basket`: `napping` (a tuxedo Kittabra asleep on it, 2 frames). Most have a small `rise` so they stand up past their tile |
+| `net_rack` `swing_set` `picnic_table` `market_cart` `bunting` | 2x1 | `##` | 0 | `market_cart`: `food spool sundries peddler`. `bunting`: 4 frames, the crooked string sags lower at the east post |
+| `slide` | 1x2 | `#` `#` | 0 | ladder north, chute south |
+| `obstacle_course` `grotto` `big_thimble` `crop_plot` | 2x2 | all `#` (`grotto`: `##` `.#`) | 0 | `grotto` (`west`): mossy rock with a cave mouth in its bottom-left cell. `big_thimble`: the Thimble fountain, 4 frames of water. `crop_plot`: `wheat corn potato carrot cabbage` |
+| `crop_row` | 2x1 | `##` | 0 | `tomato onion` |
+| `tea_stall` | 3x1 | `###` | 0 | the outdoor tea counter under a striped canopy (Basting Green) |
+| `picnic_blanket` | 2x2 | all `.` | 0 | `layer: 'floor'`, `red blue` |
+| House pieces (`stamp_home.js`) | | | | `kitchen_counter` 1x1 `plain cakes crumbs`; `table_sq` 2x2; `pet_bed` 1x1 floor; `door_inner` 1x2 (wall); `window_edge` 1x1 `w e s s_tincan` (side and front wall windows); `side_table` 1x1; `grandfather_clock` 1x1; `tv_wide` 2x1 `plain console`; `bookshelf_narrow` 1x2 `cookbooks comics`; `sofa` 4x1; `sewing_basket` `armchair` 1x1; `coat_rack` 2x1 `satchel empty` (wall); `pc_desk` 2x1; `wall_map` 3x1 `pins0`..`pins8`; `calendar` 1x1; `kigu_poster` 2x1; `laundry_basket` 1x1 `overflow folded`; `beanbag` 2x2; `trophy_shelf` 1x1 `empty plush card trophy`; `bed_double` 2x3 (pillows south) `sleeping unmade made`; `bed_blanket` 2x2 `..` `..` over 2 (the quilt drawn over the sleeping hero; `goneIf`); `toy_chest` 1x1; `nightstand` 1x1 `lamp alarm`; `floor_clutter` 1x1 floor `clothes socks controller figures plushies comic sneakers pebbles petals tuft`. Also new variants: `fridge` `drawings`, `bench` `back`, `bush` `hedge_tree` (still snippable), `shove_rock` `grass` |
+
+Chapter 1 terrains (`terrain_ch1.js`): `worn_grass` (grass group, a trampled trail), `boardwalk` (planks, `step:'wood'`), `grotto_floor` (dark rock floor),
+`mulch` (wood chips, autotile with a grass lip), `treeline_secret` (paints exactly like `treeline` and joins it, but is walkable and drawn
+again **above** actors (`overActors: true`), so the hero vanishes under the canopy; the 3D view treats it as treeline).
+
+Map options added for Chapter 1:
+- `edgeWalls: [{ h: N, x0, x1 }, { v: N, y0, y1 }]`: thin partition walls on tile edges (indoors). `h: N` is the edge between rows N-1 and N
+  (x0..x1); `v: N` is the edge between columns N-1 and N (y0..y1). Movement, NPC wandering, sight lines and pathfinding stop at them.
+  Art: `edgeWallTerrain` = `wall_wood` (default) / `wall_plaster` / `wall_stone`. `TileMap#edgeBlocked(x, y, dir)`.
+- `windowLight: [{ x, y, w, h, from: 'n'|'s'|'e'|'w' }]` and `nightGlow: [{ x, y, w }]` on an indoor map: stepped pools of light on the
+  floor that follow the clock (peach morning, pale yellow day, orange evening, blue moonlight with the room dimmed at night).
+  `lightPhase()` returns a phase to override the clock (the hero's first morning).
+- A building placed with `boxes: true` gets flower boxes under its door-side windows (2D and 3D).
+- `town: true` marks a town (no tree shaking). `treeShake: [{ sp, min, max, w, time? }]` is the map's bird table for tree shaking.
+- A prop with `glint: true` sparkles every few seconds.
+
 Terrains (all from the BIBLE list): `floor_wood` `floor_tile` `floor_stone` plain floors (no autotile); `carpet_red/blue/green` and
 `mat` are autotiles with their own group (a border is drawn on every side not touching the same id); `wall_wood/plaster/stone` are
 solid autotiles in the shared group `wall` (the tile with floor to its south shows the skirting; wall tiles beside floor or in an
@@ -78,7 +110,7 @@ For example, `M.building('tea_house', 4, 6, ...)` has its door at x6, so the lan
 - **Each town shows its story** (e.g. Hemline's skeps, Buzzlets and honey stall), so add props that fit the town's theme.
 
 ## How to add a stamp
-1. Pick the file by theme in `src/art/tiles/` (`stamp_buildings.js`, `stamp_nature.js`, `stamp_props.js`, `stamp_indoor.js`).
+1. Pick the file by theme in `src/art/tiles/` (`stamp_buildings.js`, `stamp_nature.js`, `stamp_props.js`, `stamp_indoor.js`; Chapter 1's own pieces are in `stamp_home.js`, `stamp_ch1.js`, `stamp_ch1b.js`).
 2. Call `K.stamp(id, { w, h, solid, over, layer, variants, frames, animSpeed, paint(variant, frame) })`; `paint` returns a Bitmap of exactly `w*16 x h*16`.
 3. Build it from `K.S.house` (cottages), `K.lobe/blob/cyl/roof` (draw.js) and the palette `K.P`; outline with `K.outer(b, S.omap([[tones, outlineColour]], fallback))`, then `K.shadow` last.
 4. `solid` is `h` strings of `w` chars; omit it for fully solid. Doors: put `D` in the bottom row; trees/canopies: `over` = number of top rows.
@@ -146,7 +178,7 @@ What is built from what (all of it is derived from the existing maps; no map dat
 |---|---|
 | terrain `treeline` (and the border outside the map), `hedge` | billboard trees (`tiles.tree3d(kind, variant)`: `round` `big` `pine` `bush` `hedge` in `w3d_trees.js`, lime lobes, no outlines) on a dark forest floor; deep forest shows canopy tops (`tiles.floor3d`) |
 | stamps `tree` `tree_big` `pine` `bush` | the same billboards, anchored at the trunk |
-| building stamps (`house_*` `lab` `tea_house` `general_store` `salon` via `vol(variant)`; `gate_house` `shrine` via `EXTRA` in `w3d_volumes.js`) | a prism: the flat facade art on the front face (painted with `paint(variant, frame, '3d')`, so shop awnings are left out), west / east walls with windows, two roof slopes, a flat cap and a back, plus real slanted awnings (`tiles.volume(id, variant)`); lit from the west, shaded on the east |
+| building stamps (`house_*` `rowhouse` `rowhouse_shop` `lab` `tea_house` `general_store` `salon` via `vol(variant)`, which may set `setback` px to move the front face back; `gate_house` `shrine` via `EXTRA` in `w3d_volumes.js`) | a prism: the flat facade art on the front face (painted with `paint(variant, frame, '3d')`, so shop awnings are left out), west / east walls with windows, two roof slopes, a flat cap and a back, plus real slanted awnings (`tiles.volume(id, variant)`); lit from the west, shaded on the east |
 | terrain `fence` | posts and rails as geometry (`tiles.fence3d`) |
 | every other stamp, every actor | upright sprites with soft contact shadows |
 
