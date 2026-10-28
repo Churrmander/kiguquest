@@ -55,11 +55,12 @@
     paint: (v) => {
       const b = K.B(32, 16);
       if (v === 'back') {
-        for (const x of [3, 26]) { b.fillRect(x, 12, 3, 3, P.o4); b.fillRect(x, 12, 1, 3, P.o3); }   // back legs
-        b.fillRect(1, 3, 30, 3, P.o2); b.fillRect(1, 3, 30, 1, P.o0); b.fillRect(1, 5, 30, 1, P.o4);    // the seat behind
-        for (const x of [3, 26]) { b.fillRect(x, 5, 3, 8, P.o3); b.fillRect(x, 5, 1, 8, P.o2); }       // back posts
-        b.fillRect(3, 7, 26, 2, P.o2); b.fillRect(3, 7, 26, 1, P.o1); b.fillRect(3, 9, 26, 1, P.o5);   // two backrest slats
-        b.fillRect(3, 10, 26, 2, P.o3); b.fillRect(3, 10, 26, 1, P.o2); b.fillRect(3, 12, 26, 1, P.o5);
+        // seen from behind: the backrest is the near (south) face, the seat only peeks out 2px above it
+        b.fillRect(2, 3, 28, 2, P.o2); b.hline(2, 3, 28, P.o0); b.hline(2, 4, 28, P.o3);                // the seat's far edge
+        b.fillRect(1, 5, 30, 3, P.o2); b.hline(1, 5, 30, P.o1); b.hline(1, 7, 30, P.o4);                // upper backrest slat
+        b.fillRect(1, 9, 30, 3, P.o2); b.hline(1, 9, 30, P.o1); b.hline(1, 11, 30, P.o4);               // lower backrest slat
+        b.hline(1, 8, 30, P.o5);                                                                         // the gap between the slats
+        for (const x of [5, 25]) { b.fillRect(x, 5, 2, 10, P.o3); b.vline(x, 5, 10, P.o2); b.set(x + 1, 14, P.o4); }   // two vertical supports down to the ground
         K.outer(b, WOOD_OUT);
         K.shadow(b, 16, 14, 14, 2);
         return b;
