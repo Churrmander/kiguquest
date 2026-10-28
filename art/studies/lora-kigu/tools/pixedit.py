@@ -379,3 +379,15 @@ def curl(a, x, y, col, dark):
             if tuple(a[y + j, x + i]) == WHITE:
                 a[y + j, x + i] = INK
     return a
+
+
+def fan_ribs(a, anchor, tips, col, on):
+    """Wing ribs: straight 1 px lines from the anchor (wrist) to each tip, drawn only over colours in `on`."""
+    ax, ay = anchor
+    for tx, ty in tips:
+        n = max(abs(tx - ax), abs(ty - ay))
+        for i in range(n + 1):
+            x = round(ax + (tx - ax) * i / n); y = round(ay + (ty - ay) * i / n)
+            if tuple(a[y, x]) in on:
+                a[y, x] = col
+    return a

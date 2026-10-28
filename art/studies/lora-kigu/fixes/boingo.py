@@ -29,6 +29,7 @@ for y in range(33, 42):                                              # open the 
         if tuple(b[y, x]) == INK and 35 <= y <= 40:
             b[y, x] = OR
 HAIR3 = [OR, (199, 62, 1), DK]
+b = replace(b, {(250, 250, 250): OR, (224, 219, 228): OR2, (250, 205, 138): OR2}, box=(42, 42, 52, 48)); b = replace(b, {(250, 250, 250): OR, (224, 219, 228): OR2, (250, 205, 138): OR2}, box=(78, 46, 88, 52))   # white specks in the hair
 b = nearest(b, HAIR3, box=(38, 28, 92, 62), only=[(213, 100, 37), (250, 140, 73), (93, 52, 13), (245, 115, 2), (199, 62, 1), (132, 37, 1)])
 coils(b, (44, 70, 86, 118), 72)
 out['base'] = b
@@ -49,8 +50,9 @@ k = out['back']
 k = replace(k, {(190, 191, 201): (250, 250, 250), (138, 142, 149): (224, 219, 228), (112, 126, 128): (187, 200, 209)}, box=(44, 18, 92, 52))   # hood = base white
 k = mode_filter(k, protect=[(0, 0, 128, 56)], need=5, passes=1)
 coils(k, (36, 60, 92, 120), 62, {(239, 132, 4), (206, 112, 18), (188, 77, 35)})
-for cx, cy in ((49, 52), (78, 52)):                            # copper spiral curls under the hood
+for cx, cy in ((44, 47), (46, 54), (80, 47), (78, 54)):                            # copper spiral curls under the hood
     curl(k, cx, cy, (239, 132, 4), (123, 57, 11))
+k = mode_filter(k, protect=[(0, 0, 128, 60), (50, 0, 74, 128), (0, 86, 128, 128)], need=4)   # mottled arms
 out['back'] = k
 for v, a in out.items():
     a = reoutline(a)

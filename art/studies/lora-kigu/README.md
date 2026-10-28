@@ -22,3 +22,4 @@ Study for drawing the undrawn Kigu (76-151) locally with the retrained Kigu LoRA
 | 76 Glowgrub | 8 | 8 | 8 | from Stingle; 6 critic rounds (5-6 → 7 → 8) |
 | 82 Dripstone | 8 | 8 | 8 | pose was the master; front/back rendered from it; stalactite points and drip stripes added by hand |
 | 77 Glowmira | 8 | 8 | 8 | txt2img master front, pose/back rendered from it; bulbs, hem stars and hair tones fixed by hand |
+| 80 Batnap | 8 | 8 | 8 | txt2img master front; plum wings with ribs fanned from the wrist added by hand |
