@@ -2,7 +2,7 @@
  * (Hemline Riverside, Hemline Lake and Ryukoi's cave set their own; see src/maps/hemline_river.js and hemline_lake.js.)
  *  - Rods only hook fish-based Tide Kigu, and only in the water their fish lives in: Kiskat, Zeel and Gilfin in fresh water,
  *    Fugubun and Kelpony in the sea at Button Town. Paddling finds the other water Kigu (Kerochapu, Waddlecoat, Jellybob,
- *    Snipsnap). You can't paddle until Bryn's Disc in Hemline, so Paddling levels start at about 12.
+ *    Clawdet). You can't paddle until Bryn's Disc in Hemline, so Paddling levels start at about 12.
  *  - The Old Rod comes from Gus on Route 2 (with the Fishing Log and the Fish Pocket); the Good Rod from the fisher at the
  *    Oasis, once you show him there are fish in an oasis after all (Desert Pupfish, Old Rod). The Super Rod is in Loomhaven
  *    (Chapter 8, not built yet). def.fishing format: src/game/fishing.js. */
@@ -26,7 +26,7 @@
     route5: FRESH(10, 26, 34, { kigu: { 1: [['gilfin', 10, 14, 100]], 2: [['zeel', 26, 29, 60], ['kiskat', 26, 29, 40]], 3: [['slickish', 34, 38, 50], ['zeel', 34, 38, 50]] } }),
   };
   const PADDLE = {
-    button_town: [['snipsnap', 12, 16, 50], ['jellybob', 12, 16, 25], ['waddlecoat', 12, 16, 25]],
+    button_town: [['clawdet', 12, 16, 50], ['jellybob', 12, 16, 25], ['waddlecoat', 12, 16, 25]],
     route1: [['kerochapu', 12, 15, 60], ['waddlecoat', 12, 15, 40]],
     ribbon_loop: [['kerochapu', 12, 15, 60], ['waddlecoat', 12, 15, 40]],
     route2: [['kerochapu', 13, 16, 50], ['waddlecoat', 13, 16, 30], ['jellybob', 13, 16, 20]],

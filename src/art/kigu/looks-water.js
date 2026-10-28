@@ -60,8 +60,8 @@
 
   // ---- crab (Paddling, salt water)
   const CRB = { main: '#e05a48', sub: '#f8dcc8', hair: '#8a2a20', mitt: '#e8705a', foot: '#a83a2a', eye: '#2a1a1a', acc: '#f4f0e8', dark: '#a83a2a', cape: '#2a3a6a', gold: '#f4c542' };
-  D('snipsnap', { name: 'Snipsnap', stage: 1, size: 58, rise: 4, pal: CRB, hood: { type: 'up', ears: { kind: 'round', h: 2, w: 2.6, lean: 2, dy: -2 } }, hair: { style: 'short', bangs: 'spiky' }, mouth: 'cat', arms: G.hand, footMat: 'foot', bodyW: 1.25,
-    parts: [['belly', { mat: 'sub' }], ['spots', { mat: 'dark', pts: [[-5, 1, 0.8], [5, 1, 0.8]] }]] });
+  D('clawdet', { name: 'Clawdet', stage: 1, size: 58, rise: 4, pal: CRB, hood: { type: 'up', ears: { kind: 'round', h: 2, w: 2.6, lean: 2, dy: -2 } }, hair: { style: 'short', bangs: 'spiky' }, mouth: 'cat', arms: G.hand, footMat: 'foot', bodyW: 1.25,
+    parts: [['belly', { mat: 'sub' }], ['spots', { mat: 'dark', pts: [[-5, 1, 0.8], [5, 1, 0.8]] }], ['hat', { kind: 'cap', mat: 'acc' }]] });   // a cadet's sailor cap, a size too big
   D('crabmiral', { name: 'Crabmiral', stage: 2, size: 78, rise: 6, pal: CRB, hood: { type: 'up', ears: { kind: 'round', h: 2, w: 3, lean: 2, dy: -2 } }, hair: { style: 'bob', bangs: 'spiky' }, mouth: 'flat', arms: G.hand, footMat: 'foot', bodyW: 1.25,
     parts: [['belly', { kind: 'jacket', mat: 'cape', trim: 'gold', len: 6 }], ['hat', { kind: 'cap', mat: 'cape' }], ['collar', { mat: 'acc' }]] });
 })(typeof globalThis !== 'undefined' ? globalThis : window);

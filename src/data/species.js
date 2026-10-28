@@ -47,7 +47,7 @@
     dex: 'Her yellow rain-poncho never gets wet, no matter how hard it pours.' });
   sp('ottomarine', 'Ottomarine', ['tide', 'brawl'], [95, 100, 88, 88, 80, 75], { growth: 'mediumSlow', catch: 45, exp: 240, ab: ['torrent'], cry: 'Piiraa!', stage: 3, family: 'ottopi',
     ls: [[1, 'pounce'], [1, 'bubble_pop'], [17, 'paddle_slap'], [32, 'tide_wave'], [36, 'mitt_punch'], [44, 'drill_pick']],
-    dex: 'A captain in a big coat who commands the seas from her paddle tail.' });
+    dex: 'An old fishing-boat captain in a yellow slicker. She can smell a storm coming three days before it arrives.' });
 
   sp('sprubun', 'Sprubun', ['sprout'], [50, 48, 52, 60, 55, 45], { growth: 'mediumSlow', catch: 45, exp: 62, ab: ['overgrow'], cry: 'Pyu!',
     evo: [{ to: 'lapinlily', level: 17 }],
