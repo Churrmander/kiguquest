@@ -29,7 +29,7 @@
     dex: 'Wild Pebblump herds always follow a Bouldame. She wears boulder shoulder-guards, and once she plants her feet, nobody gets past her.' });
   sp('craggoth', 'Craggoth', ['pebble', 'terra'], [95, 120, 135, 60, 80, 45], { catch: 45, exp: 240, ab: ['sturdy_soul'], cry: 'Craaag!', stage: 3, family: 'pebblump',
     ls: [[1, 'pebble_toss'], [1, 'rock_roll'], [1, 'slab_slam'], [40, 'quarry_quake'], [46, 'crystal_glint']],
-    dex: 'A crystal-crowned queen with boulder gauntlets. A whole quarry hums when she walks through it.' });
+    dex: 'A goth queen of the crags in an obsidian gown and a crown of black jet. She rules the quarry from its darkest ledge, and she doesn\'t smile for anyone.' });
 
   // ---- Route 4 and the Dust Bowl
   sp('dunehop', 'Dunehop', ['terra'], [40, 55, 40, 35, 40, 80], { catch: 200, exp: 56, ab: ['run_away'], cry: 'Jib-jib!', evo: [{ to: 'jerbix', level: 20 }],

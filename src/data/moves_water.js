@@ -1,4 +1,4 @@
-/* Moves for the fishing and Paddling Kigu (Kiskat, Zeel, Gilfin, Ryukoi, Fugubun, Kelpony, Waddlecoat, Jellybob, Snipsnap lines).
+/* Moves for the fishing and Paddling Kigu (Kiskat, Zeel, Gilfin, Ryukoi, Fugubun, Kelpony, Waddlecoat, Jellybob, Clawdet lines).
  * Same shape as moves.js. Fin Flap is Gilfin's do-nothing move (she flops about until she's strong enough to learn a real one). */
 (function (root) {
   'use strict';
