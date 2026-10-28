@@ -193,7 +193,8 @@
   R.stamp('tv_wide', 3, 5, 'console').stamp('beanbag', 3, 6);
   // east side
   R.stamp('window_edge', 14, 4, 'e').stamp('window_edge', 14, 5, 'e');
-  for (let y = 6; y <= 10; y++) R.stamp('trophy_shelf', 13, y, y === 6 ? 'empty' : 'empty' + (y - 6));   // a different keepsake on each
+  // the keepsake shelf, one board down rows 6-10: three childhood keepsakes to start with and two bare stretches waiting to be filled
+  ['empty_n', 'plush', 'medal', 'empty', 'figure_s'].forEach((v, i) => R.stamp('trophy_shelf', 13, 6 + i, v));
   // the bed against the south wall, pillows south
   R.stamp('bed_double', 5, 8); L.variantByFlag(R.def.stamps[R.def.stamps.length - 1], 'woke', 'sleeping', 'unmade');
   R.stamp('bed_blanket', 5, 8, null, { goneIf: 'woke' });
@@ -229,7 +230,10 @@
   each(R, [[3, 6], [4, 6], [3, 7], [4, 7]], 'A beanbag shaped like a Konko tail, with a hoodie flung over the back.');
   R.interact(1, 9, 'It\'s your old toy chest. It hasn\'t closed properly in years.');
   R.interact(7, 10, 'An alarm clock that has never once beaten Nibblenna.');
-  each(R, [[13, 6], [13, 7], [13, 8], [13, 9], [13, 10]], 'Nothing on this shelf yet.');
+  each(R, [[13, 6], [13, 9]], 'Nothing on this part of the shelf yet.');
+  R.interact(13, 7, 'Your very first plush. One of her ears has been sewn back on at least twice.');
+  R.interact(13, 8, 'A medal from the school sports day. It says third place, but you remember it as a win.');
+  R.interact(13, 10, 'A little figure of a girl in a kigurumi hood, mid-twirl. You got her for your birthday.');
   const bed = function* (c) {
     if (!c.flag('woke')) return;
     if (!(yield* c.ask('It\'s your bed. Have a rest?'))) return;

@@ -4,6 +4,33 @@
   const K = root.NP.art.kigu;
   const D = K.define;
 
+  // Kittabra's 32 px overworld back view, rows 7-30 (see owBack below)
+  const KITTABRA_BACK = [
+      '...........O.OOOOOO.O...........',
+      '..........OLOHHHHHHOSO..........',
+      '.........OLLHHHHHHHHHSO.........',
+      '.........OLHHHHHSHHHHSO.........',
+      '.........OLHHHHHSHHHHSO.........',
+      '.........OLHHHHHSHHHHSO.........',
+      '........OLHHHHHHSHHHHHSO........',
+      '........OLHHHHHHSHHHHSSO........',
+      '.........OLHHHHHSHHHHSO.........',
+      '.........OSSSSSSSSSSSSO.........',
+      '..........OSSSSSSSSSSO....O.....',
+      '.........ODDDDDDDDDDDDO..OSO....',
+      '........OWWJWWWWWWWDJDGO.OHO....',
+      '........OWWJWWWWWWWDJDGO.OHO....',
+      '........OWWJWWWWWWDDJDGOOHO.....',
+      '........OWWJGGGGGGGGJDGOHO......',
+      '.......OMMWJWWWWWWDDJJJGO.......',
+      '........OMMOWWWWWWDDOJGO........',
+      '.........OOWWWWWWDDDDOO.........',
+      '..........OOOOOOOOOOOO..........',
+      '...........ODDDOODDGO...........',
+      '...........ODDGGDDDGO...........',
+      '...........OGGGOOGGGO...........',
+      '............OOO..OOO............',
+  ];
   const CAT = { main: '#eceef4', sub: '#ffffff', hair: '#9aa0b4', mitt: '#c7cbd8', foot: '#c7cbd8', eye: '#4aa0d8', inner: '#ffb7c5', acc: '#ffc940', gold: '#f4c542', patch: '#9aa0b4' };
   D('kittabra', {
     name: 'Kittabra', stage: 1, size: 64, rise: 9, pal: CAT,
@@ -15,47 +42,20 @@
       ['belly', { mat: 'sub' }],
       ['bell', { at: 'head', dy: 7, dx: 6, r: 2 }],
     ],
-    // the 32 px back view was a nearly blank white blob: add the hood's ear backs, her tail curling out to the right, and a
-    // two-tone shadow down her right side
-    owBack: (b, col) => {
-      const W = b.w, op = (x, y) => x >= 0 && y >= 0 && x < W && y < b.h && b.u32[y * W + x] >>> 24;
-      const ink = col('#2c2a3c'), sh1 = col('#c4c8d8'), sh2 = col('#9aa0b4'), grey = col('#9aa0b4'), pink = col('#ffb7c5');
-      const lum = (c) => (c & 255) + ((c >> 8) & 255) + ((c >> 16) & 255);
-      // two-tone shade on the right side: per row, the light pixels in the right third step down one or two tones
-      for (let y = 0; y < b.h; y++) {
-        let x0 = -1, x1 = -1;
-        for (let x = 0; x < W; x++) if (op(x, y)) { if (x0 < 0) x0 = x; x1 = x; }
-        if (x0 < 0 || x1 - x0 < 6) continue;
-        for (let x = x1 - 1; x > x1 - (x1 - x0) * 0.4; x--) {
-          const c = b.u32[y * W + x];
-          if (!(c >>> 24) || lum(c) < 600) continue;
-          b.u32[y * W + x] = x > x1 - (x1 - x0) * 0.18 ? sh2 : sh1;
-        }
+    // the 32 px back view, drawn by hand so it matches the front view: the hood in the front's grey ramp (only the lit left edge
+    // pale), the same tiny ear tips on rows 7-8 and the head top on row 7, a 1 px centre seam down the back of the hood and the
+    // darker rim band along its bottom, the onesie back in light mid-greys with one dark belt, the tail curling up on her right
+    // and one outline colour throughout. The alt colourway is mapped through the front view's own normal -> alt colours.
+    owBack: (b, col, alt) => {
+      const rows = KITTABRA_BACK, W = b.w;
+      const map = { O: '#181829', H: '#9ca5b5', S: '#73739c', L: '#bdbdc6', W: '#efeff7', D: '#cecee7', J: '#c6cede', G: '#9ca5c6', M: '#e7e7e7' };
+      let swap = null;
+      if (alt) {
+        const f = K.ow('kittabra', 'down'), fa = K.ow('kittabra', 'down', { alt: true });
+        swap = new Map(); for (let i = 0; i < f.u32.length; i++) if (f.u32[i] >>> 24 && !swap.has(f.u32[i])) swap.set(f.u32[i], fa.u32[i]);
       }
-      // the ear backs: seen from behind, the hood's ears show only their backs in the hood fabric (no pink insides), with a darker
-      // outer edge and an ink outline; the right ear sits in the shade. Any pink the front-facing ear art left behind is repainted.
-      let top = 0; while (top < b.h && ![...Array(W).keys()].some((x) => op(x, top))) top++;
-      const hoodLit = col('#eceef4'), hi = col('#ffffff');
-      for (let y = top; y < top + 5; y++) for (let x = 0; x < W; x++) if (b.u32[y * W + x] === pink) b.u32[y * W + x] = x < W / 2 ? hoodLit : sh1;
-      let hx0 = W, hx1 = 0; for (let x = 0; x < W; x++) if (op(x, top + 1)) { hx0 = Math.min(hx0, x); hx1 = Math.max(hx1, x); }
-      for (const [ex, dir, fill] of [[hx0, 1, hoodLit], [hx1, -1, sh1]]) {
-        // a 3 px wide ear rising 2 px above the hood's crown, leaning out: tip, edge column on the outside, fabric on the inside
-        const at = (dx, dy, c) => { const x = ex + dir * dx, y = top + dy; if (x >= 0 && x < W && y >= 0) b.u32[y * W + x] = c; };
-        at(0, -2, ink);
-        at(-1, -1, ink); at(0, -1, sh2); at(1, -1, ink);
-        at(-1, 0, ink); at(0, 0, sh2); at(1, 0, fill); at(2, 0, ink);
-        at(-1, 1, ink); at(0, 1, sh2); at(1, 1, fill); at(2, 1, fill);
-      }
-      // hood back shading: a soft white highlight on the upper left of the hood, and a shade row along its lower edge where it
-      // folds onto her collar
-      for (const [dx, dy] of [[3, 3], [4, 3], [3, 4]]) { const x = hx0 + dx, y = top + dy; if (b.u32[y * W + x] === hoodLit || lum(b.u32[y * W + x]) > 690) b.u32[y * W + x] = hi; }
-      let hb = top + 4; while (hb < b.h - 1 && op(W >> 1, hb + 1) && lum(b.u32[(hb + 1) * W + (W >> 1) - 2]) > 560) hb++;
-      for (let x = 0; x < W >> 1; x++) { const c = b.u32[hb * W + x]; if (c >>> 24 && lum(c) > 650) b.u32[hb * W + x] = sh1; }
-      // the tail: out of her lower back on the right, curving up and out, a grey tip
-      const pts = [[1, 0], [2, 0], [3, -1], [3, -2], [4, -3], [4, -4], [4, -5], [3, -6]];
-      let by = b.h - 1; while (by > 0 && !op(W >> 1, by)) by--;
-      const ty = by - 5; let tx = W - 1; while (tx > 0 && !op(tx, ty)) tx--;   // from her right side, low on the back
-      pts.forEach(([dx, dy], i) => { const x = tx + dx, y = ty + dy; if (x < W - 1 && y > 0) { b.u32[y * W + x] = i > 5 ? grey : sh1; if (!op(x + 1, y)) b.u32[y * W + x + 1] = ink; if (!op(x, y - 1)) b.u32[(y - 1) * W + x] = ink; } });
+      b.u32.fill(0);
+      rows.forEach((r, i) => { for (let x = 0; x < r.length && x < W; x++) if (map[r[x]]) { const c = col(map[r[x]]); b.u32[(7 + i) * W + x] = swap && swap.has(c) ? swap.get(c) : c; } });
     },
   });
   D('wiskedabra', {

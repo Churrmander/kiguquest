@@ -153,37 +153,37 @@
   // in two layers: pet_bed (floor layer, under everything) is the whole bed, and pet_bed_front (walk-over, drawn over actors) is
   // only the bed's front lip, the same pixels again. Placed on the same tile, the lip sits in front of her feet, so she reads as
   // standing in her bed with its blue rim showing round her sides and in front; with nobody in it the two layers add up to the bed.
-  //  The bed: a plump oval rim of blue fabric (3 tones lit from the top left, a pale piping line along its top), a red cushion in the
-  //  hollow with a chew bone on it, and a cream blanket corner folded over the south-east rim.
+  //  The bed: a plump padded bolster of blue fabric round the oval (lit crest pale along the top-left, a mid tone on its outer side, a
+  //  darker inner lip where it meets the cushion and a dark underside at the front), a soft pastel-pink pillow in the hollow with a
+  //  stitched seam and a highlight, a cream blanket corner folded over the south-east rim and a little paw print stitched on the
+  //  front lip, so it reads as a pet bed even with nobody in it.
+  const PET_BED = [
+    '....OOOOOOOO....',
+    '..OOHHHLLLLLOO..',
+    '.OHHLLLLLLLLLMO.',
+    'OHLMMMMMMMMMMLMO',
+    'OHLDrrrrrrrrDLMO',
+    'OHLDqqpppppprDMO',
+    'OLLDqsppppppDMMO',
+    'OLMDppppprrrDMDO',
+    'OLLLDDDDDDDDLMDO',
+    '.OLHLLLLLLLLLMO.',
+    '.OMMMMMMMMMMMDO.',
+    '..OODDDDDDDDOO..',
+    '....OOOOOOOO....',
+  ];
+  const PET_BED_TOP = 2, PET_BED_CUT = 9;                                                          // first row; the front layer is the front bolster from its crest down
   function petBed(front) {
-    const b = K.B(16, 16), cx = 8, cy = 10, BL = [P.bl0, P.bl1, P.bl2, P.bl3];
-    const outer = (x, y) => ((x + 0.5 - cx) / 6.9) ** 2 + ((y + 0.5 - cy) / 5.1) ** 2;
-    const inner = (x, y) => ((x + 0.5 - cx) / 4.4) ** 2 + ((y + 0.5 - cy + 0.6) / 2.8) ** 2;
-    for (let y = 0; y < 16; y++) for (let x = 0; x < 16; x++) {
-      const o = outer(x, y); if (o > 1) continue;
-      const i = inner(x, y);
-      if (i <= 1) {                                                                                 // the cushion in the hollow
-        const back = y + 0.5 < cy - 0.6 - 1.3;                                                        // the back rim's inner wall throws a shadow
-        b.set(x, y, back ? P.red3 : (x + 0.5 - cx) + (y + 0.5 - cy) > 2.5 ? P.red2 : P.red1);
-        continue;
-      }
-      const dx = (x + 0.5 - cx) / 6.9, dy = (y + 0.5 - cy) / 5.1, l = -(dx * 0.8 + dy) / Math.sqrt(dx * dx + dy * dy + 0.001);
-      const inside = i < 1.6 && y + 0.5 < cy;                                                       // the back rim's inner face, in shade
-      b.set(x, y, inside ? BL[2] : l > 0.5 ? BL[1] : l > -0.45 ? BL[2] : BL[3]);
-    }
-    // the piping along the top of the rim (lit side) and the cushion's soft highlight
-    for (let x = 3; x <= 7; x++) b.set(x, x <= 4 ? 6 : 5, P.bl0);
-    b.set(2, 7, P.bl0); b.set(6, 9, P.red0); b.set(7, 9, P.red0);
-    // a chew bone on the cushion
-    K.stick(b, 8, 9, ['w...w', '.www.', 'w...w'], { w: P.p0 });
+    const b = K.B(16, 16);
+    if (!front) K.shadow(b, 8, 14, 8, 2);
+    K.stick(b, 0, PET_BED_TOP, PET_BED, { O: P.bl4, H: P.bl0, L: P.bl1, M: P.bl2, D: P.bl3, r: P.pk2, p: P.pk1, q: P.pk0, s: P.p0 });
+    // the pillow's stitched seam (a short dashed line across it) and a paw print stitched on the front bolster
+    for (const x of [6, 8, 10]) b.set(x, 9, P.pk2);
+    for (const x of [6, 8, 10]) b.set(x, 11, P.bl3);
+    b.hline(7, 12, 3, P.bl3);
     // a cream blanket corner folded over the south-east rim
-    K.stick(b, 11, 11, ['CCc', 'Ccc', 'c..'], { C: P.p1, c: P.p3 });
-    if (front) {                                                                                    // keep only the front lip (and its blanket corner)
-      for (let y = 0; y < 16; y++) for (let x = 0; x < 16; x++) if (y < 12 || inner(x, y) <= 1) b.set(x, y, 0);
-    }
-    K.outer(b, S.omap([[[P.bl0, P.bl1, P.bl2, P.bl3], P.bl4], [[P.red0, P.red1, P.red2, P.red3], P.red4], [[P.p0, P.p1, P.p3], P.p5]], 'bl4'));
-    if (front) for (let x = 0; x < 16; x++) if (b.u32[11 * 16 + x] >>> 24) b.set(x, 11, 0);           // no outline along the cut
-    if (!front) K.shadow(b, 8, 15, 7, 1);
+    K.stick(b, 11, 7, ['.CCe', 'CCce', 'Cce.', 'ce..'], { C: P.p1, c: P.p3, e: P.p5 });
+    if (front) for (let y = 0; y < PET_BED_TOP + PET_BED_CUT; y++) for (let x = 0; x < 16; x++) b.set(x, y, 0);   // keep only the front lip
     return b;
   }
   K.stamp('pet_bed', { w: 1, h: 1, layer: 'floor', solid: ['.'], paint: () => petBed(false) });
@@ -712,68 +712,88 @@
     },
   });
 
-  // A short plank shelf screwed to the east wall (tile column next to it): seen from above it is a thin board along the tile's east
-  // edge on two brackets, so the tile is mostly floor. What stands on it follows story and side flags. The 'empty' shelves are
-  // genuinely bare, waiting to be filled: just the board with a little dust on it, and on two of them a lone metal bookend (picked by
-  // the tile's row, so a stack of empty shelves isn't five copies). plush: a pink kigurumi plush sitting up; card: a framed Tailor
-  // card standing on a little easel; trophy: a gold cup with handles on a wooden base.
+  // The keepsake shelf: one long plank screwed to the east wall, laid one 1x1 stamp per tile down a column. The variant is
+  // `<item>[_n|_s|_ns]`: the suffix marks the run's north end, south end or a lone shelf, and only those ends get the board's end,
+  // its outline and an iron bracket, so a run reads as one continuous board (a mid tile is plank right through, edge to edge),
+  // with one soft shadow along its whole west side. On each tile one keepsake stands up on the board (6-9 px tall, wider than the
+  // board, so it stands out into the room): empty, plush (a pink kigurumi plush sitting up), card (a framed Tailor card on a little
+  // easel), trophy (a gold cup on a wooden base), figure (a little figure of a girl in a kigurumi hood on a round stand), medal (a
+  // gold medal on a ribbon, propped on a stand). In 3D (prism3d) the board is a real plank on the wall and the keepsake an upright
+  // picture standing on it.
   const SKIN_T = col('#ffdcc4'), SKIN_S = col('#f4b8a4');
+  const KEEPSAKES = {
+    plush: [['.p...p.', 'pPp.pPp', 'pPPPPPp', 'PkssskP', 'psSsSsp', '.pPPPp.', 'pPPpppq', 'pPpppqq', '.pp.qq.'],
+      { p: P.pk2, P: P.pk1, q: P.pk3, s: SKIN_T, S: SKIN_S, k: P.ink }],
+    card: [['GGGGGg', 'Gwwwwg', 'Gwrrwg', 'Gwwwwg', 'Gbbbwg', 'Gwwwwg', 'gggggg', '.d..d.', 'd....d'],
+      { G: P.gd1, g: P.gd3, w: P.p0, r: P.red2, b: P.n3, d: P.o4 }],
+    trophy: [['hGGggh', 'hGgggh', '.Gggd.', '.Ggdd.', '..gd..', '...d..', '..gdd.', '.OOOo.', 'Ooooo4'],
+      { g: P.gd2, G: P.gd0, d: P.gd3, h: P.gd3, O: P.o2, o: P.o3, 4: P.o4 }],
+    figure: [['h...h', 'hHHHh', 'Hkskh', 'hsssh', '.bBb.', 'bBBbb', '.bbb.', '.l.l.', 'NNNNn'],
+      { h: col('#f48c40'), H: col('#ffb468'), k: P.ink, s: SKIN_T, b: P.bl2, B: P.bl1, l: P.bl3, N: P.n2, n: P.n4 }],
+    medal: [['r...b', 'rr.bb', '.rbb.', '..b..', '.GGg.', 'GGgdg', 'Ggddg', '.gdd.', 'oooo.'],
+      { r: P.red2, b: P.bl2, G: P.gd1, g: P.gd2, d: P.gd3, o: P.o4 }],
+  };
+  const keepCache = {};
+  function keepsake(id) {
+    if (!KEEPSAKES[id]) return null;
+    if (keepCache[id]) return keepCache[id];
+    const [rows, map] = KEEPSAKES[id], w = rows[0].length + 2, h = rows.length + 2, k = K.B(w, h);
+    K.stick(k, 1, 1, rows, map); K.outer(k, P.o6);
+    return (keepCache[id] = k);
+  }
+  const SHELF_ITEMS = ['empty', 'plush', 'card', 'trophy', 'figure', 'medal'];
+  const shelfVar = (v) => { const [item, seg] = String(v || 'empty').split('_'); return { item, n: !!seg && seg.indexOf('n') >= 0, s: !!seg && seg.indexOf('s') >= 0 }; };
+  // the board's top face rows in the tile: a mid tile runs edge to edge, an end tile stops short with room for its outline
+  const shelfRows = (o) => [o.n ? 2 : 0, o.s ? 12 : 15];
+  const SHELF_Z = 13;                                                                                // the board's height on the wall in 3D
+
+  function shelfPrism(v) {
+    const o = shelfVar(v), [y0, y1] = shelfRows(o), Y0 = y0, Y1 = y1 + 1, Z = SHELF_Z, len = Y1 - Y0;
+    const top = K.B(6, len);
+    top.fillRect(0, 0, 6, len, P.o2); top.vline(0, 0, len, P.o1); top.vline(5, 0, len, P.o3);
+    if (o.n) top.hline(0, 0, 6, P.o1);
+    if (o.s) top.hline(0, len - 1, 6, P.o3);
+    const edge = K.B(len, 2); edge.fillRect(0, 0, len, 2, P.o3); edge.hline(0, 1, len, P.o4);
+    const faces = [
+      { tex: top, pts: [[10, Y1, Z], [16, Y1, Z], [16, Y0, Z], [10, Y0, Z]], n: [0, 0, 1] },
+      { tex: edge, pts: [[10, Y0, Z - 2], [10, Y1, Z - 2], [10, Y1, Z], [10, Y0, Z]], n: [-1, 0, 0] },
+    ];
+    const endFace = K.B(6, 2); endFace.fillRect(0, 0, 6, 2, P.o4); endFace.hline(0, 0, 6, P.o3);
+    if (o.s) faces.push({ tex: endFace, pts: [[10, Y1, Z - 2], [16, Y1, Z - 2], [16, Y1, Z], [10, Y1, Z]], n: [0, 1, 0] });
+    if (o.n) faces.push({ tex: endFace, pts: [[16, Y0, Z - 2], [10, Y0, Z - 2], [10, Y0, Z], [16, Y0, Z]], n: [0, -1, 0] });
+    // iron brackets under the ends: an L seen side-on
+    const br = K.B(6, 6); br.vline(5, 0, 6, P.n4); br.hline(0, 0, 6, P.n4); for (let i = 1; i < 5; i++) br.set(5 - i, i, P.n5);
+    for (const [on, by] of [[o.n, Y0 + 2], [o.s, Y1 - 2]]) if (on) faces.push({ tex: br, pts: [[10, by, Z - 6], [16, by, Z - 6], [16, by, Z], [10, by, Z]], n: [0, 1, 0], noCull: true, shade: 220 });
+    // the keepsake: an upright picture standing on the board, facing into the room
+    const k = keepsake(o.item);
+    if (k) {
+      const cy = (Y0 + Y1) / 2, w = k.w, h = k.h, x0 = Math.min(16 - w, 12.5 - w / 2);
+      faces.push({ tex: k, pts: [[x0, cy, Z - 1], [x0 + w, cy, Z - 1], [x0 + w, cy, Z - 1 + h], [x0, cy, Z - 1 + h]], n: [0, 1, 0], noCull: true, shade: 248 });
+    }
+    return faces;
+  }
+
   K.stamp('trophy_shelf', {
-    w: 1, h: 1, variants: ['empty', 'plush', 'card', 'trophy', 'empty1', 'empty2', 'empty3', 'empty4'],
+    w: 1, h: 1,
+    variants: [].concat(...SHELF_ITEMS.map((i) => [i, i + '_n', i + '_s', i + '_ns'])),
+    prism3d: (v) => shelfPrism(v),
     paint: (v) => {
-      const b = K.B(16, 16);
-      // brackets: two dark iron L-brackets running out from the wall under the board's north and south ends
-      for (const y of [3, 12]) { b.hline(10, y, 5, P.n4); b.set(10, y - 1, P.n4); b.set(11, y + 1, P.n5); }
-      // the board: 6 px deep, its lit top (west) edge, mid top, shaded east edge against the wall, a dark front lip at the south end
-      b.fillRect(9, 1, 6, 14, P.o2); b.vline(9, 1, 13, P.o0); b.vline(10, 1, 13, P.o1); b.vline(14, 1, 14, P.o4);
-      b.hline(9, 14, 6, P.o4); b.hline(9, 1, 6, P.o1);
-      // grain: two faint lines along the board
-      b.vline(12, 3, 4, P.o3); b.vline(11, 9, 3, P.o3);
-      K.outer(b, S.omap([[WOOD, P.o6], [[P.n4, P.n5], P.o6]], 'o6'));
-      const item = K.B(16, 16);
-      if (v.indexOf('empty') === 0) {
-        const k = +v.slice(5) || 0;
-        // dust: a few pale specks on the bare board
-        for (const [x, y] of [[11, 4 + k], [13, 7 + (k & 1)], [12, 11 - (k >> 1)]]) b.set(x, y, P.o0);
-        if (k === 1) K.stick(item, 11, 2, ['nN', 'nN', 'nnN'], { n: P.n2, N: P.n3 });               // a lone bookend at the north end
-        if (k === 3) K.stick(item, 11, 10, ['Nn', 'Nn', 'NNn'], { n: P.n2, N: P.n3 });              // and one at the south end of another
-      } else if (v === 'plush') {
-        K.stick(item, 9, 3, [
-          '.p..p.',
-          'pPPPPp',
-          'Pkssks',
-          'psSSsp',
-          '.pPPp.',
-          'pPPppq',
-          '.ppqq.',
-          '.p..q.',
-        ], { p: P.pk2, P: P.pk1, q: P.pk3, s: SKIN_T, S: SKIN_S, k: P.ink });
-      } else if (v === 'card') {
-        K.stick(item, 9, 3, [
-          'GGGGg',
-          'Gwwwg',
-          'Gwrwg',
-          'Gwwwg',
-          'Gbbbg',
-          'Gwwwg',
-          'gggggd',
-          '.d..d.',
-        ], { G: P.gd2, g: P.gd3, w: P.p0, r: P.red2, b: P.n3, d: P.o4 });
-      } else if (v === 'trophy') {
-        K.stick(item, 8, 3, [
-          'hGggggh',
-          'hGgggdh',
-          '.Ggggd.',
-          '..gdd..',
-          '...d...',
-          '..gdd..',
-          '.OOOOO.',
-          '.ooooo.',
-        ], { g: P.gd2, G: P.gd0, d: P.gd3, h: P.gd3, O: P.o3, o: P.o4 });
-      }
-      K.outer(item, 'o6');
-      b.blit(item, 0, 0);
-      K.shadowRect(b, 6, 2, 2, 12, 50);                                                               // the board's shadow on the floor
+      const o = shelfVar(v), [y0, y1] = shelfRows(o), b = K.B(16, 16), board = K.B(16, 16);
+      // the board's top face, 6 px deep: a lit west edge, the plank, a shaded strip against the wall; two faint grain lines
+      board.fillRect(10, y0, 6, y1 - y0 + 1, P.o2); board.vline(10, y0, y1 - y0 + 1, P.o1); board.vline(15, y0, y1 - y0 + 1, P.o3);
+      for (const [x, y, n] of [[12, 3, 4], [13, 10, 3]]) for (let i = 0; i < n; i++) if (y + i >= y0 && y + i <= y1) board.set(x, y + i, P.o3);
+      if (o.n) board.hline(10, y0, 6, P.o1);
+      if (o.s) { board.hline(10, y1 + 1, 6, P.o3); board.hline(10, y1 + 2, 6, P.o4); }                 // the run's front end: the plank's thickness
+      K.outer(board, WOOD_OUT);
+      // iron brackets only under the two ends of the run
+      if (o.n) { b.hline(7, y0 + 2, 3, P.n4); b.set(7, y0 + 3, P.n5); }
+      if (o.s) { b.hline(7, y1 - 1, 3, P.n4); b.set(7, y1, P.n5); }
+      // one soft shadow along the board's west side, continuous from tile to tile
+      K.shadowRect(b, 8, y0, 1, (o.s ? y1 + 3 : 16) - y0, 60);
+      b.blit(board, 0, 0);
+      // the keepsake, standing on the board with its foot on the plank and rising up out of it into the room
+      const k = keepsake(o.item);
+      if (k) b.blit(k, Math.min(16 - k.w, Math.round(12 - k.w / 2)), Math.min(y1 + 1, 13) - k.h + 1);       // wider than the board: it stands out into the room
       return b;
     },
   });
