@@ -84,11 +84,11 @@
     };
     // ---- billboard trees on forest tiles near open ground (every tile: the canopies overlap into a wall of foliage)
     // a stamp tucked into the forest edge can keep a few forest tiles free of billboard trees (`clear3d: [dx, dy, w, h]`, tiles
-    // relative to the stamp), so the trees in front of it don't hide it (Button Town's pond grotto arch)
+    // relative to the stamp, or a list of such rects), so the trees in front of it don't hide it (Button Town's pond grotto arch)
     const cleared = new Set();
     for (const p of tm.objs) {
-      const c = p.def.clear3d;
-      if (c) for (let y = p.y + c[1]; y < p.y + c[1] + c[3]; y++) for (let x = p.x + c[0]; x < p.x + c[0] + c[2]; x++) cleared.add(x + ',' + y);
+      const cs = p.def.clear3d;
+      if (cs) for (const c of Array.isArray(cs[0]) ? cs : [cs]) for (let y = p.y + c[1]; y < p.y + c[1] + c[3]; y++) for (let x = p.x + c[0]; x < p.x + c[0] + c[2]; x++) cleared.add(x + ',' + y);
     }
     if (tiles.tree3d) {
       for (let y = -R; y < tm.h + R; y++) for (let x = -R; x < tm.w + R; x++) {
@@ -137,13 +137,17 @@
         sc.cliffs.push({ x: x0 + 8, y: y0 + 8, kind, quads });
       }
     }
-    // ---- stamps: tree-like ones become billboard trees, everything else a billboard / volume
+    // ---- stamps: tree-like ones become billboard trees, everything else a billboard / volume / small prism
+    sc.prisms = [];
     for (const p of tm.objs) {
       const kind = TREE_STAMPS[p.id];
       if (kind && tiles.tree3d) { addTree(sc, tiles, (p.x + p.w / 2) * T, (p.y + p.h) * T - 2, kind, h32(p.x, p.y, 21), h32(p.x, p.y, 22), 0, true); continue; }
       if (p.def.ground3d) continue;   // flat on the ground: painted by the ground bake (TileMap.drawTerrain with a tileFn)
       if (S.addVolume && S.addVolume(sc, p)) continue;
-      sc.bills.push({ p, x: (p.x + p.w / 2) * T, y: (p.y + p.h) * T - 1 });
+      if (p.def.prism3d && tiles.prism3d && S.addPrism(sc, p, tiles)) continue;
+      // anchor3d 'back': the billboard stands at the back (north) edge of the footprint instead of the front, so the footprint's
+      // ground (and anything standing on it) is in front of it, e.g. the floor of a cave mouth
+      sc.bills.push({ p, x: (p.x + p.w / 2) * T, y: p.def.anchor3d === 'back' ? p.y * T + 2 : (p.y + p.h) * T - 1 });
       if (!p.def.over || p.def.layer === 'floor') sc.shadows.push({ k: 'e', x: (p.x + p.w / 2) * T + 2, y: (p.y + p.h) * T - 3, rx: Math.min(p.w * 7, 18), ry: 3.2, a: 0.2 });
     }
     return sc;
@@ -355,6 +359,35 @@
     }
   };
 
+  // ------------------------------------------------------------------------------------------------ small prisms
+  // A low piece of furniture (a stamp with `prism3d`, e.g. a side-on bench) stands up as a few textured quads instead of a billboard:
+  // tiles.prism3d(id, variant) -> [{ tex, pts: [[x,y,z] x4] in px inside the footprint, n, noCull }]. pts run bottom-left,
+  // bottom-right, top-right, top-left as seen from outside, so the texture maps the right way up. Shade follows the face normal
+  // (light from the top left / west, like the volumes).
+  const shadeFor = (n) => (n[2] > 0.5 ? 256 : n[0] < -0.5 ? 252 : n[1] > 0.5 ? 232 : n[0] > 0.5 ? 196 : 184);
+  S.addPrism = function (sc, p, tiles) {
+    const faces = tiles.prism3d(p.id, p.variant);
+    if (!faces || !faces.length) return false;
+    const x0 = p.x * T, y0 = p.y * T;
+    const quads = faces.map((f) => ({
+      tex: f.tex, n: f.n, noCull: !!f.noCull, shade: f.shade || shadeFor(f.n),
+      pts: f.pts.map(([x, y, z]) => [x0 + x, y0 + y, z]),
+      uv: [[0, f.tex.h], [f.tex.w, f.tex.h], [f.tex.w, 0], [0, 0]],
+    }));
+    sc.prisms.push({ x: x0 + p.w * 8, y: y0 + p.h * 8, quads });
+    sc.shadows.push({ k: 'e', x: x0 + p.w * 8 + 2, y: y0 + p.h * 8 + 1, rx: p.w * 7, ry: p.h * 6, a: 0.16 });
+    return true;
+  };
+  const PRISM_OPT = { shade: 256, noCull: false };
+  S.drawPrisms = function (fb, st, sc) {
+    const R = V.raster, list = sc.prisms;
+    for (let i = 0; i < list.length; i++) {
+      const c = list[i], dx = c.x - st.px, dy = c.y - st.py, v = dx * st.Fx + dy * st.Fy;
+      if (v > V.cfg.fogEnd || v < -st.f * 0.9) continue;
+      for (const q of c.quads) { PRISM_OPT.shade = q.shade; PRISM_OPT.noCull = q.noCull; R.face(fb, st, V.grade.bitmap(q.tex), q.pts, q.uv, q.n, PRISM_OPT); }
+    }
+  };
+
   const FENCE_OPT = { shade: 256, noCull: false };
   S.drawFences = function (fb, st, sc) {
     const tiles = art(), R = V.raster, fences = sc.fences;
@@ -405,6 +438,7 @@
     // ---- fences
     if (sc.fences.length) S.drawFences(fb, st, sc);
     if (sc.cliffs && sc.cliffs.length) S.drawCliffs(fb, st, sc);
+    if (sc.prisms && sc.prisms.length) S.drawPrisms(fb, st, sc);
     // ---- trees
     const trees = sc.trees;
     for (let i = 0; i < trees.length; i++) {
@@ -422,7 +456,8 @@
     for (let i = 0; i < bills.length; i++) {
       const o = bills[i], p = o.p;
       if (!proj(st, o.x, o.y)) continue;
-      const bmp = A.stamp(p.id, p.variant, A.frameAt(p.def, tick), p.deco), s = P3.s;
+      // art3d: the stamp paints a separate picture for the 3D billboard (paint(v, f, '3d'), via tiles.stamp3d)
+      const bmp = p.def.art3d && art().stamp3d ? art().stamp3d(p.id, p.variant, A.frameAt(p.def, tick), p.deco) : A.stamp(p.id, p.variant, A.frameAt(p.def, tick), p.deco), s = P3.s;
       if (P3.X + bmp.w * s * 0.5 < 0 || P3.X - bmp.w * s * 0.5 > SW || P3.Y - bmp.h * s >= SH || P3.Y <= 0) continue;
       const fogT = V.fogAt(P3.v);
       if (fogT >= 0.99) continue;

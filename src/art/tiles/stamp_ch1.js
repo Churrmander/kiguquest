@@ -710,32 +710,53 @@
   });
 
   // ============================================================================================ the pond grotto's rock arch
-  // Walk-over 2x2 (all '.', the terrain under it does the blocking): a low arch of mossy rock over a 2x2 grotto floor, its open side
-  // facing west onto the water. A heavy lintel across the top (rising 14 px over the bank behind) and a rock pillar down the east
-  // side; the middle stays clear so whatever sits on the cave floor (Button Town's Wish Candy) shows through.
+  // Walk-over 2x2 (all '.', the terrain under it does the blocking): the mouth of a little cave over a 2x2 grotto floor, open to the
+  // west onto the water. A heavy mossy lintel across the top (rising 14 px over the bank behind), a rock pillar down each side, and
+  // between them the cave's dark back wall, deepest right under the lintel. The back wall stops above the floor, so whatever sits
+  // on the cave floor (Button Town's Wish Candy at its north-east tile) shows against the dark.
+  //  3D view (art3d + anchor3d 'back'): the billboard stands at the BACK of the footprint and is painted with the whole mouth dark
+  //  down to the floor, so the cave reads as a hole in a rock face with the floor (and the candy) in front of it, not a see-through
+  //  dolmen.
   K.stamp('grotto_arch', {
-    // clear3d: in 3D the forest tiles south-east of it (in front of the camera) get no billboard trees, so the arch stands up in view
-    w: 2, h: 2, rise: 14, solid: ['..', '..'], clear3d: [1, 2, 2, 4],
-    paint: () => {
-      const b = K.B(32, 46), RK = K.TN.rock;
-      // the east pillar: two stacked boulders, the lower one wider at the foot
+    // clear3d: in 3D the forest tiles south-east of it and the column just east of it (in front of the camera) get no billboard
+    // trees, so the cave mouth stands up in view
+    w: 2, h: 2, rise: 14, solid: ['..', '..'], clear3d: [[1, 2, 2, 4], [2, 0, 1, 2]], art3d: true, anchor3d: 'back',
+    paint: (v, f, mode) => {
+      const b = K.B(32, 46), RK = K.TN.rock, is3d = mode === '3d';
+      // the cave's interior: a back wall in deep shade between the pillars, darkest under the lintel, its bottom edge ragged where
+      // the wall meets the floor (2D: it ends above the floor; 3D: it runs down to the ground)
+      const bottom = (x) => (is3d ? 44 : 17 + ((x * 7) % 3 === 0 ? 1 : 0) + (x > 9 && x < 14 ? 1 : 0));
+      for (let x = 4; x < 28; x++) for (let y = 6; y <= bottom(x); y++) b.set(x, y, y < 12 ? P.r6 : y < (is3d ? 30 : 15) ? P.v6 : P.r5);
+      for (let x = 4; x < 28; x++) { const y = bottom(x); b.set(x, y, P.r5); }
+      if (is3d) {                                                                                     // the floor lip at the mouth, lit
+        for (let x = 5; x < 27; x++) { b.set(x, 43, P.r4); b.set(x, 44, P.r3); b.set(x, 45, P.r4); }
+        for (const [x, y] of [[9, 24], [20, 30], [14, 36]]) { b.set(x, y, P.r5); b.set(x + 1, y, P.r5); }   // a few rock seams in the dark
+      } else {
+        for (const [x, y] of [[9, 13], [20, 14]]) b.set(x, y, P.r5);
+      }
+      // the pillars: two stacked boulders each side, the lower ones wider at the foot (the west one slimmer, it faces the water)
+      K.lobe(b, 3, 38, 3, 7, RK); K.lobe(b, 3, 24, 3, 7, RK);
       K.lobe(b, 28, 38, 4, 7, RK); K.lobe(b, 28, 25, 4, 7, RK);
-      // the lintel: a row of overlapping boulders, bigger towards the east where it meets the pillar
-      K.lobe(b, 5, 13, 6, 5, RK); K.lobe(b, 14, 10, 7, 6, RK); K.lobe(b, 24, 10, 8, 7, RK);
-      // the arch's underside in deep shade: the cave mouth seen from the front
-      for (let x = 2; x < 26; x++) { const yb = 16 + Math.round(1.5 * Math.sin((x - 2) * 0.13)); b.set(x, yb, P.r4); b.set(x, yb + 1, P.r5); }
-      for (let y = 18; y < 42; y++) b.set(25, y, P.r4);
+      // the lintel: a row of overlapping boulders across the whole mouth
+      K.lobe(b, 5, 7, 6, 5, RK); K.lobe(b, 15, 6, 7, 5, RK); K.lobe(b, 25, 7, 7, 5, RK);
+      // the lintel's underside and the pillars' inner faces in deep shade, framing the dark
+      for (let x = 4; x < 28; x++) for (let y = 10; y < 18; y++) {
+        const c = b.u32[y * 32 + x];
+        if (c === RK[0] || c === RK[1] || c === RK[2] || c === RK[3] || c === RK[4]) { if (!(b.u32[(y + 1) * 32 + x] === RK[0] || b.u32[(y + 1) * 32 + x] === RK[1] || b.u32[(y + 1) * 32 + x] === RK[2] || b.u32[(y + 1) * 32 + x] === RK[3] || b.u32[(y + 1) * 32 + x] === RK[4])) b.set(x, y, P.r5); }
+      }
+      for (let y = 14; y < 44; y++) { if (b.u32[y * 32 + 6] === RK[3] || b.u32[y * 32 + 6] === RK[2]) b.set(6, y, RK[4]); if (b.u32[y * 32 + 24] >>> 24) b.set(24, y, RK[4]); }
       // moss along the top of the lintel
-      for (let x = 1; x < 31; x++) { for (let y = 0; y < 12; y++) if (b.u32[y * 32 + x] >>> 24) { b.set(x, y, P.g2); if (y + 1 < 46 && b.u32[(y + 1) * 32 + x] >>> 24) b.set(x, y + 1, P.g3); break; } }
+      for (let x = 1; x < 31; x++) { for (let y = 0; y < 12; y++) if (b.u32[y * 32 + x] >>> 24) { b.set(x, y, P.g2); if (b.u32[(y + 1) * 32 + x] >>> 24) b.set(x, y + 1, P.g3); break; } }
       // cracks, each a dark line with a lit lip on its upper-left
-      for (const pts of [[[12, 6], [14, 9], [13, 12]], [[22, 5], [24, 8], [23, 11]], [[28, 28], [27, 31]], [[29, 36], [28, 40]]]) {
+      for (const pts of [[[13, 2], [15, 5], [14, 8]], [[23, 3], [25, 6], [24, 9]], [[28, 28], [27, 31]], [[29, 36], [28, 40]], [[3, 34], [2, 37]]]) {
         for (let i = 1; i < pts.length; i++) b.line(pts[i - 1][0], pts[i - 1][1], pts[i][0], pts[i][1], P.r4);
         for (const [x, y] of pts) b.set(x - 1, y, P.r1);
       }
-      // a fern at the pillar's foot and one hanging from the lintel
+      // ferns at the pillars' feet and one hanging from the lintel into the dark
       b.line(24, 45, 23, 41, P.f3); b.line(25, 45, 25, 42, P.f2);
-      b.line(8, 17, 7, 20, P.f3); b.set(9, 18, P.f2);
-      K.outer(b, S.omap([[RK, P.r6], [[P.r4, P.r5], P.r6], [[P.g2, P.g3], P.g6], [[P.f2, P.f3], P.f6]], 'r6'));
+      b.line(6, 45, 7, 42, P.f3);
+      b.line(9, 12, 8, 15, P.f3); b.set(10, 13, P.f2);
+      K.outer(b, S.omap([[RK, P.r6], [[P.r4, P.r5, P.r6], P.r6], [[P.g2, P.g3], P.g6], [[P.f2, P.f3], P.f6]], 'r6'));
       return b;
     },
   });

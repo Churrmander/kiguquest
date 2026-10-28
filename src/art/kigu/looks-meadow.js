@@ -32,13 +32,25 @@
           b.u32[y * W + x] = x > x1 - (x1 - x0) * 0.18 ? sh2 : sh1;
         }
       }
-      // the ear backs: on the top corners of the hood, a grey triangle with a pink inner edge, outlined
+      // the ear backs: seen from behind, the hood's ears show only their backs in the hood fabric (no pink insides), with a darker
+      // outer edge and an ink outline; the right ear sits in the shade. Any pink the front-facing ear art left behind is repainted.
       let top = 0; while (top < b.h && ![...Array(W).keys()].some((x) => op(x, top))) top++;
-      let hx0 = W, hx1 = 0; for (let x = 0; x < W; x++) if (op(x, top + 3)) { hx0 = Math.min(hx0, x); hx1 = Math.max(hx1, x); }
-      for (const [ex, dir] of [[hx0 + 2, 1], [hx1 - 2, -1]]) {
-        for (let i = 0; i < 3; i++) for (let j = 0; j <= 2 - i; j++) { const x = ex + dir * j, y = top + 2 - i; if (y >= 0) b.u32[y * W + x] = j === 0 && i < 2 ? pink : grey; }
-        b.u32[Math.max(0, top - 1) * W + ex] = ink;
+      const hoodLit = col('#eceef4'), hi = col('#ffffff');
+      for (let y = top; y < top + 5; y++) for (let x = 0; x < W; x++) if (b.u32[y * W + x] === pink) b.u32[y * W + x] = x < W / 2 ? hoodLit : sh1;
+      let hx0 = W, hx1 = 0; for (let x = 0; x < W; x++) if (op(x, top + 1)) { hx0 = Math.min(hx0, x); hx1 = Math.max(hx1, x); }
+      for (const [ex, dir, fill] of [[hx0, 1, hoodLit], [hx1, -1, sh1]]) {
+        // a 3 px wide ear rising 2 px above the hood's crown, leaning out: tip, edge column on the outside, fabric on the inside
+        const at = (dx, dy, c) => { const x = ex + dir * dx, y = top + dy; if (x >= 0 && x < W && y >= 0) b.u32[y * W + x] = c; };
+        at(0, -2, ink);
+        at(-1, -1, ink); at(0, -1, sh2); at(1, -1, ink);
+        at(-1, 0, ink); at(0, 0, sh2); at(1, 0, fill); at(2, 0, ink);
+        at(-1, 1, ink); at(0, 1, sh2); at(1, 1, fill); at(2, 1, fill);
       }
+      // hood back shading: a soft white highlight on the upper left of the hood, and a shade row along its lower edge where it
+      // folds onto her collar
+      for (const [dx, dy] of [[3, 3], [4, 3], [3, 4]]) { const x = hx0 + dx, y = top + dy; if (b.u32[y * W + x] === hoodLit || lum(b.u32[y * W + x]) > 690) b.u32[y * W + x] = hi; }
+      let hb = top + 4; while (hb < b.h - 1 && op(W >> 1, hb + 1) && lum(b.u32[(hb + 1) * W + (W >> 1) - 2]) > 560) hb++;
+      for (let x = 0; x < W >> 1; x++) { const c = b.u32[hb * W + x]; if (c >>> 24 && lum(c) > 650) b.u32[hb * W + x] = sh1; }
       // the tail: out of her lower back on the right, curving up and out, a grey tip
       const pts = [[1, 0], [2, 0], [3, -1], [3, -2], [4, -3], [4, -4], [4, -5], [3, -6]];
       let by = b.h - 1; while (by > 0 && !op(W >> 1, by)) by--;

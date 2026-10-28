@@ -82,11 +82,54 @@
     },
   });
 
+  /** the side-on bench in 3D. Local px in its 16x32 footprint (x east, y south, z up): the seat a slab x 4..11, y 3..29, its top at
+   *  z 8; four legs to the ground; the backrest an upright slatted panel along x 12.5 rising to z 18. east = mirrored (backrest west). */
+  function benchPrism(east) {
+    const L = 26, SZ = 8, X0 = 4, X1 = 11.5, BX = 12.5, Y0 = 3, Y1 = 29, BZ = 18;
+    // seat top: two lengthwise slats with a dark gap, lit along the west edge
+    const top = K.B(8, L);
+    top.fillRect(0, 0, 8, L, P.o2); top.vline(0, 0, L, P.o1); top.vline(1, 0, L, P.o1); top.vline(4, 0, L, P.o5); top.vline(7, 0, L, P.o3);
+    top.hline(0, 0, 8, P.o1); top.hline(0, L - 1, 8, P.o3);
+    for (const y of [5, 19]) top.set(2, y, P.o4);                                                  // a couple of nail heads
+    // seat side (west / east): the slab's 2 px edge, legs near each end down to the ground, open below
+    const side = (lit) => {
+      const b = K.B(L, SZ);
+      b.fillRect(0, 0, L, 2, lit ? P.o2 : P.o3); b.hline(0, 0, L, lit ? P.o1 : P.o2); b.hline(0, 2, L, P.o5);
+      for (const x of [2, L - 4]) { b.fillRect(x, 2, 2, SZ - 2, P.o4); b.vline(x, 2, SZ - 2, lit ? P.o3 : P.o4); b.vline(x + 1, 2, SZ - 2, P.o5); }
+      return b;
+    };
+    // seat ends (north / south): the edge and two legs
+    const end = () => {
+      const b = K.B(8, SZ);
+      b.fillRect(0, 0, 8, 2, P.o3); b.hline(0, 0, 8, P.o2); b.hline(0, 2, 8, P.o5);
+      for (const x of [0, 6]) { b.fillRect(x, 2, 2, SZ - 2, P.o4); b.vline(x + 1, 2, SZ - 2, P.o5); }
+      return b;
+    };
+    // backrest: two slats with a gap, held by two posts that run down to the ground behind the seat
+    const back = K.B(L, BZ);
+    for (const x of [2, L - 4]) { back.fillRect(x, 0, 2, BZ, P.o4); back.vline(x, 0, BZ, P.o3); }
+    for (const [y, h] of [[1, 3], [6, 3]]) { back.fillRect(0, y, L, h, P.o2); back.hline(0, y, L, P.o1); back.hline(0, y + h - 1, L, P.o4); }
+    back.hline(0, 0, L, P.o5); back.hline(0, 9, L, P.o5);
+    const S1 = side(true), S2 = side(false), E = end();
+    let faces = [
+      { tex: top, pts: [[X0, Y1, SZ], [X1, Y1, SZ], [X1, Y0, SZ], [X0, Y0, SZ]], n: [0, 0, 1] },
+      { tex: S1, pts: [[X0, Y0, 0], [X0, Y1, 0], [X0, Y1, SZ], [X0, Y0, SZ]], n: [-1, 0, 0] },
+      { tex: S2, pts: [[X1, Y1, 0], [X1, Y0, 0], [X1, Y0, SZ], [X1, Y1, SZ]], n: [1, 0, 0] },
+      { tex: E, pts: [[X0, Y1, 0], [X1, Y1, 0], [X1, Y1, SZ], [X0, Y1, SZ]], n: [0, 1, 0] },
+      { tex: E, pts: [[X1, Y0, 0], [X0, Y0, 0], [X0, Y0, SZ], [X1, Y0, SZ]], n: [0, -1, 0] },
+      { tex: back, pts: [[BX, Y0, 0], [BX, Y1, 0], [BX, Y1, BZ], [BX, Y0, BZ]], n: [-1, 0, 0], noCull: true, shade: 236 },
+    ];
+    if (east) faces = faces.map((f) => ({ tex: f.tex, noCull: f.noCull, shade: f.shade, n: [-f.n[0], f.n[1], f.n[2]],
+      pts: (f.n[0] !== 0 || f.n[2] !== 0 ? [f.pts[1], f.pts[0], f.pts[3], f.pts[2]] : f.pts).map(([x, y, z]) => [16 - x, y, z]) }));
+    return faces;
+  }
+
   K.stamp('bench_v', {
     // the same park bench turned side-on (1x2), for a path that runs north-south. default: seat facing west, backrest on the east;
     // east: the mirror image, seat facing east and backrest on the west (a pair of benches facing each other across a square)
-    // ground3d: side-on it is a low seat, so the 3D view bakes it flat into the ground (as a 32 px billboard it stood up like a door)
-    w: 1, h: 2, variants: ['default', 'east'], ground3d: true,
+    // prism3d: in the 3D view it is built as a low bench out of a few quads (a slatted seat on four legs and an upright slatted
+    // backrest), so it stands up as a bench from any heading (a billboard stood up like a door; baked flat it read as a pallet)
+    w: 1, h: 2, variants: ['default', 'east'], prism3d: (v) => benchPrism(v === 'east'),
     paint: (v) => {
       const b = K.B(16, 32);
       // backrest (east): two rails with a dark gap, joined to the seat by a dark post at each end

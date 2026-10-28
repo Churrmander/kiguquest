@@ -35,6 +35,17 @@
     return b;
   };
 
+  // small prisms (a stamp's `prism3d(variant)` faces, see persp_scene.js S.addPrism): textures quantized once, cached
+  const cP = new Map();
+  tiles.prism3d = function (id, variant) {
+    const def = NP.stamps[id];
+    if (!def || !def.prism3d) return null;
+    const v = norm(def, variant);
+    let o = cP.get(id + '|' + v);
+    if (!o) { o = def.prism3d(v).map((f) => Object.assign({}, f, { tex: f.tex.quantize15() })); cP.set(id + '|' + v, o); }
+    return o;
+  };
+
   // ------------------------------------------------------------------------------------------------ shading
   /** darken (k < 1) towards a cool blue-grey or brighten (k > 1) a copy of src; alpha kept */
   function shadeBmp(src, k) {

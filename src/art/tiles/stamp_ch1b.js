@@ -427,42 +427,48 @@
     },
   });
 
-  // A heap of measured autumn leaves: a low irregular mound of leaf clusters in red, orange and yellow, single leaves breaking its
-  // outline, a few loose leaves on the ground round it, and a rake (tines showing) leaning on it
+  // A heap of measured autumn leaves: one clean dome outlined dark, its top edge scalloped by leaf tips, shaded in three orange
+  // tones lit from the top left. Rows of small overlapping leaf arcs (a shade arc under a lit tip, staggered like scales) give it a
+  // leafy texture without noise; a red and a yellow leaf sit on the crown and two loose leaves lie on the ground beside it.
   K.stamp('leaf_heap', {
     w: 1, h: 1, rise: 4,
     paint: () => {
-      const b = K.B(16, 20), o = R('orange');
-      const HUES = [[P.red1, P.red2, P.red3], [o[1], o[2], o[3]], [P.yl1, P.yl2, P.yl3]];
-      // the mound: about 14x8, its top edge lumpy
-      const top = (x) => 10 + Math.round(3.2 * ((x - 7.5) / 7) ** 2 + (K.h32(x, 0, 93) % 3) * 0.6);
-      const L = K.B(16, 20);
-      for (let x = 1; x <= 14; x++) for (let y = top(x); y <= 17; y++) {
-        const cl = K.h32(x >> 1, (y + (x & 2 ? 1 : 0)) >> 1, 95) % 3;                                // 2x2 leaf clusters of one hue
-        const lit = (x - 1) / 13 + (y - 10) / 8;
-        const t = lit < 0.55 ? 0 : lit < 1.25 ? 1 : 2;
-        L.set(x, y, HUES[cl][t]);
+      const b = K.B(16, 20), o = R('orange'), L = K.B(16, 20);
+      const cx = 7.5, rx = 7, ry = 10, base = 17, TONE = [o[1], o[2], o[3], o[4]];
+      const tone = [];
+      for (let x = 1; x <= 14; x++) {
+        const t = (x + 0.5 - cx - 0.5) / rx, top = Math.round(base - ry * Math.sqrt(Math.max(0, 1 - t * t)) * 0.92) + [1, 0, 0, 1][(x + 1) & 3];
+        for (let y = top; y <= base; y++) {
+          const g = (x - cx) / rx * 0.8 + (y - 8) / 9;                                                  // 0 at the lit top left, ~1.6 at the foot right
+          const k = g < 0.15 ? 0 : g < 0.85 ? 1 : 2;
+          tone[y * 16 + x] = k; L.set(x, y, TONE[k]);
+        }
       }
-      // single leaves breaking the outline: little 2-3 px leaf shapes sticking out of the mound's edge
-      for (const [x, y, h] of [[2, 10, 2], [6, 7, 1], [11, 8, 0], [14, 12, 1], [0, 15, 0]]) {
-        L.set(x, y, HUES[h][0]); L.set(x + 1, y, HUES[h][1]); L.set(x + 1, y + 1, HUES[h][1]);
+      // leaf arcs in staggered rows: a one-tone-darker smile under a lit tip
+      for (const [y, x0] of [[9, 4], [9, 8], [12, 2], [12, 6], [12, 10], [15, 4], [15, 8]]) {
+        const arc = [[0, 0], [1, 1], [2, 1], [3, 0]];
+        if (arc.some(([dx, dy]) => tone[(y + dy) * 16 + x0 + dx] === undefined)) continue;
+        for (const [dx, dy] of arc) { const k = tone[(y + dy) * 16 + x0 + dx]; L.set(x0 + dx, y + dy, TONE[Math.min(3, k + 1)]); }
+        const kt = tone[(y - 1) * 16 + x0 + 1]; if (kt !== undefined) L.set(x0 + 1, y - 1, TONE[Math.max(0, kt - 1)]);
       }
-      // loose leaves scattered on the ground round it
-      for (const [x, y, h] of [[1, 18, 2], [13, 19, 0], [10, 19, 1]]) { L.set(x, y, HUES[h][0]); L.set(x + 1, y, HUES[h][2]); }
+      // a red and a yellow leaf on the crown
+      K.stick(L, 5, 8, ['.Rr', 'rr.'], { r: P.red2, R: P.red1 });
+      K.stick(L, 9, 10, ['Yy', '.y'], { y: P.yl2, Y: P.yl1 });
       K.outer(L, o[5]);
+      // two loose leaves on the ground, clear of the heap
+      K.stick(L, 0, 19, ['oO'], { o: o[2], O: o[3] });
+      K.stick(L, 13, 19, ['rR'], { r: P.red2, R: P.red3 });
+      K.shadow(b, 8, 18, 7, 1, 90);
       b.blit(L, 0, 0);
-      // the rake leaning on the heap: its head with four tines combing into the leaves, the handle running out to the top right
-      b.hline(4, 10, 6, P.o4); b.hline(4, 9, 6, P.o2);
-      for (let x = 4; x <= 9; x += 2) { b.set(x, 11, P.n4); b.set(x, 12, P.n4); }
-      b.line(9, 9, 14, 4, P.o2); b.line(10, 9, 15, 4, P.o4); b.set(14, 3, P.o4);
-      K.shadow(b, 8, 18, 7, 1, 80);
       return b;
     },
   });
 
   // ============================================================================================ Thimble
-  // The Big Thimble (2x2, 4 frames): a giant brass thimble turned upside down (open mouth up, domed end down) in a low round stone
-  // basin, as a little fountain: water bubbles up in its mouth, wells over the rim and runs down the dimpled sides
+  // The Big Thimble (2x2, 4 frames): a giant brass thimble standing the way a thimble rests on a table, open end down: a wide rolled
+  // rim at the foot, dimpled sides tapering a little as they rise, and a round dimpled dome on top. It stands in a low round stone
+  // basin as a fountain: water bubbles up out of the top of the dome, runs down over the dimples in thin streams and splashes into
+  // the basin.
   // brass, a step more ochre than the gold palette so it matches the plaque's metal: hi, lit, base, shade, deep, outline
   const BRASS = ['#fff0c0', '#f2cc6c', '#d8a444', '#b07c2c', '#7c5420'].map(col);
   K.stamp('big_thimble', {
@@ -475,46 +481,50 @@
       b.fillRect(1, 37, 30, 5, P.n3); b.hline(1, 37, 30, P.n2); b.hline(2, 41, 28, P.n4);
       b.ellipse(16, 36, 15, 7, P.n1, false); b.fillRect(1, 36, 1, 5, P.n2); b.fillRect(30, 36, 1, 5, P.n4);
       b.fillRect(12, 38, 8, 4, P.gd4); b.fillRect(13, 39, 6, 2, P.gd3); b.hline(14, 39, 4, P.gd1);   // plaque, set into a darker inset
-      // the thimble, turned upside down: the open mouth with its rolled rim at the top, slightly tapered dimpled sides, and the
-      // domed end down in the basin water
-      // the sides taper clearly towards the dome, and the dome rounds off above the basin water (y 33)
-      const TOP = 11, DOME = 25, BOT = 32, HW = 7.5;
-      const half = (y) => (y <= DOME ? HW - (y - TOP) * 0.1 : (HW - (DOME - TOP) * 0.1) * Math.sqrt(Math.max(0, 1 - ((y - DOME) / (BOT - DOME + 0.5)) ** 4)));   // a full round dome
+      // the thimble: dome top at y 6, the dome meets the sides at y 15, the sides widen down to the rolled rim (y 30-33)
+      const DT = 8, DS = 16, RIM = 30, BOT = 33, cx = 16;
+      const half = (y) => y < DS ? 8.2 * Math.sqrt(Math.max(0, 1 - ((DS - y) / (DS - DT + 0.6)) ** 2)) : y < RIM ? 8.2 + (y - DS) * 1.6 / (RIM - DS) : 10.6;
       const toneAt = [];
-      for (let y = TOP; y <= BOT; y++) {
-        const hw = half(y), x0 = Math.round(16 - hw), x1 = Math.round(16 + hw) - 1;
+      for (let y = DT; y <= BOT; y++) {
+        const hw = half(y), x0 = Math.round(cx - hw), x1 = Math.round(cx + hw) - 1;
         for (let x = x0; x <= x1; x++) {
-          const l = (x - x0) / Math.max(1, x1 - x0), low = y > DOME ? (y - DOME) / (BOT - DOME) : 0;
-          const k = l < 0.16 - low * 0.1 ? 0 : l < 0.4 ? 1 : l < 0.68 ? 2 : l < 0.86 - low * 0.2 ? 3 : 4;
+          const l = (x - x0) / Math.max(1, x1 - x0);
+          let k = l < 0.18 ? 0 : l < 0.42 ? 1 : l < 0.68 ? 2 : l < 0.86 ? 3 : 4;
+          if (y < DS) { const dy = (DS - y) / (DS - DT); k = Math.max(0, Math.min(4, k - (dy > 0.55 && l < 0.6 ? 1 : 0))); }   // the dome's crown catches more light
           b.set(x, y, g[k]); toneAt[y * W + x] = k;
         }
       }
-      // a grid of dimples over the sides and the dome in staggered rows: each one tone darker than the gold round it
-      for (let y = TOP + 4; y < BOT - 2; y += 2) for (let x = 9 + ((y >> 1) & 1); x < 24; x += 2) {
+      // dimples: a staggered grid over the dome and the sides, each one tone darker than the brass round it, kept off the edges
+      for (let y = DT + 2; y < RIM - 1; y += 2) for (let x = cx - 10 + ((y >> 1) & 1); x < cx + 10; x += 2) {
         const k = toneAt[y * W + x];
-        if (k === undefined || k >= 4 || toneAt[y * W + x - 1] === undefined || toneAt[y * W + x + 1] === undefined) continue;
+        if (k === undefined || k >= 4 || toneAt[y * W + x - 1] === undefined || toneAt[y * W + x + 1] === undefined || toneAt[(y - 1) * W + x] === undefined) continue;
         b.set(x, y, g[k + 1]);
       }
-      b.hline(9, TOP + 3, 14, g[4]);                                                                 // a dark groove under the rim
-      // the rolled rim band round the mouth: wider than the sides, lit on the left
-      b.fillRect(7, TOP, 18, 3, g[1]); b.hline(7, TOP, 18, g[0]); b.fillRect(20, TOP, 5, 3, g[2]); b.vline(24, TOP, 3, g[3]); b.hline(7, TOP + 2, 18, g[3]);
-      // the open mouth seen from just above: the rim's top face, and the water filling it right to the brim
-      b.ellipse(16, TOP - 1, 9, 3, g[1], true); b.hline(9, TOP - 3, 8, g[0]);
-      b.ellipse(16, TOP - 1, 6, 1.6, P.w2, true); b.hline(12, TOP - 2, 6, P.w1); b.set(19, TOP - 1, P.w3); b.set(20, TOP - 1, P.w3);
-      // the basin water in front of the dome, so its end sits down in the pool
-      for (let y = 33; y <= 40; y++) for (let x = 4; x < 28; x++) {
+      // the rolled rim at the foot: a lit band with a groove above it and a dark underside
+      const rx0 = Math.round(cx - 10.6), rx1 = Math.round(cx + 10.6) - 1;
+      b.hline(rx0 + 1, RIM - 1, rx1 - rx0 - 1, g[3]);
+      for (let x = rx0; x <= rx1; x++) { const l = (x - rx0) / (rx1 - rx0); b.set(x, RIM, l < 0.6 ? g[0] : g[1]); b.set(x, RIM + 1, l < 0.25 ? g[1] : l < 0.7 ? g[2] : g[3]); b.set(x, RIM + 2, l < 0.7 ? g[3] : g[4]); b.set(x, BOT, g[4]); }
+      // a curved highlight on the dome's lit shoulder
+      for (const [x, y] of [[12, 10], [11, 11], [10, 12], [10, 13]]) if (toneAt[y * W + x] !== undefined) b.set(x, y, g[0]);
+      // the basin water in front of the foot, so the thimble stands down in the pool
+      for (let y = 34; y <= 40; y++) for (let x = 4; x < 28; x++) {
         const dx = (x + 0.5 - 16) / 12.5, dy = (y + 0.5 - 35) / 5.5;
-        if (dx * dx + dy * dy <= 1 && toneAt[y * W + x] !== undefined) b.set(x, y, y === 33 ? P.w2 : P.w3);
+        if (dx * dx + dy * dy <= 1 && toneAt[y * W + x] !== undefined) b.set(x, y, P.w3);
       }
-      for (const [x, y] of [[11, 26], [11, 27], [12, 29], [13, 30]]) if (toneAt[y * W + x] !== undefined) b.set(x, y, g[0]);   // curved highlight on the dome
       K.outer(b, S.omap([[g, P.gd5], [STONE, P.n5], [[P.w0, P.w1, P.w2, P.w3], P.w4]], 'n5'));
-      // (after the outline, so they stay 1px) water bubbling up in the mouth and welling over the rim, then running down the sides
-      // into the basin; the bubble and the droplets move each frame
-      b.set(15 + (f & 1), TOP - 3 - (f >> 1 & 1), P.w0); b.set(17 - (f & 1), TOP - 2, P.w0);
-      // two overflow streams spilling off the rim's ends and falling just clear of the sides, bowing out a little as they fall
-      const fall = (y) => 9 + Math.round(Math.min(2, (y - TOP) * 0.12));
-      for (let y = TOP + 1; y < 33; y++) if ((y + f) % 5 < 3) { b.set(16 - fall(y), y, P.w2); b.set(15 + fall(y), y, P.w2); }   // broken 1 px streams
-      for (const y of [TOP + 2 + f * 5, TOP + 4 + ((f + 2) & 3) * 5]) if (y < 34) { b.set(16 - fall(y), y, P.w0); b.set(15 + fall(y), y, P.w0); }   // droplets running down
+      // (after the outline, so they stay crisp) the water: a little bubbling crown on top of the dome that rises and falls with the
+      // frames, then thin streams running down over the dome and the sides into the basin, with droplets moving down them
+      // the bubbling crown: a small mound of water welling out of the top of the dome, its outline rippling with the frames
+      const cr = [6 + (f & 1), 5, 4, 3, 2];                                                          // half-widths from row DT-1 upwards
+      for (let i = 0; i < cr.length; i++) { const y = DT - i, hw = cr[i] - (i === 4 && (f & 2) ? 1 : 0); for (let x = cx - hw; x < cx + hw; x++) b.set(x, y, i >= 3 ? P.w0 : x < cx - hw + 2 ? P.w1 : x >= cx + hw - 2 ? P.w3 : P.w2); }
+      b.set(cx - 3 + f, DT - 6, P.w1); b.set(cx + 2 - (f >> 1), DT - 7 + (f & 1), P.w0);              // spray drops
+      for (let x = cx - 6; x < cx + 6; x++) if (b.u32[(DT - 5) * W + x] >>> 24 === 0 && b.u32[(DT - 4) * W + x] >>> 24) b.set(x, DT - 5, P.w4);   // a dark rim on the crown
+      // thin streams running down over the dimples on the lit and shaded sides, with droplets moving down them
+      for (const [k, ph, c] of [[-0.62, 0, P.w1], [0.55, 2, P.w2], [-0.1, 1, P.w1]]) {
+        for (let y = DT; y < RIM; y++) if ((y + f + ph) % 5 < (k === -0.1 ? 2 : 3)) b.set(Math.round(cx - 0.5 + k * half(y)), y, c);
+        const dy = DT + 1 + ((f + ph) & 3) * 5;
+        b.set(Math.round(cx - 0.5 + k * half(dy)), dy, P.w0);
+      }
       b.set(6 + f, 34, P.w0); b.set(25 - f, 34, P.w0); b.set(9 + f, 33, P.w1); b.set(22 - f, 33, P.w1);   // splashes in the basin
       return b;
     },

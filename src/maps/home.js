@@ -71,7 +71,7 @@
   H.stamp('sink', 6, 2).stamp('window', 6, 1);
   H.stamp('chair', 7, 3, 'down').stamp('chair', 8, 3, 'down').stamp('chair', 6, 4, 'right').stamp('chair', 6, 5, 'right');
   H.stamp('table_sq', 7, 4);
-  H.stamp('pet_bed', 1, 5);
+  H.stamp('pet_bed', 1, 5).stamp('pet_bed_front', 1, 5);   // the bed, and its front lip drawn over Nibblenna's feet
   // stair room: Mom's door in the north wall
   H.stamp('door_inner', 10, 0);
   // hall

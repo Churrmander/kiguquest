@@ -47,7 +47,7 @@ decisions BIBLE left open (sizes, solid rows, variants). `solid` rows are writte
 | `crop_row` | 2x1 | `##` | 0 | `tomato onion` |
 | `tea_stall` | 3x1 | `###` | 0 | the outdoor tea counter under a striped canopy (Basting Green) |
 | `picnic_blanket` | 2x2 | all `.` | 0 | `layer: 'floor'`, `red blue` |
-| House pieces (`stamp_home.js`) | | | | `kitchen_counter` 1x1 `plain cakes crumbs`; `table_sq` 2x2; `pet_bed` 1x1 floor; `door_inner` 1x2 (wall); `window_edge` 1x1 `w e s s_tincan` (side and front wall windows); `side_table` 1x1; `grandfather_clock` 1x1; `tv_wide` 2x1 `plain console`; `bookshelf_narrow` 1x2 `cookbooks comics`; `sofa` 4x1; `sewing_basket` `armchair` 1x1; `coat_rack` 2x1 `satchel empty` (wall); `pc_desk` 2x1; `wall_map` 3x1 `pins0`..`pins8`; `calendar` 1x1; `kigu_poster` 2x1; `laundry_basket` 1x1 `overflow folded`; `beanbag` 2x2; `trophy_shelf` 1x1 `empty plush card trophy`; `bed_double` 2x3 (pillows south) `sleeping unmade made`; `bed_blanket` 2x2 `..` `..` over 2 (the quilt drawn over the sleeping hero; `goneIf`); `toy_chest` 1x1; `nightstand` 1x1 `lamp alarm`; `floor_clutter` 1x1 floor `clothes socks controller figures plushies comic sneakers pebbles petals tuft`. Also new variants: `fridge` `drawings`, `bench` `back`, `bush` `hedge_tree` (still snippable), `shove_rock` `grass` |
+| House pieces (`stamp_home.js`) | | | | `kitchen_counter` 1x1 `plain cakes crumbs`; `table_sq` 2x2; `pet_bed` 1x1 floor + `pet_bed_front` 1x1 walk-over `over 1` (place both on the same tile: the front lip is drawn over whoever stands in the bed); `door_inner` 1x2 (wall); `window_edge` 1x1 `w e s s_tincan` (side and front wall windows); `side_table` 1x1; `grandfather_clock` 1x1; `tv_wide` 2x1 `plain console`; `bookshelf_narrow` 1x2 `cookbooks comics`; `sofa` 4x1; `sewing_basket` `armchair` 1x1; `coat_rack` 2x1 `satchel empty` (wall); `pc_desk` 2x1; `wall_map` 3x1 `pins0`..`pins8`; `calendar` 1x1; `kigu_poster` 2x1; `laundry_basket` 1x1 `overflow folded`; `beanbag` 2x2; `trophy_shelf` 1x1 `empty plush card trophy`; `bed_double` 2x3 (pillows south) `sleeping unmade made`; `bed_blanket` 2x2 `..` `..` over 2 (the quilt drawn over the sleeping hero; `goneIf`); `toy_chest` 1x1; `nightstand` 1x1 `lamp alarm`; `floor_clutter` 1x1 floor `clothes socks controller figures plushies comic sneakers pebbles petals tuft`. Also new variants: `fridge` `drawings`, `bench` `back`, `bush` `hedge_tree` (still snippable), `shove_rock` `grass` |
 
 Chapter 1 terrains (`terrain_ch1.js`): `worn_grass` (grass group, a trampled trail), `boardwalk` (planks, `step:'wood'`), `grotto_floor` (dark rock floor),
 `mulch` (wood chips, autotile with a grass lip), `treeline_secret` (paints exactly like `treeline` and joins it, but is walkable and drawn
@@ -63,6 +63,10 @@ Map options added for Chapter 1:
 - A building placed with `boxes: true` gets flower boxes under its door-side windows (2D and 3D).
 - `town: true` marks a town (no tree shaking). `treeShake: [{ sp, min, max, w, time? }]` is the map's bird table for tree shaking.
 - A prop with `glint: true` sparkles every few seconds.
+- 3D-only stamp options: `prism3d(variant)` builds the stamp from a few textured quads instead of a billboard (faces
+  `{ tex, pts: [[x,y,z] x4] in footprint px, n, noCull?, shade? }`, e.g. the side-on `bench_v`); `art3d: true` gives the billboard
+  its own picture (`paint(v, f, '3d')`); `anchor3d: 'back'` stands the billboard at the back edge of the footprint so the footprint's
+  ground is in front of it (`grotto_arch`); `clear3d` takes one `[dx, dy, w, h]` rect or a list of them.
 
 Terrains (all from the BIBLE list): `floor_wood` `floor_tile` `floor_stone` plain floors (no autotile); `carpet_red/blue/green` and
 `mat` are autotiles with their own group (a border is drawn on every side not touching the same id); `wall_wood/plaster/stone` are
