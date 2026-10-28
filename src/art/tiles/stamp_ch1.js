@@ -220,22 +220,29 @@
     w: 1, h: 1, rise: 4,
     paint: () => {
       const b = K.B(16, 20);
-      b.fillRect(2, 5, 2, 12, P.o3); b.vline(2, 5, 12, P.o2); b.fillRect(12, 5, 2, 12, P.o4); b.set(12, 5, P.o3);   // side frames
-      // the drum: rope coils, lit on top, a groove shadow every other row and a dark underside so it reads round
-      for (let y = 6; y < 15; y++) {
-        const c = y === 6 ? P.hy1 : y === 14 ? P.hy4 : y >= 12 ? (y & 1 ? P.hy3 : P.hy4) : (y & 1 ? P.hy2 : P.hy3);
-        b.hline(4, y, 8, c);
+      // a steel base plate bolted to the deck
+      b.fillRect(1, 15, 14, 3, P.n3); b.hline(1, 15, 14, P.n2); b.hline(1, 17, 14, P.n5);
+      for (const x of [2, 13]) b.set(x, 16, P.n1);
+      // two cheek plates in darker metal, rounded on top, lit on their west edges
+      for (const x of [2, 11]) {
+        b.fillRect(x, 5, 3, 10, P.n4); b.vline(x, 5, 10, P.n3); b.vline(x + 2, 5, 10, P.n5);
+        b.set(x, 5, 0); b.set(x + 2, 5, 0); b.hline(x + 1, 4, 1, P.n4);
       }
-      b.set(4, 7, P.hy0); b.set(5, 7, P.hy1); b.set(4, 8, P.hy1); b.vline(11, 7, 7, P.hy4);
-      // the axle boss on the east frame, the crank arm and its knob
-      b.set(13, 10, P.n2); b.set(12, 10, P.n4);
-      b.line(13, 9, 14, 4, P.n5); b.set(14, 3, P.n2); b.set(15, 3, P.n3); b.set(14, 2, P.n1);
-      // base board with two bolts and two feet
-      b.fillRect(1, 16, 14, 2, P.o3); b.hline(1, 16, 14, P.o2); b.set(3, 16, P.n2); b.set(12, 16, P.n2);
-      b.fillRect(2, 18, 2, 1, P.o4); b.fillRect(12, 18, 2, 1, P.o4);
-      b.line(8, 15, 6, 17, P.hy3);                                                                     // rope end
-      out(b, [[[P.hy0, P.hy1, P.hy2, P.hy3, P.hy4], P.o6], [STONE, P.n6]]);
-      K.shadow(b, 8, 19, 7, 1);
+      // the drum between them: a horizontal wooden barrel wound with four turns of tan rope, lit on top, dark underneath
+      for (let x = 5; x <= 10; x++) for (let y = 6; y <= 13; y++) {
+        const groove = (x - 5) % 2 === 1 && x < 10;
+        const t = y <= 6 ? 0 : y <= 8 ? 1 : y <= 11 ? 2 : 3;
+        b.set(x, y, groove ? [P.hy2, P.hy3, P.hy4, P.hy4][t] : [P.hy1, P.hy1, P.hy2, P.hy3][t]);
+      }
+      b.hline(5, 14, 6, P.o4);
+      // the axle boss and an L-shaped crank with a red knob
+      b.set(12, 9, P.n1); b.set(13, 9, P.n2);
+      b.hline(13, 10, 2, P.n2); b.vline(14, 6, 4, P.n2); b.set(15, 6, P.n3);
+      b.fillRect(14, 4, 2, 2, P.red2); b.set(14, 4, P.red1);
+      // the rope's loose end running off the drum onto the plate
+      b.set(9, 14, P.hy2); b.set(9, 15, P.hy2); b.set(10, 16, P.hy2); b.set(11, 16, P.hy3);
+      out(b, [[[P.hy0, P.hy1, P.hy2, P.hy3, P.hy4], P.o6], [[P.n1, P.n2, P.n3, P.n4, P.n5], P.n6], [[P.red1, P.red2], P.red4]]);
+      K.shadow(b, 8, 18, 8, 1, 120);
       return b;
     },
   });
@@ -247,22 +254,23 @@
       for (const x of [2, 28]) { b.fillRect(x, 3, 2, 21, P.o3); b.vline(x, 3, 21, P.o2); }
       b.fillRect(1, 2, 30, 3, P.o2); b.hline(1, 2, 30, P.o0); b.hline(1, 4, 30, P.o4);              // crossbar, lit top edge
       out(b);
-      // the net: a sparse diamond mesh hung over the bar in two sagging folds, so the posts and the ground show through
-      const bottom = (x) => 15 + Math.round(3 * Math.abs(Math.sin(((x - 4) / 24) * Math.PI * 2 * 0.75 + 0.3)));
+      // the net: a blue-grey rope lattice in 1px diamonds, open so the planks show through, sagging in a curve between the posts
+      const bottom = (x) => 13 + Math.round(6 * Math.sin(Math.PI * (x - 4) / 23));
+      const net = K.B(32, 26);
       for (let x = 4; x < 28; x++) {
         const bt = bottom(x);
         for (let y = 5; y <= bt; y++) {
-          const u = (x + y) & 3, w = (x - y + 64) & 3;
-          if (u === 0 || w === 0) b.set(x, y, (u === 0 && w === 0) ? P.f5 : (y < 8 ? P.f3 : P.f4));
+          const sag = Math.round((y - 5) / (bt - 5 || 1) * (bt - 13) * 0.6);                         // the diamonds stretch down the sag
+          const u = (x + y - sag + 600) % 5, w = (x - y + sag + 600) % 5;
+          if (u === 0 || w === 0) net.set(x, y, u === 0 && w === 0 ? P.n5 : y < 9 ? P.n3 : P.n4);
         }
-        b.set(x, bt, P.f4);                                                                            // the foot rope
-        if (x === 9 || x === 19) for (let y = 6; y < bt; y++) b.set(x, y, P.f5);                       // fold lines
+        net.set(x, bt, P.n4); net.set(x, bt + 1, P.n5);                                                // the foot rope
       }
-      // cork floats along the bottom edge
-      for (const x of [7, 15, 23]) {
+      b.blit(net, 0, 0);
+      // orange floats spaced along the foot rope
+      for (const x of [9, 16, 23]) {
         const y = bottom(x) + 1;
-        b.fillRect(x - 1, y, 3, 2, P.l2); b.set(x - 1, y, P.l1); b.set(x + 1, y + 1, P.l4);
-        b.hline(x, y + 2, 1, P.o5); b.set(x - 1, y + 2, 0); b.set(x + 1, y + 2, 0); b.set(x, y - 1, P.o5); b.set(x - 2, y, P.o5); b.set(x - 2, y + 1, P.o5); b.set(x + 2, y, P.o5); b.set(x + 2, y + 1, P.o5);
+        K.stick(b, x - 2, y, ['.kkk.', 'kaabk', '.kkk.'], { k: P.red4, a: P.l2, b: P.l3 });
       }
       K.shadow(b, 16, 24, 14, 1);
       return b;
@@ -273,25 +281,28 @@
     w: 1, h: 1, rise: 6,
     paint: () => {
       const b = K.B(16, 22);
-      // each pot is a half-cylinder net cage: an arched top, wooden rib hoops, rope mesh over a dark inside, a funnel at one end
-      const pot = (x, y, w, h) => {
-        for (let yy = 0; yy < h; yy++) {
-          const cut = yy === 0 ? 2 : yy === 1 ? 1 : 0;
-          for (let xx = cut; xx < w - cut; xx++) {
-            const mesh = ((xx + yy) & 3) === 1 || ((xx - yy + 16) & 3) === 1;
-            b.set(x + xx, y + yy, mesh ? (yy < 3 && xx < 4 ? P.p0 : P.p2) : (yy < 2 ? P.as4 : P.ink2));
-          }
-        }
-        for (const rx of [3, w - 2]) for (let yy = rx === w - 2 ? 1 : 0; yy < h - 1; yy++) b.set(x + rx, y + yy, yy < 2 ? P.o1 : P.o2);   // rib hoops
-        b.hline(x, y + h - 1, w, P.o3); b.set(x, y + h - 1, P.o2);                                        // base runner
-        b.fillRect(x + 1, y + 3, 2, 3, P.ink); b.set(x + 1, y + 3, P.p2);                                // funnel opening
-      };
-      pot(1, 13, 7, 7); pot(8, 13, 7, 7); pot(3, 6, 7, 7);
-      // a red float on a rope tied to the top pot
-      b.line(10, 9, 13, 7, P.hy3);
-      b.fillRect(12, 3, 3, 4, P.red2); b.set(12, 3, P.red1); b.set(12, 4, P.red1); b.vline(14, 4, 3, P.red3); b.hline(12, 5, 3, P.p0);
-      out(b, [[[P.p0, P.p2, P.p3, P.as4, P.ink2, P.ink], P.ink], [[P.red0, P.red1, P.red2, P.red3, P.p0], P.red4]]);
-      K.shadow(b, 8, 21, 7, 1);
+      // creels: a tan wooden base, an arched hoop of orange (lit on the left, dark on the right), blue-grey netting with gaps so the
+      // planks show through, all outlined in dark brown. Two stacked on the left, one beside them.
+      const POT = [
+        '..kkkk..',
+        '.kaaabk.',
+        'kan..nbk',
+        'ka.nn.bk',
+        'kan..nbk',
+        'ka.nn.bk',
+        'koooooqk',
+        'kqqqqqqk',
+        '.kkkkkk.',
+      ];
+      const map = { k: P.o5, a: P.l2, b: P.l4, n: P.n3, o: P.o1, q: P.o3 };
+      K.stick(b, 0, 4, POT, map);
+      K.stick(b, 0, 12, POT, map);
+      K.stick(b, 8, 12, POT, map);
+      // the red-and-white buoy seated on the right-hand pot, tied to the stack by a rope
+      b.line(6, 7, 10, 9, P.hy3);
+      K.stick(b, 10, 6, ['.kk.', 'krrk', 'kwwk', 'krRk', '.kk.'], { k: P.red4, r: P.red2, R: P.red3, w: P.p0 });
+      b.set(11, 7, P.red1);
+      K.shadow(b, 8, 21, 8, 1);
       return b;
     },
   });
@@ -300,18 +311,17 @@
     w: 1, h: 1, rise: 4,
     paint: () => {
       const b = K.B(16, 20);
-      K.cyl(b, 4, 4, 8, 14, K.TN.woodDark);
-      // end grain on the cap: a light ring round a darker heart
-      b.fillRect(4, 2, 8, 3, P.o1); b.hline(5, 1, 6, P.o0); b.hline(5, 5, 6, P.o3); b.set(4, 2, P.o0);
-      b.hline(6, 3, 4, P.o2); b.set(7, 3, P.o3); b.set(8, 3, P.o3);
-      // the rope in a figure eight round the post, with a shadow under each turn
-      b.line(3, 8, 12, 11, P.hy2); b.line(3, 11, 12, 8, P.hy2); b.set(7, 9, P.hy1); b.set(8, 10, P.hy1);
-      b.line(4, 9, 11, 12, P.o5); b.line(4, 12, 11, 9, P.o5);
-      b.line(3, 8, 12, 11, P.hy2); b.line(3, 11, 12, 8, P.hy2); b.set(5, 9, P.hy1); b.set(10, 9, P.hy1);
-      // the loose end trailing down onto the deck
-      b.line(12, 11, 14, 15, P.hy2); b.line(14, 16, 10, 18, P.hy2); b.set(13, 17, P.hy3); b.set(9, 18, P.hy3);
-      out(b, [[[P.hy1, P.hy2, P.hy3], P.o6]]);
-      K.shadow(b, 8, 19, 6, 1);
+      // a cast-iron bollard: a round neck (light west, dark east, 3 tones), a much wider, darker mushroom cap with a lip, a foot flange
+      const tone = (i, n) => [P.n1, P.n2, P.n3, P.n4][Math.min(3, Math.floor(i / n * 4))];
+      for (let y = 7; y <= 14; y++) for (let i = 0; i < 6; i++) b.set(5 + i, y, tone(i, 6));
+      for (let i = 0; i < 8; i++) { b.set(4 + i, 15, tone(i, 8)); b.set(4 + i, 16, P.n4); }
+      for (let i = 0; i < 12; i++) { b.set(2 + i, 3, tone(i, 12)); b.set(2 + i, 4, tone(i, 12)); b.set(2 + i, 5, P.n4); b.set(2 + i, 6, P.n5); }
+      b.set(2, 3, 0); b.set(13, 3, 0); b.hline(4, 2, 8, P.n2); b.set(4, 2, P.n1);
+      // one clean loop of tan rope round the neck with a dark edge, and a short end trailing to the deck
+      b.hline(4, 8, 8, P.o1); b.hline(4, 9, 8, P.o1); b.hline(4, 7, 8, P.o5); b.hline(4, 10, 8, P.o5);
+      for (const [x, y] of [[12, 9], [12, 10], [13, 11], [13, 12], [13, 13], [12, 14], [12, 15]]) b.set(x, y, P.o1);
+      out(b, [[[P.n1, P.n2, P.n3, P.n4, P.n5], P.n6]], 'o5');
+      K.shadow(b, 8, 18, 6, 1, 110);
       return b;
     },
   });
@@ -350,31 +360,33 @@
         }
       }
       b.hline(Math.round(CX - half(DECK_B)) + 1, DECK_B, Math.round(2 * half(DECK_B)) - 1, bl[4]);   // the stern rail's dark edge
-      // the wheelhouse aft of midships: a cream box with a red roof, a window and a darker east face
-      const wx = 14, wy = 12 + dy;
-      b.fillRect(wx, wy, 8, 3, rd[1]); b.hline(wx, wy, 8, rd[0]); b.hline(wx, wy + 3, 8, rd[4]);
-      b.fillRect(wx, wy + 4, 7, 5, P.p1); b.fillRect(wx + 7, wy + 4, 1, 5, P.p3); b.hline(wx, wy + 8, 8, P.p3);
-      b.fillRect(wx + 2, wy + 5, 3, 2, P.gl3); b.set(wx + 2, wy + 5, P.gl1); b.fillRect(wx + 6, wy + 5, 1, 3, P.o4);
-      // the mast at the bow with its sail furled round it and lashed with red ties
-      const mx = 12;
-      b.vline(mx, 1 + dy, 13, P.o4); b.vline(mx + 1, 1 + dy, 13, P.o5);
-      b.fillRect(mx - 1, 4 + dy, 4, 7, P.p1); b.vline(mx - 1, 4 + dy, 7, P.p0); b.vline(mx + 2, 4 + dy, 7, P.p3);
-      for (const y of [5, 8]) b.hline(mx - 1, y + dy, 4, rd[2]);
-      b.hline(mx - 1, 0 + dy, 1, 0);
-      // a heaped green net with two floats at the bow-side of the deck
+      // the wheelhouse aft of midships, in the same 3/4 view as the deck: a big red roof seen from above, and only a short cream
+      // front face (window and door) below it
+      const wx = 14, wy = 11 + dy;
+      b.fillRect(wx, wy, 9, 6, rd[2]); b.hline(wx, wy, 9, rd[0]); b.vline(wx, wy, 6, rd[1]); b.vline(wx + 8, wy, 6, rd[3]); b.hline(wx, wy + 5, 9, rd[4]);
+      b.fillRect(wx, wy + 6, 9, 3, P.p1); b.vline(wx + 8, wy + 6, 3, P.p3); b.hline(wx, wy + 8, 9, P.p3);
+      b.fillRect(wx + 1, wy + 6, 3, 2, P.gl3); b.set(wx + 1, wy + 6, P.gl1); b.fillRect(wx + 6, wy + 6, 1, 3, P.o4);
+      // a plain wooden mast forward of it, the sail furled along a boom that runs aft to the cabin roof
+      const mx = 11;
+      b.fillRect(mx, 2 + dy, 2, 3, P.o2); b.set(mx + 1, 2 + dy, P.o3); b.set(mx, 2 + dy, P.o1);       // the mast head, seen from above
+      b.vline(mx + 1, 5 + dy, 6, P.o3); b.vline(mx, 5 + dy, 6, P.p1); b.vline(mx + 2, 5 + dy, 6, P.p3);  // boom with the furled sail on it
+      b.set(mx, 7 + dy, P.o4); b.set(mx + 2, 7 + dy, P.o4);                                            // a sail tie
+      // a heaped net in the rope colour of the net racks, with two orange floats
       const nx = 7, ny = 15 + dy;
       for (let yy = 0; yy < 5; yy++) for (let xx = 0; xx < 7; xx++) {
         const d = ((xx - 3) / 3.6) ** 2 + ((yy - 3) / 3.2) ** 2;
-        if (d > 1 || yy < 0) continue;
-        b.set(nx + xx, ny + yy, d < 0.35 && yy < 3 ? P.f2 : ((xx + yy) & 1 ? P.f3 : P.f4));
+        if (d > 1) continue;
+        b.set(nx + xx, ny + yy, d < 0.35 && yy < 3 ? P.n2 : ((xx + yy) & 1 ? P.n3 : P.n4));
       }
-      b.set(nx + 2, ny + 1, P.l2); b.set(nx + 5, ny + 3, P.l2);
+      b.set(nx + 2, ny + 1, P.l3); b.set(nx + 5, ny + 3, P.l3);
       // a coil of rope by the stern
       b.fillRect(16, 21 + dy, 3, 1, P.hy2); b.set(16, 21 + dy, P.hy1); b.set(18, 21 + dy, P.hy3);
       // foam round the hull: it moves with the frame
-      const foam = f ? [[2, 24], [26, 21], [5, 29], [22, 30]] : [[3, 22], [27, 25], [9, 30], [19, 29]];
+      const foam = f ? [[2, 24], [27, 20], [4, 30], [24, 31]] : [[3, 21], [26, 25], [8, 31], [20, 30]];
       for (const [x, y] of foam) { b.hline(x, y, 3, P.w0); b.set(x + 3, y, P.w1); }
-      K.outer(b, S.omap([[S.tones(bl), bl[5]], [S.tones(rd), rd[5]], [[P.f2, P.f3, P.f4, P.l2], P.f6], [[P.p0, P.p1, P.p2, P.p3], P.p6], [[P.hy1, P.hy2, P.hy3], P.o6], [[P.w0, P.w1], P.w2]], 'o6'));
+      // the wake trailing off the stern, longer on one frame than the other
+      for (let i = 0; i < (f ? 3 : 2); i++) { b.set(12 - i * 2, 29 + i + dy, P.w1); b.set(19 + i * 2, 29 + i + dy, P.w1); }
+      K.outer(b, S.omap([[S.tones(bl), bl[5]], [S.tones(rd), rd[5]], [[P.n2, P.n3, P.n4, P.l3], P.n6], [[P.p0, P.p1, P.p2, P.p3], P.p6], [[P.hy1, P.hy2, P.hy3], P.o6], [[P.w0, P.w1], P.w2]], 'o6'));
       return b;
     },
   });
@@ -443,22 +455,24 @@
     w: 1, h: 2, rise: 8,
     paint: () => {
       const b = K.B(16, 40), r = R('red'), y = R('yellow');
-      // ladder at the north end, a platform, and the chute running south
-      for (const x of [2, 12]) { b.fillRect(x, 1, 2, 14, y[3]); b.vline(x, 1, 14, y[2]); }
-      for (let yy = 3; yy < 13; yy += 3) b.hline(4, yy, 8, y[2]);
-      b.vline(3, 9, 4, y[1]); b.vline(12, 9, 4, y[1]);                                                  // hand rails
-      b.fillRect(2, 12, 12, 3, r[1]); b.hline(2, 12, 12, r[0]);                                         // platform top
-      b.fillRect(2, 15, 12, 3, r[3]); b.hline(2, 17, 12, r[4]); b.vline(2, 15, 3, r[2]);                // its south face, in shadow
-      // chute: raised red side rails, a yellow bed with a long shine stripe down its length, a curved run-out at the foot
-      for (let yy = 18; yy < 38; yy++) {
+      // ladder at the north end: upright rails lit on the west, dark on the east, rungs with a shadow under each
+      for (const x of [2, 12]) { b.vline(x, 1, 13, y[2]); b.vline(x + 1, 1, 13, y[4]); }
+      for (let yy = 3; yy < 12; yy += 3) { b.hline(4, yy, 8, y[1]); b.hline(4, yy + 1, 8, y[4]); }
+      // a small platform between the ladder and the chute: lit top, red front face in shadow
+      b.fillRect(2, 12, 12, 3, r[1]); b.hline(2, 12, 12, r[0]); b.vline(2, 12, 3, r[0]);
+      b.fillRect(2, 15, 12, 2, r[3]); b.hline(2, 16, 12, r[4]);
+      // chute: red side rails, the bed shading from light at the top to dark at the foot, a lighter strip down its centre
+      for (let yy = 17; yy < 38; yy++) {
         const k = yy - 33, flare = k > 0 ? Math.min(2, Math.round(k * 0.5)) : 0;
-        const x0 = 3 - flare, x1 = 12 + flare;
-        b.hline(x0 + 1, yy, x1 - x0 - 1, yy >= 35 ? y[1] : y[2]);
-        b.vline(x1 - 2, yy, 1, y[3]); b.set(x1 - 1, yy, y[3]);
-        b.set(6, yy, y[0]); b.set(7, yy, yy >= 35 ? y[0] : y[1]);                                       // the slide shine
-        b.set(x0, yy, r[2]); b.set(x1, yy, r[4]);                                                       // side rails
+        const x0 = 3 - flare, x1 = 12 + flare, t = (yy - 17) / 21;
+        const bed = t < 0.3 ? y[1] : t < 0.62 ? y[2] : y[3];
+        const strip = t < 0.3 ? y[0] : t < 0.62 ? y[1] : y[2];
+        b.hline(x0 + 1, yy, x1 - x0 - 1, bed);
+        b.set(7, yy, strip); b.set(8, yy, strip);
+        b.set(x1 - 1, yy, t < 0.62 ? y[3] : y[4]);
+        b.set(x0, yy, r[2]); b.set(x1, yy, r[4]);
       }
-      b.hline(1, 38, 14, r[3]); b.set(1, 38, r[2]); b.hline(2, 38, 1, r[2]);                           // the lip of the run-out
+      b.hline(1, 38, 14, r[3]); b.set(1, 38, r[2]);                                                    // the lip of the run-out
       K.outer(b, S.omap([[S.tones(r), r[5]], [S.tones(y), y[5]]], 'o6'));
       K.shadow(b, 8, 39, 7, 1);
       return b;
@@ -475,15 +489,18 @@
       const b = K.B(16, 22), r = R(RIDERS[v]), lt = r[1], base = r[2], dk = r[3];
       const fill = (cx, cy, rx, ry) => { for (let y = Math.floor(cy - ry); y <= Math.ceil(cy + ry); y++) for (let x = Math.floor(cx - rx); x <= Math.ceil(cx + rx); x++) { const d = ((x - cx) / (rx + 0.5)) ** 2 + ((y - cy) / (ry + 0.5)) ** 2; if (d <= 1) b.set(x, y, (x - cx) + (y - cy) * 1.3 < -1.2 ? lt : (y - cy) > ry * 0.55 ? dk : base); } };
       // the coil spring and its base plate
-      b.fillRect(4, 19, 8, 2, P.n3); b.hline(4, 19, 8, P.n2);
-      for (let yy = 14; yy < 19; yy += 2) { b.hline(6, yy, 4, P.n1); b.set(9, yy + 1, P.n3); b.set(6, yy + 1, P.n3); }
+      b.ellipse(8, 19.5, 4.5, 1.5, P.n3, true); b.hline(5, 19, 6, P.n2); b.hline(5, 21, 6, P.n4);        // the base disc
+      for (let yy = 13; yy < 19; yy++) {                                                                   // a zig-zag coil spring, lit / dark turns
+        const up = (yy & 1) === 0;
+        for (let i = 0; i < 4; i++) b.set(6 + i, yy, up ? (i < 2 ? P.n1 : P.n2) : (i < 2 ? P.n3 : P.n4));
+        b.set(up ? 9 : 6, yy, up ? P.n2 : P.n4);
+      }
       // tail first (behind the body)
       if (v === 'konko') { fill(13, 7, 1.5, 3); b.set(13, 3, P.yl1); b.set(12, 4, P.yl1); b.set(14, 5, P.red2); b.set(13, 4, P.yl1); }   // flame tail
       else if (v === 'ottopi') { fill(13, 12, 2, 1); b.set(14, 13, dk); }                                                                       // paddle tail
       else { b.fillRect(13, 9, 2, 2, P.p0); }                                                                             // cotton tail
       // body (a rounded shell) and the saddle on its back
-      fill(9, 12, 4.5, 2.5);
-      b.fillRect(8, 9, 4, 2, P.o3); b.hline(8, 9, 4, P.o1);
+      fill(9, 11, 4.5, 2.5);
       b.fillRect(5, 13, 3, 1, v === 'sprubun' ? P.pk1 : P.p0);                                          // a pale tummy patch
       // head with the costume's ears, and a toy face: one dot eye and a cheek
       if (v === 'konko') { b.fillRect(3, 1, 2, 3, base); b.set(3, 1, lt); b.fillRect(6, 1, 2, 3, dk); b.set(4, 3, P.pk1); }
@@ -494,9 +511,13 @@
       else if (v === 'ottopi') { b.fillRect(1, 7, 2, 2, P.p0); b.set(1, 7, P.ink); }                    // round snout and nose
       else { b.set(2, 8, P.pk1); b.set(8, 3, P.f3); b.set(9, 2, P.f2); b.set(8, 2, P.f2); }             // pink nose, a sprout
       b.set(4, 6, P.ink); b.set(4, 5, P.p0); b.set(4, 8, P.pk1);
-      // the handle: a grey peg through the head
-      b.fillRect(6, 5, 3, 1, P.n1); b.set(8, 5, P.n3); b.set(6, 4, P.n2);
-      K.outer(b, S.omap([[S.tones(r), r[5]], [[P.n1, P.n2, P.n3], P.n5]], r[5]));
+      // handle pegs sticking out of both sides of the head, and a foot peg on the body, so she reads as a ride
+      b.set(1, 5, P.n1); b.set(2, 5, P.n2); b.set(8, 5, P.n2); b.set(9, 5, P.n3);
+      b.set(6, 14 - 1, P.n2); b.set(5, 13, P.n1);
+      // a red saddle with a lit top
+      b.fillRect(8, 8, 4, 2, P.red2); b.hline(8, 8, 4, P.red1);
+      const ol = v === 'sprubun' ? R('teal')[5] : r[5];
+      K.outer(b, ol);
       K.shadow(b, 8, 21, 6, 1);
       return b;
     },
@@ -514,27 +535,28 @@
         b.set(x, y, y <= 4 ? t[1] : y >= 11 ? t[4] : y >= 9 ? t[3] : t[2]);
       }
       for (let x = 10; x < 28; x += 3) for (let y = 3; y <= 12; y++) b.set(x, y, y <= 4 ? t[0] : y >= 10 ? t[4] : t[3]);
-      // the open west end: a lit rim round a dark mouth, its inner shadow deepest at the top
       b.ellipse(6, 7.5, 3, 4.5, t[1], true);
       b.ellipse(6, 7.5, 2, 3.5, P.o5, true);
       b.hline(5, 4, 3, P.o6); b.hline(4, 5, 4, P.o6); b.set(7, 10, P.o4); b.set(6, 11, P.o4);
       b.set(3, 5, t[0]); b.set(3, 6, t[0]);
-      // three stepping stumps with grass between them, each with a two-tone end-grain top
-      const stump = (x, y) => {
-        b.fillRect(x, y + 2, 6, 3, P.b2); b.vline(x, y + 2, 3, P.b1); b.vline(x + 5, y + 2, 3, P.b3);
-        b.fillRect(x, y, 6, 3, P.o1); b.hline(x + 1, y, 4, P.o0); b.set(x, y, 0); b.set(x + 5, y, 0);
-        b.hline(x + 2, y + 1, 2, P.o2); b.set(x + 1, y + 2, P.o2); b.set(x + 4, y + 2, P.o2);
+      // three stepping stumps of different heights, each with a ring-grain top and lit bark
+      const stump = (x, y, h) => {
+        b.fillRect(x, y + 2, 6, h, P.b2); b.vline(x, y + 2, h, P.b1); b.vline(x + 5, y + 2, h, P.b3); b.hline(x + 1, y + 1 + h, 4, P.b3);
+        K.stick(b, x, y, ['.0111.', '012321', '.1221.'], { 0: P.o0, 1: P.o1, 2: P.o2, 3: P.o4 });
       };
-      stump(2, 16); stump(11, 19); stump(3, 25);
+      stump(2, 14, 5); stump(11, 19, 3); stump(3, 25, 2);
       // balance beam on two trestles
-      b.fillRect(19, 17, 11, 3, P.o2); b.hline(19, 17, 11, P.o0); b.hline(19, 19, 11, P.o4);
-      for (const x of [20, 27]) { b.fillRect(x, 20, 2, 4, P.o4); b.set(x, 20, P.o3); }
-      // a pair of tyres lying flat to hop through
-      for (const cx of [20, 27]) {
-        b.ellipse(cx, 28, 3, 2, P.ink2, true); b.hline(cx - 2, 26, 5, P.n4); b.set(cx - 3, 27, P.n4);
-        b.hline(cx - 1, 28, 3, P.g4); b.set(cx, 27, P.g5);
-      }
-      out(b, [[S.tones(t), t[5]], [K.TN.bark, P.b4], [[P.ink2, P.n4, P.g4, P.g5], P.ink]]);
+      b.fillRect(19, 16, 11, 3, P.o2); b.hline(19, 16, 11, P.o0); b.hline(19, 18, 11, P.o4);
+      for (const x of [20, 27]) { b.fillRect(x, 19, 2, 4, P.o4); b.set(x, 19, P.o3); }
+      // two tyres lying flat, apart: dark rubber with a lit edge, the hole a grey ring round the grass
+      for (const x of [13, 23]) K.stick(b, x, 25, [
+        '.hhrrr.',
+        'hrgggrr',
+        'rgcccgr',
+        'rrgggrr',
+        '.rrrrr.',
+      ], { h: P.n4, r: P.ink2, g: P.n3, c: P.g4 });
+      out(b, [[S.tones(t), t[5]], [K.TN.bark, P.b4], [[P.ink2, P.n3, P.n4, P.g4], P.ink]]);
       return b;
     },
   });
@@ -587,20 +609,17 @@
     w: 1, h: 1, rise: 2,
     paint: () => {
       const b = K.B(16, 18);
-      // a pyramid of split logs seen end on: bark in the gaps, each end a round slice with a light ring and a dark heart
-      b.polygon([[2, 16], [13, 16], [13, 13], [10, 5], [5, 5], [2, 13]], P.b4);
-      const log = (x, y) => {
-        b.fillRect(x + 1, y, 2, 4, P.o1); b.fillRect(x, y + 1, 4, 2, P.o1);
-        b.set(x + 1, y, P.o0); b.set(x, y + 1, P.o0);
-        b.set(x + 1, y + 1, P.o2); b.set(x + 2, y + 2, P.o4); b.set(x + 2, y + 1, P.o2); b.set(x + 1, y + 2, P.o2);
-        b.set(x + 3, y + 2, P.b1); b.set(x + 2, y + 3, P.b1);
-      };
-      for (const [x, y] of [[2, 12], [6, 12], [10, 12], [4, 8], [8, 8], [6, 4]]) log(x, y);
-      // a hatchet bitten into the top log, its handle leaning up and away
-      b.line(10, 4, 14, 0, P.o3); b.set(11, 4, P.o4);
-      b.fillRect(8, 3, 3, 2, P.n2); b.set(8, 3, P.n0); b.set(9, 5, P.n3); b.set(10, 5, P.n4);
-      out(b, [[K.TN.bark, P.b4], [STONE, P.n5]]);
-      K.shadow(b, 8, 17, 7, 1);
+      // a tidy stack of split logs seen end on, three rows: each end a pale round slice with a darker heart inside a bark ring
+      const LOG = ['.bbb.', 'b011b', 'b02 1b'.replace(' ', ''), 'b111b', '.bbb.'];
+      const map = { b: P.b2, 0: P.o0, 1: P.o1, 2: P.o3 };
+      for (const [x, y] of [[0, 12], [5, 12], [10, 12], [3, 8], [8, 8], [5, 4]]) K.stick(b, x, y, LOG.map((r) => r.replace(/b/g, 'b')), map);
+      for (const [x, y] of [[4, 14], [9, 14], [7, 10], [9, 6]]) b.set(x, y, P.b3);                 // bark shade in the joins
+      // the hatchet bedded into the top log: steel head, a 1px shadow under it, the handle leaning up and away
+      b.set(9, 6, P.o5); b.set(10, 6, P.o5);
+      b.fillRect(8, 4, 3, 2, P.n2); b.set(8, 4, P.n0); b.set(10, 5, P.n3);
+      b.line(11, 4, 14, 1, P.o3); b.set(12, 2, P.o2); b.set(14, 0, P.o4);
+      out(b, [[K.TN.bark, P.b4], [STONE, P.n5], [[P.o0, P.o1, P.o3], P.b4]]);
+      K.shadow(b, 8, 17, 8, 1);
       return b;
     },
   });
@@ -609,21 +628,27 @@
     w: 1, h: 1, rise: 12,
     paint: () => {
       const b = K.B(16, 28);
-      // the oak it hangs from: a trunk on the west side up to a branch reaching east, a few leaves on top
-      b.fillRect(1, 2, 3, 24, P.b2); b.vline(1, 2, 24, P.b1); b.vline(3, 2, 24, P.b3);
-      for (const y of [7, 13, 19]) b.set(2, y, P.b3);
-      b.set(0, 25, P.b2); b.set(4, 25, P.b3);                                                          // roots
-      b.fillRect(3, 2, 11, 2, P.b2); b.hline(3, 2, 11, P.b1); b.set(14, 2, P.b2);
-      for (const [x, w] of [[2, 5], [10, 4]]) { b.hline(x, 0, w, P.f2); b.hline(x, 1, w, P.f3); b.set(x + 1, 0, P.f1); }
-      // one rope, rope-tan with a twist of shading
-      for (let y = 4; y < 17; y++) b.set(9, y, y & 1 ? P.o2 : P.o3);
-      // the tyre hanging flat: a thin far rim, a thick near rim and its tread, the hole see-through
-      b.ellipse(9, 21, 5, 1.6, P.ink2, true); b.fillRect(4, 19, 11, 2, P.ink2);                       // the tread (side of the tyre)
-      b.ellipse(9, 18.5, 5, 2.4, P.n4, true);                                                          // the rubber's top face
-      b.hline(6, 16, 6, P.n3); b.set(5, 17, P.n3);
-      b.ellipse(9, 18, 2.6, 1.0, 0, true);                                                             // the hole: far rim thin, near rim thick
-      out(b, [[K.TN.bark, P.b4], [K.TN.leaf, P.f6], [[P.ink2, P.n3, P.n4], P.ink]]);
-      K.shadow(b, 9, 26, 5, 1);
+      // a wooden A-frame: a top beam on two splayed legs, and one rope from the middle of the beam
+      for (let y = 3; y <= 26; y++) {
+        const t = (y - 3) / 23, xl = Math.round(3 - t * 2), xr = Math.round(12 + t * 2);
+        b.set(xl, y, P.o2); b.set(xr, y, P.o4);
+      }
+      b.fillRect(2, 1, 12, 2, P.o2); b.hline(2, 1, 12, P.o1); b.hline(3, 3, 10, P.o5);                // the top beam and its shadow
+      for (let y = 4; y < 16; y++) b.set(8, y, y & 1 ? P.o1 : P.o3);                                  // the rope, twisted
+      out(b);
+      // the tyre hanging, tilted a little: dark rubber lit along its top-left, and the hole a lighter grey ellipse
+      const t = K.B(16, 28);
+      K.stick(t, 4, 15, [
+        '..hhhrr..',
+        '.hrrrrrr.',
+        'hrgggggrr',
+        'rrgggggrd',
+        '.rrrrrrd.',
+        '...rrdd..',
+      ], { h: P.n4, r: P.ink2, g: P.n3, d: P.ink });
+      K.outer(t, 'ink');
+      b.blit(t, 0, 0);
+      K.shadow(b, 8, 26, 5, 1);
       return b;
     },
   });
@@ -658,11 +683,12 @@
     paint: () => {
       const b = K.B(16, 32), r = R('pink'), y = R('yellow');
       // the diamond tipped over about 20 degrees where it caught in the branches
-      const a = 0.35, ca = Math.cos(a), sa = Math.sin(a), C = [8, 8.5];
+      const a = 0.5, ca = Math.cos(a), sa = Math.sin(a), C = [8, 8.5];
       const rot = ([x, yy]) => [Math.round(C[0] + x * ca - yy * sa), Math.round(C[1] + x * sa + yy * ca)];
       const T = rot([0, -7]), Rt = rot([5.5, -1]), Bm = rot([0, 7]), L = rot([-5.5, -1]), M = rot([0, -1]);
       b.polygon([T, Rt, Bm, L], r[2]);
-      b.polygon([T, Rt, M], y[2]); b.polygon([L, Bm, M], y[2]);
+      b.polygon([T, Rt, M], y[2]); b.polygon([L, Bm, M], y[3]);
+      b.line(L[0] + 1, L[1] + 1, M[0], Bm[1] - 2, y[4]);                                                // the crumpled quadrant's fold
       b.line(T[0], T[1], Bm[0], Bm[1], P.o5); b.line(L[0], L[1], Rt[0], Rt[1], P.o5);                 // the cross spars
       b.set(T[0] - 1, T[1] + 2, r[0]); b.set(L[0] + 2, L[1], y[0]);
       // tail bows: two-tone with a highlight, red on the left, yellow on the right, so they show against the leaves
@@ -672,7 +698,10 @@
       K.outer(b, S.omap([[S.tones(r), r[5]], [S.tones(y), y[5]], [[P.red1, P.red2], P.red4], [[P.p0, P.p2], P.p4]], 'o6'));
       // (drawn after the outline so it stays 1px) the string tangled in a loop and a zigzag before it hangs down into the tile below
       const s = [[Bm[0], Bm[1] + 1], [Bm[0] - 2, Bm[1] + 3], [Bm[0], Bm[1] + 5], [Bm[0] + 2, Bm[1] + 3], [Bm[0], Bm[1] + 2], [Bm[0] - 1, Bm[1] + 7], [Bm[0] + 1, Bm[1] + 10], [Bm[0] - 1, Bm[1] + 13], [Bm[0], 30]];
-      for (let i = 1; i < s.length; i++) b.line(s[i - 1][0], s[i - 1][1], s[i][0], s[i][1], P.p0);
+      const str = K.B(16, 32);
+      for (let i = 1; i < s.length; i++) str.line(s[i - 1][0], s[i - 1][1], s[i][0], s[i][1], P.p0);
+      for (let yy = 0; yy < 32; yy++) for (let x = 0; x < 15; x++) if (str.u32[yy * 16 + x] >>> 24 && !(str.u32[yy * 16 + x + 1] >>> 24) && !(b.u32[yy * 16 + x + 1] >>> 24)) b.set(x + 1, yy, P.n3);   // its grey shadow
+      b.blit(str, 0, 0);
       return b;
     },
   });

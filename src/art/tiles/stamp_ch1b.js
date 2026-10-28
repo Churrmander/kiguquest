@@ -22,59 +22,94 @@
   //  ribbons: bright bows tied on the sleeves and robes, two tails fluttering. wrapped: both figures under one white sheet (two soft
   //  lumps with long folds), tied with string, with a paper tag; only the plinth and plaque show.
   const SW = R('white'), SG = R('gray');
+  const MB = [P.mb0, P.mb1, P.mb2, P.mb3, P.mb4, P.mb5];                                          // the marble ramp: hi, lit, mid, shade, deep, outline
+  const HAIR = [P.mb2, P.mb3, P.mb3, P.mb4, P.mb4], FACE = [P.mb0, P.mb0, P.mb1, P.mb2, P.mb3];
   const SHEET = [col('#ffffff'), col('#d8dcea'), col('#aab0c8')], SHEET_OUT = SW[5];
-  /** each figure is drawn on its own layer and outlined, so the two women and the spool read as separate shapes */
-  function layer(fn) { const l = K.B(64, 64); fn(l, SW); K.outer(l, SW[4]); return l; }
-  /** a robe from the shoulders (y0) to the hem (y1): sloped shoulders, a gentle flare, lit left third, shaded right quarter.
-   *  cx(y) gives the centre line (so a figure can lean) */
-  function robe(b, st, y0, y1, cx, hw0, hw1) {
-    for (let y = y0; y <= y1; y++) {
-      const hw = y < y0 + 3 ? hw0 - 3 + (y - y0) * 1.2 : hw0 + (y - y0 - 3) * (hw1 - hw0) / (y1 - y0 - 3);
-      const x0 = Math.round(cx(y) - hw), x1 = Math.round(cx(y) + hw);
-      for (let x = x0; x <= x1; x++) { const t = (x - x0) / Math.max(1, x1 - x0); b.set(x, y, t < 0.3 ? st[1] : t < 0.74 ? st[2] : st[3]); }
+  /** shade one part's flat silhouette with a 4-tone ramp lit from the top left: each row runs light (west) to deep (east), the lit half
+   *  of a top edge catches the white highlight, bottom edges go a step darker */
+  function shade(l, ramp) {
+    const W = l.w, H = l.h, src = l.u32.slice(), op = (x, y) => x >= 0 && y >= 0 && x < W && y < H && src[y * W + x] >>> 24;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      if (!op(x, y)) continue;
+      let x0 = x, x1 = x;
+      while (op(x0 - 1, y)) x0--;
+      while (op(x1 + 1, y)) x1++;
+      const t = (x - x0) / Math.max(1, x1 - x0);
+      let c = t < 0.3 ? 1 : t < 0.65 ? 2 : t < 0.88 ? 3 : 4;
+      if (!op(x, y - 1) && t < 0.45) c = 0;
+      else if (!op(x, y + 1) && c < 4) c++;
+      l.set(x, y, ramp[c]);
     }
+    return l;
   }
-  /** a stone head facing south, lit from the top left: no eyes, just a brow shadow under the hair line, a nose and a chin shadow */
-  function head(b, cx, cy, st) {
-    b.circle(cx, cy, 4, st[1], true);
-    b.fillRect(cx + 2, cy - 2, 2, 6, st[2]); b.set(cx + 4, cy, st[2]); b.set(cx + 4, cy + 1, st[3]);
-    for (let y = cy - 4; y <= cy - 1; y++) for (let x = cx - 4; x <= cx + 4; x++) if (b.u32[y * 64 + x] >>> 24) b.set(x, y, (x - cx) + (y - cy) < -4 ? st[1] : x > cx + 1 ? st[3] : st[2]);   // hair cap
-    b.hline(cx - 2, cy, 4, st[3]);                                                                 // brow shadow under the fringe
-    b.set(cx, cy + 2, st[2]); b.hline(cx - 1, cy + 4, 3, st[3]);
+  /** a part on its own layer: draw(l) paints a flat silhouette, which is shaded and outlined in the deep tone, so the parts read apart */
+  function part(b, draw, ramp, after) { const l = K.B(64, 64); draw(l); shade(l, ramp || MB); if (after) after(l); K.outer(l, MB[4]); b.blit(l, 0, 0); return l; }
+  const fillRows = (l, y0, y1, cx, hw) => { for (let y = y0; y <= y1; y++) { const h = hw(y); l.hline(Math.round(cx - h), y, Math.round(2 * h) + 1, MB[2]); } };
+  /** a robed figure standing on the plinth (hem at y 47): narrow sloped shoulders, a girdled waist at y 33, the skirt flaring to the hem */
+  const bodyHW = (y) => y <= 22 ? 1.5 : y === 23 ? 4 : y <= 26 ? 6 : y <= 33 ? 6 - (y - 26) * 2 / 7 : 4 + (y - 33) * 6 / 14;
+  /** skirt folds (a crease with a lit edge), the girdle, the hem, and the lowered arm as a crease down her side with the hand at the hip */
+  function robeDetail(l, cx, offs, armSide) {
+    for (const o of offs) {
+      const x0 = cx + Math.round(o * 0.45), x1 = cx + o;
+      l.line(x0, 36, x1, 46, MB[3]);
+      if (o < 2) l.line(x0 - 1, 37, x1 - 1, 46, MB[1]);
+    }
+    l.hline(cx - 4, 33, 9, MB[3]);
+    for (let x = cx - 10; x <= cx + 10; x += 3) l.set(x, 47, MB[4]);
+    const ax = cx + armSide * 4;
+    l.line(ax, 25, ax + armSide, 33, MB[3]);
+    l.fillRect(Math.min(ax + armSide, ax + armSide * 2), 34, 2, 2, armSide < 0 ? MB[1] : MB[3]);
   }
-  function astara(b, st) {
-    robe(b, st, 16, 44, () => 19.5, 8, 9);
-    for (const x of [15, 19, 23]) { b.vline(x, 30, 13, st[3]); b.vline(x - 1, 32, 11, st[1]); }   // straight robe folds
-    b.fillRect(18, 13, 4, 4, st[2]); b.vline(18, 13, 4, st[1]); b.hline(18, 13, 4, st[3]);       // neck, the chin's shadow on it
-    head(b, 19, 9, st);
-    b.circle(19, 4, 2, st[2], true); b.set(18, 3, st[1]); b.set(20, 5, st[3]);                    // bun
-    b.polygon([[12, 17], [15, 16], [27, 32], [25, 34]], R('red')[2]); b.line(13, 17, 26, 33, R('red')[1]);   // crimson sash
-    // her right arm reaching east to the spool: sleeve lit on top, shaded underneath, the hand on the flange
-    b.polygon([[24, 17], [27, 17], [30, 23], [28, 25], [24, 21]], st[2]); b.line(25, 17, 29, 22, st[1]); b.line(24, 21, 27, 24, st[3]);
-    b.fillRect(29, 22, 2, 3, st[1]);
+  function headPart(b, cx, cy) {
+    part(b, (l) => { l.circle(cx, cy, 5, MB[2], true); l.fillRect(cx - 1, cy + 4, 3, 3, MB[2]); }, FACE, (l) => {
+      l.hline(cx - 3, cy, 2, MB[3]); l.hline(cx + 1, cy, 2, MB[3]);                                  // closed eyes, serene
+      l.set(cx, cy + 2, MB[2]); l.hline(cx - 1, cy + 4, 2, MB[2]);                                     // nose and chin shadow
+    });
   }
-  function anwela(b, st) {
-    const lean = (y) => 43 + (y - 19) * 0.12;
-    // long hair falling down her back, behind the robe
-    b.polygon([[42, 8], [46, 9], [49, 16], [50, 30], [46, 30], [45, 17]], st[2]); b.line(47, 12, 49, 29, st[3]); b.line(45, 10, 47, 20, st[1]);
-    robe(b, st, 18, 44, lean, 8, 9.5);
-    for (const x of [40, 45, 50]) { b.line(x, 31, x + 1, 43, st[3]); b.line(x - 1, 32, x, 43, st[1]); }
-    for (const y of [27, 34]) { b.line(37, y, 53, y - 2, R('blue')[2]); b.line(37, y + 1, 53, y - 1, R('blue')[3]); }   // ribbons across her robe
-    b.fillRect(40, 15, 4, 4, st[2]); b.vline(40, 15, 4, st[1]); b.hline(40, 15, 4, st[3]);
-    head(b, 41, 11, st);
-    b.line(38, 7, 44, 6, st[1]);                                                                     // a ribbon band in her hair
-    // her left arm reaching west to the spool
-    b.polygon([[40, 18], [37, 19], [34, 24], [36, 26], [41, 22]], st[2]); b.line(39, 18, 35, 23, st[1]); b.line(41, 22, 37, 26, st[3]);
-    b.fillRect(34, 22, 2, 3, st[1]);
+  /** Astara (west): her hair up in a bun, the near arm raised to hold the Everspool's west end, the other at her side */
+  function astara(b, ribbons) {
+    const cx = 19;
+    part(b, (l) => fillRows(l, 22, 47, cx, bodyHW), MB, (l) => {
+      robeDetail(l, cx, [-7, -3, 2, 6], -1);
+      if (ribbons) for (let i = 0; i <= 12; i++) {                                                   // a crimson sash over the shoulder to the hip, following the body
+        const t = i / 12, x = Math.round(cx - 4 + 9 * t - 1.2 * Math.sin(Math.PI * t)), y = Math.round(24 + 9 * t);
+        l.set(x, y, R('red')[2]); l.set(x, y + 1, R('red')[3]);
+      }
+    });
+    headPart(b, cx, 16);
+    part(b, (l) => {                                                                                    // hair: a cap swept to one side, a bun on top
+      for (let y = 10; y <= 16; y++) for (let x = cx - 6; x <= cx + 6; x++) if ((x - cx) ** 2 + (y - 16) ** 2 <= 38 && (y < 13 || Math.abs(x - cx) >= 5 || (y === 13 && x > cx - 2))) l.set(x, y, MB[2]);
+      l.circle(cx - 1, 8, 3, MB[2], true);
+    }, HAIR, (l) => { l.line(cx - 2, 8, cx, 10, MB[4]); l.set(cx - 2, 6, MB[2]); });
   }
-  /** the Everspool between them: two flat light-grey flanges with dark rims, a gold thread core */
+  /** Anwela (east): long hair falling past her shoulders, the near arm raised to the Everspool's east end */
+  function anwela(b, ribbons) {
+    const cx = 45;
+    part(b, (l) => {                                                                                    // her long hair, falling behind her shoulders
+      for (let y = 15; y <= 31; y++) { const w = y < 20 ? 6.5 : 6.5 + (y - 20) * 0.08; l.hline(Math.round(cx - w), y, Math.round(2 * w) + 1, MB[2]); }
+      for (const x of [cx - 7, cx + 7]) l.set(x, 31, 0);
+    }, HAIR, (l) => { for (const x of [cx - 5, cx + 5]) l.line(x, 21, x + (x < cx ? -1 : 1), 30, MB[4]); });
+    part(b, (l) => fillRows(l, 22, 47, cx, bodyHW), MB, (l) => {
+      robeDetail(l, cx, [-6, -2, 3, 7], 1);
+      if (ribbons) {
+        const x0 = cx - 4, x1 = cx + 4;
+        for (let x = x0; x <= x1; x++) { const y = 32 + Math.round(1.3 * Math.sin(Math.PI * (x - x0) / (x1 - x0))); l.set(x, y, R('blue')[2]); l.set(x, y + 1, R('blue')[3]); }
+        for (let y = 35; y <= 45; y++) { const x = Math.round(cx + bodyHW(y) - 2); l.set(x, y, R('blue')[2]); l.set(x - 1, y, R('blue')[1]); }   // a tail falling along her skirt's edge
+      }
+    });
+    headPart(b, cx, 17);
+    part(b, (l) => {                                                                                    // hair cap with a centre parting
+      for (let y = 11; y <= 17; y++) for (let x = cx - 6; x <= cx + 6; x++) if ((x - cx) ** 2 + (y - 17) ** 2 <= 38 && (y < 14 || Math.abs(x - cx) >= 5)) l.set(x, y, MB[2]);
+    }, HAIR, (l) => { l.vline(cx, 11, 3, MB[4]); });
+  }
+  /** the Everspool, held up between them: two flanges seen edge-on (the spool's ends) and a gold thread core between them */
   function everspool(b) {
-    b.fillRect(28, 20, 9, 9, P.gd2); b.vline(28, 20, 9, P.gd1); b.vline(29, 20, 9, P.gd1); b.vline(36, 20, 9, P.gd3);
-    for (let y = 21; y < 28; y += 2) { b.hline(29, y, 7, P.gd1); b.set(35, y, P.gd2); b.hline(29, y + 1, 7, P.gd3); }
-    for (const y of [17, 29]) { b.hline(27, y, 11, P.n0); b.hline(26, y + 1, 13, P.n1); b.hline(26, y + 2, 13, P.n3); b.set(38, y + 1, P.n2); }
+    const l = K.B(64, 64);
+    l.fillRect(30, 8, 5, 7, P.p1); l.vline(30, 8, 7, P.p0); l.vline(34, 8, 7, P.p3);                 // the wound thread (pale cream)
+    for (let y = 9; y < 14; y += 2) l.hline(31, y, 3, P.p3);
+    for (const x of [28, 36]) { l.ellipse(x, 11, 1.5, 5.5, P.gd2, true); l.vline(x - 1, 8, 6, P.gd1); l.vline(x + 1, 8, 6, P.gd3); l.set(x, 6, P.gd0); }   // gilded flanges
+    K.outer(l, P.gd4); b.blit(l, 0, 0);
   }
-  /** wrapped for Tidy Day: two soft lumps under one white sheet (Astara taller on the left, Anwela lower on the right, a dip over the
-   *  spool between them), long vertical folds from the shoulders, a darker hem pooled on the plinth, sagging string ties and a tag */
   function wrapped(b) {
     const L = { cx: 21, cy: 12, r: 8, top: 4, h0: 8, k: 0.16 }, Rr = { cx: 44, cy: 21, r: 8, top: 14, h0: 8, k: 0.2 }, M = { cx: 32, cy: 24, r: 4.5, top: 20, h0: 4, k: 0.25 };
     const inLump = (o, x, y) => {
@@ -87,7 +122,6 @@
     for (let y = 0; y <= 44; y++) for (let x = 6; x <= 57; x++) {
       const ins = [L, M, Rr].map((o) => inLump(o, x, y));
       if (!ins.some(Boolean)) continue;
-      // nearest centre among the lumps covering this pixel
       let best = -1, bd = 1e9;
       [L, M, Rr].forEach((o, i) => { if (ins[i]) { const d = Math.abs(x - o.cx) / (o.h0 + 1) + (i === 1 ? 0.6 : 0); if (d < bd) { bd = d; best = i; } } });
       owner[y * 64 + x] = best;
@@ -97,48 +131,50 @@
       const i = owner[y * 64 + x]; if (i < 0) continue;
       const o = lumps[i], hw = y <= o.cy ? o.r : o.h0 + (y - o.cy) * o.k, t = (x - o.cx) / hw;
       let c = t < -0.25 || (y < o.top + 3 && t < 0.3) ? 0 : t < 0.5 ? 1 : 2;
-      if (y >= 41) c = c === 0 && y < 43 ? 1 : 2;                                                     // the darker hem pooled on the plinth
-      if (x > 6 && owner[y * 64 + x - 1] >= 0 && owner[y * 64 + x - 1] !== i) c = 2;                   // the crease where two lumps meet
+      if (y >= 41) c = c === 0 && y < 43 ? 1 : 2;
+      if (x > 6 && owner[y * 64 + x - 1] >= 0 && owner[y * 64 + x - 1] !== i) c = 2;
       b.set(x, y, SHEET[c]);
     }
-    for (let x = 8; x < 56; x += 4) if (owner[44 * 64 + x] >= 0) b.set(x, 45, SHEET[2]);                // a scalloped hem
-    // long vertical folds from the shoulders down, spreading a little as the cloth falls
-    const fold = (o, off, y0) => { for (let y = y0; y <= 42; y++) { const x = Math.round(o.cx + off + off * (y - y0) / 50); if (owner[y * 64 + x] >= 0) { b.set(x, y, SHEET[2]); if (owner[y * 64 + x - 1] >= 0 && off < 3) b.set(x - 1, y, SHEET[0]); } } };
-    for (const off of [-5, -2, 2, 5]) fold(L, off, 15 + Math.abs(off));
-    for (const off of [-4, 0, 4]) fold(Rr, off, 24 + Math.abs(off));
-    fold(M, 0, 26);
-    // string ties sagging along the shape, a shadow under each
+    for (let x = 8; x < 56; x += 4) if (owner[44 * 64 + x] >= 0) b.set(x, 45, SHEET[2]);
+    // short folds where the sheet drapes off each shoulder, and one soft fold shadow down each lump
+    const fold = (o, off, y0) => { for (let y = y0; y <= y0 + 6; y++) { const x = Math.round(o.cx + off + off * (y - y0) / 30); if (owner[y * 64 + x] >= 0) { b.set(x, y, SHEET[2]); if (owner[y * 64 + x - 1] >= 0) b.set(x - 1, y, SHEET[0]); } } };
+    for (const off of [-4, 4]) fold(L, off, 16);
+    for (const off of [-4, 4]) fold(Rr, off, 26);
+    for (const o of [L, Rr]) for (let y = o.cy + 2; y <= 40; y++) {
+      const x = Math.round(o.cx + 2 + (y - o.cy) * 0.12);
+      if (owner[y * 64 + x] >= 0 && owner[y * 64 + x + 1] >= 0) { b.set(x, y, SHEET[1]); b.set(x + 1, y, SHEET[2]); }
+    }
     const rope = (y0, xa, xb, sag) => { for (let x = xa; x <= xb; x++) { if (owner[y0 * 64 + x] < 0 && owner[(y0 + 2) * 64 + x] < 0) continue; const y = y0 + Math.round(sag * Math.sin(Math.PI * (x - xa) / (xb - xa))); b.set(x, y, P.hy3); b.set(x, y + 1, P.hy4); } };
     rope(24, 12, 30, 2); rope(34, 9, 55, 3);
-    b.line(29, 37, 28, 39, P.hy3);                                                                    // the tag's loop
+    b.line(29, 37, 28, 39, P.hy3);
     b.fillRect(25, 39, 7, 5, P.p0); b.hline(25, 39, 7, P.p1); b.hline(25, 43, 7, P.p3); b.set(26, 40, P.o3);
     b.hline(27, 41, 4, P.p3);
   }
-  function bow(b, x, y, r, tails, f) {
-    b.blit(K.spr(['aa.aa', 'abcba', 'aa.aa'], { a: r[1], b: r[2], c: r[3] }), x - 2, y - 1);
-    if (tails) { b.line(x - 1, y + 2, x - 2 - f, y + 6, r[2]); b.line(x + 1, y + 2, x + 3 + f, y + 5, r[2]); }
-  }
+  function bow(b, x, y, r) { b.blit(K.spr(['aa.aa', 'abcba', 'aa.aa'], { a: r[1], b: r[2], c: r[3] }), x - 2, y - 1); }
   K.stamp('statue', {
     w: 4, h: 4, over: 1, variants: ['wrapped', 'ribbons'],
     paint: (v) => {
-      const b = K.B(64, 64), g = SG, st = SW;
-      // plinth (grey, so the pale figures stand out): a wide low step, the block, a lighter top, bronze plaque on the south face
-      b.fillRect(3, 56, 58, 7, g[3]); b.hline(3, 56, 58, g[2]); b.hline(3, 62, 58, g[4]);
-      b.fillRect(7, 42, 50, 15, g[2]); b.fillRect(7, 42, 50, 4, g[1]); b.hline(7, 42, 50, g[0]); b.hline(7, 46, 50, g[3]);
-      b.vline(7, 46, 10, g[1]); b.fillRect(55, 46, 2, 10, g[3]);
-      for (const [x, y] of [[12, 50], [47, 52], [20, 53], [44, 49]]) b.set(x, y, g[3]);
-      b.fillRect(25, 48, 14, 7, P.gd3); b.fillRect(26, 49, 12, 5, P.gd2); b.hline(26, 49, 12, P.gd1);
-      for (const y of [51, 53]) b.hline(28, y, 8, P.gd4);
+      const b = K.B(64, 64), g = SG;
+      // a two-step grey plinth (so the white marble stands out): a wide low base step, a raised upper step with a bronze plaque
+      b.fillRect(2, 56, 60, 7, g[3]); b.fillRect(2, 56, 60, 2, g[1]); b.hline(2, 56, 60, g[0]); b.hline(2, 62, 60, g[4]); b.vline(2, 58, 4, g[2]);
+      b.fillRect(7, 46, 50, 10, g[2]); b.fillRect(7, 46, 50, 3, g[1]); b.hline(7, 46, 50, g[0]); b.hline(7, 49, 50, g[3]);
+      b.vline(7, 49, 7, g[1]); b.fillRect(55, 49, 2, 7, g[3]); b.hline(8, 55, 48, g[3]);
+      for (const [x, y] of [[12, 52], [48, 51], [19, 53], [44, 53]]) b.set(x, y, g[3]);
+      b.fillRect(25, 50, 14, 5, P.gd3); b.fillRect(26, 51, 12, 3, P.gd2); b.hline(26, 51, 12, P.gd1); b.hline(28, 52, 8, P.gd4);
       if (v === 'ribbons') {
-        b.blit(layer(astara), 0, 0); b.blit(layer(anwela), 0, 0);
-        b.hline(13, 44, 15, st[4]); b.hline(37, 44, 17, st[4]);                                      // where the robes meet the plinth
-        b.line(33, 31, 30, 37, P.gd2); b.line(30, 37, 32, 43, P.gd2);                                // thread running down to the plinth
-        b.blit(layer(everspool), 0, 0);
-        bow(b, 24, 22, R('yellow'), false, 0); bow(b, 41, 23, R('blue'), false, 0);
-        bow(b, 19, 33, R('pink'), true, 1); bow(b, 47, 40, R('yellow'), false, 0);
-      } else wrapped(b);
-      K.outer(b, S.omap([[S.tones(SW), SW[5]], [S.tones(SG), SG[5]], [T5('red'), R('red')[5]], [T5('blue'), R('blue')[5]], [T5('yellow'), R('yellow')[5]], [T5('pink'), R('pink')[5]],
-        [[P.gd1, P.gd2, P.gd3, P.gd4], P.gd5], [[P.hy2, P.hy3, P.hy4], P.o6], [[P.p0, P.p1, P.p3], P.p6], [SHEET, SHEET_OUT]], SW[5]));
+        anwela(b, true); astara(b, true);
+        everspool(b);
+        // the raised arms, drawn last so their hands hold the spool's ends; a red ribbon spirals up Astara's sleeve
+        part(b, (l) => { l.polygon([[21, 24], [24, 24], [26, 13], [24, 13]], MB[2]); l.fillRect(24, 10, 3, 4, MB[2]); }, MB, (l) => {
+          for (const y of [21, 17]) { l.set(22, y, R('red')[2]); l.set(23, y - 1, R('red')[2]); l.set(24, y - 2, R('red')[3]); }
+        });
+        part(b, (l) => { l.polygon([[40, 24], [43, 24], [40, 13], [38, 13]], MB[2]); l.fillRect(38, 10, 3, 4, MB[2]); });
+        bow(b, 24, 33, R('pink')); bow(b, 41, 13, R('yellow')); bow(b, 14, 45, R('yellow')); bow(b, 50, 45, R('pink'));
+      } else {
+        const l = K.B(64, 64); wrapped(l); b.blit(l, 0, 3);
+      }
+      K.outer(b, S.omap([[MB, MB[5]], [S.tones(SW), SW[5]], [S.tones(SG), SG[5]], [T5('red'), R('red')[5]], [T5('blue'), R('blue')[5]], [T5('yellow'), R('yellow')[5]], [T5('pink'), R('pink')[5]],
+        [[P.gd0, P.gd1, P.gd2, P.gd3, P.gd4], P.gd5], [[P.hy2, P.hy3, P.hy4], P.o6], [[P.p0, P.p1, P.p3], P.gd4], [SHEET, SHEET_OUT]], SW[5]));
       return b;
     },
   });
@@ -249,19 +285,18 @@
     w: 2, h: 1, rise: 14, frames: 4, animSpeed: 12,
     paint: (v, f) => {
       const b = K.B(32, 30);
-      b.fillRect(2, 3, 2, 25, P.o3); b.vline(2, 3, 25, P.o2); b.fillRect(28, 7, 2, 21, P.o3); b.vline(28, 7, 21, P.o2);
-      b.set(2, 2, P.o1); b.set(28, 6, P.o1);
-      // a thin cord sagging in a gentle curve between the posts, lower at the east end
+      // two 2px posts, lit on the west side, dark on the east, each with a lighter cap
+      for (const [x, y0] of [[2, 3], [28, 7]]) { b.vline(x, y0, 28 - y0, P.o2); b.vline(x + 1, y0, 28 - y0, P.o4); b.set(x, y0 - 1, P.o1); b.set(x + 1, y0 - 1, P.o2); }
+      // a cord sagging in a gentle curve between the posts, lower at the east end
       const at = (x) => Math.round(4 + (x - 4) * 0.16 + 4 * Math.sin(((x - 4) / 24) * Math.PI));
-      const cols = [R('red'), R('yellow'), R('blue'), R('green'), R('pink')];
-      for (let i = 0; i < 5; i++) {
-        // 4px-tall pennants, lighter on the left half, every other one swaying by 1px a frame
-        const x = 5 + i * 5, y = at(x + 1) + 1, c = cols[i], sway = ((i & 1) ? [0, 1, 0, -1] : [1, 0, -1, 0])[f];
-        b.polygon([[x, y], [x + 3, y], [x + 1.5 + sway, y + 5]], c[2]);
-        for (let yy = y; yy < y + 4; yy++) { b.set(x + (yy - y >> 1), yy, c[1]); if (yy - y < 2) b.set(x + 1, yy, c[1]); }
-        b.set(x + 3, y, c[3]);
+      const cols = [R('red'), R('yellow'), R('blue'), R('green'), R('pink'), R('orange')];
+      for (let i = 0; i < 6; i++) {
+        // 4x5 pennants across the whole span, lighter on the left; alternate ones flutter 1px each frame
+        const x = 5 + i * 4, y = at(x + 1) + 1, c = cols[i], sway = ((i & 1) ? [1, 0, -1, 0] : [-1, 0, 1, 0])[f], len = 4 + (((i + f) & 1));
+        b.polygon([[x, y], [x + 3, y], [x + 1.5 + sway, y + len]], c[2]);
+        b.vline(x, y, 2, c[1]); b.set(x + 1, y + 2, c[1]); b.vline(x + 3, y, 2, c[3]);
       }
-      out(b, [[T5('red'), R('red')[5]], [T5('yellow'), R('yellow')[5]], [T5('blue'), R('blue')[5]], [T5('green'), R('green')[5]], [T5('pink'), R('pink')[5]]]);
+      out(b, [[T5('red'), R('red')[5]], [T5('yellow'), R('yellow')[5]], [T5('blue'), R('blue')[5]], [T5('green'), R('green')[5]], [T5('pink'), R('pink')[5]], [T5('orange'), R('orange')[5]]]);
       for (let x = 4; x < 28; x++) b.set(x, at(x), P.o4);                                                // the cord, 1px, over everything
       K.shadow(b, 16, 28, 14, 1);
       return b;
@@ -292,17 +327,21 @@
   K.stamp('picnic_bench', {
     w: 1, h: 1, rise: 4,
     paint: () => {
-      const b = K.B(16, 20), g = R('green');
-      // a plain backless picnic bench in the picnic_table's planks: two seat planks, legs splayed outward at each end
-      for (const [x0, x1] of [[4, 2], [11, 13]]) { b.line(x0, 14, x1, 18, P.o4); b.line(x0 + (x1 > x0 ? -1 : 1), 14, x1 + (x1 > x0 ? -1 : 1), 18, P.o5); }
-      b.hline(3, 16, 10, P.o5);                                                                         // a stretcher between the legs
-      b.fillRect(1, 8, 14, 3, P.o2); b.hline(1, 8, 14, P.o1); b.hline(1, 10, 14, P.o3);                // back plank
-      b.fillRect(1, 11, 14, 3, P.o2); b.hline(1, 11, 14, P.o1); b.hline(1, 13, 14, P.o4);              // front plank
-      b.hline(1, 14, 14, P.o4);
-      // Gran's little flask, off to one end
-      b.fillRect(11, 4, 2, 4, g[2]); b.vline(11, 4, 4, g[1]); b.hline(11, 3, 2, P.n2); b.set(12, 7, g[3]);
-      out(b, [[S.tones(g), g[5]], [[P.n2], P.n4]]);
-      K.shadow(b, 8, 19, 7, 1);
+      const b = K.B(16, 20);
+      // a low, wide backless bench: two trestle legs (splayed, with a foot rail), then a seat of three planks with dark gaps
+      for (const x of [2, 11]) { K.stick(b, x, 13, ['.ab.', '.ab.', 'a..b', 'a..b', 'cc.cc'.slice(0, 4)], { a: P.o3, b: P.o4, c: P.o5 }); }
+      b.hline(4, 15, 8, P.o4);
+      b.fillRect(0, 8, 16, 6, P.o2);
+      for (const y of [8, 10, 12]) b.hline(0, y, 16, P.o1);
+      for (const y of [9, 11]) b.hline(0, y, 16, P.o2);
+      b.hline(0, 10, 16, P.o5); b.hline(0, 12, 16, P.o5);                                               // the gaps between the planks
+      b.hline(0, 8, 16, P.o0); b.hline(0, 11, 16, P.o1); b.hline(0, 13, 16, P.o1);
+      b.hline(0, 14, 16, P.o4);                                                                         // the front edge in shade
+      for (const x of [1, 14]) for (const y of [9, 11, 13]) b.set(x, y, P.o4);                          // nail heads
+      // Gran's little wicker picnic basket at one end
+      K.stick(b, 9, 3, ['.kkkk.', 'k....k', 'wwwwww', 'wvwvwv', 'vvvvvv'], { k: P.o4, w: P.o1, v: P.o3 });
+      out(b);
+      K.shadow(b, 8, 19, 8, 1);
       return b;
     },
   });
@@ -326,8 +365,9 @@
         b.set(tx - 1, ty, r[1]); b.set(tx, ty, P.p0); b.set(tx + 1, ty, y[1]); b.set(tx - 1, ty + 1, r[3]); b.set(tx + 1, ty + 1, y[3]);
       }
       K.outer(b, S.omap([[S.tones(r), r[5]], [S.tones(y), y[5]], [[P.p0], P.p4]], 'o6'));
-      // the string: one 1px light line down to the kid's hands (drawn after the outline so it stays thin)
-      for (let yy = Bm[1] + 1; yy < 32; yy++) { const x = Math.round(Bm[0] - (yy - Bm[1]) * 0.22); if (!(b.u32[yy * 16 + x] >>> 24)) b.set(x, yy, P.p0); }
+      // the string: tied at the bridle point in the kite's centre, running down to the kid's hands clear of the tail; 1px, light with a
+      // darker tone on alternate pixels so it reads on bright grass (drawn after the outline so it stays thin)
+      for (let yy = M[1] + 1; yy < 32; yy++) { const x = Math.round(M[0] - 2 - (yy - M[1]) * 0.3); if (x >= 0 && !(b.u32[yy * 16 + x] >>> 24) || yy > Bm[1] + 1) b.set(Math.max(0, x), yy, yy & 1 ? P.n2 : P.p0); }
       return b;
     },
   });
@@ -360,25 +400,28 @@
   K.stamp('leaf_heap', {
     w: 1, h: 1, rise: 4,
     paint: () => {
-      const b = K.B(16, 20), o = R('orange'), gold = P.yl2, rust = R('brown')[3];
-      // a dome of leaves grouped into clusters: gold highlights on the top left, orange in the middle, rust in the shadow
-      for (let y = 8; y < 19; y++) for (let x = 1; x < 15; x++) {
-        const dx = (x - 7.5) / 6.8, dy = (y - 18) / 9.5;
-        if (dx * dx + dy * dy > 1) continue;
-        const l = dx * 0.7 + dy * 0.8 + (K.h32(x >> 1, y >> 1, 41) % 3 - 1) * 0.25;                     // cluster-sized lumps
-        b.set(x, y, l < -0.75 ? gold : l < -0.15 ? o[2] : l < 0.35 ? o[3] : rust);
+      const b = K.B(16, 20), o = R('orange'), rust = R('brown')[3];
+      // a lumpy heap: three rounded mounds on a flat base, filled with little 2px leaves in red, orange and yellow
+      const inHeap = (x, y) => ((x - 4) / 4) ** 2 + ((y - 13) / 4) ** 2 <= 1 || ((x - 8.5) / 5) ** 2 + ((y - 11) / 5) ** 2 <= 1 || ((x - 12.5) / 3.5) ** 2 + ((y - 13.5) / 3.5) ** 2 <= 1 || (y >= 14 && y <= 17 && x >= 1 && x <= 15);
+      for (let y = 5; y <= 17; y++) for (let x = 0; x < 16; x++) if (inHeap(x, y)) b.set(x, y, o[3]);
+      const LEAF = [P.red2, o[2], P.yl2];
+      for (let y = 6; y <= 15; y++) for (let x = 1; x < 15; x++) {
+        if (!inHeap(x, y) || !inHeap(x + 1, y + 1)) continue;
+        const h = K.h32(x, y, 77);
+        if (h % 3) continue;
+        const c = LEAF[(h >> 4) % 3], lit = x + y < 15;
+        b.set(x, y, lit && c === o[2] ? P.yl2 : c); b.set(x + 1, y + 1, c === P.yl2 ? o[2] : c === o[2] ? P.red2 : R('red')[3]);
       }
-      for (const [x, y] of [[4, 11], [9, 10], [6, 14], [11, 13], [3, 15]]) { b.set(x, y, rust); b.set(x + 1, y + 1, rust); }   // gaps between clusters
-      for (const [x, y] of [[5, 10], [8, 12], [12, 15]]) b.set(x, y, R('red')[2]);                      // a few red accents
-      // a rake leaning on the heap: thin brown handle, a fan of grey tines at the foot
-      b.line(13, 0, 10, 12, P.o3); b.line(14, 1, 11, 12, P.o4);
-      out(b, [[[gold, o[2], o[3], rust, R('red')[2]], o[5]]], o[5]);
-      // the rake head, after the outline so the tines stay crisp
-      for (let i = 0; i < 6; i++) { b.set(7 + i, 14, P.n3); b.set(7 + i, 15 + (i & 1), P.n2); }
-      b.hline(7, 13, 6, P.n4);
-      // a few loose leaves blown onto the ground
-      for (const [x, y, c] of [[0, 18, o[2]], [15, 17, gold], [2, 19, o[3]]]) b.set(x, y, c);
-      K.shadow(b, 8, 19, 7, 1);
+      b.hline(1, 16, 15, rust); b.hline(1, 17, 15, rust); b.hline(2, 15, 13, o[3]);                    // a darker base band
+      for (const [x, c] of [[3, P.red2], [8, P.yl2], [12, o[2]]]) b.set(x, 16, c);
+      out(b, [[[P.yl2, o[2], o[3], rust, P.red2, R('red')[3]], o[5]]], o[5]);
+      // the rake leaning on it: a tan handle, a bar, and six 1px dark tines with gaps
+      // the rake leaning on its side, head up: a tan handle down to the ground, a bar, and six 1px dark tines against the sky
+      b.line(11, 4, 14, 17, P.o2); b.line(12, 4, 15, 16, P.o3);
+      b.hline(6, 3, 10, P.o1); b.hline(6, 4, 10, P.o3);
+      for (let x = 6; x < 16; x += 2) { b.set(x, 1, P.ink); b.set(x, 2, P.ink); }
+      b.set(15, 2, P.ink);
+      K.shadow(b, 8, 19, 8, 1, 80);
       return b;
     },
   });
@@ -395,35 +438,33 @@
       b.fillRect(1, 37, 30, 5, P.n3); b.hline(1, 37, 30, P.n2); b.hline(2, 41, 28, P.n4);
       b.ellipse(16, 36, 15, 7, P.n1, false); b.fillRect(1, 36, 1, 5, P.n2); b.fillRect(30, 36, 1, 5, P.n4);
       b.fillRect(13, 38, 6, 3, P.gd3); b.hline(14, 39, 4, P.gd1);                                     // plaque
-      // the thimble standing in the basin: a domed, dimpled crown on top, the sides flaring out to a rolled rim at the waterline
-      const half = (y) => y < 13 ? Math.sqrt(Math.max(0, 1 - ((13 - y) / 9.5) ** 2)) * 8 : 8 + (y - 13) * 0.14;
-      for (let y = 4; y < 34; y++) {
+      // the thimble: straight, slightly tapered sides, a rounded dome cap, and a rolled rim band at the base
+      const half = (y) => y < 11 ? Math.sqrt(Math.max(0, 1 - ((11 - y) / 6.5) ** 2)) * 7.5 : 7.5 + (y - 11) * 0.05;
+      for (let y = 5; y < 30; y++) {
         const hw = half(y), x0 = Math.round(16 - hw), x1 = Math.round(16 + hw) - 1;
         for (let x = x0; x <= x1; x++) {
-          const l = (x - x0) / Math.max(1, x1 - x0), top = y < 13 ? (13 - y) / 9 : 0;
-          b.set(x, y, l < 0.18 + top * 0.2 && y > 5 ? g[0] : l < 0.4 ? g[1] : l < 0.68 ? g[2] : l < 0.86 ? g[3] : g[4]);
+          const l = (x - x0) / Math.max(1, x1 - x0), top = y < 11 ? (11 - y) / 6 : 0;
+          b.set(x, y, l < 0.16 + top * 0.25 && y > 5 ? g[0] : l < 0.4 ? g[1] : l < 0.68 ? g[2] : l < 0.86 ? g[3] : g[4]);
         }
       }
-      // dimples: dark and paired low in the middle, single and softer towards the crown and the edges, so the surface reads round
-      for (let y = 7; y < 29; y += 3) for (let x = 9 + ((y / 3) & 1) * 2; x < 25; x += 3) {
-        const hw = half(y), e = Math.abs(x - 16) / hw;
-        if (e > 0.85) continue;
-        const c = b.u32[y * W + x]; if (!(c >>> 24)) continue;
-        const soft = e > 0.55 || y < 12;
-        b.set(x, y, soft ? (x < 16 ? g[2] : g[4]) : (x < 13 ? g[2] : g[3]));
-        if (!soft && y > 14) b.set(x, y + 1, x < 13 ? g[1] : g[4]);
+      // dimples in rows, crisp on the lit side and fading out into the shadow side
+      for (let y = 8; y < 28; y += 3) for (let x = 10 + ((y / 3) & 1) * 2; x < 23; x += 3) {
+        const hw = half(y), e = (x - 16) / hw;
+        if (Math.abs(e) > 0.8 || e > 0.45) continue;
+        if (y < 10 && Math.abs(e) > 0.4) continue;
+        b.set(x, y, e > 0.15 ? g[3] : g[2]); if (e < 0 && y > 11) b.set(x, y + 1, g[1]);
       }
-      b.fillRect(6, 30, 20, 3, g[1]); b.hline(6, 30, 20, g[0]); b.hline(6, 32, 20, g[3]); b.fillRect(23, 30, 3, 3, g[3]);   // rolled rim
-      // water bubbling up from the crown and running down the sides in sheets, a different set each frame
-      for (let i = 0; i < 3; i++) b.set(13 + i * 3 + (f & 1), 3 - ((f + i) % 2), P.w0);
-      b.hline(13, 4, 6, P.w1); b.set(16, 4, P.w0);
-      const sheets = [[[8, 7, 18], [21, 9, 22]], [[10, 6, 14], [22, 10, 24], [7, 18, 28]], [[9, 6, 20], [23, 12, 20]], [[11, 5, 12], [21, 8, 26], [8, 20, 29]]][f];
-      for (const [x, y0, y1] of sheets) for (let y = y0; y <= y1; y++) {
-        const xx = x + (x < 16 ? -Math.round((y - y0) * 0.12) : Math.round((y - y0) * 0.12));
-        b.set(xx, y, (y + f) % 4 === 0 ? P.w0 : P.w2); b.set(xx + 1, y, P.w1);
-      }
-      b.set(5 + f * 2, 35, P.w1); b.set(26 - f * 2, 34, P.w1); b.set(9 + f, 33, P.w0); b.set(23 - f, 33, P.w0);   // ripples in the basin
+      // the rolled rim band: 2px, lighter gold, wider than the sides
+      b.fillRect(7, 30, 18, 2, g[1]); b.hline(7, 30, 18, g[0]); b.fillRect(21, 30, 4, 2, g[2]); b.set(24, 30, g[3]); b.set(24, 31, g[3]);
+      b.hline(7, 32, 18, g[3]);
+      // a little spout on the crown, with thin light-blue streams arching off it and falling into the basin; the droplets move each frame
+      b.fillRect(15, 3, 2, 2, P.n2); b.set(15, 3, P.n1);
       K.outer(b, S.omap([[g, P.gd5], [STONE, P.n5], [[P.w0, P.w1, P.w2, P.w3], P.w4]], 'n5'));
+      // (after the outline, so they stay 1px) streams arching off the spout and falling clear of the sides; the droplets move each frame
+      const streams = [[[14, 2], [12, 1], [10, 1], [8, 2], [6, 3], [5, 5]], [[17, 2], [19, 1], [21, 1], [23, 2], [25, 3], [26, 5]]];
+      for (const st of streams) for (let i = 0; i < st.length; i++) b.set(st[i][0], st[i][1], (i + f) % 3 === 0 ? P.w0 : P.w2);
+      for (let y = 6; y < 30; y++) { b.set(4 + (y > 18 ? 0 : 1) - (y > 26 ? 1 : 0), y, (y + f) % 4 === 0 ? P.w0 : P.w2); b.set(27 - (y > 18 ? 0 : 1) + (y > 26 ? 1 : 0), y, (y + f + 2) % 4 === 0 ? P.w0 : P.w2); }
+      b.set(5 + f, 34, P.w0); b.set(26 - f, 34, P.w0); b.set(9 + f, 33, P.w1); b.set(23 - f, 33, P.w1);   // splashes in the basin
       return b;
     },
   });
@@ -434,30 +475,34 @@
     paint: (v, f) => {
       const b = K.B(16, 22);
       // basket: weave, with a lighter rim band on top
-      b.fillRect(2, 14, 12, 6, P.o2); b.hline(2, 19, 12, P.o3);
-      for (let y = 16; y < 19; y++) for (let x = 2 + (y & 1); x < 14; x += 2) b.set(x, y, P.o3);
-      b.hline(2, 14, 12, P.o1); b.hline(2, 15, 12, P.o2);
-      // yarn balls peeking out round her: blue on the left, pink on the right, yellow in front, each with wrap lines
-      b.circle(3, 12, 2, P.bl1, true); b.set(2, 11, P.p0); b.set(3, 13, P.bl2); b.set(4, 12, P.bl2);
-      b.circle(13, 11, 2, P.pk1, true); b.set(12, 10, P.p0); b.set(13, 12, P.pk2); b.set(14, 11, P.pk2);
-      // the Kittabra, a girl in a tuxedo cat onesie, curled up asleep: her hood (round, two triangle ears) on the left, the body curving
-      // round to the right, the costume's tail wrapped round the front
-      b.ellipse(9.5, 10, 4.5, 3, P.ink2, true);                                                         // curled back
-      b.set(7, 7, P.ink3); b.hline(8, 7, 3, P.ink3); b.set(11, 8, P.ink3);                              // light along her back
-      b.circle(5, 8, 3, P.ink2, true); b.set(3, 6, P.ink3); b.set(4, 5, P.ink3);                         // hood
-      b.set(2, 5, P.ink2); b.set(2, 4, P.ink2); b.set(3, 4, P.ink2); b.set(7, 5, P.ink2); b.set(7, 4, P.ink2); b.set(6, 4, P.ink2);   // ears
-      b.fillRect(3, 8, 5, 3, SKIN); b.set(3, 10, P.ink2); b.set(7, 10, P.ink2);                         // her face in the hood opening
-      b.set(3, 9, P.ink2); b.set(4, 9, P.ink); b.set(6, 9, P.ink); b.set(7, 9, P.ink2);                 // eyes closed: two little curves
-      b.set(5, 10, P.pk1);
-      b.fillRect(8, 11, 3, 2, P.p0);                                                                     // white bib
-      b.hline(4, 13, 9, P.ink2); b.hline(5, 12, 2, P.ink2); b.set(12, 12, P.ink2); b.set(3, 13, P.p0);  // tail wrapped round the front, white tip
-      b.fillRect(8, 13, 2, 1, P.p0);                                                                     // a mitten paw over it
-      b.set(10, 14, P.yl1); b.circle(9, 15, 1, P.yl1, true); b.set(10, 16, P.o1);                        // a yellow ball tucked in front
-      out(b, [[[P.ink2, P.ink3, P.ink], P.ink], [[P.p0, SKIN, P.pk1, P.pk2, P.bl1, P.bl2, P.yl1], P.o6]]);
-      b.line(13, 12, 14, 17, P.pk2);                                                                     // a loose strand over the rim
-      // the sleep "z": small then large in turn, up and to the right, white with a dark outline
-      const z = K.spr(f ? ['xxxx', '..x.', '.x..', 'x...', 'xxxx'] : ['xxx', '..x', '.x.', 'xxx'], { x: P.p0 }), zl = K.B(16, 8);
-      zl.blit(z, f ? 11 : 10, f ? 1 : 3); K.outer(zl, P.ink); b.blit(zl, 0, 0);
+      b.fillRect(2, 15, 12, 5, P.o2); b.hline(2, 19, 12, P.o3);
+      for (let y = 17; y < 19; y++) for (let x = 2 + (y & 1); x < 14; x += 2) b.set(x, y, P.o3);
+      b.hline(1, 15, 14, P.o1); b.hline(1, 16, 14, P.o2);
+      // the Kittabra, a girl in a tuxedo-cat onesie, curled up asleep on the yarn: hood ears up, her face tucked down on her white
+      // mittens, closed eyes as two little lines, the costume tail wrapped round the front. She breathes: up 1px on frame 1.
+      const k = K.B(16, 22);
+      K.stick(k, 2, 7 - f, [
+        '.k...k.......',
+        'kKk.kKk......',
+        'kKKKKKkkkkk..',
+        'kKsssssKKKkkk',
+        'kKaasaaKkkkkk',
+        'kwsssssw.kkkt',
+        '.kkkkkkkkkkkt',
+        'ttttttttttttt',
+      ], { k: P.ink2, K: P.ink3, s: SKIN, a: P.ink, w: P.p0, t: P.ink2 });
+      k.set(2, 14 - f, P.p0);                                                                           // the tail's white tip
+      K.outer(k, P.ink);
+      b.blit(k, 0, 0);
+      // three round balls of yarn sitting at the rim in front of her, each with a wrap line
+      const yb = K.B(16, 22);
+      for (const [x, y, c] of [[0, 13, [P.bl1, P.bl2]], [11, 13, [P.pk1, P.pk2]], [6, 15, [P.yl1, P.yl2]]]) {
+        K.stick(yb, x, y, ['.aa.', 'abaa', 'aaba', '.bb.'], { a: c[0], b: c[1] });
+      }
+      K.outer(yb, 'o6');
+      b.blit(yb, 0, 0);
+      // a small sleep "z": a 3x3 white glyph up and to the right, clear of her ear
+      K.stick(b, 12, f ? 1 : 2, ['zzz', '.z.', 'z..', 'zzz'], { z: P.p0 });
       K.shadow(b, 8, 21, 7, 1);
       return b;
     },
@@ -492,41 +537,53 @@
   }
   const CROP = {
     wheat: (b, x, y) => { for (let i = -2; i <= 2; i += 2) { b.vline(x + i, y - 5, 6, P.hy3); b.fillRect(x + i - 1, y - 8, 2, 4, P.hy1); b.set(x + i, y - 9, P.hy0); } },
-    corn: (b, x, y) => {   // a 2px stalk, long drooping leaves in two greens, a cob in its green husk, a tassel
-      b.fillRect(x, y - 10, 2, 11, P.f3); b.vline(x, y - 10, 11, P.f2);
-      b.line(x - 1, y - 9, x - 3, y - 8, P.f2); b.set(x - 4, y - 7, P.f3);
-      b.line(x - 1, y - 5, x - 4, y - 4, P.f2); b.set(x - 5, y - 3, P.f3); b.set(x - 5, y - 2, P.f3);
-      b.line(x + 2, y - 8, x + 5, y - 6, P.f3); b.set(x + 5, y - 5, P.f4);
-      b.fillRect(x + 2, y - 5, 2, 3, P.yl2); b.set(x + 2, y - 5, P.yl1); b.set(x + 3, y - 2, P.f3); b.set(x + 2, y - 2, P.f2); b.set(x + 4, y - 4, P.f3);
-      b.set(x, y - 11, P.hy1); b.set(x + 1, y - 12, P.hy1);
+    corn: (b, x, y) => {   // a tall 2px stalk, two long drooping leaves each side in two greens, one cob in its husk, a tassel
+      b.fillRect(x, y - 13, 2, 14, P.f3); b.vline(x, y - 13, 14, P.f2);
+      for (const [ly, dir] of [[10, -1], [6, 1], [3, -1]]) {
+        const sx = dir < 0 ? x - 1 : x + 2;
+        b.set(sx, y - ly, P.f1); b.set(sx + dir, y - ly + 0, P.f1); b.set(sx + dir * 2, y - ly + 1, P.f2); b.set(sx + dir * 3, y - ly + 2, P.f3);
+        b.set(sx + dir, y - ly + 1, P.f3);
+      }
+      b.fillRect(x + 2, y - 9, 2, 4, P.yl2); b.set(x + 2, y - 9, P.yl1); b.set(x + 3, y - 6, P.yl3); b.set(x + 3, y - 9, P.f2);   // the cob
+      b.set(x, y - 14, P.hy1); b.set(x + 1, y - 15, P.hy1); b.set(x - 1, y - 15, P.hy2);
     },
-    potato: (b, x, y) => { K.lobe(b, x, y - 2, 3, 2, K.TN.leaf); b.set(x - 1, y - 4, P.p0); b.set(x + 1, y, P.o1); },
+    potato: (b, x, y) => {   // low, spreading dark leaves with small white flowers
+      b.ellipse(x, y - 1, 2.5, 1.5, P.f4, true); b.hline(x - 1, y - 2, 2, P.f3); b.set(x + 1, y - 1, P.f3); b.hline(x - 2, y, 5, P.f5);
+      b.set(x - 1, y - 3, P.p0); b.set(x + 1, y - 3, P.p0); b.set(x + 2, y - 2, P.p0); b.set(x + 1, y - 2, P.yl2);
+    },
     carrot: (b, x, y) => { b.fillRect(x - 1, y - 1, 3, 2, R('orange')[2]); b.hline(x - 1, y - 1, 2, R('orange')[1]); b.set(x - 1, y - 1, R('orange')[0]); for (const dx of [-2, 0, 2]) b.line(x, y - 2, x + dx, y - 6, P.f2); b.set(x, y - 6, P.f1); },
     cabbage: (b, x, y) => {   // dark outer leaves, lighter inner leaves, a pale core with a little swirl
       b.ellipse(x, y - 2, 3, 2.5, P.f3, true); b.hline(x - 2, y, 5, P.f4); b.set(x + 3, y - 1, P.f4);
-      b.ellipse(x - 0.5, y - 2.5, 2, 1.5, P.f1, true);
-      b.set(x - 1, y - 3, P.g0); b.set(x, y - 3, P.g0); b.set(x, y - 2, P.f2); b.set(x + 1, y - 3, P.f2); b.set(x - 1, y - 2, P.f0);
+      b.ellipse(x - 0.5, y - 2.5, 2, 1.5, P.f0, true);
+      b.set(x - 1, y - 3, P.g0); b.set(x, y - 3, P.g0); b.set(x, y - 2, P.f1); b.set(x + 1, y - 2, P.f1); b.set(x - 1, y - 2, P.g0);
     },
-    tomato: (b, x, y) => { b.vline(x + 2, y - 12, 13, P.o3); K.lobe(b, x, y - 6, 3, 5, K.TN.leaf); for (const [dx, dy] of [[-1, -8], [1, -4], [-2, -3]]) { b.fillRect(x + dx, y + dy, 2, 2, P.red2); b.set(x + dx, y + dy, P.red1); } },
+    tomato: (b, x, y) => {   // a tan stake, lobed leaves up it, clusters of 2px red fruit with a highlight
+      for (const [lx, ly, rx, ry] of [[-1, -11, 2, 1.5], [2, -8, 2, 1.5], [-2, -6, 2, 1.5], [1, -3, 2.5, 1.5], [-2, -1, 2, 1]]) {
+        b.ellipse(x + lx, y + ly, rx, ry, P.f3, true); b.set(x + lx - 1, y + ly - 1, P.f1); b.set(x + lx + 1, y + ly + 1, P.f4);
+      }
+      b.vline(x, y - 13, 14, P.o1); b.set(x, y - 13, P.o0);
+      for (const [dx, dy] of [[-3, -8], [-1, -7], [2, -5], [3, -4], [-3, -3]]) { b.fillRect(x + dx, y + dy, 2, 2, P.red2); b.set(x + dx, y + dy, P.red0); }
+    },
     onion: (b, x, y) => { b.fillRect(x - 1, y - 2, 3, 3, P.p0); b.set(x + 1, y, P.p2); for (const dx of [-1, 0, 1]) b.vline(x + dx, y - 7 + Math.abs(dx), 5 - Math.abs(dx), dx ? P.f3 : P.f2); },
   };
-  const cropOutline = [[K.TN.leaf, P.f6], [K.TN.leafLight, P.f5], [[P.f1, P.f2, P.f3, P.f4], P.f6], [[P.hy0, P.hy1, P.hy2, P.hy3, P.yl1, P.yl2], P.o5],
-    [S.tones(R('orange')), R('orange')[5]], [[P.red1, P.red2], P.red4], [[P.p0, P.p2], P.f6], [[P.d2, P.d3, P.d4, P.d5], P.d5], [[P.g0], P.f6]];
+  const cropOutline = [[K.TN.leaf, P.f6], [K.TN.leafLight, P.f5], [[P.f1, P.f2, P.f3, P.f4], P.f6], [[P.hy0, P.hy1, P.hy2, P.hy3, P.yl1, P.yl2, P.yl3], P.o5],
+    [S.tones(R('orange')), R('orange')[5]], [[P.red0, P.red1, P.red2], P.red4], [[P.p0, P.p2], P.f6], [[P.d2, P.d3, P.d4, P.d5], P.d5], [[P.g0], P.f6]];
   K.stamp('crop_plot', {
     w: 2, h: 2, variants: ['wheat', 'corn', 'potato', 'carrot', 'cabbage'],
     paint: (v) => {
       const b = K.B(32, 32);
-      const rows = v === 'corn' ? [12, 21, 30] : v === 'wheat' ? [9, 16, 23, 30] : [8, 14, 20, 26, 30].slice(0, 5);
+      const rows = v === 'corn' ? [16, 30] : v === 'wheat' ? [9, 16, 23, 30] : [8, 14, 20, 26, 30].slice(0, 5);
       soil(b, 32, 32, rows);
       if (v === 'wheat') {
-        // thin gold stalks with leaning ears, soil showing between the rows
-        for (const y of rows) for (let x = 3; x < 29; x += 3) {
-          const h = 5 + (K.h32(x, y, 3) % 2), lean = ((x >> 1) + (y >> 2)) & 1;
-          b.vline(x, y - h, h, P.hy3);
-          b.fillRect(x + lean - 1, y - h - 3, 2, 3, P.hy1); b.vline(x + lean, y - h - 2, 2, P.hy2); b.set(x + lean - 1, y - h - 3, P.hy0);
+        // dense golden tufts in four clear rows: darker stems, a lighter head on each, a small gap between tufts
+        for (const y of rows) for (let x = 2; x < 30; x++) {
+          if (x % 5 === 1) continue;
+          const tall = (x % 5 === 3) ? 1 : 0;
+          b.vline(x, y - 2, 3, P.hy3);
+          b.fillRect(x, y - 5 - tall, 1, 3, x % 2 ? P.hy1 : P.hy2); b.set(x, y - 5 - tall, P.hy0);
         }
       } else if (v === 'corn') {
-        for (const y of rows) for (let x = 6; x < 27; x += 6) CROP.corn(b, x + ((y >> 3) & 1) * 2, y);
+        for (const y of rows) for (let x = 7; x < 27; x += 8) CROP.corn(b, x + ((y >> 3) & 1) * 2, y);
       } else {
         const dx = 6;
         for (const y of rows) for (let x = 5; x < 29; x += dx) CROP[v](b, x + ((y >> 2) & 1), y);
@@ -569,13 +626,20 @@
   K.stamp('watering_can', {
     w: 1, h: 1,
     paint: () => {
-      const b = K.B(16, 16), g = R('green');
-      b.fillRect(3, 6, 7, 7, g[2]); b.vline(3, 6, 7, g[1]); b.vline(9, 6, 7, g[3]); b.hline(3, 12, 7, g[4]);
-      b.ellipse(6, 6, 3, 1, g[1], true); b.set(5, 6, g[4]);
-      b.line(10, 11, 13, 5, g[2]); b.line(10, 10, 13, 4, g[1]); b.fillRect(13, 3, 2, 2, g[3]);          // spout and rose
-      b.line(4, 5, 6, 2, g[3]); b.line(6, 2, 8, 5, g[3]);                                              // handle
-      out(b, [[S.tones(g), g[5]]], g[5]);
-      K.shadow(b, 7, 14, 5, 1);
+      const b = K.B(16, 16);
+      // galvanised grey: lit west side and a white glint, mid body, darker east side and base
+      b.fillRect(2, 6, 8, 7, P.n2); b.vline(2, 6, 7, P.n1); b.vline(8, 6, 7, P.n3); b.vline(9, 6, 7, P.n4); b.hline(2, 12, 8, P.n4);
+      b.vline(3, 7, 3, P.white);
+      b.hline(2, 6, 8, P.n1); b.hline(3, 5, 6, P.n3);                                                  // the rolled top rim
+      for (const y of [8, 11]) b.hline(3, y, 5, P.n3);                                                  // two ribs
+      // the long spout ending in a wider rose
+      b.line(10, 11, 12, 5, P.n2); b.line(10, 12, 13, 6, P.n3);
+      K.stick(b, 12, 2, ['.ab', 'abc', 'bcc'], { a: P.n0, b: P.n1, c: P.n3 });
+      out(b, [[[P.n0, P.n1, P.n2, P.n3, P.n4, P.white], P.n6]], 'n6');
+      // the open handle loop over the top (after the outline so the gap stays open)
+      for (const [x, y] of [[3, 4], [3, 3], [4, 2], [5, 2], [6, 2], [7, 3], [7, 4]]) b.set(x, y, P.n6);
+      b.set(4, 3, P.n2); b.set(5, 3, 0); b.set(6, 3, P.n3);
+      K.shadow(b, 7, 14, 6, 1);
       return b;
     },
   });
@@ -585,16 +649,26 @@
     w: 1, h: 1, rise: 12,
     paint: () => {
       const b = K.B(16, 28), pk = R('pink');
-      b.vline(8, 12, 15, P.o3); b.vline(7, 12, 15, P.o2);                                              // post
-      b.fillRect(1, 12, 14, 2, P.o2);                                                                   // crossbar
-      b.fillRect(4, 12, 8, 9, pk[2]); b.vline(4, 12, 9, pk[1]); b.vline(11, 12, 9, pk[3]);              // cardigan
-      b.fillRect(1, 12, 3, 4, pk[2]); b.fillRect(12, 12, 3, 4, pk[3]);                                  // sleeves
-      b.set(1, 16, P.hy1); b.set(14, 16, P.hy1); b.set(2, 16, P.hy2);                                   // straw cuffs
-      b.fillRect(5, 15, 3, 3, R('blue')[2]); b.set(5, 15, R('blue')[1]);                                // a patch
-      for (const y of [14, 16, 18]) b.set(8, y, P.p0);                                                  // buttons
-      b.fillRect(5, 6, 6, 6, P.hy2); b.hline(5, 6, 6, P.hy1); b.set(6, 8, P.o5); b.set(9, 8, P.o5); b.hline(6, 10, 4, P.o4);   // burlap face
-      b.fillRect(2, 5, 12, 2, P.hy1); b.fillRect(5, 2, 6, 3, P.hy2); b.hline(5, 2, 6, P.hy0); b.hline(5, 4, 6, pk[3]);  // straw hat with a band
-      out(b, [[S.tones(pk), pk[5]], [[P.hy0, P.hy1, P.hy2], P.o5], [T5('blue'), R('blue')[5]], [[P.p0], P.o6]]);
+      b.vline(8, 10, 17, P.o3); b.vline(7, 10, 17, P.o2);                                              // post, right down to the ground
+      b.fillRect(1, 10, 14, 2, P.o2);                                                                   // crossbar
+      b.fillRect(4, 10, 8, 9, pk[2]); b.vline(4, 10, 9, pk[1]); b.vline(11, 10, 9, pk[3]);              // cardigan
+      b.fillRect(1, 10, 3, 4, pk[2]); b.hline(1, 10, 3, pk[1]); b.fillRect(12, 10, 3, 4, pk[3]);        // sleeves
+      for (const [x, y, c] of [[0, 14, P.hy1], [1, 14, P.hy2], [2, 15, P.hy1], [13, 14, P.hy2], [14, 15, P.hy1], [15, 14, P.hy2]]) b.set(x, y, c);   // straw out of the cuffs
+      b.fillRect(5, 13, 3, 3, R('blue')[2]);                                                            // a patch
+      for (const y of [12, 14, 16]) b.set(8, y, P.p0);                                                  // buttons
+      // the burlap sack head: two tones, button eyes, a stitched smile, tied at the neck with straw poking out
+      K.stick(b, 4, 3, [
+        '.aaaab..',
+        'aaaaabbb',
+        'aekaakbb'.replace('e', 'a'),
+        'aaaaaabb',
+        'asasasbb'.replace(/s/g, 's'),
+        '.aaaabb.',
+        'h.tttt.h',
+      ], { a: P.hy2, b: P.hy3, k: P.ink, s: P.o5, t: P.o4, h: P.hy1 });
+      b.set(5, 5, P.ink);
+      b.fillRect(2, 2, 12, 2, P.hy1); b.hline(2, 3, 12, P.hy2); b.fillRect(5, 0, 6, 2, P.hy2); b.hline(5, 0, 6, P.hy1); b.hline(5, 2, 6, pk[3]);   // straw hat with a band
+      out(b, [[S.tones(pk), pk[5]], [[P.hy1, P.hy2, P.hy3], P.o5], [[P.p0], P.o6]]);
       K.shadow(b, 8, 27, 4, 1);
       return b;
     },
@@ -604,19 +678,22 @@
     w: 1, h: 1, variants: ['carrots'],
     paint: () => {
       const b = K.B(16, 16), o = R('orange');
-      // handles and legs at the back (west), the tray, and the single wheel at the front (east)
-      b.line(0, 6, 4, 8, P.o3); b.line(0, 7, 3, 9, P.o4);                                              // handles
-      b.line(4, 11, 3, 14, P.o4); b.line(6, 11, 6, 14, P.o4);                                           // legs
-      b.polygon([[3, 6], [13, 6], [11, 11], [4, 11]], P.o2); b.hline(4, 11, 7, P.o4); b.line(13, 6, 11, 11, P.o3);
-      // carrots standing up out of the tray: orange shoulders, a darker tip, leafy green tufts
-      for (const [x, yy] of [[4, 2], [7, 1], [10, 2], [12, 3]]) {
-        b.set(x, yy + 1, o[1]); b.set(x + 1, yy + 1, o[2]); b.set(x, yy + 2, o[1]); b.set(x + 1, yy + 2, o[2]); b.set(x, yy + 3, o[2]); b.set(x + 1, yy + 3, o[3]);
+      // two handle rails running back (west) to dark grips, two legs, then the tray: its open top a lighter trapezoid, its side a darker band
+      b.line(1, 6, 4, 8, P.o3); b.line(1, 9, 4, 10, P.o3);
+      b.fillRect(0, 5, 2, 2, P.o5); b.fillRect(0, 8, 2, 2, P.o5);
+      b.line(5, 12, 5, 14, P.o4); b.line(8, 12, 8, 14, P.o4);
+      b.polygon([[3, 6], [14, 6], [12, 9], [4, 9]], P.o1);
+      b.hline(3, 6, 12, P.o0);
+      b.polygon([[4, 10], [12, 10], [11, 12], [5, 12]], P.o3); b.hline(4, 10, 9, P.o4); b.hline(5, 12, 7, P.o4);
+      // carrots heaped in the tray: orange shoulders, a darker tip, leafy tops
+      for (const [x, yy] of [[5, 3], [8, 2], [11, 3]]) {
+        b.set(x, yy + 1, o[2]); b.set(x + 1, yy + 1, o[2]); b.set(x, yy + 2, o[2]); b.set(x + 1, yy + 2, o[3]); b.set(x, yy + 3, o[2]); b.set(x + 1, yy + 3, o[3]);
         b.set(x, yy, P.f2); b.set(x + 1, yy - 1, P.f3);
       }
-      b.hline(3, 6, 11, P.o0); b.hline(4, 7, 9, P.o3);                                                 // the tray's lit rim and the inside wall below it
-      b.circle(13, 12, 2, P.ink2, true); b.fillRect(12, 11, 3, 3, P.n4); b.set(13, 12, P.n2); b.set(12, 11, P.n2);   // the wheel: a dark tyre ring round a lighter hub
-      b.set(12, 10, P.o4); b.set(13, 10, P.o4);
-      out(b, [[S.tones(o), o[5]], [[P.f2, P.f3], P.ink], [[P.ink2, P.n2, P.n4], P.ink]]);
+      for (const x of [6, 9]) { b.set(x, 7, o[2]); b.set(x + 1, 7, o[3]); }
+      // the wheel at the front: a round dark tyre, a light hub
+      K.stick(b, 11, 10, ['.rrr.', 'rhnrr', 'rnwnr', 'rrnrr', '.rrr.'], { r: P.ink2, h: P.n2, n: P.n2, w: P.n0 });
+      out(b, [[[P.f2, P.f3], P.ink], [[P.ink2, P.n0, P.n2], P.ink]]);
       K.shadow(b, 8, 15, 7, 1);
       return b;
     },
