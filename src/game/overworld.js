@@ -7,6 +7,8 @@
   const A = () => NP.assets;
   const DIRV = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
   const OPP = { up: 'down', down: 'up', left: 'right', right: 'left' };
+  // anything a shopkeeper can stand behind: A at the front of one talks to whoever is on the other side (owner's rule)
+  const COUNTERS = new Set(['counter_l', 'counter_m', 'counter_r', 'counter_c', 'tea_healer', 'display_case', 'honey_stall']);
   const ABORT = { abort: true };
   /** Writing-team hook: NP.text.get(key) -> array of page strings | null. Safe when NP.text does not exist. */
   function textOverride(key) {
@@ -813,7 +815,7 @@
       const p = this.player, m = this.map;
       const [dx, dy] = DIRV[p.dir];
       const x = p.x + dx, y = p.y + dy;
-      const a = this.actors.find((q) => q.visible && q.x === x && q.y === y);
+      let a = this.actors.find((q) => q.visible && q.x === x && q.y === y);
       // field move: facing calm water with Disc: Paddle in the bag, A offers to step onto it
       if (!a && m.inBounds(x, y) && m.tdef(x, y).paddle && !this.paddling() && NP.state.bag.disc_paddle) {
         const dir = p.dir;
@@ -822,23 +824,7 @@
       }
       if (a) {
         if (a.kind === 'prop') { this.runScript(a.def.script, a); return; }
-        const d = a.def;
-        if (a.kind === 'npc' && d) {
-          NP.snd.sfx('select');
-          a.dir = OPP[p.dir];
-          const tr = d.trainer;
-          if (tr) {
-            if (NP.state.flags['tr_' + m.id + '_' + a.id]) this.runScript(tr.then || function* (c) { yield* c.sayT(m.id + '.' + a.id + '.after', tr.after); }, a);
-            else this.spawn(this.trainerEncounter(a, false), 'trainer');
-            return;
-          }
-          if (d.script) this.runScript(d.script, a);
-          else if (d.say) {
-            const lines = textOverride(m.id + '.' + a.id) || (Array.isArray(d.say) ? d.say : [d.say]);
-            this.runScript(function* (c) { for (const t of lines) yield* c.say(t); });
-          }
-          return;
-        }
+        if (a.kind === 'npc' && a.def) { this.talkTo(a); return; }
       }
       for (const e of m.def.interact || []) {
         if (e.x === x && e.y === y) {
@@ -848,9 +834,36 @@
           return;
         }
       }
+      // a counter in front of you: talk to whoever stands on the far side of it
+      if (!a && this.counterAt(x, y)) {
+        a = this.actors.find((q) => q.visible && q.kind === 'npc' && q.def && q.x === x + dx && q.y === y + dy);
+        if (a) { this.talkTo(a); return; }
+      }
       // field move: a bush in front of you can be snipped away
       const bush = m.placements.find((q) => q.id === 'bush' && q.x === x && q.y === y);
       if (bush) { NP.snd.sfx('select'); this.runScript(function* (c) { yield* c.snip(bush); }); }
+    }
+
+    counterAt(x, y) {
+      return this.map.placements.some((q) => COUNTERS.has(q.id) && x >= q.x && x < q.x + q.w && y >= q.y && y < q.y + q.h);
+    }
+
+    /** A on an NPC (face to face, or across a counter) */
+    talkTo(a) {
+      const p = this.player, m = this.map, d = a.def;
+      NP.snd.sfx('select');
+      a.dir = OPP[p.dir];
+      const tr = d.trainer;
+      if (tr) {
+        if (NP.state.flags['tr_' + m.id + '_' + a.id]) this.runScript(tr.then || function* (c) { yield* c.sayT(m.id + '.' + a.id + '.after', tr.after); }, a);
+        else this.spawn(this.trainerEncounter(a, false), 'trainer');
+        return;
+      }
+      if (d.script) this.runScript(d.script, a);
+      else if (d.say) {
+        const lines = textOverride(m.id + '.' + a.id) || (Array.isArray(d.say) ? d.say : [d.say]);
+        this.runScript(function* (c) { for (const t of lines) yield* c.say(t); });
+      }
     }
 
     npcAI() {
