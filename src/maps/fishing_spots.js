@@ -15,7 +15,7 @@
     kigu: { 1: [['gilfin', lo, lo + 3, 60], ['kiskat', lo, lo + 3, 40]], 2: [['kiskat', mid, mid + 4, 40], ['zeel', mid, mid + 4, 25], ['gilfin', mid, mid + 4, 35]], 3: [['slickish', hi, hi + 4, 40], ['zeel', hi, hi + 4, 30], ['gilfin', hi, hi + 4, 30]] },
   }, extra || {});
   const SPOTS = {
-    button_town: { water: 'salt', kigu: { 1: [['fugubun', 5, 8, 100]], 2: [['fugubun', 18, 22, 60], ['kelpony', 18, 22, 40]], 3: [['bloppoo', 32, 36, 60], ['kelpony', 30, 34, 40]] } },
+    button_town: { water: 'salt', kigu: { 1: [['fugubun', 5, 8, 100]], 2: [['fugubun', 18, 22, 60], ['kelpony', 18, 22, 40]], 3: [['swellegant', 32, 36, 60], ['kelpony', 30, 34, 40]] } },
     route1: FRESH(4, 18, 30),
     ribbon_loop: FRESH(4, 18, 30),
     route2: FRESH(5, 18, 30, { river: true }),

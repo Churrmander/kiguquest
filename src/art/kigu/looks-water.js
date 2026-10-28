@@ -36,7 +36,7 @@
   const PUF = { main: '#e8d080', sub: '#fbf6e4', hair: '#8a6a2a', mitt: '#e8d080', foot: '#a8884a', eye: '#3a3020', acc: '#8ac06a', dark: '#a8884a', spot: '#a8884a' };
   D('fugubun', { name: 'Fugubun', stage: 1, size: 56, rise: 4, pal: PUF, hood: { type: 'up', ears: null }, hair: { style: 'short', bangs: 'part' }, mouth: 'o', arms: G.hand, footMat: 'foot', bodyW: 1.3,
     parts: [['belly', { mat: 'sub' }], ['spots', { mat: 'spot', pts: [[-5, 1, 1], [0, 0, 1], [5, 1, 1]] }], ['hat', { kind: 'tuft', mat: 'acc' }]] });
-  D('bloppoo', { name: 'Bloppoo', stage: 2, size: 74, rise: 6, pal: PUF, hood: { type: 'up', ears: null }, hair: { style: 'bob', bangs: 'part' }, mouth: 'o', arms: G.hand, footMat: 'foot', bodyW: 1.35,
+  D('swellegant', { name: 'Swellegant', stage: 2, size: 74, rise: 6, pal: PUF, hood: { type: 'up', ears: null }, hair: { style: 'bob', bangs: 'part' }, mouth: 'o', arms: G.hand, footMat: 'foot', bodyW: 1.35,
     parts: [['cape', { mat: 'acc', trim: 'sub', flare: 9, drop: 4 }], ['belly', { mat: 'sub' }], ['spots', { mat: 'acc', pts: [[-6, 2, 1.4], [0, 1, 1.4], [6, 2, 1.4]] }], ['hat', { kind: 'tuft', mat: 'acc' }]] });
 
   // ---- seahorse (salt water)

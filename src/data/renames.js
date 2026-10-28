@@ -70,6 +70,7 @@
     boulderina: 'bouldame',
     // round 5 (2026-10-28): the crab line goes navy all the way, cadet to admiral
     snipsnap: 'clawdet',
+    bloppoo: 'swellegant',   // swell + elegant, owner's pick
   });
   const from = (NP.data.renamedFrom = {});
   Object.keys(R).forEach((o) => (from[R[o]] = o));

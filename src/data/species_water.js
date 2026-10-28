@@ -40,12 +40,12 @@
   sp('ryukoi', 'Ryukoi', ['tide', 'drake'], [95, 120, 80, 60, 100, 82], { growth: 'slow', catch: 45, exp: 214, ab: ['torrent'], cry: 'Gu-RYOO!', stage: 2, family: 'gilfin',
     ls: [[1, 'fin_flap'], [1, 'koi_rush'], [1, 'pounce'], [30, 'koi_rush'], [34, 'waterfall_climb'], [40, 'paddle_slap'], [46, 'tide_wave']],
     dex: 'A dragon-koi in a cape of gold-thread scales. The first Ryukoi swam up a waterfall for months to reach a golden scale.' });
-  sp('fugubun', 'Fugubun', ['tide'], [55, 48, 62, 50, 55, 35], { catch: 190, exp: 58, ab: ['shed_skin'], cry: 'Pffup!', evo: [{ to: 'bloppoo', level: 18 }],
+  sp('fugubun', 'Fugubun', ['tide'], [55, 48, 62, 50, 55, 35], { catch: 190, exp: 58, ab: ['shed_skin'], cry: 'Pffup!', evo: [{ to: 'swellegant', level: 18 }],
     ls: [[1, 'pounce'], [1, 'puff_up'], [5, 'bubble_pop'], [10, 'spine_jab'], [15, 'aqua_dash']],
     dex: 'A round pufferfish onesie with a fringed hood. When she\'s startled she puffs up so much that she rolls away.' });
-  sp('bloppoo', 'Bloppoo', ['tide', 'nettle'], [85, 72, 92, 70, 80, 45], { catch: 75, exp: 155, ab: ['shed_skin'], cry: 'Pfff-PAH!', stage: 2, family: 'fugubun',
+  sp('swellegant', 'Swellegant', ['tide', 'nettle'], [85, 72, 92, 70, 80, 45], { catch: 75, exp: 155, ab: ['shed_skin'], cry: 'Pfff-PAH!', stage: 2, family: 'fugubun',
     ls: [[1, 'puff_up'], [1, 'spine_jab'], [1, 'aqua_dash'], [18, 'tail_sting'], [24, 'bubble_beam'], [32, 'tide_wave']],
-    dex: 'A bubble cape with soft green spine-frills. They are padded, not sharp, but nobody wants to find that out.' });
+    dex: 'A very proper lady in a bubble-lace gown trimmed with soft spine-frills. The moment anything flusters her, she swells up to twice her size.' });
   sp('kelpony', 'Kelpony', ['tide', 'dream'], [50, 40, 55, 65, 65, 55], { catch: 120, exp: 64, ab: ['keen_eye'], cry: 'Bloop-hm.',
     evo: [{ to: 'kelpuda', level: 1, held: 'delicate_teacup' }],
     ls: [[1, 'bubble_pop'], [1, 'daydream'], [8, 'kelp_drift'], [14, 'bubble_beam'], [20, 'dream_wave']],
