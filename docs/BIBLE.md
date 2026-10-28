@@ -77,7 +77,7 @@ Every new or changed Kigu name must pass all of these, and **the owner approves 
 9. **One theme per line (owner, 2026-10-28).** Every stage of an evolution line carries the same idea, and the line grows it
    from first stage to last: Clawdet → Crabmiral (navy: cadet, then admiral). Snipsnap → Crabmiral failed this (no navy
    in the first stage) and was renamed. Check the names, the costumes and the Sketchbook lines. A line doesn't need a job or
-   costume theme: the animal simply growing up is a theme too (Chipsnatch the squawking seagull → Gullrae the long-distance
+   costume theme: the animal simply growing up is a theme too (Snakcher the squawking seagull → Gullrae the long-distance
    albatross). What fails is a line that switches ideas partway.
 
 **Owner's note on rule 4 (2026-10-26):** a stem only counts when it carries the same idea. Letters that line up by
