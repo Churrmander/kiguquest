@@ -700,6 +700,36 @@
     },
   });
 
+  // ============================================================================================ the pond grotto's rock arch
+  // Walk-over 2x2 (all '.', the terrain under it does the blocking): a low arch of mossy rock over a 2x2 grotto floor, its open side
+  // facing west onto the water. A heavy lintel across the top (rising 14 px over the bank behind) and a rock pillar down the east
+  // side; the middle stays clear so whatever sits on the cave floor (Button Town's Wish Candy) shows through.
+  K.stamp('grotto_arch', {
+    w: 2, h: 2, rise: 14, solid: ['..', '..'],
+    paint: () => {
+      const b = K.B(32, 46), RK = K.TN.rock;
+      // the east pillar: two stacked boulders, the lower one wider at the foot
+      K.lobe(b, 28, 38, 4, 7, RK); K.lobe(b, 28, 25, 4, 7, RK);
+      // the lintel: a row of overlapping boulders, bigger towards the east where it meets the pillar
+      K.lobe(b, 5, 13, 6, 5, RK); K.lobe(b, 14, 10, 7, 6, RK); K.lobe(b, 24, 10, 8, 7, RK);
+      // the arch's underside in deep shade: the cave mouth seen from the front
+      for (let x = 2; x < 26; x++) { const yb = 16 + Math.round(1.5 * Math.sin((x - 2) * 0.13)); b.set(x, yb, P.r4); b.set(x, yb + 1, P.r5); }
+      for (let y = 18; y < 42; y++) b.set(25, y, P.r4);
+      // moss along the top of the lintel
+      for (let x = 1; x < 31; x++) { for (let y = 0; y < 12; y++) if (b.u32[y * 32 + x] >>> 24) { b.set(x, y, P.g2); if (y + 1 < 46 && b.u32[(y + 1) * 32 + x] >>> 24) b.set(x, y + 1, P.g3); break; } }
+      // cracks, each a dark line with a lit lip on its upper-left
+      for (const pts of [[[12, 6], [14, 9], [13, 12]], [[22, 5], [24, 8], [23, 11]], [[28, 28], [27, 31]], [[29, 36], [28, 40]]]) {
+        for (let i = 1; i < pts.length; i++) b.line(pts[i - 1][0], pts[i - 1][1], pts[i][0], pts[i][1], P.r4);
+        for (const [x, y] of pts) b.set(x - 1, y, P.r1);
+      }
+      // a fern at the pillar's foot and one hanging from the lintel
+      b.line(24, 45, 23, 41, P.f3); b.line(25, 45, 25, 42, P.f2);
+      b.line(8, 17, 7, 20, P.f3); b.set(9, 18, P.f2);
+      K.outer(b, S.omap([[RK, P.r6], [[P.r4, P.r5], P.r6], [[P.g2, P.g3], P.g6], [[P.f2, P.f3], P.f6]], 'r6'));
+      return b;
+    },
+  });
+
   // ============================================================================================ the kite in the treeline
   // Walk-over (over: 2): a diamond kite tangled in the canopy, its string hanging down into the tile below.
   K.stamp('kite_snag', {

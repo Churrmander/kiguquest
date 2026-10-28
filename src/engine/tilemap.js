@@ -199,7 +199,9 @@
           if (def.hasOverlay) overlays.push([id, tx, ty, frame]);
         }
       }
-      for (const p of this.floors) {
+      // floor-layer stamps; the 3D ground pass (tileFn) also paints `ground3d` stamps (solid but flat, e.g. crop plots) into the ground
+      const flat = tileFn ? this.floors.concat(this.objs.filter((p) => p.def.ground3d)) : this.floors;
+      for (const p of flat) {
         if (p.x + p.w <= x0 - 1 || p.x >= x1 + 1 || p.y + p.h <= y0 - 1 || p.y >= y1 + 1) continue;
         fb.blit(A.stamp(p.id, p.variant, A.frameAt(p.def, tick), p.deco), p.x * T - camX, p.y * T - camY);
       }
@@ -219,7 +221,13 @@
       const visible = (p) => p.x + p.w > x0 - 1 && p.x < x1 + 1 && p.y + p.h > y0 - 1 && p.y - Math.ceil((p.def.rise || 0) / T) < y1 + 1;
       // y-sorted objects: stamp bases and actors
       const list = [];
-      for (const p of this.objs) if (visible(p)) list.push({ sortY: (p.y + p.h) * T, order: 0, p });
+      for (const p of this.objs) {
+        if (!visible(p)) continue;
+        list.push({ sortY: (p.y + p.h) * T, order: 0, p });
+        // a building's roof overhang (`rise` above a stamp with a 3D volume) is a back layer: it sorts just above the footprint's
+        // top row, so a prop or a person standing in the row(s) behind the building is drawn over the roof instead of vanishing
+        if (p.def.vol && p.def.rise > 0 && !p.over) list.push({ sortY: p.y * T - 1, order: 0, p, roof: true });
+      }
       for (const a of actors || []) list.push({ sortY: a.sortY, order: 1, a });
       if (this.edges.size) for (const w of this.edgeArt()) list.push({ sortY: w.sortY, order: 0, w });
       list.sort((a, b) => a.sortY - b.sortY || a.order - b.order);
@@ -228,6 +236,8 @@
         if (e.w) { if (e.w.bmp) fb.blit(e.w.bmp, e.w.x - camX, e.w.y - camY); continue; }
         const p = e.p, bmp = A.stamp(p.id, p.variant, A.frameAt(p.def, tick), p.deco);
         const dx = p.x * T - camX, dy = p.y * T - camY - (p.def.rise || 0);   // rise: tall art stands up past the footprint
+        if (e.roof) { fb.blit(bmp, dx, dy, { sx: 0, sy: 0, sw: bmp.w, sh: p.def.rise }); continue; }
+        if (p.def.vol && p.def.rise > 0 && !p.over) { fb.blit(bmp, dx, dy + p.def.rise, { sx: 0, sy: p.def.rise, sw: bmp.w, sh: bmp.h - p.def.rise }); continue; }
         if (p.over > 0 && p.over < p.h) fb.blit(bmp, dx, dy + p.over * T, { sx: 0, sy: p.over * T, sw: bmp.w, sh: bmp.h - p.over * T });
         else if (!p.over) fb.blit(bmp, dx, dy);
         else fb.blit(bmp, dx, dy); // fully "over": drawn with the base too, then again on top

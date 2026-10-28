@@ -150,8 +150,9 @@
     if (dcol < 0) dcol = def.w >> 1;
     const off = def.w >= 7 ? 2 : 1, y = b.h - 13;
     let i = 0;
-    for (const cx of [dcol - off, dcol + off]) {
-      if (cx < 0 || cx >= def.w) continue;
+    const sides = def.boxSides || [true, true];   // a stamp whose facade already has a sill box on one side skips that side
+    for (const [k, cx] of [dcol - off, dcol + off].entries()) {
+      if (cx < 0 || cx >= def.w || !sides[k]) continue;
       const x = cx * T + 2;
       K.S.flowerBox(b, x, y, 12, BLOOMS[i++ & 1]);
       b.hline(x, y + 3, 12, P.o6);

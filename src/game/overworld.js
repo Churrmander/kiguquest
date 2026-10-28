@@ -372,6 +372,9 @@
       this.map = this.tileMap(id);
       this.map.syncSnips(NP.state.flags);
       this.map.syncShoves(NP.state.flags);
+      // flag-driven stamp variants (L.variantByFlag / L.variantBy) follow the flags on every load, including loads that skip onEnter
+      // (a blackout, a scene's loadMap with noEnter): the TileMap is cached, so without this it would keep the variant it was built with
+      if (NP.levels && NP.levels.syncStamps) NP.levels.syncStamps({ map: this.map });
       (NP.state.visited = NP.state.visited || {})[id] = 1;
       const def = this.map.def;
       if (NP.view3d && NP.view3d.enter) NP.view3d.enter(def);   // 3D or flat, and the camera preset, for this map
@@ -837,6 +840,7 @@
       const p = this.player, m = this.map;
       const [dx, dy] = DIRV[p.dir];
       const x = p.x + dx, y = p.y + dy;
+      if (m.edgeBlocked(p.x, p.y, p.dir)) return;   // a thin wall on the tile edge: nothing behind it can be used or talked to
       const a = this.actors.find((q) => q.visible && q.x === x && q.y === y);
       // field move: facing calm water with Disc: Paddle in the bag, A offers to step onto it
       if (!a && m.inBounds(x, y) && m.tdef(x, y).paddle && !this.paddling() && NP.state.bag.disc_paddle) {

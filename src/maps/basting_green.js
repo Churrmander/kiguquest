@@ -155,7 +155,7 @@
   M.npc('vlb', 18, 10, 'villager_f1', 'left',
     'Tidy Day comes every year now. It used to be Ribbon Day.\\pWe tied ribbons on everything, and nobody folded anything.', { move: 'turn' });
   M.npc('flb', 14, 14, 'fisher', 'up',
-    'The Tailors on Ribbon Loop love a friendly battle.\\pWin a few and Master Poppy will hear about it!');
+    'Win a few on Ribbon Loop and Master Poppy will hear about it!');   // plan O15, the approved line verbatim
 
   // ---- the parade: folded-sheet bearers fill the north road until you have reached Thimble the long way round
   const parade = (id, x, y, look, dir, say) => M.npc(id, x, y, look, dir, say, { hideIf: 'thimble_reached' });
@@ -187,7 +187,8 @@
   M.hidden('garden_silk', 18, 15, 'silk_spool', 1, 'hidden Silk Spool on the garden lawn');
 
   // ---- exits and spawns
-  M.spawn('south', 11, 20, 'up').spawn('north', 11, 2, 'down').spawn('east', 22, 11, 'left');
+  // arrivals land on the road's east lane (x12), the column Route 1's and Thimble's roads share, so crossing over never jumps sideways
+  M.spawn('south', 12, 20, 'up').spawn('north', 12, 2, 'down').spawn('east', 22, 11, 'left');
   M.spawn('door', 4, 8, 'up');   // in front of the tea counter: where a blackout wakes you
   M.edge('s', 11, 12, 'route1', 'north').edge('n', 11, 12, 'thimble', 'south').edge('e', 11, 12, 'ribbon_loop', 'west');
   M.reg();

@@ -83,9 +83,10 @@
   });
 
   K.stamp('bench_v', {
-    // the same park bench turned side-on (1x2), for a path that runs north-south: seat facing west, backrest on the east
-    w: 1, h: 2,
-    paint: () => {
+    // the same park bench turned side-on (1x2), for a path that runs north-south. default: seat facing west, backrest on the east;
+    // east: the mirror image, seat facing east and backrest on the west (a pair of benches facing each other across a square)
+    w: 1, h: 2, variants: ['default', 'east'],
+    paint: (v) => {
       const b = K.B(16, 32);
       // backrest (east): two rails with a dark gap, joined to the seat by a dark post at each end
       b.fillRect(12, 2, 3, 26, P.o3); b.hline(12, 2, 3, P.o1); b.vline(13, 3, 24, P.o5); b.vline(14, 3, 24, P.o4);
@@ -97,7 +98,7 @@
       for (const y of [6, 22]) { b.fillRect(3, y, 2, 3, P.o4); b.vline(3, y, 3, P.o3); }
       K.outer(b, WOOD_OUT);
       K.shadowRect(b, 1, 5, 2, 23, 70);   // its shadow falls along the long west side
-      return b;
+      return v === 'east' ? b.flippedX() : b;
     },
   });
 

@@ -122,6 +122,7 @@
   M.ascii(0, 0, ROWS);
   // the sea (rows U-X) can't be paddled; the pond (L27-R30) can, and the grotto mouth (N30-O30) is only reached across it
   M.rect(26, 11, 4, 7, 'o').set(29, 13, 'k').set(29, 14, 'k');
+  M.stamp('grotto_arch', 29, 13);   // the low rock arch that makes the 2x2 floor read as a cave mouth (walk-over: the floor stays paddle-reachable)
   // the pier (U13-V14) is a 2-wide deck; the jetty at x18 stays a single plank walk
   M.rect(12, 20, 1, 2, '<').rect(13, 20, 1, 2, '>');
 
@@ -237,7 +238,7 @@
   // the tree house itself, the same room as the memory but in the present day (no sepia, no little kids): up the ladder and back down
   K.reg({
     id: 'treehouse', name: 'The Tree House', music: 'home_town', battleBg: 'indoor', border: 'treeline', indoor: true,
-    legend: { T: 'treeline', W: 'wall_wood', b: 'floor_wood' },
+    legend: { T: 'treeline', W: 'wall_wood', b: 'floor_wood', o: 'stairs_down' },   // o: the ladder hole, drawn as the way down
     rows: [
       'TTTTTTTTTT',
       'TWWWWWWWWT',
@@ -245,7 +246,7 @@
       'TbbbbbbbbT',
       'TbbbbbbbbT',
       'TbbbbbbbbT',
-      'TbbbbbbbbT',
+      'TbbbbbbboT',
       'TTTTTTTTTT',
     ],
     stamps: [{ id: 'window', x: 2, y: 1 }, { id: 'window', x: 4, y: 1 }, { id: 'window', x: 6, y: 1 }, { id: 'table_s', x: 7, y: 3 },
@@ -253,7 +254,7 @@
       { id: 'plant', x: 1, y: 3 }, { id: 'ladder', x: 8, y: 4 }],
     npcs: [], props: [], triggers: [], interact: [],
     warps: [{ x: 8, y: 6, to: 'treehouse_clearing', door: 'treehouse', sound: 'door' }],   // the ladder hole
-    spawns: { door: { x: 7, y: 6, dir: 'left' } },
+    spawns: { door: { x: 7, y: 6, dir: 'up' } },
   });
 
   // -------------------------------------------------------------------------------------- the lab

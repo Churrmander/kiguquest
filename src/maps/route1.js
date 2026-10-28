@@ -55,8 +55,8 @@
     id: 'route1', name: 'Route 1  Meadow Lane', music: 'route_meadow', battleBg: 'grass', border: 'treeline', w: W, h: H,
     view: 'street',   // 3D camera preset (street | town | flat-ish), see src/engine/persp.js
     legend: { '.': 'grass', T: 'treeline', p: 'path', ',': 'tallgrass', f: 'flowers', w: 'water', d: 'ledge_d', s: 'sand', g: 'grass' },
-    // tree shake (approved 2026-10-28): Chirpadee common, Lyripip rare. Levels are the spec's placeholder until the Ch1 balance pass.
-    treeShake: [{ sp: 'chirpadee', min: 3, max: 5, w: 7 }, { sp: 'lyripip', min: 14, max: 14, w: 1 }],
+    // tree shake (approved 2026-10-28): Chirpadee common, Lyripip rare. The rare Lyripip is kept under-levelled to fit the route (open question for the owner: her level in the Ch1 balance pass).
+    treeShake: [{ sp: 'chirpadee', min: 3, max: 5, w: 7 }, { sp: 'lyripip', min: 4, max: 5, w: 1 }],
   });
   M.ascii(0, 0, ROWS);
 
@@ -94,6 +94,7 @@
   prop('item_sugar', 4, 12, 'sugar_cube', 1, 'r1_sugar');
   prop('item_grotto', 20, 38, 'silk_spool', 3, 'r1_grotto', 'snip');     // X2: just inside the grotto mouth, behind the Snip tree
   prop('item_cove', 23, 4, 'snack_cake', 3, 'r1_cove', 'paddle');        // X3: the sand cove across the pond
+  M.def.props[M.def.props.length - 1].glint = true;                      // a sparkle so it's noticed from the west shore (plan X3)
 
   // X1: the Snip tree speaks for itself (the default bush text talks about a bush). Gone once it's cut.
   const SNIP_FLAG = 'snip:route1:17,37';
@@ -130,10 +131,11 @@
     if (!m || !m.visible) return;
     yield* c.emote(m, 'exclaim');
     if (birdHere) { if (NP.snd.cry) NP.snd.cry('chirpadee'); c.hideNpc('chirp_r1'); }   // the wild Chirpadee flies off
+    yield* c.approach(m);   // she comes over first: from her spot the south treeline hides her in the 3D view
     yield* c.sayT('route1.mimi.1', 'Mimi: {player}! Oh no, the Chirpadee flew off. I\'d only drawn one of her wings!');
-    yield* c.approach(m);
     yield* c.sayT('route1.mimi.2', 'Mimi: You got your very own Kigu! I\'ve been out here all morning drawing wild Kigu.\\pI\'m designing costumes for them, and this lane is full of good models.');
-    if (yield* c.ask('Mimi: Can I sketch {kigu}? I\'ll be really quick, I promise!')) {
+    const askT = NP.textOverride && NP.textOverride('route1.mimi.ask');
+    if (yield* c.ask(askT ? askT.join(' ') : 'Mimi: Can I sketch {kigu}? I\'ll be really quick, I promise!')) {
       yield* c.sayT('route1.mimi.yes1', 'Mimi: Thank you! Just stay right there, {kigu}. You\'re doing great.');
       yield* c.emote(m, 'note');
       yield* c.wait(30);
@@ -164,19 +166,20 @@
     x: 3, y: 8, w: 20, h: 1, id: 'rival1', when: (c) => !c.flag('rival1_done'),
     script: function* (c) {
       const t = c.npc('tomo_r1');
-      c.placeNpc(t, c.player.x, 4, 'down');
+      // he comes down the lane (x12-13, the only gap in Suzu's ledge row) and over to wherever you crossed the trigger row,
+      // by an open path, so he never walks through water, trees or people
+      c.placeNpc(t, c.player.x <= 12 ? 12 : 13, 4, 'down');
       c.showNpc('tomo_r1');
       yield* c.emote('player', 'exclaim');
       yield* c.say('{rival}: Hold it, {player}!');
-      yield* c.walk(t, ['down', 3]);
-      yield* c.face('player', 'up');
+      yield* c.approach(t);
       yield* c.say('{rival}: Thimble first, {player}? I\'ve been practising since the kite.\\pCome on, then. Show me your best, and I\'ll show you mine!');
       const rs = c.state.rivalStarter || 'ottopi';
       const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'rival', ai: 2, reward: 10, canLose: true, team: L.team([[rs, 5], ['chirpadee', 4]]) });
       c.set('rival1_done');
       if (won) yield* c.say('{rival}: Whoa! Okay, your Kigu are tougher than I thought.\\pNice one, {player}. I\'ll be right behind you in Thimble Village!');
       else yield* c.say('{rival}: Told you they were tough! But you were brilliant, {player}.\\pYou should rest up. Rematch at the Salon? Deal?');
-      yield* c.walk(t, ['right', 3]);
+      yield* c.leave(t, 4);
       c.hideNpc('tomo_r1');
     },
   });

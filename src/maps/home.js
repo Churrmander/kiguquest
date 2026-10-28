@@ -32,7 +32,7 @@
     lightPhase: firstMorning,
     onEnter: function* (c) {
       L.syncStamps(c);
-      if (c.flag('woke') && NP.Clock.phase() === 'night') c.placeNpc('nibblenna', 6, 3, 'up');   // humming at the kitchen window
+      if (c.flag('woke') && NP.Clock.roomPhase(c.map.def) === 'night') c.placeNpc('nibblenna', 6, 3, 'up');   // humming at the kitchen window
       // the first time downstairs on the first morning: Mom comes over from the oven
       if (!c.flag('woke') || c.flag('mom_sheets') || c.flag('kite_call') || c.flag('has_starter')) return;
       c.set('mom_sheets');
@@ -78,7 +78,7 @@
   H.stamp('window_edge', 0, 6, 'w').stamp('side_table', 1, 7).stamp('plant', 13, 7);
   // living room
   H.stamp('grandfather_clock', 2, 8).stamp('tv_wide', 8, 8, 'plain').stamp('bookshelf_narrow', 13, 8, 'cookbooks');
-  H.stamp('sofa', 7, 10).stamp('sewing_basket', 11, 10).stamp('armchair', 12, 10);
+  H.stamp('sofa', 7, 10).stamp('sewing_basket', 11, 10).stamp('armchair', 12, 10, 'back');   // both seen from behind, facing the TV
   H.stamp('coat_rack', 6, 13); L.variantByFlag(H.def.stamps[H.def.stamps.length - 1], 'kite_call', 'satchel', 'empty');
   H.stamp('window_edge', 10, 14, 's').stamp('window_edge', 11, 14, 's').stamp('plant', 13, 13);
 
@@ -100,7 +100,7 @@
     showIf: 'woke', note: "Mom's Nibblenna, on her bed in the kitchen corner (at the kitchen window at night)",
     script: function* (c) {
       cry('nibblenna');
-      if (NP.Clock.phase() === 'night') { yield* c.sayT('player_house.nibblenna.night', 'Nibblenna is humming softly at the kitchen window.'); return; }
+      if (NP.Clock.roomPhase(c.map.def) === 'night') { yield* c.sayT('player_house.nibblenna.night', 'Nibblenna is humming softly at the kitchen window.'); return; }
       yield* c.sayT('player_house.nibblenna.1', ['Nibblenna: Nomnom!', 'Nibblenna wiggled happily, as if she hadn\'t seen you in years.']);
     },
   });
@@ -207,7 +207,7 @@
     ['figures', 7, 5, 'Little Konko, Ottopi and Sprubun figures are set up mid-battle on the rug.'],
     ['plushies', 2, 9, 'Kigu plushies are spilling out of the toy chest. One of them is a homemade Nibblenna.'],
     ['comic', 2, 6, 'An open comic, face down to keep your page. It\'s issue 12 of The Wandering Tailor.'],
-    ['sneakers', 10, 8, 'Your sneakers are lying by the bed. One of them has fallen on its side.'],
+    ['sneakers', 10, 8, 'Your sneakers are lying in the middle of the floor. One of them has fallen on its side.'],
   ];
   for (const [v, x, y, line] of CLUTTER) R.stamp('floor_clutter', x, y, v).interact(x, y, line);
 

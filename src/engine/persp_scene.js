@@ -133,6 +133,7 @@
     for (const p of tm.objs) {
       const kind = TREE_STAMPS[p.id];
       if (kind && tiles.tree3d) { addTree(sc, tiles, (p.x + p.w / 2) * T, (p.y + p.h) * T - 2, kind, h32(p.x, p.y, 21), h32(p.x, p.y, 22), 0, true); continue; }
+      if (p.def.ground3d) continue;   // flat on the ground: painted by the ground bake (TileMap.drawTerrain with a tileFn)
       if (S.addVolume && S.addVolume(sc, p)) continue;
       sc.bills.push({ p, x: (p.x + p.w / 2) * T, y: (p.y + p.h) * T - 1 });
       if (!p.def.over || p.def.layer === 'floor') sc.shadows.push({ k: 'e', x: (p.x + p.w / 2) * T + 2, y: (p.y + p.h) * T - 3, rx: Math.min(p.w * 7, 18), ry: 3.2, a: 0.2 });

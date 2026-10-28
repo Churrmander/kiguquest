@@ -89,14 +89,14 @@
     id: 'ribbon_loop', name: 'Ribbon Loop', music: 'route_meadow', battleBg: 'grass', border: 'treeline', w: W, h: H,
     view: 'street',
     legend: { '.': 'grass', T: 'treeline', H: 'hedge', p: 'path', ',': 'tallgrass', f: 'flowers' },
-    // tree shake (approved 2026-10-28): Chirpadee common, Lyripip rare. Same table as Route 1 until the Ch1 balance pass.
-    treeShake: [{ sp: 'chirpadee', min: 3, max: 5, w: 7 }, { sp: 'lyripip', min: 14, max: 14, w: 1 }],
+    // tree shake (approved 2026-10-28): Chirpadee common, Lyripip rare and under-levelled for the route (her level is an open owner question for the Ch1 balance pass).
+    treeShake: [{ sp: 'chirpadee', min: 3, max: 5, w: 7 }, { sp: 'lyripip', min: 5, max: 6, w: 1 }],
   });
   M.ascii(0, 0, ROWS);
 
   // ---------------------------------------------------------------------------------------------------------- stamps
   M.sign(4, 22, 'RIBBON LOOP\\nThe long way round to Thimble Village.');
-  M.sign(8, 3, 'RIBBON LOOP\\nWest: Thimble  South: Basting Green');
+  M.sign(8, 3, 'RIBBON LOOP\\nWest: Thimble, South: Basting Green');
   M.sign(15, 6, 'THE RIBBON MAZE', 'maze sign beside the north gate');
   M.stamp('haystack', 5, 2);
   M.trees([[27, 7], [13, 22]]);
@@ -142,6 +142,9 @@
     { hideIf: 'badge1', note: 'Society guard, south gate (gone after Poppy)' });
   M.npc('rl_worried', 21, 19, 'tailor_f', 'down', null, { script: worried, note: 'Worried Tailor (no battle), her Kittabra is lost in the maze' });
   M.npc('rl_kitty', 4, 7, 'kigu:kittabra', 'down', null, { script: kitty, hideIf: 'rl_kitty_found', note: 'the lost Kittabra, far north-west blind corner' });
+  // back home: once found she waits on the flowers across the road from her Tailor (spec 4.2; her line is PROPOSED, awaiting the owner)
+  M.npc('rl_kitty_home', 21, 22, 'kigu:kittabra', 'up', null, { showIf: 'rl_kitty_found', note: 'the Kittabra, safely back with her Tailor',
+    script: function* (c) { if (NP.snd && NP.snd.cry) NP.snd.cry('kittabra'); yield* c.sayT('ribbon_loop.rl_kitty_home', 'Kittabra purrs and won\'t leave her Tailor\'s side.'); } });
 
   // ---------------------------------------------------------------------------------------------------------- things to find
   M.pickup('maze_silk', 13, 11, 'silk_spool', 3, '3 Silk Spools by the fountain in the maze centre');

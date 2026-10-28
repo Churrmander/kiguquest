@@ -439,7 +439,8 @@
   });
 
   // ============================================================================================ Thimble
-  // The Big Thimble (2x2, 4 frames): a giant brass thimble upside down in a low round stone basin, water bubbling over its rim
+  // The Big Thimble (2x2, 4 frames): a giant brass thimble turned upside down (open mouth up, domed end down) in a low round stone
+  // basin, as a little fountain: water bubbles up in its mouth, wells over the rim and runs down the dimpled sides
   K.stamp('big_thimble', {
     w: 2, h: 2, rise: 14, frames: 4, animSpeed: 10,
     paint: (v, f) => {
@@ -450,38 +451,46 @@
       b.fillRect(1, 37, 30, 5, P.n3); b.hline(1, 37, 30, P.n2); b.hline(2, 41, 28, P.n4);
       b.ellipse(16, 36, 15, 7, P.n1, false); b.fillRect(1, 36, 1, 5, P.n2); b.fillRect(30, 36, 1, 5, P.n4);
       b.fillRect(12, 38, 8, 4, P.gd4); b.fillRect(13, 39, 6, 2, P.gd3); b.hline(14, 39, 4, P.gd1);   // plaque, set into a darker inset
-      // the thimble: straight, slightly tapered sides, a rounded dome cap, and a rolled rim band at the base
-      const half = (y) => y < 11 ? Math.sqrt(Math.max(0, 1 - ((11 - y) / 6.5) ** 2)) * 7.5 : 7.5 + (y - 11) * 0.05;
+      // the thimble, turned upside down: the open mouth with its rolled rim at the top, slightly tapered dimpled sides, and the
+      // domed end down in the basin water
+      const TOP = 11, DOME = 21, BOT = 35, HW = 7.5;
+      const half = (y) => (y <= DOME ? HW - (y - TOP) * 0.07 : (HW - (DOME - TOP) * 0.07) * Math.sqrt(Math.max(0, 1 - ((y - DOME) / (BOT - DOME + 0.5)) ** 2)));
       const toneAt = [];
-      for (let y = 5; y < 30; y++) {
+      for (let y = TOP; y <= BOT; y++) {
         const hw = half(y), x0 = Math.round(16 - hw), x1 = Math.round(16 + hw) - 1;
         for (let x = x0; x <= x1; x++) {
-          const l = (x - x0) / Math.max(1, x1 - x0), top = y < 11 ? (11 - y) / 6 : 0;
-          const k = l < 0.16 + top * 0.25 && y > 5 ? 0 : l < 0.4 ? 1 : l < 0.68 ? 2 : l < 0.86 ? 3 : 4;
+          const l = (x - x0) / Math.max(1, x1 - x0), low = y > DOME ? (y - DOME) / (BOT - DOME) : 0;
+          const k = l < 0.16 - low * 0.1 ? 0 : l < 0.4 ? 1 : l < 0.68 ? 2 : l < 0.86 - low * 0.2 ? 3 : 4;
           b.set(x, y, g[k]); toneAt[y * W + x] = k;
         }
       }
-      // a grid of dimples over the whole dome and sides in staggered rows: each one tone darker than the gold round it, with a
-      // lit lower lip on the light side
-      for (let y = 8; y < 28; y += 2) for (let x = 9 + ((y >> 1) & 1); x < 24; x += 2) {
+      // a grid of dimples over the sides and the dome in staggered rows: each one tone darker than the gold round it
+      for (let y = TOP + 4; y < BOT - 2; y += 2) for (let x = 9 + ((y >> 1) & 1); x < 24; x += 2) {
         const k = toneAt[y * W + x];
         if (k === undefined || k >= 4 || toneAt[y * W + x - 1] === undefined || toneAt[y * W + x + 1] === undefined) continue;
-        if (y < 10 && Math.abs(x - 16) > 3) continue;
         b.set(x, y, g[k + 1]);
       }
-      b.hline(8, 29, 16, g[4]);                                                                      // a dark groove above the rim
-      // the rolled rim band: 2px, lighter gold, wider than the sides
-      b.fillRect(7, 30, 18, 2, g[1]); b.hline(7, 30, 18, g[0]); b.fillRect(21, 30, 4, 2, g[2]); b.set(24, 30, g[3]); b.set(24, 31, g[3]);
-      b.hline(7, 32, 18, g[3]);
-      // a little spout on the crown, with thin light-blue streams arching off it and falling into the basin; the droplets move each frame
-      b.fillRect(15, 3, 2, 2, P.n2); b.set(15, 3, P.n1);
+      b.hline(9, TOP + 3, 14, g[4]);                                                                 // a dark groove under the rim
+      // the rolled rim band round the mouth: wider than the sides, lit on the left
+      b.fillRect(7, TOP, 18, 3, g[1]); b.hline(7, TOP, 18, g[0]); b.fillRect(20, TOP, 5, 3, g[2]); b.vline(24, TOP, 3, g[3]); b.hline(7, TOP + 2, 18, g[3]);
+      // the open mouth seen from just above: the rim's top face, and the water filling it right to the brim
+      b.ellipse(16, TOP - 1, 9, 3, g[1], true); b.hline(9, TOP - 3, 8, g[0]);
+      b.ellipse(16, TOP - 1, 6, 1.6, P.w2, true); b.hline(12, TOP - 2, 6, P.w1); b.set(19, TOP - 1, P.w3); b.set(20, TOP - 1, P.w3);
+      // the basin water in front of the dome, so its end sits down in the pool
+      for (let y = 33; y <= 40; y++) for (let x = 4; x < 28; x++) {
+        const dx = (x + 0.5 - 16) / 12.5, dy = (y + 0.5 - 35) / 5.5;
+        if (dx * dx + dy * dy <= 1 && toneAt[y * W + x] !== undefined) b.set(x, y, y === 33 ? P.w2 : P.w3);
+      }
       K.outer(b, S.omap([[g, P.gd5], [STONE, P.n5], [[P.w0, P.w1, P.w2, P.w3], P.w4]], 'n5'));
-      // (after the outline, so they stay 1px) streams arching off the spout and falling clear of the sides; the droplets move each frame
-      const streams = [[[14, 2], [12, 1], [10, 1], [8, 2], [6, 3], [5, 5]], [[17, 2], [19, 1], [21, 1], [23, 2], [25, 3], [26, 5]]];
-      for (const st of streams) for (let i = 1; i < st.length; i++) b.line(st[i - 1][0], st[i - 1][1], st[i][0], st[i][1], i < 3 ? P.w1 : P.w2);   // solid 1px jets
-      for (let y = 6; y < 30; y++) { b.set(4 + (y > 18 ? 0 : 1) - (y > 26 ? 1 : 0), y, P.w2); b.set(27 - (y > 18 ? 0 : 1) + (y > 26 ? 1 : 0), y, P.w2); }
-      for (const y of [8 + f * 5, 10 + ((f + 2) & 3) * 5]) { b.set(5 - (y > 26 ? 1 : 0) - (y > 18 ? 1 : 0), y, P.w0); b.set(26 + (y > 18 ? 1 : 0) + (y > 26 ? 1 : 0), y, P.w0); }   // droplets running down
-      b.set(5 + f, 34, P.w0); b.set(26 - f, 34, P.w0); b.set(9 + f, 33, P.w1); b.set(23 - f, 33, P.w1);   // splashes in the basin
+      // (after the outline, so they stay 1px) water bubbling up in the mouth and welling over the rim, then running down the sides
+      // into the basin; the bubble and the droplets move each frame
+      b.set(15 + (f & 1), TOP - 3 - (f >> 1 & 1), P.w0); b.set(17 - (f & 1), TOP - 2, P.w0);
+      // two overflow streams spilling off the rim's ends and falling just clear of the sides, bowing out a little as they fall
+      const fall = (y) => 9 + Math.round(Math.min(2, (y - TOP) * 0.12));
+      for (let y = TOP + 1; y < 34; y++) { b.set(16 - fall(y), y, P.w2); b.set(15 + fall(y), y, P.w2); }
+      for (let y = TOP + 3; y < 31; y++) if ((y + f * 2) % 7 < 3) b.set(12, y, P.w1);                  // a thin sheet down the front
+      for (const y of [TOP + 2 + f * 5, TOP + 4 + ((f + 2) & 3) * 5]) if (y < 34) { b.set(16 - fall(y), y, P.w0); b.set(15 + fall(y), y, P.w0); }   // droplets running down
+      b.set(6 + f, 34, P.w0); b.set(25 - f, 34, P.w0); b.set(9 + f, 33, P.w1); b.set(22 - f, 33, P.w1);   // splashes in the basin
       return b;
     },
   });
@@ -596,7 +605,9 @@
   const cropOutline = [[K.TN.leaf, P.f6], [K.TN.leafLight, P.f5], [[P.f1, P.f2, P.f3, P.f4], P.f6], [[P.hy0, P.hy1, P.hy2, P.hy3, P.yl1, P.yl2, P.yl3], P.o5],
     [S.tones(R('orange')), R('orange')[5]], [[P.red0, P.red1, P.red2, P.red3], P.red4], [[P.p0, P.p2, P.pu1], P.f6], [[P.d2, P.d3, P.d4, P.d5], P.d5], [[P.g0], P.f6]];
   K.stamp('crop_plot', {
-    w: 2, h: 2, variants: ['wheat', 'corn', 'potato', 'carrot', 'cabbage'],
+    // ground3d: a tilled field lies flat, so the 3D view bakes it into the ground (like a floor-layer stamp) instead of standing it
+    // up as a card; it stays solid, and the flat view draws it as usual
+    w: 2, h: 2, ground3d: true, variants: ['wheat', 'corn', 'potato', 'carrot', 'cabbage'],
     paint: (v) => {
       const b = K.B(32, 32);
       const rows = v === 'corn' ? [13, 21, 29] : v === 'wheat' ? [9, 16, 23, 30] : v === 'potato' ? [9, 18, 27] : [8, 14, 20, 26, 30];

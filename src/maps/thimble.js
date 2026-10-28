@@ -185,10 +185,11 @@
   for (const [x, y] of [[12, 11], [13, 11], [12, 12], [13, 12]]) M.interact(x, y, 'THIMBLE VILLAGE. Where every stitch counts.', 'Big Thimble plaque');
   M.stamp('yarn_basket', 11, 10, 'napping', { goneIf: 'yarn_basket' });
   M.def.interact.push({ x: 11, y: 10, script: yarn, when: (c) => !c.flag('yarn_basket'), note: 'Poppy\'s yarn basket (can be taken once Poppy asks)' });
-  M.stamp('bench_v', 10, 12).stamp('bench_v', 15, 12);                // facing the Big Thimble, parallel to the north-south approach
+  M.stamp('bench_v', 10, 12, 'east').stamp('bench_v', 15, 12);        // both facing the Big Thimble, parallel to the north-south approach
   M.stamp('herb_planter', 9, 14, 'flowers').stamp('herb_planter', 16, 9, 'flowers');
-  M.stamp('notice_board', 16, 10);
-  M.interact(16, 10, 'VILLAGE NEWS\\nThe Tea House has a new cocoa, and the Salon is open to challengers.', 'notice board (draft text)');
+  // plan K17 (16,10) sits right behind Mr. Sharp's cart canopy and can't be seen, so it stands one tile up-left at J16 (owner sign-off pending)
+  M.stamp('notice_board', 15, 9);
+  M.interact(15, 9, 'VILLAGE NEWS\\nThe Tea House has a new cocoa, and the Salon is open to challengers.', 'notice board (draft text)');
   M.stamp('market_cart', 15, 11, 'peddler');                          // Mr. Sharp's cart (room to sell later)
   M.stamp('lamp', 8, 8).stamp('lamp', 17, 8);                          // on the grass corners where the square meets the main street
 
@@ -280,6 +281,7 @@
     ],
     npcs: [
       { id: 'maid', x: 4, y: 2, look: 'tea_maid', dir: 'down', script: 'tea' },
+      { id: 'cook', x: 9, y: 4, look: 'cook', dir: 'left', script: 'tea_cook', note: 'Tea House cook: turns a fish into a dish (src/game/fishing.js)' },
       { id: 'tea_guest', x: 7, y: 6, look: 'lady', dir: 'left', say: ['The cocoa here is the best in Tsumugi.\\pI only wish Kigu could try the macarons too.'] },
     ],
   });

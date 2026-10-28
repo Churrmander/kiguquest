@@ -403,11 +403,27 @@
 
   // Mom's cosy floral armchair with a lace doily: a tall back along the north, two raised arms with rounded fronts, a lower seat cushion
 
+  // back: the same chair seen from behind, facing north (like the sofa beside it): the seat cushion beyond the backrest, the tall
+  // back face with a lace doily hanging over its top, the arm rolls standing up either side
   K.stamp('armchair', {
-    w: 1, h: 1,
-    paint: () => {
+    w: 1, h: 1, variants: ['default', 'back'],
+    paint: (v) => {
       const b = K.B(16, 16);
       const r = tn('pink');
+      if (v === 'back') {
+        b.fillRect(4, 2, 8, 3, r[1]); b.hline(4, 2, 8, r[0]); b.vline(4, 2, 3, r[0]);              // seat cushion, beyond the back
+        for (const x of [1, 12]) {                                                                   // arm rolls, lit tops
+          b.fillRect(x, 1, 3, 12, r[2]); b.hline(x, 1, 3, r[0]); b.vline(x, 2, 6, r[1]);
+          b.vline(x + 2, 2, 10, x === 1 ? r[3] : r[4]);
+        }
+        b.fillRect(3, 5, 10, 3, r[1]); b.hline(3, 5, 10, r[0]); b.hline(3, 7, 10, r[2]);            // the backrest's top roll
+        b.fillRect(3, 8, 10, 5, r[3]); b.hline(3, 12, 10, r[4]); b.vline(8, 9, 3, r[4]);            // the back face, a seam
+        b.fillRect(5, 5, 6, 3, P.p0); b.hline(5, 7, 6, P.p2); b.set(5, 8, P.p0); b.set(7, 8, P.p0); b.set(9, 8, P.p0);   // doily
+        b.fillRect(2, 13, 2, 1, P.o5); b.fillRect(12, 13, 2, 1, P.o5);                               // short dark feet
+        K.outer(b, S.omap([[r, K.ramp('pink')[5]], [[P.p0, P.p2], P.p4]], 'o6'));
+        K.shadowRect(b, 1, 14, 14, 1);
+        return b;
+      }
       // a tall darker back along the north, two rolled arms that rise above the seat, a plump seat cushion with a button,
       // a darker front face and stubby legs; lit from the top left, same build as the sofa
       b.fillRect(2, 1, 12, 5, r[3]); b.hline(2, 1, 12, r[1]); b.hline(2, 2, 12, r[2]); b.vline(2, 1, 5, r[2]);   // the back
@@ -552,11 +568,12 @@
     },
   });
 
-  // Two posters, each with a title band and one big chibi Kigu (a girl in her costume's hood): teal with Konko, sunny yellow with Sprubun.
-  // Taped at the corners.
+  // Three posters side by side, each with a title band and one big chibi Kigu (a girl in her costume's hood): teal with Konko,
+  // pink with Ottopi, sunny yellow with Sprubun. Taped at the corners.
   const SKIN = col('#ffdcc4');
   function chibi(b, cx, cy, r, ear) {
     if (ear === 'tri') { b.polygon([[cx - 4, cy - 3], [cx - 4, cy - 7], [cx - 1, cy - 5]], r[2]); b.polygon([[cx + 4, cy - 3], [cx + 4, cy - 7], [cx + 1, cy - 5]], r[3]); b.set(cx - 3, cy - 5, P.pk1); }
+    if (ear === 'round') { b.circle(cx - 3, cy - 5, 1.5, r[2], true); b.circle(cx + 3, cy - 5, 1.5, r[3], true); b.set(cx - 3, cy - 5, P.pk1); }
     if (ear === 'long') { b.fillRect(cx - 3, cy - 9, 2, 6, r[1]); b.fillRect(cx + 2, cy - 9, 2, 6, r[2]); b.vline(cx - 2, cy - 8, 4, P.pk1); }
     b.circle(cx, cy - 2, 3.5, r[2], true); b.set(cx - 2, cy - 5, r[1]); b.set(cx - 3, cy - 4, r[1]); b.set(cx - 1, cy - 5, r[1]);   // hood
     b.fillRect(cx - 2, cy - 2, 5, 3, SKIN); b.set(cx - 1, cy - 1, P.ink); b.set(cx + 1, cy - 1, P.ink); b.set(cx - 2, cy, P.pk1); b.set(cx + 2, cy, P.pk1);
@@ -566,15 +583,18 @@
     w: 2, h: 1,
     paint: () => {
       const b = K.B(32, 16);
-      const tl = K.ramp('teal'), yl = K.ramp('yellow'), or = K.ramp('orange'), mt = K.ramp('mint');
-      // two posters, each with a title band along the top and one big chibi Kigu: a girl in her costume's hood
-      b.fillRect(1, 1, 14, 14, tl[1]); b.hline(1, 1, 14, tl[0]); b.fillRect(1, 1, 14, 3, tl[4]); for (const x of [3, 5, 6, 8, 10, 11]) b.set(x, 2, P.p0);
-      chibi(b, 8, 10, or, 'tri');
-      b.fillRect(17, 1, 14, 14, yl[1]); b.hline(17, 1, 14, yl[0]); b.fillRect(17, 1, 14, 3, or[3]); for (const x of [19, 20, 22, 24, 25, 27]) b.set(x, 2, P.p0);
-      chibi(b, 24, 10, mt, 'long');
-      for (const [x, y] of [[20, 6], [28, 7], [19, 12]]) b.set(x, y, P.white);                      // sparkles
+      const tl = K.ramp('teal'), pk = K.ramp('pink'), yl = K.ramp('yellow'), or = K.ramp('orange'), mt = K.ramp('mint');
+      // three narrow posters, each with a title band along the top and one chibi Kigu: a girl in her costume's hood
+      const poster = (x0, bg, band, kigu, ear, dots) => {
+        b.fillRect(x0, 1, 10, 14, bg[1]); b.hline(x0, 1, 10, bg[0]); b.fillRect(x0, 1, 10, 3, band); for (const x of dots) b.set(x0 + x, 2, P.p0);
+        chibi(b, x0 + 5, 10, kigu, ear);
+      };
+      poster(0, tl, tl[4], or, 'tri', [2, 3, 5, 7]);
+      poster(11, pk, pk[4], tl, 'round', [2, 4, 5, 7]);
+      poster(22, yl, or[3], mt, 'long', [2, 3, 5, 6]);
+      for (const [x, y] of [[23, 6], [30, 7], [24, 12]]) b.set(x, y, P.white);                      // sparkles
       K.outer(b, S.omap([], 'o5'));
-      for (const x0 of [0, 16]) for (const [x, y] of [[x0 + 1, 1], [x0 + 14, 1], [x0 + 1, 14], [x0 + 14, 14]]) { b.set(x, y, P.p0); b.set(x + (x > x0 + 7 ? 1 : -1), y, P.p2); }   // tape at each corner
+      for (const x0 of [0, 11, 22]) for (const [x, y] of [[x0, 1], [x0 + 9, 1], [x0, 14], [x0 + 9, 14]]) b.set(x, y, P.p0);   // tape at each corner
       return b;
     },
   });
