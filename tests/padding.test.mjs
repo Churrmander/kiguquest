@@ -99,9 +99,9 @@ console.log('morning + parcel ok');
 
 // ---- Basting Green: Tidy Day holds the north road; Ribbon Loop is the way round
 st.party[0].level = 30; st.party[0].hp = NP.Kigu.maxHp(st.party[0]);
-t.ow.loadMap('basting_green', 11, 19, 'up');
+t.ow.loadMap('basting_green', 11, 20, 'up');
 t.tick(4);
-assert.ok(t.travel(11, 12, 300));
+assert.ok(t.travel(11, 17, 300));
 settle();
 assert.ok(st.flags.tidy_seen && said.some((s) => /Participation is optional/.test(s)), 'Tidy Day scene');
 assert.ok(!t.travel(11, 0, 200), 'the parade fills the north road');

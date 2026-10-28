@@ -24,7 +24,7 @@ assert.equal(t.ow.map.id, 'route1', 'now on route1: ' + t.pos());
 assert.ok(t.travel(12, 0, 900), 'cross route 1; at ' + t.pos());
 assert.equal(t.ow.map.id, 'basting_green', 'arrived in Basting Green: ' + t.pos());
 // Tidy Day: the parade holds the north road, so the way on is east round Ribbon Loop
-assert.ok(t.travel(11, 12, 300), 'up the green; at ' + t.pos());
+assert.ok(t.travel(11, 17, 300), 'up the green; at ' + t.pos());
 assert.ok(st.flags.tidy_seen, 'the Tidy Day scene played on the way through');
 assert.ok(!t.travel(11, 0, 300) && t.ow.map.id === 'basting_green', 'the parade blocks the north road');
 assert.ok(t.travel(23, 11, 600), 'east road; at ' + t.pos());
