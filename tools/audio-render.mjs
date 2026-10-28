@@ -1,10 +1,11 @@
-// Renders songs / jingles / sfx / cries to 16-bit mono WAV in Node (no browser) for sanity checks; prints duration, loudness and peak.
+// Renders songs / jingles / sfx / cries to 16-bit stereo WAV in Node (no browser) for sanity checks; prints duration, loudness and peak.
 //   node tools/audio-render.mjs [--out dir] [--loops 1] [--raw] [id ...]     (no ids = every song, jingle and sfx)
 //   node tools/audio-render.mjs cry:konko        (species cry)
+// Loudness is mono-equivalent BS.1770 (channel powers averaged), comparable with the older mono renders.
 // --raw renders without the stored level gains (src/audio/levels.js). Output goes through the same soft limiter as the game.
 import path from 'node:path';
-import { ROOT } from './load.mjs';
-import { loadAudio, renderEvents, kWeight, integratedLufs, shortLufs, writeWav, RATE } from './audio-synth.mjs';
+import { ROOT, loadNP } from './load.mjs';
+import { loadAudio, renderEvents, renderLufs, renderPeak, writeWav, RATE } from './audio-synth.mjs';
 
 const args = process.argv.slice(2);
 let out = path.join(ROOT, '.preview', 'audio'), loops = 1, raw = false;
@@ -17,6 +18,8 @@ for (let i = 0; i < args.length; i++) {
 }
 const NP = loadAudio();
 const A = NP.audio;
+// cries are spoken from the species' sound-word (NP.data.species[id].cry), so load the species table when a cry is asked for
+if (ids.some((id) => id.startsWith('cry:'))) NP.data.species = loadNP({ files: ['src/core/ns.js', 'src/data/species.js', 'src/data/species_p2.js'], quiet: true }).NP.data.species;
 const all = ids.length ? ids : [...A.songs(), ...A.jingles(), ...A.sfxs()];
 for (const id of all) {
   let events, seconds, short = false;
@@ -32,10 +35,8 @@ for (const id of all) {
   } else if (NP.data.sfx[id] !== undefined) { const c = A.sfxEvents(id, { levels: !raw }); events = c.events; seconds = c.seconds + 0.05; short = true; }
   else { console.log('unknown id', id); continue; }
   const r = renderEvents(NP, events, seconds);
-  let peak = 0;
-  for (const v of r.mix) peak = Math.max(peak, Math.abs(v));
-  const xk = kWeight(r.mix, RATE);
-  const lufs = short ? shortLufs(xk, RATE, seconds - 0.05) : integratedLufs(xk, RATE);
-  writeWav(path.join(out, id.replace(':', '_') + '.wav'), r.mix, RATE, true);
+  const peak = renderPeak(r);
+  const lufs = renderLufs(r, short, seconds - 0.05);
+  writeWav(path.join(out, id.replace(':', '_') + '.wav'), r, RATE, true);
   console.log(id.padEnd(20), seconds.toFixed(1).padStart(6) + 's', 'LUFS', lufs.toFixed(1).padStart(6), 'peak', peak.toFixed(2), events.length + ' ev');
 }

@@ -5,7 +5,8 @@
   const W = 30, H = 40;
 
   const M = L.map({
-    id: 'gingham_woods', name: 'Gingham Woods', music: 'forest_gingham', battleBg: 'grass', border: 'treeline', w: W, h: H, fill: 'T',
+    id: 'gingham_woods', name: 'Gingham Woods', music: 'forest_gingham', battleBg: 'forest', border: 'treeline', w: W, h: H, fill: 'T',
+    view: 'town',   // 3D camera preset (street | town | flat-ish), see src/engine/persp.js
     legend: { '.': 'grass', T: 'treeline', p: 'path', ',': 'tallgrass', f: 'flowers', d: 'dirt' },
   });
 
@@ -31,29 +32,29 @@
 
   // ---- scenery
   M.sign(12, 37, 'GINGHAM WOODS\\nKeep to the dirt paths.', 'entry sign');
-  M.sign(13, 6, 'SPINDLE SHRINE\\nSpeak softly. The thread sleeps.', 'north sign');
+  M.sign(13, 6, 'SPINDLE SHRINE (north)\\nPlease keep your voices down near the shrine.', 'north sign');
   // trees are 1x2 (top y, base y+1)
   M.trees([[17, 33], [5, 32], [25, 34], [12, 24], [23, 14], [26, 19], [7, 8], [20, 6], [8, 14], [6, 15]]);
-  M.trees([[3, 23], [9, 26], [27, 16], [16, 7], [7, 6]], 'pine');
+  M.trees([[3, 23], [9, 26], [27, 16], [16, 6], [7, 6]], 'pine');
   M.stamp('stump', 8, 21).stamp('stump', 26, 17).stamp('boulder', 18, 35).stamp('boulder', 4, 36).stamp('rock', 24, 35).stamp('bush', 12, 26).stamp('bush', 7, 10).stamp('bush', 7, 17);
-  M.stamp('flowerbed', 3, 17).stamp('flowerbed', 26, 22);
+  M.stamp('bush', 3, 17).stamp('bush', 26, 22);   // (wild bushes: a stone planter in the woods made no sense)
 
   // ---- people and pickups
   M.spawn('south', 13, 38, 'up').spawn('north', 14, 2, 'down');
   M.edge('s', 13, 14, 'route2', 'north').edge('n', 14, 15, 'spindle_shrine', 'south');
 
   M.trainer('pete', 7, 26, 'camper', 'right', { cls: 'Camper', name: 'Pete', sight: 4, reward: 7, ai: 1, team: [['sprubun', 10], ['buzzlet', 10], ['molli', 11]],
-    intro: 'Shh! You will wake the trees. ...Oh, you want to battle? Quietly, then.', win: 'That was a very polite way to lose.', after: 'Keep to the dirt. The grass hides all sorts of sleepers.' });
-  M.trainer('tess', 25, 22, 'picnicker', 'left', { cls: 'Picnicker', name: 'Tess', sight: 5, reward: 8, ai: 1, team: [['daisip', 11], ['silkie', 11]],
-    intro: 'A picnic in the woods is the best picnic. Even better with a battle!', win: 'My sandwiches have gone all soft...', after: 'Past the north clearing is the Spindle Shrine. Everyone whispers up there.' });
-  M.trainer('yuki', 17, 6, 'schoolgirl', 'down', { cls: 'Schoolgirl', name: 'Yuki', sight: 3, reward: 8, ai: 1, team: [['peepi', 11], ['sprubun', 11]],
-    intro: 'We are not supposed to battle in the woods. ...Just a quiet one.', win: 'Teacher is going to ask why I am out of breath.', after: 'The Pressers came through here yesterday, measuring the paths. Rude!' });
-  M.trainer('riku', 5, 16, 'net_kid', 'down', { cls: 'Net Kid', name: 'Riku', sight: 3, reward: 7, ai: 1, team: [['webbi', 12], ['buzzlet', 11]],
-    intro: 'You found my glade! Finders have to battle. That is the rule.', win: 'Okay, okay. You can use the glade too.', after: 'The webs here catch the morning dew. They look like tiny lace.' });
+    intro: 'Shh! You\'ll wake the trees! ...Oh, you want to battle? All right, but quietly.', win: 'That was a very polite way to lose.', after: 'Stick to the dirt paths. There are Kigu napping all through that grass.' });
+  M.trainer('tess', 25, 22, 'picnicker', 'left', { cls: 'Picnicker', name: 'Tess', sight: 5, reward: 8, ai: 1, team: [['daisip', 11], ['acolarva', 11]],
+    intro: 'A picnic in the woods is the best picnic, and it\'s even better with a battle!', win: 'My sandwiches have gone all soft...', after: 'The Spindle Shrine is just past the north clearing. Everyone whispers up there.' });
+  M.trainer('yuki', 17, 6, 'schoolgirl', 'down', { cls: 'Schoolgirl', name: 'Yuki', sight: 4, reward: 8, ai: 1, team: [['chirpadee', 11], ['sprubun', 11]],
+    intro: 'We\'re not supposed to battle in the woods. ...But a quiet one is okay, right?', win: 'Teacher\'s going to ask why I\'m out of breath.', after: 'The Pressers came through here yesterday, measuring the paths. Rude!' });
+  M.trainer('riku', 4, 16, 'net_kid', 'right', { cls: 'Net Kid', name: 'Riku', sight: 2, reward: 7, ai: 1, team: [['spinnet', 12], ['buzzlet', 11]],
+    intro: 'You found my glade, so you have to battle me. That\'s the rule!', win: 'Okay, okay. You can use the glade too.', after: 'In the mornings the webs here get all dewy. They look like little lace doilies!' });
 
-  M.npc('hush', 7, 16, 'old_tailor', 'left', ['Hush, now. Listen.\\pThe woods have a seam of their own. You can hear it if you stand still.'], { note: 'glade elder' });
-  M.npc('artist', 25, 20, 'artist', 'down', ['I am painting the trees. They keep moving a little when I stop looking.\\pPerhaps they are shy.'], { note: 'painter in clearing C' });
-  M.npc('hiker', 16, 34, 'hiker', 'left', ['Lost? Everyone is, here, once.\\pFollow the dirt paths and the trees will let you through.'], { note: 'near the entry' });
+  M.npc('hush', 7, 16, 'old_tailor', 'left', ['Shh. Stand still for a moment and listen.\\pIf you\'re quiet, you can hear the whole wood humming.\\pThat\'s the Buzz Kigu, busy at work.'], { note: 'glade elder' });
+  M.npc('artist', 25, 20, 'artist', 'down', ['I\'m painting the trees. They keep moving a little whenever I stop looking.\\pMaybe they\'re just shy.'], { note: 'painter in clearing C' });
+  M.npc('hiker', 16, 34, 'hiker', 'left', ['Lost? Don\'t worry, everyone gets turned around here at least once.\\pJust follow the dirt paths and the trees will let you through.'], { note: 'near the entry' });
 
   M.pickup('spool', 4, 32, 'bond_spool', 3);
   M.pickup('cake', 26, 33, 'fancy_cake', 1);
@@ -69,7 +70,7 @@
   M.hidden('stump_cube', 8, 21, 'sugar_cube', 1, 'hidden Sugar Cube under the stump');
   M.hidden('stump_numb', 26, 17, 'numb_away', 1, 'hidden Numb Away under the stump');
 
-  M.enc('grass', [['buzzlet', 7, 9, 25], ['sprubun', 7, 9, 20], ['silkie', 8, 10, 15], ['webbi', 8, 10, 15], ['daisip', 8, 10, 15], ['cocoona', 9, 11, 5]]);
+  M.enc('grass', [['buzzlet', 7, 9, 25], ['daisip', 7, 10, 35], ['acolarva', 8, 10, 15], ['spinnet', 8, 10, 15], ['vowspun', 9, 11, 5]]);   // no starters in the wild (owner, 2026-10-27)
 
   M.reg();
 })(typeof globalThis !== 'undefined' ? globalThis : window);

@@ -18,10 +18,10 @@
       const base = K.TYPE[id].color, r = ramp(base), light = luma(base) > 150;
       const St = R('steel');
       // needle (2px wide near the head, 1px toward the point)
-      b.line(12, 12, 2, 22, P(St.m));
-      b.line(13, 12, 3, 22, P(St.d1));
+      b.line(12, 12, 3, 21, P(St.m));
+      b.line(13, 12, 4, 21, P(St.d1));
       b.line(11, 12, 3, 20, P(St.l1));
-      b.set(1, 23, P(St.l2));
+      b.set(2, 22, P(St.l2));
       // thread wrapped once around the shaft
       H.pxs(b, [[8, 15], [7, 16], [9, 16]], r.m);
       // pearl head
@@ -65,11 +65,16 @@
   }
   for (const id of K.TYPE_IDS) H.add('disc_' + id, 'discs', false, discIcon(id));
 
-  // field discs (HM-style): silver disc, coloured label
+  // field discs (HM-style): silver disc, coloured label. `glyph` = hand-drawn 9x9 two/three-colour pictures (snip, paddle) that read at 1x;
+  // the others keep the one-colour silhouette `rows` with a dark outline.
   const FIELD = {
-    snip: { col: '#46b85c', rows: ['#.......#', '.#.....#.', '..#...#..', '...#.#...', '....#....', '...#.#...', '.##...##.', '#..#.#..#', '.##...##.'] },
+    snip: { col: '#46b85c', glyph: [
+      'SS.....SS', '.SS...SS.', '..SS.SS..', '...SSS...', '....P....', '...GGG...', '.GG.G.GG.', 'G..G.G..G', '.GG...GG.'],
+      legend: { S: '#4a5a90', P: '#2a3a70', G: '#2f9a4c' } },
     glide: { col: '#4ea8f2', rows: ['......###', '....#####', '..#######', '.########', '#########', '.#.#.#.#.', '..#.#.#..', '...#.#...', '....#....'] },
-    paddle: { col: '#3f7ae2', rows: ['.....###.', '....#####', '....#####', '...######', '...#####.', '..#.###..', '.#.......', '#........', '.........'] },
+    paddle: { col: '#3f7ae2', glyph: [
+      '......bbb', '.....bBBb', '....bBBwb', '...bBBBb.', '..WbBBb..', '.WwbbB...', 'Ww.......', 'WW.~~~~..', '..~....~.'],
+      legend: { b: '#1f4ab0', B: '#4a8cf0', w: '#d4e8ff', W: '#b4743c', '~': '#5ab4f0' } },
     shove: { col: '#b4733c', rows: ['.........', '..#####..', '.#######.', '#########', '#########', '#########', '.#######.', '.........', '.........'] },
     climb: { col: '#f28c38', rows: ['.#.....#.', '.#######.', '.#.....#.', '.#.....#.', '.#######.', '.#.....#.', '.#.....#.', '.#######.', '.#.....#.'] },
   };
@@ -79,12 +84,18 @@
       discBase(b, '#b8c4dc', R('cream'));
       // colour ring between the silver rim and the label
       H.ring(b, 11, 11, 6.9, 6.0, P(r.m));
-      const e = layer(11, 11);
-      H.art(e, 1, 1, f.rows, { '#': r.m });
-      e.outline(P(r.d2), { diag: false });
-      // inner shade pixels (bottom-right of every stroke)
-      for (let y = 0; y < 11; y++) for (let x = 0; x < 11; x++) if (e.get(x, y) === P(r.m) && (e.get(x + 1, y + 1) >>> 24) === 0) e.set(x, y, P(r.d1));
-      b.blit(e, 6, 6);
+      if (f.draw) {
+        f.draw(b);
+      } else if (f.glyph) {
+        H.art(b, 7, 7, f.glyph, f.legend);
+      } else {
+        const e = layer(11, 11);
+        H.art(e, 1, 1, f.rows, { '#': r.m });
+        e.outline(P(r.d2), { diag: false });
+        // inner shade pixels (bottom-right of every stroke)
+        for (let y = 0; y < 11; y++) for (let x = 0; x < 11; x++) if (e.get(x, y) === P(r.m) && (e.get(x + 1, y + 1) >>> 24) === 0) e.set(x, y, P(r.d1));
+        b.blit(e, 6, 6);
+      }
       if (k === 'shove') H.pxs(b, [[8, 10, '#ffffff'], [9, 9, '#ffffff']], '#ffffff');
       H.twinkle(b, 21, 3, '#ffffff');
       return H.done(b, '#2a3450', 'disc_' + k);

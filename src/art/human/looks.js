@@ -13,15 +13,17 @@
   const out = (type, main, trim, under) => ({ type, main, trim, under });
 
   // ---- P1: heroes, rival, friends, professor ----
-  def('hero_m', { name: 'Hero (boy)', build: 'teen', sex: 'm', skin: 'fair', hair: hair('spiky', 'chestnut'), eyes: 'brown',
-    face: { eyes: 'normal', mouth: 'grin', brows: 'normal' }, outfit: out('jacket', 'red', 'white', 'white'), bottom: { type: 'pants', color: 'navy' }, shoes: 'white',
-    acc: ['satchel:#a0642e'] });
-  def('hero_f', { name: 'Hero (girl)', build: 'teen', sex: 'f', skin: 'fair', hair: hair('ponytail', 'chestnut'), eyes: 'brown',
-    face: { eyes: 'normal', mouth: 'smile' }, outfit: out('jacket', 'red', 'white', 'white'), bottom: { type: 'shorts', color: 'navy' }, legs: 'white', shoes: 'white',
-    acc: ['satchel:#a0642e', 'bow:#f6f4f0'] });
-  def('tomo', { name: 'Tomo', build: 'teen', sex: 'm', skin: 'pale', hair: hair('sidepart', 'ink'), eyes: 'grey',
-    face: { eyes: 'serious', mouth: 'flat', brows: 'stern' }, outfit: out('jacket', 'charcoal', 'starch', 'white'), bottom: { type: 'pants', color: 'slate' }, shoes: 'black',
-    acc: ['glasses:#4a3a58', 'scarf:starch'] });
+  def('hero_m', { name: 'Hero (boy)', build: 'teen', sex: 'm', skin: 'fair', hair: hair('messy', '#b87a40'), eyes: 'blue',
+    face: { eyes: 'normal', mouth: 'smile', brows: 'normal' }, outfit: out('overalls', 'white', 'denim', 'white'), bottom: { type: 'pants', color: '#34487c' }, shoes: 'chocolate',
+    acc: ['flatcap:#4a4452/#c8a050', 'satchel:#a0642e', 'belt:#7c4e30', 'spools'] });
+  def('hero_f', { name: 'Hero (girl)', build: 'teen', sex: 'f', skin: 'fair', hair: hair('ponytail', 'blonde'), eyes: 'blue',
+    face: { eyes: 'normal', mouth: 'smile' }, outfit: out('overalls', 'white', 'denim', 'white'), bottom: { type: 'shorts', color: 'denim' }, legs: 'white', shoes: 'chocolate',
+    acc: ['beret:#b8302e/#e8c870', 'satchel:#a0642e', 'belt:#7c4e30', 'spools'] });
+  // the two heroes as small kids, for the tree house memory (round 4): same hair and colours, no Tailor kit yet
+  def('hero_m_kid', { name: 'Hero (boy, little)', build: 'child', sex: 'm', skin: 'fair', hair: hair('messy', '#b87a40'), eyes: 'blue',
+    face: { eyes: 'wide', mouth: 'grin', brows: 'normal' }, outfit: out('tee', 'white', 'denim'), bottom: { type: 'shorts', color: '#34487c' }, shoes: 'chocolate', acc: ['flatcap:#4a4452/#c8a050'] });
+  def('hero_f_kid', { name: 'Hero (girl, little)', build: 'child', sex: 'f', skin: 'fair', hair: hair('ponytail', 'blonde'), eyes: 'blue',
+    face: { eyes: 'wide', mouth: 'grin' }, outfit: out('dress', 'white', 'denim'), legs: 'white', shoes: 'chocolate', acc: ['bow:#b8302e'] });
   def('mimi', { name: 'Mimi', build: 'teen', sex: 'f', skin: 'fair', hair: hair('bob', 'honey'), eyes: 'green',
     face: { eyes: 'happy', mouth: 'grin' }, outfit: out('cardigan', 'pink', 'white', 'cream'), bottom: { type: 'skirt', color: 'plum' }, legs: 'white', shoes: 'rose',
     acc: ['bow:#f0508a'] });
@@ -116,8 +118,49 @@
     face: { eyes: 'happy', mouth: 'smile', brows: 'worried' }, outfit: out('vest', 'plum', 'gold', 'cream'), bottom: { type: 'pants', color: 'slate' }, shoes: 'brown', acc: ['roundglasses:#c8a020', 'tape'] });
 
   // ---- story one-offs: the Spindle Shrine guardian, Pressed (bleached white, blue piping) and herself again (chapter 2)
-  def('cocoona_pressed', { name: 'Pressed Cocoona', build: 'child', sex: 'f', skin: 'pale', hair: hair('pigtails', 'white'), eyes: 'sky',
+  def('cocoona_pressed', { name: 'Pressed Vowspun', build: 'child', sex: 'f', skin: 'pale', hair: hair('pigtails', 'white'), eyes: 'sky',
     face: { eyes: 'normal', mouth: 'flat' }, outfit: out('hoodie', 'white', 'starch', 'white'), bottom: { type: 'shorts', color: 'white' }, legs: 'white', shoes: 'white' });
-  def('cocoona', { name: 'Cocoona', build: 'child', sex: 'f', skin: 'fair', hair: hair('pigtails', 'blonde'), eyes: 'amber',
+  def('vowspun', { name: 'Vowspun', build: 'child', sex: 'f', skin: 'fair', hair: hair('pigtails', 'blonde'), eyes: 'amber',
     face: { eyes: 'happy', mouth: 'grin', blush: true }, outfit: out('hoodie', 'cream', 'gold', 'white'), bottom: { type: 'shorts', color: 'khaki' }, legs: 'white', shoes: 'brown' });
+  // ---- Chapters 4 to 6: Gusset (Bobbin Quarry), Mrs. Kasuri (Shibuyarn fabric shop), the Shibuyarn station master, Tuck again,
+  // Pleat Calender (the Works engineer, with his pocket watch), Dart (Kite Hill's Master Tailor) and a courier
+  def('gusset', { name: 'Gusset', build: 'stout', sex: 'm', skin: 'tan', hair: hair('cropped', 'grey'), eyes: 'brown', facial: 'beard', facialColor: 'grey',
+    face: { eyes: 'serious', mouth: 'flat', brows: 'stern' }, outfit: out('vest', 'khaki', 'brown', 'cream'), bottom: { type: 'pants', color: 'slate' }, shoes: 'chocolate',
+    acc: ['hat:#f2cc40/#f06a9c', 'belt:#7c4e30'] });
+  def('kasuri', { name: 'Mrs. Kasuri', build: 'elder', sex: 'f', skin: 'fair', hair: hair('bun', 'silver'), eyes: 'brown',
+    face: { eyes: 'happy', mouth: 'smile' }, outfit: out('cardigan', '#34487c', 'white', 'cream'), bottom: { type: 'longskirt', color: 'charcoal' }, shoes: 'black',
+    acc: ['roundglasses:#c8a020', 'tape'] });
+  // the children of Canvas Rest (Tavi and Nell; Bo borrows the net kid's goggles)
+  def('camp_kid_m', { name: 'Boy', build: 'child', sex: 'm', skin: 'tan', hair: hair('messy', 'black'), eyes: 'brown',
+    face: { eyes: 'wide', mouth: 'grin' }, outfit: out('tee', '#e8a840', '#f4e4c0'), bottom: { type: 'shorts', color: '#8a5a32' }, shoes: 'brown', acc: ['bandana:#c8483a'] });
+  def('camp_kid_f', { name: 'Girl', build: 'child', sex: 'f', skin: 'warm', hair: hair('ponytail', 'brown'), eyes: 'amber',
+    face: { eyes: 'wide', mouth: 'smile' }, outfit: out('dress', '#4ab0a0', '#f4e4c0'), shoes: 'brown' });
+  // the same three children asleep in the sand cave's nest (eyes shut)
+  for (const id of ['camp_kid_m', 'camp_kid_f', 'net_kid']) def(id + '_nap', Object.assign({}, looks[id], { face: { eyes: 'closed', mouth: 'smile' }, acc: (looks[id].acc || []).filter((a) => !a.startsWith('goggles')) }));
+  // the big desert Kigu of the sand cave (Canvas Rest's sun-cloth quest): a tall sand-coloured onesie with a woven red scarf
+  def('sand_mother', { name: 'Kigu', build: 'adult', sex: 'f', skin: 'fair', hair: hair('short', 'brown'), eyes: 'amber',
+    face: { eyes: 'wide', mouth: 'smile' }, outfit: out('hoodie', '#d49a50', '#d49a50', '#f4e4c0'), bottom: { type: 'pants', color: '#d49a50' }, shoes: '#b88848',
+    acc: ['kigutail:#d49a50', 'kiguhood:#d49a50', 'wovenscarf:#c8483a'] });
+  def('station_master', { name: 'Station Master', build: 'adult', sex: 'm', skin: 'warm', hair: hair('short', 'black'), eyes: 'dark', facial: 'mustache',
+    face: { eyes: 'normal', mouth: 'smile' }, outfit: out('uniform', 'navy', 'gold', 'white'), bottom: { type: 'pants', color: 'navy' }, shoes: 'black',
+    acc: ['cap:#24305c/#e8b830'] });
+  def('tuck', { name: 'Tuck', build: 'teen', sex: 'm', skin: 'fair', hair: hair('sidepart', 'brown'), eyes: 'blue',
+    face: { eyes: 'wide', mouth: 'o', brows: 'worried' }, outfit: out('uniform', 'white', 'starch', 'white'), bottom: { type: 'pants', color: 'white' }, shoes: 'white' });
+  def('pleat_calender', { name: 'Pleat Calender', build: 'tall', sex: 'm', skin: 'fair', hair: hair('sidepart', '#9c9cac'), eyes: 'grey', facial: 'mustache', facialColor: '#9c9cac',
+    face: { eyes: 'sharp', mouth: 'flat', brows: 'stern' }, outfit: out('suit', 'white', 'starch', 'white'), bottom: { type: 'pants', color: 'white' }, shoes: 'black',
+    acc: ['brooch:#e8b830', 'glasses:#9c9cac'] });
+  // matches her AutoSprite battle sprite: long loose brown hair, brown bomber jacket, cream scarf, flight goggles
+  def('dart', { name: 'Dart', build: 'adult', sex: 'f', skin: 'fair', hair: hair('long', '#8e5a36'), eyes: 'brown',
+    face: { eyes: 'happy', mouth: 'grin', lashes: true }, outfit: out('jacket', 'chocolate', 'cream', 'white'), bottom: { type: 'pants', color: 'khaki' }, shoes: 'chocolate',
+    acc: ['goggles:#b8bccc', 'scarf:#f4e6c4'] });
+  def('courier', { name: 'Courier', build: 'teen', sex: 'm', skin: 'tan', hair: hair('spiky', 'black'), eyes: 'dark',
+    face: { eyes: 'sharp', mouth: 'grin' }, outfit: out('jacket', 'red', 'white', 'black'), bottom: { type: 'shorts', color: 'charcoal' }, legs: 'white', shoes: 'red',
+    acc: ['cap:#d8363a/#f6f4f0', 'bag:#3a3a44'] });
+  // the Seam Road bridge crew (Route 3): hi-vis vests with reflective stripes and yellow hard hats
+  def('builder_m', { name: 'Builder', build: 'stout', sex: 'm', skin: 'warm', hair: hair('cropped', 'brown'), eyes: 'dark', facial: 'mustache',
+    face: { eyes: 'normal', mouth: 'flat', brows: 'normal' }, outfit: out('vest', 'orange', 'orange', 'white'), bottom: { type: 'pants', color: 'denim' }, shoes: 'chocolate',
+    acc: ['hardhat:#f2cc40/#fff3b0', 'hivis:#f4f0c8', 'belt:#7c4e30'] });
+  def('builder_f', { name: 'Builder', build: 'adult', sex: 'f', skin: 'tan', hair: hair('bun', 'black'), eyes: 'brown',
+    face: { eyes: 'normal', mouth: 'smile' }, outfit: out('vest', 'orange', 'orange', 'white'), bottom: { type: 'pants', color: 'olive' }, shoes: 'chocolate',
+    acc: ['hardhat:#f2cc40/#fff3b0', 'hivis:#f4f0c8', 'belt:#7c4e30'] });
 })(typeof globalThis !== 'undefined' ? globalThis : window);

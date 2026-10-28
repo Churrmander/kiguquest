@@ -74,7 +74,21 @@
         },
       },
     },
-    side: {}, weather: {}, field: {},
+    side: {
+      // Foxfire: a blue flame over the user's whole side for 5 turns. It belongs to the side, not to the Kigu who lit it, so it stays when she
+      // switches out. Every damaging Ember move used by that side glows (x1.3) and says so.
+      foxfire: {
+        duration: 5,
+        onStart(c) { c.battle.msg('Foxfire flickered into life around ' + (c.side.index === 0 ? 'your team' : 'the opposing team') + '!'); },
+        onEnd(c) { c.battle.msg((c.side.index === 0 ? 'Your team' : 'The opposing team') + "'s foxfire burned out."); },
+        modDamage(c, d) {
+          if (!c.move || c.move.type !== 'ember' || c.move.category === 'status') return;
+          c.battle.msg('The foxfire glows brightly!');
+          return Math.floor(d * 1.3);
+        },
+      },
+    },
+    weather: {}, field: {},
   };
 
   // -------------------------------------------------------------------------------------------------
@@ -92,7 +106,8 @@
     if (eff === 0) return { dmg: 0, eff: 0, crit: false, stab: false };
     if (move.fixed === 'level') return { dmg: atk.level, eff, crit: false, stab: false };
     const phys = move.category === 'physical';
-    const crit = o.crit !== undefined ? o.crit : battle.rng.ratio(1, [16, 8, 4, 3, 2][Math.min(4, move.crit || 0)]);
+    const stage = battle.chain('modCritStage', atk, move.crit || 0, { move, target: def });   // Focus Energy, the Gold Scale
+    const crit = o.crit !== undefined ? o.crit : battle.rng.ratio(1, [16, 8, 4, 3, 2][Math.max(0, Math.min(4, stage))]);
     const aKey = phys ? 'atk' : 'spa', dKey = phys ? 'def' : 'spd';
     let power = battle.chain('modPower', atk, move.power, { move, target: def });
     const A = battle.getStat(atk, aKey, crit ? { ignoreNeg: true } : {});
@@ -138,6 +153,9 @@
     mon.moveThisTurn = true;
     battle.moveUser = mon;
     battle.add({ t: 'move', who: mon, move: move.id });
+    // a go-first move that beat a faster foe says so, so turn order never looks broken
+    const cut = (move.priority || 0) > 0 && mon.foes.find((f) => battle.queue.some((q) => q.mon === f && q.type === 'move') && battle.getSpeed(f) > battle.getSpeed(mon));
+    if (cut) battle.msg(mon.label() + ' dashed in ahead of ' + cut.label() + '!');
     battle.msg(mon.label() + ' used ' + move.name + '!');
     const target = resolveTarget(battle, mon, move, ch);
     if (!target) { battle.msg('But there was no target...'); return; }
@@ -196,6 +214,10 @@
 
   B.statusMove = function (battle, mon, target, move) {
     let did = false;
+    if (move.sideCond) { // e.g. Foxfire: a condition on the USER's side (stays when she switches out); using it again refreshes it
+      const cur = mon.side.conds[move.sideCond], def = B.COND.side[move.sideCond];
+      if (cur) cur.turns = def.duration || cur.turns; else battle.addSideCond(mon.side, move.sideCond, mon);
+    }
     if (move.status) {
       if (target.status) { battle.msg(target.label() + ' is already ' + ({ brn: 'burned', psn: 'poisoned', tox: 'poisoned', par: 'paralyzed', slp: 'asleep', frz: 'frozen' }[target.status] || 'affected') + '.'); return; }
       did = battle.setStatus(target, move.status.id, mon, move);

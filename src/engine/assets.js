@@ -27,6 +27,8 @@
     treeline: T('#1e6a2e', { solid: true }), fence: T('#a8783c', { solid: true }), hedge: T('#2e8a3a', { solid: true }),
     ledge_d: T('#5fae42', { ledge: 'down' }), ledge_l: T('#5fae42', { ledge: 'left' }), ledge_r: T('#5fae42', { ledge: 'right' }),
     cliff: T('#8a7a6a', { solid: true }), bridge_h: T('#b8884a'), bridge_v: T('#b8884a'),
+    bridge_h_n: T('#b8884a'), bridge_h_s: T('#b8884a'), bridge_v_w: T('#b8884a'), bridge_v_e: T('#b8884a'),
+    bridge_h_n_cut_e: T('#b8884a'), bridge_h_s_cut_e: T('#b8884a'), bridge_h_n_cut_w: T('#b8884a'), bridge_h_s_cut_w: T('#b8884a'),
     cave_floor: T('#7a6a5a', { encounter: 'cave' }), cave_wall: T('#3a3030', { solid: true }),
     floor_wood: T('#c89858'), floor_tile: T('#e0dccc'), floor_stone: T('#9a98a0'), carpet_red: T('#b83838'), carpet_blue: T('#4860b8'), carpet_green: T('#3c9860'),
     wall_wood: T('#8a5a30', { solid: true }), wall_plaster: T('#e8dcc0', { solid: true }), wall_stone: T('#6a6870', { solid: true }),
@@ -136,7 +138,16 @@
       return { w: 16, h: 24, frames };
     });
   }
+  /** 'rival' is a pseudo-look: the other protagonist (opposite-gender hero), so the rival always looks like the hero you did not pick */
+  const rl = (look) => {
+    if (look === 'rival') return NP.State && NP.state ? NP.State.rivalLookId() : 'hero_m';
+    // the heroes as little kids (tree house memory): the player's own look, or the other hero's, with '_kid'
+    if (look === 'player_kid') return (NP.State && NP.state ? NP.State.lookId() : 'hero_f') + '_kid';
+    if (look === 'rival_kid') return (NP.State && NP.state ? NP.State.rivalLookId() : 'hero_m') + '_kid';
+    return look;
+  };
   A.human = function (look) {
+    look = rl(look);
     const h = art().human;
     if (h && h.has && h.overworld) {
       const v = tryit(() => (h.has(look) ? memo('ho|' + look, () => h.overworld(look)) : null), null);
@@ -145,6 +156,7 @@
     return fallbackHuman(look || 'npc');
   };
   function portrait(kind, look) {
+    look = rl(look);
     const h = art().human;
     if (h && h.has && h[kind]) {
       const v = tryit(() => (h.has(look) ? memo('hp|' + kind + '|' + look, () => h[kind](look)) : null), null);
@@ -160,7 +172,50 @@
     });
   }
   A.humanFront = (look) => portrait('front', look);
+  /** A foe trainer's battle sprite: the approved AutoSprite art (NP.art.autosprite.trainer) when the look has it, else humanFront.
+   *  look may list fallbacks ('zip|rocker'); 'rival' is the other hero. -> { bmp, hand } (hand null for the generated art). */
+  A.trainerFront = (look) => memo('tf|' + look + '|' + rl(look), () => {
+    const as = art().autosprite, ids = String(look).split('|').map(rl);
+    const hit = as && as.hasTrainer ? ids.find((id) => as.hasTrainer(id)) : null;
+    if (hit) { const t = tryit(() => as.trainer(hit), null); if (t) return t; }
+    const h = art().human, plain = ids.find((id) => h && h.has && h.has(id)) || ids[0];
+    return { bmp: A.humanFront(plain), hand: null };
+  });
   A.humanBack = (look) => portrait('back', look);
+  /** Back-view battle pose for the send-out animation. pose: 'ready' | 'windup' | 'throw' | 'follow'; lean = whole-body sway in px (the
+   *  head swings further than the feet). The arm pose comes from NP.art.human.backPose (drawn by the generator, same size as back());
+   *  the lean and the throw's lift are applied here, scaled by the bitmap's own height. Anchor stays bottom-centre (w/2, h-2).
+   *  The battle scene prefers A.heroThrow (the approved AutoSprite frames) when the look has them. */
+  A.humanThrow = (look, pose, lean) => memo('ht|' + look + '|' + pose + '|' + lean, () => {
+    const h = art().human, lk = rl(look);
+    const posed = pose && pose !== 'ready' && h && h.backPose && h.has && h.has(lk) ? tryit(() => h.backPose(lk, pose), null) : null;
+    return leaned(posed || A.humanBack(look), pose, lean);
+  });
+  function leaned(base, pose, lean) {
+    if (!lean && pose !== 'throw') return base;
+    const out = new Bitmap(base.w, base.h), lift = pose === 'throw' ? Math.max(1, Math.round(base.h / 64)) : 0;
+    for (let y = 0; y < base.h; y++) {
+      const k = Math.pow(Math.max(0, 1 - y / base.h), 1.4), dx = Math.round((lean || 0) * k);
+      for (let x = 0; x < base.w; x++) {
+        const c = base.u32[y * base.w + x];
+        if (!(c >>> 24)) continue;
+        const X = x + dx, Y = y - (y < base.h * 0.6 ? lift : 0);
+        if (X >= 0 && X < out.w && Y >= 0) out.u32[Y * out.w + X] = c;
+      }
+    }
+    // the lift opens a gap at the waist: fill it with the first unlifted row
+    const seam = Math.ceil(base.h * 0.6);
+    for (let k = 0; k < lift && seam < base.h; k++) {
+      const Y = seam - lift + k, dx = Math.round((lean || 0) * Math.pow(Math.max(0, 1 - seam / base.h), 1.4));
+      for (let x = 0; x < base.w; x++) {
+        const c = base.u32[seam * base.w + x], X = x + dx;
+        if (c >>> 24 && X >= 0 && X < out.w && !(out.u32[Y * out.w + X] >>> 24)) out.u32[Y * out.w + X] = c;
+      }
+    }
+    return out;
+  }
+  /** The hero's approved battle-start throw (NP.art.autosprite.hero): { idle, wind, follow } of { bmp, cap, hand }, or null. */
+  A.heroThrow = (look) => { const as = art().autosprite, lk = rl(look); return as && as.hasHero && as.hasHero(lk) ? tryit(() => as.hero(lk), null) : null; };
 
   // ------------------------------------------------------------------ kigu
   function blob(id, back) {
@@ -181,14 +236,27 @@
     });
   }
   A.kiguHas = (id) => !!(art().kigu && art().kigu.has && tryit(() => art().kigu.has(id), false));
-  A.kiguFront = function (id, alt) {
-    if (A.kiguHas(id)) { const b = tryit(() => art().kigu.front(id, alt ? { alt: true } : undefined), null); if (b) return b; }
-    return blob(id, false);
+  /** Battle sprites: front 96x96 (anchor bottom-centre (48, 94)), back 128x128 (anchor (64, 126), drawn 4/3 larger).
+   *  frame = idle-animation frame (wraps; 0 = rest pose). The placeholder blob is padded to the same cells and anchors. */
+  // The approved AutoSprite art (NP.art.autosprite) wins per view; NP.art.kigu draws whatever it lacks (missing back views).
+  const as = () => art().autosprite;
+  const asHas = (id, view) => !!(as() && tryit(() => as().has(id, view), false));
+  A.kiguFront = function (id, alt, frame) {
+    if (asHas(id, 'front')) { const b = tryit(() => as().front(id, { alt: !!alt, frame: frame | 0 }), null); if (b) return b; }
+    if (A.kiguHas(id)) { const b = tryit(() => art().kigu.front(id, { alt: !!alt, frame: frame | 0 }), null); if (b) return b; }
+    return memo('fkf|' + id, () => blob(id, false).padded(16, 32, 16, 0));
   };
-  A.kiguBack = function (id, alt) {
-    if (A.kiguHas(id)) { const b = tryit(() => art().kigu.back(id, alt ? { alt: true } : undefined), null); if (b) return b; }
-    return blob(id, true);
+  A.kiguBack = function (id, alt, frame) {
+    if (asHas(id, 'back')) { const b = tryit(() => as().back(id, { alt: !!alt, frame: frame | 0 }), null); if (b) return b; }
+    if (A.kiguHas(id)) { const b = tryit(() => art().kigu.back(id, { alt: !!alt, frame: frame | 0 }), null); if (b) return b; }
+    return memo('fkb|' + id, () => blob(id, true).padded(32, 64, 32, 0));
   };
+  /** Foe-side battle pose (same cell as the front) shown while she attacks; null when there is none. */
+  A.kiguPose = (id, alt) => (asHas(id, 'pose') ? tryit(() => as().pose(id, { alt: !!alt }), null) : null);
+  /** Number of idle frames for a species (1 for the placeholder). */
+  A.kiguFrames = (id) => (asHas(id, 'front') ? as().idleFrames(id) : A.kiguHas(id) && art().kigu.idleFrames ? tryit(() => art().kigu.idleFrames(id), 1) : 1);
+  /** Bottom-centre anchor of a battle sprite bitmap (feet on the second-to-last row). */
+  A.anchorOf = (bmp) => ({ x: bmp.w >> 1, y: bmp.h - 2 });
   A.kiguIcon = function (id, frame) {
     if (A.kiguHas(id)) { const b = tryit(() => art().kigu.icon(id, frame & 1), null); if (b) return b; }
     return memo('fi|' + id + '|' + (frame & 1), () => {
@@ -244,6 +312,8 @@
       return b;
     });
   };
+  /** a real fish from the Fishing Log (src/data/fish.js): icons are registered as items named 'fish_<id>' */
+  A.fishIcon = function (id) { return A.itemIcon('fish_' + id); };
   A.emote = function (name) {
     const v = A.icon('emote', name);
     if (v) return v;
@@ -267,16 +337,19 @@
       return b;
     });
   };
+  /** Battle backdrop, native 256x144 (NP.W x NP.BOX_Y): { bg, enemyBase, playerBase, ... } passed through from NP.art.tiles.battleBg —
+   *  bases are the sprite feet anchors (the player's lies below the panel top, so its Kigu stands partly behind the command area,
+   *  5th-gen style). The flat fallback (art missing) uses the same size and anchors. */
   A.battleBg = function (id) {
     const r = tryit(() => art().tiles.battleBg(id || 'grass'), null);
     if (r) return r;
     return memo('bg|' + id, () => {
-      const bg = new Bitmap(240, 112);
-      bg.fillRect(0, 0, 240, 62, '#9ad4f0');
-      bg.fillRect(0, 62, 240, 50, '#78c058');
-      bg.ellipse(172, 62, 40, 9, '#5aa040', true);
-      bg.ellipse(58, 108, 52, 10, '#5aa040', true);
-      return { bg, enemyBase: { x: 172, y: 62 }, playerBase: { x: 58, y: 108 } };
+      const W = NP.W, H = NP.BOX_Y, bg = new Bitmap(W, H);
+      bg.fillRect(0, 0, W, 60, '#9ad4f0');
+      bg.fillRect(0, 60, W, H - 60, '#78c058');
+      bg.ellipse(188, 88, 60, 11, '#5aa040', true);
+      bg.ellipse(66, 142, 92, 18, '#5aa040', true);
+      return { id: id || 'grass', bg, enemyBase: { x: 188, y: 92 }, playerBase: { x: 66, y: 148 } };
     });
   };
   const hasIcon = (k) => tryit(() => !art().icons.has || art().icons.has(k), false);

@@ -15,6 +15,7 @@ const CORE = ['src/core/color.js', 'src/core/rng.js', 'src/core/bitmap.js', 'src
 const ORDER = [
   ...CORE.map((f) => [f]),
   ['src/art/kigu/files.json'],
+  ['src/art/autosprite/files.json'],
   ['src/art/human/files.json'],
   ['src/art/tiles/files.json'],
   ['src/art/icons/files.json'],
@@ -23,6 +24,7 @@ const ORDER = [
   ['src/maps/files.json'],
   ['src/engine/files.json'],
   ['src/game/files.json'],
+  ['src/game/arcade/files.json'],
   ['src/platform/browser.js', true],
 ];
 

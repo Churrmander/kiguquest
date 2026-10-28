@@ -13,7 +13,7 @@
 </style>
 </head>
 <body>
-<canvas id="screen" width="240" height="160" tabindex="0"></canvas>
+<canvas id="screen" width="256" height="192" tabindex="0"></canvas>
 <div id="hint"><kbd>Arrows</kbd> move &nbsp; <kbd>Z</kbd> A &nbsp; <kbd>X</kbd> B (hold to run) &nbsp; <kbd>Enter</kbd> Start &nbsp; <kbd>Backspace</kbd> Select &nbsp; <kbd>A</kbd>/<kbd>S</kbd> L/R</div>
 
 <!-- Script order matters: every file is a classic script that attaches to the global NP namespace.
@@ -33,12 +33,22 @@
 <script src="src/art/kigu/looks-meadow.js"></script>
 <script src="src/art/kigu/looks-gingham.js"></script>
 <script src="src/art/kigu/looks-p2.js"></script>
+<script src="src/art/kigu/looks-ch4.js"></script>
+<script src="src/art/kigu/looks-ch5.js"></script>
+<script src="src/art/kigu/looks-water.js"></script>
+<!-- src/art/autosprite/files.json -->
+<script src="src/art/autosprite/data.js"></script>
+<script src="src/art/autosprite/api.js"></script>
+<script src="src/art/autosprite/rig.js"></script>
+<script src="src/art/autosprite/rigs.js"></script>
 <!-- src/art/human/files.json -->
 <script src="src/art/human/paper.js"></script>
 <script src="src/art/human/spec.js"></script>
+<script src="src/art/human/rig.js"></script>
+<script src="src/art/human/head.js"></script>
+<script src="src/art/human/body.js"></script>
 <script src="src/art/human/ow.js"></script>
-<script src="src/art/human/ow-parts.js"></script>
-<script src="src/art/human/portrait.js"></script>
+<script src="src/art/human/trainer.js"></script>
 <script src="src/art/human/looks.js"></script>
 <script src="src/art/human/api.js"></script>
 <!-- src/art/tiles/files.json -->
@@ -49,14 +59,25 @@
 <script src="src/art/tiles/terrain_forest.js"></script>
 <script src="src/art/tiles/terrain_indoor.js"></script>
 <script src="src/art/tiles/terrain_bridge.js"></script>
+<script src="src/art/tiles/terrain_desert.js"></script>
+<script src="src/art/tiles/terrain_rock.js"></script>
 <script src="src/art/tiles/stamp_lib.js"></script>
 <script src="src/art/tiles/stamp_buildings.js"></script>
 <script src="src/art/tiles/stamp_nature.js"></script>
 <script src="src/art/tiles/stamp_props.js"></script>
 <script src="src/art/tiles/stamp_indoor.js"></script>
 <script src="src/art/tiles/stamp_shrine.js"></script>
+<script src="src/art/tiles/stamp_desert.js"></script>
 <script src="src/art/tiles/stamp_gate.js"></script>
+<script src="src/art/tiles/stamp_arcade.js"></script>
+<script src="src/art/tiles/stamp_city.js"></script>
+<script src="src/art/tiles/stamp_kite.js"></script>
+<script src="src/art/tiles/battle_kit.js"></script>
+<script src="src/art/tiles/battle_nature.js"></script>
+<script src="src/art/tiles/battle_places.js"></script>
 <script src="src/art/tiles/api.js"></script>
+<script src="src/art/tiles/w3d_trees.js"></script>
+<script src="src/art/tiles/w3d_volumes.js"></script>
 <!-- src/art/icons/files.json -->
 <script src="src/art/icons/kit.js"></script>
 <script src="src/art/icons/glyphs.js"></script>
@@ -66,6 +87,13 @@
 <script src="src/art/icons/items-heal.js"></script>
 <script src="src/art/icons/items-use.js"></script>
 <script src="src/art/icons/items-held.js"></script>
+<script src="src/art/icons/items-pins.js"></script>
+<script src="src/art/icons/items-key.js"></script>
+<script src="src/art/icons/items-ch4.js"></script>
+<script src="src/art/icons/items-fish.js"></script>
+<script src="src/art/icons/badges.js"></script>
+<script src="src/art/icons/emotes.js"></script>
+<script src="src/art/icons/title.js"></script>
 <!-- src/audio/files.json -->
 <script src="src/audio/notation.js"></script>
 <script src="src/audio/sfx.js"></script>
@@ -74,6 +102,8 @@
 <script src="src/audio/songs_battle.js"></script>
 <script src="src/audio/songs_world.js"></script>
 <script src="src/audio/songs_p2.js"></script>
+<script src="src/audio/songs_ch4.js"></script>
+<script src="src/audio/songs_ch5.js"></script>
 <script src="src/audio/engine.js"></script>
 <!-- src/data/files.json -->
 <script src="src/data/types.js"></script>
@@ -81,9 +111,17 @@
 <script src="src/data/abilities.js"></script>
 <script src="src/data/moves.js"></script>
 <script src="src/data/moves_p2.js"></script>
+<script src="src/data/moves_ch4.js"></script>
+<script src="src/data/moves_ch5.js"></script>
+<script src="src/data/moves_water.js"></script>
 <script src="src/data/species.js"></script>
 <script src="src/data/species_p2.js"></script>
+<script src="src/data/species_ch4.js"></script>
+<script src="src/data/species_ch5.js"></script>
+<script src="src/data/species_water.js"></script>
 <script src="src/data/items.js"></script>
+<script src="src/data/fish.js"></script>
+<script src="src/data/renames.js"></script>
 <script src="src/data/text/_api.js"></script>
 <!-- src/maps/files.json -->
 <script src="src/maps/_kit.js"></script>
@@ -91,11 +129,37 @@
 <script src="src/maps/scripts.js"></script>
 <script src="src/maps/button_town.js"></script>
 <script src="src/maps/route1.js"></script>
+<script src="src/maps/basting_green.js"></script>
+<script src="src/maps/ribbon_loop.js"></script>
 <script src="src/maps/thimble.js"></script>
 <script src="src/maps/route2.js"></script>
 <script src="src/maps/gingham_woods.js"></script>
 <script src="src/maps/spindle_shrine.js"></script>
 <script src="src/maps/hemline.js"></script>
+<script src="src/maps/hemline_river.js"></script>
+<script src="src/maps/hemline_lake.js"></script>
+<script src="src/maps/ch3_lib.js"></script>
+<script src="src/maps/route3.js"></script>
+<script src="src/maps/seamstead.js"></script>
+<script src="src/maps/crisp.js"></script>
+<script src="src/maps/seamstead_salon.js"></script>
+<script src="src/maps/ch4_lib.js"></script>
+<script src="src/maps/route4.js"></script>
+<script src="src/maps/canvas_rest.js"></script>
+<script src="src/maps/sun_flats.js"></script>
+<script src="src/maps/dust_bowl.js"></script>
+<script src="src/maps/dust_oasis.js"></script>
+<script src="src/maps/bobbin_quarry.js"></script>
+<script src="src/maps/quarry_tunnels.js"></script>
+<script src="src/maps/quarry_salon.js"></script>
+<script src="src/maps/route5.js"></script>
+<script src="src/maps/shibuyarn.js"></script>
+<script src="src/maps/shibuyarn_arcade.js"></script>
+<script src="src/maps/spark_cellar.js"></script>
+<script src="src/maps/route6.js"></script>
+<script src="src/maps/kite_hill.js"></script>
+<script src="src/maps/kite_salon.js"></script>
+<script src="src/maps/fishing_spots.js"></script>
 <!-- src/engine/files.json -->
 <script src="src/engine/input.js"></script>
 <script src="src/engine/sound.js"></script>
@@ -105,6 +169,9 @@
 <script src="src/engine/game.js"></script>
 <script src="src/engine/assets.js"></script>
 <script src="src/engine/tilemap.js"></script>
+<script src="src/engine/persp.js"></script>
+<script src="src/engine/persp_raster.js"></script>
+<script src="src/engine/persp_scene.js"></script>
 <!-- src/game/files.json -->
 <script src="src/game/kigu.js"></script>
 <script src="src/game/items.js"></script>
@@ -113,11 +180,25 @@
 <script src="src/game/battle/ai.js"></script>
 <script src="src/game/battle/catch.js"></script>
 <script src="src/game/state.js"></script>
+<script src="src/game/weather.js"></script>
+<script src="src/game/clock.js"></script>
 <script src="src/game/overworld.js"></script>
+<script src="src/game/fishing.js"></script>
 <script src="src/game/battlescene.js"></script>
+<script src="src/game/battlefx.js"></script>
 <script src="src/game/menus.js"></script>
 <script src="src/game/screens.js"></script>
 <script src="src/game/main.js"></script>
+<!-- src/game/arcade/files.json -->
+<script src="src/game/arcade/core.js"></script>
+<script src="src/game/arcade/moth_patrol.js"></script>
+<script src="src/game/arcade/button_breaker.js"></script>
+<script src="src/game/arcade/steam_chase.js"></script>
+<script src="src/game/arcade/rooftop_hop.js"></script>
+<script src="src/game/arcade/plush_catcher.js"></script>
+<script src="src/game/arcade/prizes.js"></script>
+<script src="src/game/arcade/counters.js"></script>
+<script src="src/game/arcade/cards.js"></script>
 <script src="src/platform/browser.js" data-browser></script>
 <!-- END SCRIPTS -->
 </body>

@@ -6,5 +6,7 @@
   "src/audio/songs_battle.js",
   "src/audio/songs_world.js",
   "src/audio/songs_p2.js",
+  "src/audio/songs_ch4.js",
+"src/audio/songs_ch5.js",
   "src/audio/engine.js"
 ]

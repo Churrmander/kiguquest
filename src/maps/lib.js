@@ -3,7 +3,7 @@
  *  L.map(o)      chainable builder: terrain grid + stamps / npcs / props / warps / triggers, registered through NP.mapkit.
  *  L.room(o)     indoor room with a door mat + exit warp;  L.tea(o) / L.store(o) the standard Tea House / General Store.
  *  trainers, pickups (visible + hidden), signs, gates and Snip trees (terrain that changes with story flags, persisted by flag).
- *  'want|fallback' picks: 'sparkin|nibbi' = Sparkin if that species exists yet, else Nibbi (logged in L.subs; tests report it),
+ *  'want|fallback' picks: 'scurrent|nibblit' = Scurrent if that species exists yet, else Nibblit (logged in L.subs; tests report it),
  *  so maps keep working while the data/art teams are still adding species, items and looks.
  *
  * Text conventions (docs/text.md): one page = <= 2 lines (~75 chars); '\\p' = new page; '\\n' = line break; say Kigu / Tailor /
@@ -25,13 +25,13 @@
     if (!L.subs.some((s) => s.kind === kind && s.want === want && s.used === fb)) L.subs.push({ kind, want, used: fb });
     return fb;
   }
-  L.sp = (s, d) => pick('species', NP.data.species, s, d || 'nibbi');
+  L.sp = (s, d) => pick('species', NP.data.species, s, d || 'nibblit');
   L.item = (s, d) => pick('item', NP.data.items, s, d || 'snack_cake');
-  L.look = (s, d) => pick('look', NP.art && NP.art.human && NP.art.human.looks, s, d || 'villager_m1');
+  L.look = (s, d) => (/^(rival|player_kid|rival_kid)$/.test(String(s).split('|')[0]) ? String(s).split('|')[0] : pick('look', NP.art && NP.art.human && NP.art.human.looks, s, d || 'villager_m1'));
   L.hasItem = (id) => !!(NP.data.items && NP.data.items[id]);
   L.hasMove = (id) => !!(NP.data.moves && NP.data.moves[id]);
 
-  /** team([['cocoona', 14, { moves:[..], item:'plum_treat', nature:'adamant' }], ['sparkin|nibbi', 12]]) */
+  /** team([['vowspun', 14, { moves:[..], item:'plum_treat', nature:'adamant' }], ['scurrent|nibblit', 12]]) */
   L.team = function (list) {
     return list.map((e) => {
       const o = e[2] || {};
@@ -51,7 +51,7 @@
   // ------------------------------------------------------------------------------------------ actors and pickups
   L.trainerDef = function (id, x, y, look, dir, o) {
     const tr = { cls: o.cls, name: o.name, sight: o.sight || 3, reward: o.reward || 10, ai: o.ai === undefined ? 1 : o.ai, team: L.team(o.team) };
-    for (const k of ['intro', 'win', 'lose', 'after', 'music', 'jingle', 'master', 'bg']) if (o[k] !== undefined) tr[k] = o[k];
+    for (const k of ['intro', 'win', 'lose', 'after', 'music', 'jingle', 'master', 'bg', 'then']) if (o[k] !== undefined) tr[k] = o[k];
     return { id, x, y, look: L.look(look, 'tailor_f'), dir: dir || 'down', trainer: tr, note: o.note };
   };
 
@@ -101,7 +101,7 @@
     if (!(yield* c.ask('Use Snip on the tree?'))) return;
     NP.snd.sfx('leaf');
     L.setGate(c, key, true);
-    yield* c.sayT(id + '.done', ['{player} had a Kigu Snip the tree down!']);
+    yield* c.sayT(id + '.done', ['{player}\'s Kigu used Snip and cut the tree down!']);
   };
 
   // ------------------------------------------------------------------------------------------ things that change with story flags
@@ -298,6 +298,7 @@
       .stamp('window', 2, 1).stamp('window', 7, 1).stamp('plant', 1, 3).stamp('plant', 9, 6);
     M.interact(4, 3, 'tea').interact(5, 3, 'tea').interact(9, 3, 'pc');
     M.npc('maid', 4, 2, 'tea_maid', 'down', null, { script: 'tea', note: 'Tea House healer (shared script "tea")' });
+    M.npc('cook', 9, 4, 'cook', 'left', null, { script: 'tea_cook', note: 'Tea House cook: turns a fish into a dish (src/game/fishing.js)' });
     for (const gst of o.guests || []) M.npc(gst.id, gst.x, gst.y, gst.look, gst.dir, gst.say, { note: gst.note });
     return M;
   };

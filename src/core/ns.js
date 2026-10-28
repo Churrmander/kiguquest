@@ -2,8 +2,9 @@
 (function (root) {
   'use strict';
   const NP = (root.NP = root.NP || {});
-  NP.W = 240; // GBA screen
-  NP.H = 160;
+  NP.W = 256; // DS top screen
+  NP.H = 192;
+  NP.BOX_Y = NP.H - 48; // top of the 48px message / command box
   NP.TILE = 16;
 
   NP.data = NP.data || {}; // content registries: NP.data.species[id], NP.data.moves[id], NP.data.items[id], ...

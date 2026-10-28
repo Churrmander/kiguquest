@@ -72,7 +72,7 @@ for (const id of ids) {
   // people and pickups must stand on walkable ground
   for (const n of def.npcs || []) {
     if (tm.solid(n.x, n.y)) bad(id, 'npc ' + n.id + ' is inside something solid at ' + n.x + ',' + n.y);
-    if (n.look && NP.art.human.has && !NP.art.human.has(n.look)) bad(id, 'npc ' + n.id + ' has unknown look ' + n.look);
+    if (n.look && !/^(rival|player_kid|rival_kid)$/.test(n.look) && NP.art.human.has && !NP.art.human.has(n.look)) bad(id, 'npc ' + n.id + ' has unknown look ' + n.look);
     const tr = n.trainer;
     if (tr) for (const t of tr.team) if (!NP.data.species[t.sp]) bad(id, 'trainer ' + n.id + ' uses unknown species ' + t.sp);
   }
@@ -84,8 +84,12 @@ for (const id of ids) {
     const seen = new Uint8Array(tm.w * tm.h);
     const q = [];
     for (const s of Object.values(def.spawns || {})) { q.push([s.x, s.y]); seen[s.y * tm.w + s.x] = 1; }
-    const bushAt = new Set(tm.placements.filter((p) => p.id === 'bush').map((p) => p.x + ',' + p.y));
+    const bushAt = new Set(tm.placements.filter((p) => p.id === 'bush' || (NP.stamps[p.id] && NP.stamps[p.id].shove)).map((p) => p.x + ',' + p.y));
+    // flag gates (switch barriers, locked doors) count as open here: this test is about layout; tests/chapter3 checks the closed state
+    const gateCells = new Set();
+    for (const g of Object.values(def.gates || {})) if (g.closed !== 'h') for (const [gx, gy] of g.cells) gateCells.add(gx + ',' + gy);
     const open = (x, y) => {
+      if (gateCells.has(x + ',' + y)) return true;
       if (!tm.solid(x, y)) return true;
       if (!fieldMoves || !tm.inBounds(x, y)) return false;
       const t = tm.tdef(x, y);
@@ -111,14 +115,37 @@ for (const id of ids) {
   const touchWith = (x, y) => [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => reachWith(x + dx, y + dy));
   for (const p of def.props || []) {
     if (p.gate) { // behind a field move: unreachable on foot, reachable with Paddle/Snip
-      if (!['paddle', 'snip'].includes(p.gate)) bad(id, 'prop ' + p.id + ' has unknown gate ' + p.gate);
+      if (!['paddle', 'snip', 'shove'].includes(p.gate)) bad(id, 'prop ' + p.id + ' has unknown gate ' + p.gate);
       if (touch(p.x, p.y)) bad(id, 'prop ' + p.id + ' is marked gated (' + p.gate + ') but can be reached on foot');
       if (!touchWith(p.x, p.y)) bad(id, 'prop ' + p.id + ' is gated (' + p.gate + ') but cannot be reached even with field moves');
     } else if (!touch(p.x, p.y)) bad(id, 'prop ' + p.id + ' at ' + p.x + ',' + p.y + ' cannot be reached');
   }
   for (const n of def.npcs || []) {
     if (n.hidden) continue;
-    if (!touch(n.x, n.y)) bad(id, 'npc ' + n.id + ' at ' + n.x + ',' + n.y + ' is walled in');
+    if (n.gate ? !touchWith(n.x, n.y) : !touch(n.x, n.y)) bad(id, 'npc ' + n.id + ' at ' + n.x + ',' + n.y + ' is walled in');
+  }
+}
+
+// props that block must never sit on a road: lamps and the like stand beside it (a lamp across a 2-wide street used to wall the village in two)
+for (const id of ids) {
+  const tm = tms[id];
+  if (!tm) continue;
+  for (const p of tm.placements) {
+    if (p.id !== 'lamp') continue;
+    for (let yy = 0; yy < p.h; yy++) if (p.def.solid[yy][0] === '#' && ['cobble', 'path', 'rock_path', 'bridge_h', 'bridge_v', 'bridge_h_n', 'bridge_h_s', 'bridge_v_w', 'bridge_v_e'].includes(tm.idAt(p.x, p.y + yy))) bad(id, 'lamp@' + p.x + ',' + p.y + ' blocks the road at ' + p.x + ',' + (p.y + yy));
+  }
+}
+
+// a person standing just behind a cliff (seen from the camera) is hidden by it in the 3D view, as if stuck in the wall (owner's note)
+const FRONT = [[0, 1], [-1, 0], [0, -1], [1, 0]];   // the tile between a person and the camera, for camera 0 (looks north) .. 3 (west)
+for (const id of ids) {
+  const tm = tms[id], def = NP.maps[id];
+  if (!tm || def.indoor) continue;
+  for (const n of def.npcs || []) {
+    const z = (def.cameraZones || []).find((q) => n.x >= q.x && n.x < q.x + (q.w || 1) && n.y >= q.y && n.y < q.y + (q.h || 1));
+    const [fx, fy] = FRONT[(z ? z.camera : def.camera || 0) & 3];
+    const t = tm.inBounds(n.x + fx, n.y + fy) && tm.idAt(n.x + fx, n.y + fy);
+    if (t && /^cliff|^cave_wall/.test(t)) bad(id, 'npc ' + n.id + ' at ' + n.x + ',' + n.y + ' stands right behind a cliff (' + t + '), so the 3D view hides them');
   }
 }
 

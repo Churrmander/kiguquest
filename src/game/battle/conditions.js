@@ -149,7 +149,7 @@
     },
   });
   FX.registerVolatile('leechseed', {
-    residualOrder: 20, batonPass: true,
+    residualOrder: 20, batonPass: true, endsWithSource: true,   // owner's call: the seed withers when the Kigu who planted it faints
     onStart(c) { c.battle.tmsg('system.volatile.leechseed.start', '{mon} was seeded!', { mon: mon(c.holder) }); },
     onResidual(c) {
       const m = c.holder, src = c.data.source;

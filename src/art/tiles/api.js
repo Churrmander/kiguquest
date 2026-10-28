@@ -58,14 +58,24 @@
     return b;
   };
 
-  /** Battle background: { bg: Bitmap 240x112, enemyBase:{x,y}, playerBase:{x,y} } (cached; do not mutate bg). */
+  /**
+   * Battle background: { id, bg: Bitmap 256x144 (NP.W x NP.BOX_Y), enemyBase:{x,y}, playerBase:{x,y}, layers?:{sky,ground}, enemyDisc?:{bmp,x,y},
+   * playerDisc?:{bmp,x,y} } (cached; do not mutate). `bg` is the finished composite (platforms included); the optional extras are the
+   * same picture as separate 256x144 layers / platform bitmaps (x,y = top-left in bg coordinates) for camera sway and intro pans.
+   * Unknown ids fall back to 'grass'. Painters may return a bare Bitmap (old style) or { bg, layers, enemyDisc, playerDisc }.
+   */
   tiles.battleBg = function (id) {
     let r = bgCache.get(id);
     if (r) return r;
     const def = K.battleBgs[id] || K.battleBgs.grass;
     if (!def) throw new Error('NP.art.tiles: no battle backgrounds registered');
-    const bg = def.paint().quantize15();
-    r = { id: def.id, bg, enemyBase: { x: def.enemyBase.x, y: def.enemyBase.y }, playerBase: { x: def.playerBase.x, y: def.playerBase.y } };
+    const out = def.paint();
+    const full = out && out.u32 ? { bg: out } : out;
+    const q = (b) => b.quantize15();
+    r = { id: def.id, bg: q(full.bg), enemyBase: { x: def.enemyBase.x, y: def.enemyBase.y }, playerBase: { x: def.playerBase.x, y: def.playerBase.y } };
+    if (full.layers) r.layers = { sky: q(full.layers.sky), ground: q(full.layers.ground) };
+    if (full.enemyDisc) r.enemyDisc = { bmp: q(full.enemyDisc.bmp), x: full.enemyDisc.x, y: full.enemyDisc.y };
+    if (full.playerDisc) r.playerDisc = { bmp: q(full.playerDisc.bmp), x: full.playerDisc.x, y: full.playerDisc.y };
     bgCache.set(id, r);
     return r;
   };
@@ -81,11 +91,14 @@
    * (outside counts as the same group, per the contract).
    */
   tiles.computeMask = function (idAt, x, y) {
-    const g = tiles.groupOf(idAt(x, y));
+    const id = idAt(x, y), g = tiles.groupOf(id);
+    // a road that `meetsBridge` runs straight onto a bridge (no curb or grass margin at the end of the planks)
+    const toBridge = !!(NP.terrain[id] && NP.terrain[id].meetsBridge);
     let m = 0;
     for (const [dx, dy, bit] of DIRS) {
       const n = idAt(x + dx, y + dy);
       if (n === null || n === undefined || tiles.groupOf(n) === g) m |= bit;
+      else if (toBridge && NP.terrain[n] && NP.terrain[n].bridge) m |= bit;
     }
     return m;
   };

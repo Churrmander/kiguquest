@@ -32,17 +32,22 @@
   // --- Ember
   M('cinder', 'Cinder', 'ember', S, 40, 100, 25, { status: st('brn', 10) }, 'A small shower of sparks.');
   M('scorch_tail', 'Scorch Tail', 'ember', P, 70, 100, 15, { status: st('brn', 10) }, 'Whips a burning tail.');
-  M('foxfire', 'Fox Fire', 'ember', T, null, 85, 15, { status: st('brn') }, 'A weird blue flame burns the foe.');
+  M('foxfire', 'Fox Fire', 'ember', T, null, 85, 15, { status: st('brn'), sideCond: 'foxfire' }, 'Burns the foe and powers up your Ember moves for 5 turns.');
   M('foxfire_blast', 'Foxfire Blast', 'ember', S, 90, 100, 15, { status: st('brn', 10) }, 'A sweeping wave of fox-fire.');
+  // Kyuubelle's late moves (owner's note: she learned nothing new after evolving at 36)
+  M('festive_dance', 'Festive Dance', 'ember', T, null, null, 20, { target: 'self', boosts: { spa: 1, spe: 1 } }, 'A whirling festival dance. Raises Sp. Atk and Speed.');
+  M('spirit_bell', 'Spirit Bell', 'dream', S, 80, 100, 15, { boosts: { spd: -1 }, boostChance: 20 }, 'A shrine bell rings in the mind. May lower Sp. Def.');
+  M('fox_moon', 'Fox Moon', 'dream', T, null, null, 10, { target: 'self', heal: 0.5 }, 'Rests under a fox-shaped moon. Restores half HP.');
+  M('ninefold_fire', 'Ninefold Fire', 'ember', S, 120, 85, 5, { status: st('brn', 20) }, 'All nine tails burn at once. May burn.');
   // --- Tide
-  M('bubble_pop', 'Bubble Pop', 'tide', S, 40, 100, 30, null, 'Pops bubbles on the foe.');
+  M('bubble_pop', 'Bubble Pop', 'tide', S, 35, 100, 30, null, 'Pops bubbles on the foe.');
   M('bubble_beam', 'Bubble Beam', 'tide', S, 65, 100, 20, { boosts: { spe: -1 }, boostChance: 10 }, 'May lower Speed.');
   M('aqua_dash', 'Aqua Dash', 'tide', P, 40, 100, 20, { priority: 1 }, 'A watery rush that strikes first.');
   M('shell_guard', 'Shell Guard', 'tide', T, null, null, 40, { target: 'self', boosts: { def: 1 } }, 'Hides behind the shell.');
   M('paddle_slap', 'Paddle Slap', 'tide', P, 60, 100, 25, null, 'Slaps with a big paddle.');
   M('tide_wave', 'Tide Wave', 'tide', S, 90, 100, 15, null, 'A crashing wave.');
   // --- Sprout
-  M('vine_snip', 'Vine Snip', 'sprout', P, 45, 100, 25, null, 'Lashes with vines.');
+  M('vine_snip', 'Vine Snip', 'sprout', S, 40, 100, 25, null, 'Lashes with vines.');
   M('leaf_flick', 'Leaf Flick', 'sprout', P, 55, 95, 25, { crit: 1 }, 'Flicks sharp leaves. Crits often.');
   M('seed_sow', 'Seed Sow', 'sprout', T, null, 90, 10, { leech: true }, 'Plants a seed that saps HP.');
   M('nap_dust', 'Nap Dust', 'sprout', T, null, 75, 15, { status: st('slp') }, 'Sleepy dust.');

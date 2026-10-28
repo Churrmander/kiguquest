@@ -159,7 +159,7 @@ if (I.fxNames && I.fxNames().length) {
 // ---------------------------------------------------------------- logo + title
 if (want('logo') && I.has('logo')) {
   const L = I.logo();
-  checkBudget('logo', L, 48);
+  checkBudget('logo', L, 2400);   // soft anti-aliased, dithered lettering: rich colour on purpose (only item icons / emotes stay <= 16)
   out('logo', titled(`logo ${L.w}x${L.h} (${L.countColors()} colours)`, L.padded(4, 4, 4, 4)));
   const onLight = new Bitmap(L.w + 8, L.h + 8).clear('#f0e8d8');
   onLight.blit(L, 4, 4);
@@ -171,10 +171,10 @@ if (want('title') && I.has('titleScene')) {
   if (I.has('logo')) {
     const c = T.clone();
     const L = I.logo();
-    c.blit(L, Math.floor((240 - L.w) / 2), 14);
+    c.blit(L, Math.floor((T.w - L.w) / 2), 20);
     // "PRESS START" like the game would print it
-    Font.draw(c, 'PRESS START', 120, 132, { color: '#fff8e0', outline: '#302040', align: 'center' });
-    Font.draw(c, '© 2026 TSUMUGI WORKS', 120, 148, { color: '#d8c8f0', align: 'center' });
+    Font.draw(c, 'PRESS START', T.w / 2, 150, { color: '#fff8e0', outline: '#302040', align: 'center' });
+    Font.draw(c, '© 2026 TSUMUGI WORKS', T.w / 2, T.h - 12, { color: '#d8c8f0', align: 'center' });
     out('title-logo', c);
   }
 }

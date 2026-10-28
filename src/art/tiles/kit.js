@@ -347,11 +347,12 @@
   };
 
   /**
-   * Register a stamp. def.paint(variantName, frame) -> Bitmap (w*16 x h*16).
+   * Register a stamp. def.paint(variantName, frame) -> Bitmap (w*16 x h*16 + rise).
    * variants: array of names. draw(variant, frame) accepts a name or an index.
+   * rise: px of art above the footprint (tall buildings: walls and roof stand up past the top solid row; drawn y-sorted with the base).
    */
   K.stamp = function (id, def) {
-    const s = Object.assign({ over: 0, layer: 'obj', variants: ['default'], frames: 1, animSpeed: 16 }, def);
+    const s = Object.assign({ over: 0, rise: 0, layer: 'obj', variants: ['default'], frames: 1, animSpeed: 16 }, def);
     if (!s.solid) {
       s.solid = [];
       for (let y = 0; y < s.h; y++) s.solid.push('#'.repeat(s.w));
@@ -364,8 +365,17 @@
       if (v === undefined || v === null || s.variants.indexOf(v) < 0) v = s.variants[0];
       const f = (((frame | 0) % s.frames) + s.frames) % s.frames;
       const b = paint(v, f);
-      if (b.w !== s.w * T || b.h !== s.h * T) throw new Error('stamp ' + id + ' drew ' + b.w + 'x' + b.h);
+      if (b.w !== s.w * T || b.h !== s.h * T + s.rise) throw new Error('stamp ' + id + ' drew ' + b.w + 'x' + b.h);
       return b.quantize15();
+    };
+    // 3D view (w3d_volumes.js): the same picture painted with paint(v, f, '3d') - buildings leave out what the renderer builds as real
+    // geometry (striped awnings) - and `vol(variant)` = the building's volume options, when the stamp has one.
+    s.draw3d = function (variant, frame) {
+      let v = variant;
+      if (typeof v === 'number') v = s.variants[((v % s.variants.length) + s.variants.length) % s.variants.length];
+      if (v === undefined || v === null || s.variants.indexOf(v) < 0) v = s.variants[0];
+      const f = (((frame | 0) % s.frames) + s.frames) % s.frames;
+      return paint(v, f, '3d').quantize15();
     };
     return NP.reg(NP.stamps, id, s);
   };

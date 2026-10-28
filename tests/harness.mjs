@@ -5,7 +5,33 @@ export function boot(seed) {
   const { NP } = loadNP({ quiet: true });
   NP.rng.seed(seed === undefined ? 12345 : seed);
   const G = NP.Game;
+  // Speaker check: when a line starts "Name:" and Name is a character with a sprite, that character should be standing on screen
+  // (owner's note: "Mimi is talking to me, but is nowhere to be found"). Collected in bot.offscreen.
+  const offscreen = [];
+  const say0 = NP.Overworld.prototype.say;
+  NP.Overworld.prototype.say = function* (text, o) {
+    const m = /^(\{rival\}|[A-Z][a-z]+(?: [A-Z][a-z]+)?):/.exec(String(text));
+    const looks = (NP.art && NP.art.human && NP.art.human.looks) || {};
+    const look = m && (m[1] === '{rival}' ? 'rival' : m[1].toLowerCase());
+    if (look && (look === 'rival' || looks[look]) && this.player && this.map && !(this.map.def.memory)) {
+      const p = this.player;
+      const near = this.actors.some((a) => a !== p && a.look === look && !a.hidden && Math.abs(a.x - p.x) <= 6 && a.y - p.y >= -5 && a.y - p.y <= 4);
+      if (!near) {
+        const k = this.map.id + ' | ' + String(text).slice(0, 60);
+        if (!offscreen.includes(k)) offscreen.push(k);
+      }
+    }
+    yield* say0.call(this, text, o);
+  };
+  // lines spoken from out of sight on purpose: Tuck in Thimble wears a plain Presser look (his own look is from Chapter 5),
+  // Gusset calls out from behind the herd, and the pressed Vowspun's sprite is a Kigu
+  const MEANT = [/^thimble \| Tuck:/, /^quarry_tunnels_2 \| Gusset: \(from somewhere/, /^spindle_shrine \| Vowspun:/];
+  process.on('exit', () => {
+    const bad = offscreen.filter((k) => !MEANT.some((r) => r.test(k)));
+    if (bad.length) { console.error('Speakers talking from off screen (owner\'s rule: the speaker stands on screen):\n  ' + bad.join('\n  ')); process.exitCode = 1; }
+  });
   const bot = {
+    offscreen,
     NP, G,
     tick(n = 1) { for (let i = 0; i < n; i++) { G.tick(); G.render(); } },
     hold(btn, frames) { NP.Input.set(btn, true); bot.tick(frames); NP.Input.set(btn, false); bot.tick(1); },
@@ -29,6 +55,12 @@ export function boot(seed) {
       for (let i = 0; i < steps.length; i++) { const n = typeof steps[i + 1] === 'number' ? steps[++i] : 1; for (let k = 0; k < n; k++) list.push(steps[i - (n > 1 || typeof steps[i] === 'number' ? 1 : 0)]); }
       return list;
     },
+    /** the key to press to walk in map direction d: the 3D camera may be turned, and the pad follows the screen */
+    keyFor(d) {
+      const V = NP.view3d;
+      return V && V.on && V.q ? V.DIRS[(V.DIRS.indexOf(d) - V.q + 4) & 3] : d;
+    },
+    /** walk n tiles in MAP direction dir (whatever way the camera faces) */
     go(dir, n = 1) {
       const ow = bot.ow;
       for (let i = 0; i < n; i++) {
@@ -37,11 +69,12 @@ export function boot(seed) {
         while (guard++ < 80) {
           const p = ow.player;
           const before = p.x + ',' + p.y;
-          NP.Input.set(dir, true);
+          var key = bot.keyFor(dir);
+          NP.Input.set(key, true);
           bot.tick(1);
           if (p.x + ',' + p.y !== before || p.moving) break;
         }
-        NP.Input.set(dir, false);
+        NP.Input.set(key, false);
         let g = 0;
         while (ow.player.moving && g++ < 60) bot.tick(1);
         if (!bot.idle() && G.top() === ow) bot.mash(() => bot.idle() || G.top() !== ow, 4000);

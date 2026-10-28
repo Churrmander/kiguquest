@@ -8,7 +8,7 @@
   // ---------------------------------------------------------------- fox line (Ember)
   const FOX = { main: '#f28a3a', sub: '#fff1d8', hair: '#b85a26', mitt: '#5a3430', foot: '#5a3430', eye: '#f0a020', flame: '#ffd640', inner: '#ffc9a0', acc: '#d63a3a', trim: '#fff1d8' };
   D('konko', {
-    name: 'Konko', stage: 1, size: 47, rise: 7, pal: FOX,
+    name: 'Konko', stage: 1, size: 67, rise: 10, pal: FOX,
     hood: { type: 'up', ears: { kind: 'tri', h: 9, w: 4, lean: 1 } },
     hair: { style: 'short', bangs: 'part' },
     arms: { mittMat: 'mitt' }, footMat: 'foot',
@@ -18,7 +18,7 @@
     ],
   });
   D('kitsuri', {
-    name: 'Kitsuri', stage: 2, size: 54, rise: 8, pal: FOX, bodyW: 1.0,
+    name: 'Kitsuri', stage: 2, size: 77, rise: 11, pal: FOX, bodyW: 1.0,
     hood: { type: 'band', ears: { kind: 'tri', h: 10, w: 4.5, lean: 1, mat: 'main' }, mat: 'main' },
     hair: { style: 'long', bangs: 'part', drop: 2 },
     arms: { mittMat: 'mitt' }, footMat: 'foot',
@@ -32,7 +32,7 @@
     ],
   });
   D('kyuubelle', {
-    name: 'Kyuubelle', stage: 3, size: 61, rise: 9, pal: Object.assign({}, FOX, { acc: '#c83a4a', main: '#f4913e', fire: '#6fd8ff', mask: '#fff6e6' }),
+    name: 'Kyuubelle', stage: 3, size: 87, rise: 13, pal: Object.assign({}, FOX, { acc: '#c83a4a', main: '#f4913e', fire: '#6fd8ff', mask: '#fff6e6' }),
     hood: { type: 'band', ears: { kind: 'tri', h: 11, w: 5, lean: 1, mat: 'main' }, mat: 'main' },
     hair: { style: 'long', bangs: 'part', drop: 4 },
     arms: { mittMat: 'mitt', mat: 'acc' }, footMat: 'foot',
@@ -48,7 +48,7 @@
   // ---------------------------------------------------------------- otter line (Tide)
   const OT = { main: '#38b2b6', sub: '#fff0d8', hair: '#7a4a2c', mitt: '#2a7f90', foot: '#2a7f90', eye: '#5a3a1a', shell: '#f59ab0', acc: '#ffd23a', acc2: '#5cc0f0', navy: '#27406a', bubble: '#cdeeff', freck: '#a06a4a' };
   D('ottopi', {
-    name: 'Ottopi', stage: 1, size: 47, rise: 4, pal: OT,
+    name: 'Ottopi', stage: 1, size: 67, rise: 6, pal: OT,
     hood: { type: 'up', ears: { kind: 'round', h: 3, w: 3.2, lean: 1, dy: 1 } },
     hair: { style: 'short', bangs: 'part', lock: true },
     face: ['freckles'],
@@ -60,7 +60,7 @@
     ],
   });
   D('ottelia', {
-    name: 'Ottelia', stage: 2, size: 54, rise: 5, pal: Object.assign({}, OT, { poncho: '#ffd84a' }),
+    name: 'Ottelia', stage: 2, size: 77, rise: 7, pal: Object.assign({}, OT, { poncho: '#ffd84a' }),
     hood: { type: 'band', ears: { kind: 'round', h: 3, w: 3.4, lean: 1, dy: 1 }, mat: 'main' },
     hair: { style: 'bob', bangs: 'part' },
     face: ['freckles'],
@@ -74,7 +74,7 @@
     ],
   });
   D('ottomarine', {
-    name: 'Ottomarine', stage: 3, size: 61, rise: 7, pal: Object.assign({}, OT, { coat: '#27406a', gold: '#f4c542' }),
+    name: 'Ottomarine', stage: 3, size: 87, rise: 10, pal: Object.assign({}, OT, { coat: '#27406a', gold: '#f4c542' }),
     hood: { type: 'none' },
     hair: { style: 'bob', bangs: 'part' },
     face: ['freckles'],
@@ -92,7 +92,7 @@
   // ---------------------------------------------------------------- bunny line (Sprout)
   const BUN = { main: '#8fdc9c', sub: '#fff5e8', hair: '#d8f0c0', mitt: '#6ec48a', foot: '#6ec48a', eye: '#3a8a5a', clover: '#4ea86a', leaf: '#5cc860', cheek: '#ffb0c0', acc: '#ffffff', lily: '#fff8f0', inner: '#ffb7c5', flowerP: '#ff9ec0', flowerY: '#ffe060' };
   D('sprubun', {
-    name: 'Sprubun', stage: 1, size: 48, rise: 10, pal: BUN,
+    name: 'Sprubun', stage: 1, size: 68, rise: 14, pal: BUN,
     hood: { type: 'up', ears: { kind: 'floppy', h: 11, w: 3.4, lean: 2, droop: 1, dx: -1 } },
     hair: { style: 'short', bangs: 'spiky' },
     arms: { mittMat: 'mitt' }, footMat: 'foot',
@@ -104,7 +104,7 @@
     ],
   });
   D('lapinlily', {
-    name: 'Lapinlily', stage: 2, size: 55, rise: 10, pal: BUN,
+    name: 'Lapinlily', stage: 2, size: 78, rise: 14, pal: BUN,
     hood: { type: 'up', ears: { kind: 'leaf', h: 12, w: 3.4, lean: 3, mat: 'lily', inner: 'flowerP', dx: 0 }, mat: 'lily' },
     hair: { style: 'braid', bangs: 'part', mat: 'hair', side: -1, tie: 'flowerP' },
     arms: { mittMat: 'mitt' }, footMat: 'foot',
@@ -114,8 +114,8 @@
       ['belly', { kind: 'apron', mat: 'lily' }],
     ],
   });
-  D('lapinelle', {
-    name: 'Lapinelle', stage: 3, size: 61, rise: 10, pal: Object.assign({}, BUN, { main: '#7ed490' }),
+  D('lapinade', {
+    name: 'Lapinade', stage: 3, size: 87, rise: 14, pal: Object.assign({}, BUN, { main: '#7ed490' }),
     hood: { type: 'none', ears: { kind: 'floppy', h: 14, w: 3.6, lean: 3, droop: 2, dx: 0, over: true, mat: 'lily', inner: 'flowerP' } },
     hair: { style: 'long', bangs: 'part', drop: 3 },
     arms: { mittMat: 'mitt' }, footMat: 'foot',

@@ -9,7 +9,7 @@
 
   function bgFill(fb, a, b) {
     fb.clear(a || '#d8e6f6');
-    for (let y = 0; y < 160; y += 8) fb.fillRect(0, y, 240, 4, b || '#cddcf0');
+    for (let y = 0; y < NP.H; y += 8) fb.fillRect(0, y, NP.W, 4, b || '#cddcf0');
   }
   const STAT_NAMES = { hp: 'HP', atk: 'Attack', def: 'Defense', spa: 'Sp. Atk', spd: 'Sp. Def', spe: 'Speed' };
 
@@ -24,6 +24,8 @@
       super('light');
       this.o = Object.assign({ mode: 'menu' }, o || {});
       this.cur = 0;
+      // a forced switch (the lead fainted) starts on the first Kigu who can still fight, so pressing A just works
+      if (this.o.forced) { const i = this.party.findIndex((k) => k.hp > 0); if (i >= 0) this.cur = i; }
       this.swap = -1;
       this.hint = this.o.prompt || (this.o.mode === 'menu' ? 'Choose a Kigu.' : 'Choose a Kigu.');
       this.result = null;
@@ -55,9 +57,11 @@
           } else {
             NP.snd.sfx('select');
             const battle = o.mode === 'battle';
-            const items = [battle ? 'Send Out' : 'Summary', battle ? 'Summary' : 'Switch', 'Cancel'];
+            const items = [battle ? 'Send Out' : 'Summary', battle ? 'Summary' : 'Switch'];
+            if (!battle && k.item) items.push('Take Item');
+            items.push('Cancel');
             const m = new ui.Menu({ items, theme: 'light', x: 160, y: 88, cursor: 0 });
-            m.x = 240 - m.w - 4; m.y = 146 - m.h;
+            m.x = NP.W - m.w - 4; m.y = NP.H - 14 - m.h;
             const r = yield* this.menu(m);
             if (r.type === 'select') {
               const pick = items[r.index];
@@ -69,6 +73,11 @@
               } else if (pick === 'Summary') {
                 const s = new SummaryScene(this.cur); NP.Game.push(s); yield* this.waitFor(() => s.finished);
                 this.cur = s.idx;
+              } else if (pick === 'Take Item') {
+                const d = NP.data.items[k.item];
+                NP.State.addItem(k.item, 1);
+                this.hint = 'Took the ' + (d ? d.name : 'item') + ' from ' + NP.Kigu.displayName(k) + '.';
+                k.item = null;
               } else if (pick === 'Switch') {
                 this.swap = this.cur; this.hint = 'Move to where?';
               }
@@ -84,24 +93,24 @@
       const party = this.party;
       const tick = NP.Game.frame;
       for (let i = 0; i < 6; i++) {
-        const y = 4 + i * 23;
+        const y = 6 + i * 27;
         const k = party[i];
         const sel = i === this.cur, sw = i === this.swap;
-        fb.fillRect(4, y, 232, 21, sw ? '#f0d8a0' : sel ? '#fff4c8' : '#f4f8ff');
-        fb.strokeRect(4, y, 232, 21, sel ? '#d84040' : '#6f86c0');
+        fb.fillRect(4, y, NP.W - 8, 23, sw ? '#f0d8a0' : sel ? '#fff4c8' : '#f4f8ff');
+        fb.strokeRect(4, y, NP.W - 8, 23, sel ? '#d84040' : '#6f86c0');
         if (!k) { ui.text(fb, '-', 12, y + 6, 'light', { color: '#b0b8d0' }); continue; }
         const ic = A().kiguIcon(k.species, sel ? (tick >> 4) & 1 : 0);
-        fb.blit(ic, 6, y - 6, { sy: 0, sh: 30 });
+        fb.blit(ic, 6, y - 6, { sy: 2, sh: 29 });
         ui.text(fb, K().displayName(k), 42, y + 3, 'light');
         ui.text(fb, 'Lv' + k.level, 42, y + 12, 'light', { color: '#707890', shadow: null });
         const max = K().maxHp(k);
-        ui.hpBar(fb, 100, y + 9, 70, k.hp, max);
-        ui.text(fb, k.hp + '/' + max, 174, y + 7, 'light', { shadow: null });
-        drawStatus(fb, k, 208, y + 4);
+        ui.hpBar(fb, 108, y + 10, 76, k.hp, max);
+        ui.text(fb, k.hp + '/' + max, 188, y + 8, 'light', { shadow: null });
+        drawStatus(fb, k, 224, y + 5);
         if (k.item) fb.fillRect(36, y + 14, 4, 4, '#e8c030');
       }
-      ui.frame(fb, 0, 142, 240, 18, 'light');
-      ui.text(fb, this.hint, 8, 147, 'light');
+      ui.frame(fb, 0, NP.H - 18, NP.W, 18, 'light');
+      ui.text(fb, this.hint, 8, NP.H - 13, 'light');
       this.drawUI(fb, frame);
     }
   }
@@ -131,73 +140,86 @@
       const k = NP.state.party[this.idx];
       bgFill(fb, '#e6e0f4', '#ddd6ee');
       const sp = K().sp(k);
-      ui.frame(fb, 4, 4, 88, 152, 'light');
-      fb.blit(A().kiguFront(k.species, k.alt), 16, 14);
-      ui.text(fb, K().displayName(k), 12, 82, 'light');
-      ui.text(fb, 'Lv' + k.level, 12, 94, 'light', { color: '#707890' });
-      sp.types.forEach((t, i) => fb.blit(A().typePill(t), 12 + i * 36, 108));
-      if (k.alt) ui.text(fb, '★ Limited', 12, 136, 'light', { color: '#d09020' });
-      ui.frame(fb, 96, 4, 140, 152, 'light');
+      ui.frame(fb, 4, 4, 100, NP.H - 8, 'light');
+      { const f = A().kiguFront(k.species, k.alt, (NP.Game.frame / 9) | 0); fb.blit(f, 54 - (f.w >> 1), 8); }
+      ui.text(fb, K().displayName(k), 12, 106, 'light');
+      ui.text(fb, 'Lv' + k.level, 12, 118, 'light', { color: '#707890' });
+      sp.types.forEach((t, i) => fb.blit(A().typePill(t), 12 + i * 36, 132));
+      if (k.alt) ui.text(fb, '★ Limited', 12, 160, 'light', { color: '#d09020' });
+      ui.frame(fb, 108, 4, NP.W - 112, NP.H - 8, 'light');
       const st = K().stats(k);
       if (this.page === 0) {
         let y = 10;
         for (const s of K().STATS) {
-          ui.text(fb, STAT_NAMES[s], 106, y, 'light');
+          ui.text(fb, STAT_NAMES[s], 118, y, 'light');
           const v = s === 'hp' ? k.hp + '/' + st.hp : String(st[s]);
-          ui.text(fb, v, 226 - Font.width(v), y, 'light');
-          y += 11;
+          ui.text(fb, v, NP.W - 18 - Font.width(v), y, 'light');
+          y += 13;
         }
         const nat = NP.data.natures[k.nature];
-        ui.text(fb, 'Nature ' + (nat ? nat.name : '-'), 106, 79, 'light', { color: '#707890' });
+        ui.text(fb, 'Nature ' + (nat ? nat.name : '-'), 118, 92, 'light', { color: '#707890' });
         const ab = NP.data.abilities[K().abilityId(k)];
-        ui.text(fb, 'Ability ' + (ab ? ab.name : '-'), 106, 90, 'light', { color: '#707890' });
-        ui.text(fb, 'Exp ' + k.exp + '  Next ' + K().expToNext(k), 106, 101, 'light', { color: '#707890' });
-        ui.expBar(fb, 106, 112, 120, K().expProgress(k));
-        ui.text(fb, 'Met: ' + (k.ot || '?') + ' Lv' + k.metLevel, 106, 120, 'light', { color: '#707890', shadow: null });
-        ui.text(fb, 'Bond ' + k.bond, 106, 130, 'light', { color: '#707890', shadow: null });
+        ui.text(fb, 'Ability ' + (ab ? ab.name : '-'), 118, 105, 'light', { color: '#707890' });
+        ui.text(fb, 'Exp ' + k.exp + '  Next ' + K().expToNext(k), 118, 118, 'light', { color: '#707890' });
+        ui.expBar(fb, 118, 130, NP.W - 140, K().expProgress(k));
+        ui.text(fb, 'Met: ' + (k.ot || '?') + ' Lv' + k.metLevel, 118, 140, 'light', { color: '#707890', shadow: null });
+        ui.text(fb, 'Bond ' + k.bond, 118, 153, 'light', { color: '#707890', shadow: null });
       } else {
         k.moves.forEach((m, i) => {
           const mv = NP.data.moves[m.id];
-          const y = 10 + i * 35;
-          fb.fillRect(102, y, 128, 31, '#f4f8ff'); fb.strokeRect(102, y, 128, 31, '#6f86c0');
-          ui.text(fb, mv.name, 108, y + 3, 'light');
-          fb.blit(A().typePill(mv.type), 108, y + 16);
-          ui.text(fb, 'PP ' + m.pp + '/' + m.maxpp, 150, y + 18, 'light', { shadow: null });
-          const pw = mv.category === 'status' ? '-' : mv.fixed ? 'Lv' : String(mv.power);
-          ui.text(fb, 'Pow ' + pw, 172, y + 3, 'light', { color: '#707890', shadow: null });
-          ui.text(fb, mv.category === 'status' ? 'Status' : mv.category === 'physical' ? 'Phys' : 'Spec', 204, y + 3, 'light', { color: '#707890', shadow: null });
+          const y = 10 + i * 42;
+          fb.fillRect(114, y, NP.W - 128, 38, '#f4f8ff'); fb.strokeRect(114, y, NP.W - 128, 38, '#6f86c0');
+          ui.text(fb, mv.name, 120, y + 3, 'light');
+          fb.blit(A().typePill(mv.type), 120, y + 16);
+          ui.text(fb, 'PP ' + m.pp + '/' + m.maxpp, 162, y + 18, 'light', { shadow: null });
+          // right-aligned inside the card: power on the top line, Phys/Spec under it (status moves just say Status)
+          const grey = { color: '#707890', shadow: null, align: 'right' };
+          if (mv.category === 'status') ui.text(fb, 'Status', 238, y + 3, 'light', grey);
+          else {
+            ui.text(fb, 'Pow ' + (mv.fixed ? 'Lv' : String(mv.power)), 238, y + 3, 'light', grey);
+            ui.text(fb, mv.category === 'physical' ? 'Phys' : 'Spec', 238, y + 18, 'light', grey);
+          }
         });
-        for (let i = k.moves.length; i < 4; i++) ui.text(fb, '-', 108, 10 + i * 35 + 8, 'light', { color: '#b0b8d0' });
+        for (let i = k.moves.length; i < 4; i++) ui.text(fb, '-', 120, 10 + i * 42 + 8, 'light', { color: '#b0b8d0' });
       }
-      ui.text(fb, this.page === 0 ? 'Stats' : 'Moves', 104, 143, 'light', { color: '#d84040', shadow: null });
-      ui.text(fb, '<> page  ^v Kigu', 232, 143, 'light', { color: '#9098b0', shadow: null, align: 'right' });
+      ui.text(fb, this.page === 0 ? 'Stats' : 'Moves', 116, NP.H - 17, 'light', { color: '#d84040', shadow: null });
+      ui.text(fb, '<> page  ^v Kigu', NP.W - 12, NP.H - 17, 'light', { color: '#9098b0', shadow: null, align: 'right' });
     }
   }
 
   // ===================================================================================== BagScene
-  const POCKETS = [['items', 'Items'], ['spools', 'Spools'], ['key', 'Key Items']];
+  // the Fish pocket appears once Gus has sewn it on (src/game/fishing.js keeps the fish themselves in NP.state.fish.pocket)
+  const POCKETS0 = [['items', 'Items'], ['spools', 'Spools'], ['key', 'Key Items']];
+  const pockets = () => (NP.state && NP.state.flags.fish_pocket ? POCKETS0.concat([['fish', 'Fish']]) : POCKETS0);
   class BagScene extends Scene {
     constructor(o) {
       super('light');
       this.o = Object.assign({ mode: 'field' }, o || {});
       this.pocket = 0;
-      this.cur = [0, 0, 0];
+      this.cur = [0, 0, 0, 0];
       this.result = null;
       this.note = '';
     }
     enter() { this.spawn(this.run(), 'bag'); }
     list() {
-      const id = POCKETS[this.pocket][0];
+      const id = pockets()[this.pocket][0];
+      if (id === 'fish') return NP.Fishing.st().pocket.map((e) => ({ fish: e, id: e.id, n: 1, d: { name: NP.Fishing.label(e), pocket: 'fish', desc: this.fishDesc(e) } }));
       return Object.keys(NP.state.bag).filter((k) => NP.data.items[k] && NP.data.items[k].pocket === id).map((k) => ({ id: k, n: NP.state.bag[k], d: NP.data.items[k] }));
+    }
+    fishDesc(e) {
+      const f = NP.data.fish[e.id], F = NP.Fishing;
+      if (f.rare) return 'A rare ' + f.name + ', ' + e.cm + ' cm long. Show it to the Fishing Master at Hemline Lake!';
+      return (F.isLunker(e) ? 'A LUNKER! ' : '') + 'A ' + e.cm + ' cm ' + f.name + (e.contest ? ', from the contest' : '') + '. ' +
+        (f.dish ? 'A Tea House cook can make it into a dish. ' : '') + 'Shops buy fish too.';
     }
     *run() {
       yield;
       for (;;) {
         const items = this.list();
-        const p = this.pocket;
+        const p = this.pocket, np = pockets().length;
         const d = Input.menuDir();
-        if (d === 'left' || Input.pressed.l) { this.pocket = (this.pocket + 2) % 3; NP.snd.sfx('cursor'); }
-        else if (d === 'right' || Input.pressed.r) { this.pocket = (this.pocket + 1) % 3; NP.snd.sfx('cursor'); }
+        if (d === 'left' || Input.pressed.l) { this.pocket = (this.pocket + np - 1) % np; NP.snd.sfx('cursor'); }
+        else if (d === 'right' || Input.pressed.r) { this.pocket = (this.pocket + 1) % np; NP.snd.sfx('cursor'); }
         else if (d === 'up' && items.length) { this.cur[p] = (this.cur[p] + items.length - 1) % items.length; NP.snd.sfx('cursor'); }
         else if (d === 'down' && items.length) { this.cur[p] = (this.cur[p] + 1) % items.length; NP.snd.sfx('cursor'); }
         if (this.cur[p] >= items.length) this.cur[p] = Math.max(0, items.length - 1);
@@ -216,10 +238,35 @@
       const o = this.o, u = it.d.use;
       const battle = o.mode === 'battle';
       this.note = '';
-      const m = new ui.Menu({ items: ['Use', 'Cancel'], theme: 'light', x: 160, y: 70 });
-      m.x = 240 - m.w - 4; m.y = 100;
+      if (it.fish) { this.note = 'Cook it, sell it or trade it. It can\'t be used here.'; NP.snd.sfx('error'); return false; }
+      // held items (Expert Belt, type pins...) are given to a Kigu to hold instead of used
+      // (an evolution item like the Starlit Thread has no held effect of its own, but its description says "Held:")
+      const give = !!((it.d.held || /^Held:/.test(it.d.desc || '')) && !u && !battle);
+      const reg = !!(it.d.register && !battle), isReg = NP.state.registered === it.id;
+      const m = new ui.Menu({ items: [give ? 'Give' : 'Use'].concat(reg ? [isReg ? 'Unregister' : 'Register'] : [], ['Cancel']), theme: 'light', x: 160, y: 70 });
+      m.x = NP.W - m.w - 4; m.y = 100;
       const r = yield* this.menu(m);
+      if (r.type === 'select' && reg && r.index === 1) {   // a key item for the Select button (a rod; bikes later)
+        NP.state.registered = isReg ? null : it.id;
+        NP.snd.sfx(isReg ? 'cancel' : 'select');
+        this.note = isReg ? it.d.name + ' is no longer on Select.' : 'Press Select to use the ' + it.d.name + '.';
+        return false;
+      }
       if (r.type !== 'select' || r.index !== 0) return false;
+      if (give) {
+        const s = new PartyScene({ mode: 'pick', prompt: 'Give to which Kigu?' });
+        NP.Game.push(s);
+        yield* this.waitFor(() => s.finished);
+        const idx = s.result;
+        if (idx === null || idx === undefined || idx < 0) return false;
+        const k = NP.state.party[idx], old = k.item;
+        if (old) NP.State.addItem(old, 1);
+        k.item = it.id;
+        NP.State.removeItem(it.id, 1);
+        NP.snd.sfx('select');
+        this.note = K().displayName(k) + ' is now holding the ' + it.d.name + (old && NP.data.items[old] ? ', and the ' + NP.data.items[old].name + ' went back in the bag.' : '.');
+        return false;
+      }
       if (!u) { this.note = 'It cannot be used now.'; NP.snd.sfx('error'); return false; }
       if (u.spool) {
         if (!battle) { this.note = 'Not now. Spools are for wild Kigu.'; NP.snd.sfx('error'); return false; }
@@ -230,6 +277,18 @@
       if (battle && !it.d.inBattle) { this.note = 'It cannot be used in battle.'; NP.snd.sfx('error'); return false; }
       if (!battle && !it.d.inField) { this.note = 'It cannot be used here.'; NP.snd.sfx('error'); return false; }
       if (u.escape) { NP.State.removeItem(it.id, 0); this.result = { escape: true }; return true; }
+      if (u.rod) {   // fishing: the overworld casts once the Bag closes (src/game/fishing.js)
+        if (!NP.Fishing.canFish(NP.Game.find(NP.Overworld))) { this.note = 'Face some water first, then use it.'; NP.snd.sfx('error'); return false; }
+        this.result = { rod: u.rod };
+        return true;
+      }
+      if (u.fishlog) { const s = new NP.FishLogScene(); NP.Game.push(s); yield* this.waitFor(() => s.finished); return false; }
+      if (u.toggle) {   // an on/off key item (Exp Share): the flag holds "off", so a new item starts switched on
+        const off = !NP.state.flags[u.toggle];
+        NP.state.flags[u.toggle] = off;
+        this.note = it.d.name + ' was switched ' + (off ? 'off.' : 'on.'); NP.snd.sfx(off ? 'cancel' : 'select');
+        return false;
+      }
       if (u.repel) {
         NP.state.repel = u.repel; NP.State.removeItem(it.id, 1);
         this.note = 'Wild Kigu will stay away for a while.'; NP.snd.sfx('select');
@@ -265,9 +324,9 @@
     draw(fb, frame) {
       bgFill(fb, '#f4ecd8', '#ece2c8');
       ui.frame(fb, 4, 4, 232, 18, 'light');
-      const p = this.pocket;
-      POCKETS.forEach((pk, i) => {
-        const x = 12 + i * 70;
+      const p = this.pocket, PK = pockets();
+      PK.forEach((pk, i) => {
+        const x = 12 + i * (PK.length > 3 ? 56 : 70);
         ui.text(fb, pk[1], x + 4, 9, 'light', { color: i === p ? '#d83838' : '#9098b0', shadow: i === p ? undefined : null });
       });
       ui.text(fb, '<', 8, 9, 'light', { color: '#9098b0' }); ui.text(fb, '>', 228, 9, 'light', { color: '#9098b0' });
@@ -280,18 +339,19 @@
         const it = items[top + i], y = 32 + i * 12;
         if (top + i === cur) ui.cursor(fb, 10, y, 'light');
         ui.text(fb, it.d.name, 20, y, 'light');
-        if (it.d.pocket !== 'key') ui.text(fb, 'x' + it.n, 148 - Font.width('x' + it.n), y, 'light');
+        if (NP.state.registered === it.id) ui.text(fb, 'SEL', 148 - Font.width('SEL'), y, 'light', { color: '#d83838', shadow: null });
+        if (it.d.pocket !== 'key' && !it.fish) ui.text(fb, 'x' + it.n, 148 - Font.width('x' + it.n), y, 'light');
       }
-      ui.frame(fb, 158, 26, 78, 96, 'light');
+      ui.frame(fb, 158, 26, NP.W - 162, 124, 'light');
       if (items[cur]) {
-        fb.blit(A().itemIcon(items[cur].id), 185, 32);
-        const lines = Font.wrap(items[cur].d.desc, 66);
-        lines.slice(0, 6).forEach((l, i) => ui.text(fb, l, 164, 62 + i * 10, 'light', { color: '#505870', shadow: null }));
+        fb.blit(items[cur].fish ? A().fishIcon(items[cur].id) : A().itemIcon(items[cur].id), 158 + ((NP.W - 162 - 24) >> 1), 32);
+        const lines = Font.wrap(items[cur].d.desc, NP.W - 174);
+        lines.slice(0, 8).forEach((l, i) => ui.text(fb, l, 164, 62 + i * 10, 'light', { color: '#505870', shadow: null }));
       }
-      ui.frame(fb, 0, 126, 240, 34, 'light');
+      ui.frame(fb, 0, NP.H - 34, NP.W, 34, 'light');
       const money = '$' + NP.state.money;
-      ui.text(fb, this.note || (items[cur] ? '' : ''), 8, 134, 'light');
-      ui.text(fb, money, 232 - Font.width(money), 146, 'light', { color: '#707890', shadow: null });
+      ui.text(fb, this.note || (items[cur] ? '' : ''), 8, NP.H - 26, 'light');
+      ui.text(fb, money, NP.W - 8 - Font.width(money), NP.H - 14, 'light', { color: '#707890', shadow: null });
       this.drawUI(fb, frame);
     }
   }
@@ -309,10 +369,11 @@
     *run() {
       yield;
       for (;;) {
-        const m = new ui.Menu({ items: ['Buy', 'Sell', 'Leave'], theme: 'light', x: 4, y: 4 });
+        const fish = NP.state.fish && NP.state.fish.pocket.length;   // shops buy fish from the Fish Pocket too (bigger pays more)
+        const m = new ui.Menu({ items: fish ? ['Buy', 'Sell', 'Sell fish', 'Leave'] : ['Buy', 'Sell', 'Leave'], theme: 'light', x: 4, y: 4 });
         const r = yield* this.menu(m);
-        if (r.type === 'cancel' || r.index === 2) { NP.Game.pop(); return; }
-        if (r.index === 0) yield* this.buy(); else yield* this.sell();
+        if (r.type === 'cancel' || r.item.label === 'Leave') { NP.Game.pop(); return; }
+        if (r.index === 0) yield* this.buy(); else if (r.index === 1) yield* this.sell(); else yield* this.sellFish();
       }
     }
     *qty(max, unit, verb) {
@@ -353,6 +414,21 @@
         }
       }
     }
+    *sellFish() {
+      const F = NP.Fishing;
+      for (;;) {
+        const P = F.st().pocket;
+        if (!P.length) { this.note = 'You have no fish left.'; return; }
+        const m = new ui.Menu({ items: P.map((e) => ({ label: F.label(e), right: '$' + F.price(e), e })), theme: 'light', x: 64, y: 6, visible: 7 });
+        this.shown = m;
+        const r = yield* this.menu(m);
+        this.shown = null;
+        if (r.type === 'cancel') return;
+        const e = r.item.e, $ = F.price(e);
+        F.take(e); NP.state.money += $; NP.snd.sfx('select');
+        this.note = 'Sold the ' + NP.data.fish[e.id].name + ' for $' + $ + '.';
+      }
+    }
     *sell() {
       for (;;) {
         const ids = Object.keys(NP.state.bag).filter((k) => NP.data.items[k].pocket !== 'key' && NP.data.items[k].price > 0);
@@ -375,18 +451,18 @@
     }
     draw(fb, frame) {
       bgFill(fb, '#e4f0e0', '#d8e8d4');
-      ui.frame(fb, 160, 100, 76, 20, 'light');
-      ui.text(fb, '$' + NP.state.money, 168, 106, 'light');
-      ui.frame(fb, 0, 124, 240, 36, 'light');
+      ui.frame(fb, NP.W - 80, NP.H - 60, 76, 20, 'light');
+      ui.text(fb, '$' + NP.state.money, NP.W - 72, NP.H - 54, 'light');
+      ui.frame(fb, 0, NP.H - 36, NP.W, 36, 'light');
       const cur = this.shown && this.shown.items[this.shown.cur];
       if (cur && cur.id) {
-        ui.text(fb, NP.data.items[cur.id].desc, 8, 132, 'light');
-        fb.blit(A().itemIcon(cur.id), 200, 126);
-      } else ui.text(fb, this.note, 8, 132, 'light');
-      if (this.note && cur && cur.id && this.note !== 'Welcome!') ui.text(fb, this.note, 8, 146, 'light', { color: '#707890', shadow: null });
+        ui.text(fb, NP.data.items[cur.id].desc, 8, NP.H - 28, 'light');
+        fb.blit(A().itemIcon(cur.id), NP.W - 40, NP.H - 34);
+      } else ui.text(fb, this.note, 8, NP.H - 28, 'light');
+      if (this.note && cur && cur.id && this.note !== 'Welcome!') ui.text(fb, this.note, 8, NP.H - 14, 'light', { color: '#707890', shadow: null });
       if (this.qtyBox) {
-        ui.frame(fb, 130, 74, 106, 24, 'light');
-        ui.text(fb, 'x' + NP.util.pad(this.qtyBox.n, 2, ' ') + '   $' + this.qtyBox.n * this.qtyBox.unit, 140, 82, 'light');
+        ui.frame(fb, NP.W - 110, NP.H - 86, 106, 24, 'light');
+        ui.text(fb, 'x' + NP.util.pad(this.qtyBox.n, 2, ' ') + '   $' + this.qtyBox.n * this.qtyBox.unit, NP.W - 100, NP.H - 78, 'light');
       }
       this.drawUI(fb, frame);
     }
@@ -433,9 +509,9 @@
     }
     draw(fb, frame) {
       bgFill(fb, '#dcd8f0', '#d0cce8');
-      ui.frame(fb, 0, 124, 240, 36, 'light');
-      ui.text(fb, this.note, 8, 134, 'light');
-      ui.text(fb, 'Party ' + NP.state.party.length + '/6   Storage ' + NP.state.box.length, 8, 146, 'light', { color: '#707890', shadow: null });
+      ui.frame(fb, 0, NP.H - 36, NP.W, 36, 'light');
+      ui.text(fb, this.note, 8, NP.H - 26, 'light');
+      ui.text(fb, 'Party ' + NP.state.party.length + '/6   Storage ' + NP.state.box.length, 8, NP.H - 14, 'light', { color: '#707890', shadow: null });
       if (this.boxMenu) {
         const it = this.boxMenu.items[this.boxMenu.cur];
         const k = NP.state.box[it.i];

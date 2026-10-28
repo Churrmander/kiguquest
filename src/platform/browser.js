@@ -1,19 +1,20 @@
-/* Browser shell — the ONLY file that touches the DOM. Blits NP.Game's 240x160 framebuffer to the canvas, maps the keyboard to
+/* Browser shell — the ONLY file that touches the DOM. Blits NP.Game's NP.W x NP.H framebuffer to the canvas, maps the keyboard to
  * NP.Input, unlocks the AudioContext on the first gesture and runs the fixed 60 Hz game loop. */
 (function (root) {
   'use strict';
   const NP = root.NP;
   const canvas = document.getElementById('screen');
   if (!canvas || !NP || !NP.Game) { console.error('browser.js: missing canvas or NP.Game'); return; }
+  canvas.width = NP.W; canvas.height = NP.H;
   const ctx = canvas.getContext('2d', { alpha: false });
   ctx.imageSmoothingEnabled = false;
-  const img = ctx.createImageData(240, 160);
+  const img = ctx.createImageData(NP.W, NP.H);
 
   // ---- sizing: integer scale that fits the window
   function fit() {
-    const s = Math.max(1, Math.floor(Math.min(root.innerWidth / 240, (root.innerHeight - 44) / 160)));
-    canvas.style.width = 240 * s + 'px';
-    canvas.style.height = 160 * s + 'px';
+    const s = Math.max(1, Math.floor(Math.min(root.innerWidth / NP.W, (root.innerHeight - 44) / NP.H)));
+    canvas.style.width = NP.W * s + 'px';
+    canvas.style.height = NP.H * s + 'px';
   }
   root.addEventListener('resize', fit);
   fit();
@@ -34,6 +35,7 @@
     unlock();
     if (e.code === 'KeyM' && !e.repeat) { muted = !muted; try { NP.audio && NP.audio.setVolume && NP.audio.setVolume({ music: muted ? 0 : 0.55, sfx: muted ? 0 : 0.55 }); } catch (x) { /* */ } return; }
     if (e.code === 'KeyF' && !e.repeat) { if (document.fullscreenElement) document.exitFullscreen(); else canvas.requestFullscreen && canvas.requestFullscreen(); return; }
+    if (e.code === 'KeyV' && !e.repeat) { if (NP.view3d) NP.view3d.toggle(); return; }
     const b = KEYS[e.code];
     if (!b) return;
     e.preventDefault();
@@ -81,6 +83,8 @@
   // ---- go
   try {
     const q = new URLSearchParams(root.location.search);
+    // the overworld is drawn in 3D outdoors (flat indoors) unless the URL says ?flat; the V key flips it at runtime
+    if (NP.view3d) NP.view3d.mode = q.has('flat') ? 'flat' : 'auto';
     NP.boot();
     if (q.has('quick')) NP.quickStart(q.get('name') || 'Ren', q.get('gender') || 'm');
   } catch (err) { console.error('boot error:', err); }

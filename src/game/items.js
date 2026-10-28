@@ -14,7 +14,9 @@
       const max = K.maxHp(k);
       if (u.revive) return k.hp <= 0 ? '' : 'not sleepy';
       if (k.hp <= 0) return 'asleep';
-      if (u.hp || u.hpPct) return k.hp >= max ? 'full' : '';
+      if (u.meal) return '';   // a Tea House dish is always welcome: its boosts last until her next battle
+      const cures = u.cure && k.status && (u.cure === 'all' || u.cure.indexOf(k.status) >= 0);   // a dish can heal and cure at once
+      if (u.hp || u.hpPct) return k.hp >= max && !cures ? 'full' : '';
       if (u.cure) {
         if (!k.status) return 'no status';
         return u.cure === 'all' || u.cure.indexOf(k.status) >= 0 ? '' : 'wrong status';
@@ -35,7 +37,10 @@
       if (u.hp || u.hpPct) {
         const max = K.maxHp(k), before = k.hp;
         k.hp = Math.min(max, k.hp + (u.hp || Math.floor(max * u.hpPct)));
-        return { text: name + ' recovered ' + (k.hp - before) + ' HP!' };
+        if (u.cure && k.status && (u.cure === 'all' || u.cure.indexOf(k.status) >= 0)) k.status = null;
+        const ate = k.hp > before ? name + ' recovered ' + (k.hp - before) + ' HP!' : name + ' ate every bite!';
+        if (u.meal) { k.meal = Object.assign({}, u.meal); return { text: ate + ' She\'s raring to go for her next battle!' }; }
+        return { text: ate };
       }
       if (u.cure) { k.status = null; return { text: name + ' was cured!' }; }
       if (u.pp) {

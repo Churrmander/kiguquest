@@ -8,6 +8,7 @@
   const LOOK = 0.2;    // seconds scheduled ahead
   const TICK = 25;     // ms between scheduler runs
   const PRE = 0.05;    // start latency of a (re)started song
+  const VARY = /^(hit|imp_|cast_|swing|punch|slash|whip|heavy|shake)/;
 
   const st = {
     ctx: null, master: null, musicGain: null, sfxGain: null, noiseBuf: null, waves: {},
@@ -51,6 +52,9 @@
       let s = 12345;
       for (let i = 0; i < d.length; i++) { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; d[i] = (s / 4294967296) * 2 - 1; }
       Object.assign(st, { ctx, master, musicGain: mg, sfxGain: sg, noiseBuf: buf });
+      // shared reverb (one per volume group): voices with `rev` send into dest.rev (mirrored by the FFT convolution in tools/audio-synth.mjs)
+      st.revM = makeReverb(mg);
+      sg.rev = makeReverb(sg);
       if (ctx.state === 'suspended') ctx.resume();
     } catch (e) { st.ctx = null; return false; }
     if (st.cur && !st.paused && !st.jingle && !st.playing) startSong(st.cur, st.opts, 0, 0);
@@ -74,11 +78,43 @@
     for (let i = 1; i < pts.length; i++) param.linearRampToValueAtTime(pts[i][1], when + pts[i][0]);
   }
 
+  function makeReverb(out) {
+    const ctx = st.ctx;
+    if (!ctx.createConvolver) return null;
+    try {
+      const ir = N.reverbIR(ctx.sampleRate);
+      const buf = ctx.createBuffer(2, ir[0].length, ctx.sampleRate);
+      buf.getChannelData(0).set(ir[0]); buf.getChannelData(1).set(ir[1]);
+      const cv = ctx.createConvolver();
+      cv.normalize = false;
+      cv.buffer = buf;
+      const input = ctx.createGain();
+      input.connect(cv); cv.connect(out);
+      return input;
+    } catch (e) { return null; }
+  }
+
+  // a voice's gain node -> (lowpass is before it) -> panner -> dest, plus the reverb send
+  function route(g, dest, when, v) {
+    let out = g;
+    if (v.pan !== undefined) { // panned voices carry +3 dB (equal-power law); without a panner take it back off
+      const p = st.ctx.createStereoPanner ? st.ctx.createStereoPanner() : st.ctx.createGain();
+      if (p.pan) p.pan.setValueAtTime(Math.max(-1, Math.min(1, v.pan)), when); else p.gain.value = Math.SQRT1_2;
+      g.connect(p); out = p;
+    }
+    out.connect(dest);
+    if (v.rev && dest.rev) {
+      const s = st.ctx.createGain();
+      s.gain.value = v.rev;
+      g.connect(s); s.connect(dest.rev);
+    }
+  }
+
   function osc(dest, when, v) {
     const ctx = st.ctx;
     const o = ctx.createOscillator();
     const g = ctx.createGain();
-    if (v.wave === 'pulse') o.setPeriodicWave(pulseWave(v.duty));
+    if (v.wave === 'pulse') o.setPeriodicWave(pulseWave(v.duty === undefined ? 2 : v.duty));
     else o.type = v.wave;
     o.frequency.setValueAtTime(v.f, when);
     if (v.f2 && v.f2 !== v.f) o.frequency.exponentialRampToValueAtTime(Math.max(20, v.f2), when + v.dur);
@@ -91,7 +127,15 @@
       l.start(when); l.stop(when + v.dur + 0.03);
     }
     applyEnv(g.gain, when, N.envPoints(v.env, v.dur, v.amp));
-    o.connect(g); g.connect(dest);
+    if (v.lp) { // optional lowpass (Q in dB, default -3), exponential sweep lp -> lp2 over lpt seconds
+      const f = ctx.createBiquadFilter();
+      f.type = 'lowpass';
+      f.Q.value = v.q === undefined ? -3 : v.q;
+      f.frequency.setValueAtTime(v.lp, when);
+      if (v.lp2) f.frequency.exponentialRampToValueAtTime(Math.max(30, v.lp2), when + (v.lpt || v.dur));
+      o.connect(f); f.connect(g);
+    } else o.connect(g);
+    route(g, dest, when, v);
     o.start(when); o.stop(when + v.dur + 0.03);
   }
 
@@ -106,7 +150,8 @@
     f.Q.value = v.q;
     const g = ctx.createGain();
     applyEnv(g.gain, when, N.envPoints(v.env, v.dur, v.amp));
-    src.connect(f); f.connect(g); g.connect(dest);
+    src.connect(f); f.connect(g);
+    route(g, dest, when, v);
     src.start(when, Math.random() * 0.8); src.stop(when + v.dur + 0.03);
   }
 
@@ -135,6 +180,16 @@
     return p.t0 + (p.pass === 0 ? e.t : c.total + (p.pass - 1) * (c.total - c.loopStart) + (e.t - c.loopStart));
   };
 
+  // a music bus: dry gain into the music volume, plus .rev (its reverb send, faded and dropped with it)
+  function makeBus() {
+    const bus = st.ctx.createGain();
+    bus.connect(st.musicGain);
+    if (st.revM) { bus.rev = st.ctx.createGain(); bus.rev.connect(st.revM); }
+    return bus;
+  }
+  const busNodes = (bus) => (bus.rev ? [bus, bus.rev] : [bus]);
+  function dropBus(bus) { for (const b of busNodes(bus)) { try { b.disconnect(); } catch (e) { /* */ } } }
+
   function killPlaying(fadeSec) {
     const p = st.playing;
     if (!p) return;
@@ -143,11 +198,13 @@
     try {
       const t = now();
       if (fadeSec > 0) {
-        p.bus.gain.cancelScheduledValues(t);
-        p.bus.gain.setValueAtTime(p.bus.gain.value, t);
-        p.bus.gain.linearRampToValueAtTime(0, t + fadeSec);
-        setTimeout(() => { try { p.bus.disconnect(); } catch (e) { /* */ } }, fadeSec * 1000 + 250);
-      } else p.bus.disconnect();
+        for (const b of busNodes(p.bus)) {
+          b.gain.cancelScheduledValues(t);
+          b.gain.setValueAtTime(b.gain.value, t);
+          b.gain.linearRampToValueAtTime(0, t + fadeSec);
+        }
+        setTimeout(() => dropBus(p.bus), fadeSec * 1000 + 250);
+      } else dropBus(p.bus);
     } catch (e) { /* */ }
   }
 
@@ -179,9 +236,8 @@
     pos = Math.max(0, Math.min(pos || 0, comp.total));
     const t = st.ctx.currentTime;
     const start = t + PRE;
-    const bus = st.ctx.createGain();
-    if (fadeMs > 0) { bus.gain.setValueAtTime(0, t); bus.gain.linearRampToValueAtTime(1, t + fadeMs / 1000); }
-    bus.connect(st.musicGain);
+    const bus = makeBus();
+    if (fadeMs > 0) for (const b of busNodes(bus)) { b.gain.setValueAtTime(0, t); b.gain.linearRampToValueAtTime(1, t + fadeMs / 1000); }
     const ev = comp.events;
     const p = { comp, bus, t0: start - pos, pass: 0, idx: firstIdx(ev, pos), loopIdx: firstIdx(ev, comp.loopStart), timer: 0 };
     // notes that were already sounding at `pos` continue (re-struck) for their remaining length, so a resume is seamless
@@ -189,7 +245,7 @@
       for (let i = p.idx - 1; i >= 0 && ev[i].t > pos - comp.maxDur - 1e-9; i--) {
         const e = ev[i];
         const left = e.t + e.dur - pos;
-        if (e.ch !== 'noi' && left > 0.05) voice(bus, start, Object.assign({}, e, { t: 0, dur: left }));
+        if (e.d === undefined && left > 0.05) voice(bus, start, Object.assign({}, e, { t: 0, dur: left }));
       }
     }
     st.playing = p;
@@ -240,7 +296,7 @@
     clearInterval(j.timer);
     st.jingle = null;
     const bus = j.bus;
-    setTimeout(() => { try { bus.disconnect(); } catch (e) { /* */ } }, 400);
+    setTimeout(() => dropBus(bus), 2000); // lets the reverb tail ring out
     if (resumeMusic) {
       if (j.terminal && !j.requested) {
         // victory-style jingle: the music it replaced is gone for good (unless the game asked for another song meanwhile)
@@ -264,8 +320,7 @@
       st.saved = { id: st.cur, pos: posAt(st.playing, now()) };
       killPlaying(0.04);
     }
-    const bus = st.ctx.createGain();
-    bus.connect(st.musicGain);
+    const bus = makeBus();
     const t = st.ctx.currentTime + PRE;
     playEvents(comp.events, bus, t);
     const j = { bus, end: t + comp.seconds + 0.3, fin, terminal: !comp.resume, ducked, requested: false, timer: 0 };
@@ -281,7 +336,10 @@
     const t = st.ctx.currentTime;
     if (st.last[id] !== undefined && t - st.last[id] < 0.035) return;
     st.last[id] = t;
-    playEvents(c.events, st.sfxGain, t + 0.005);
+    // battle sounds get a small random pitch wobble (about +-4%) so repeated hits don't sound copy-pasted
+    let ev = c.events;
+    if (VARY.test(id)) { const k = 0.96 + Math.random() * 0.08; ev = ev.map((e) => Object.assign({}, e, { f: e.f && e.f * k, f2: e.f2 && e.f2 * k })); }
+    playEvents(ev, st.sfxGain, t + 0.005);
   };
 
   A.cry = function (speciesId) {

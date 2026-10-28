@@ -141,6 +141,7 @@
   class Battle {
     constructor(cfg) {
       this.cfg = cfg;
+      this.spoolTries = 0;
       this.format = cfg.format === 'double' ? 'double' : 'single';
       this.slots = this.format === 'double' ? 2 : 1;
       this.rng = cfg.rng || NP.rng;
@@ -393,7 +394,7 @@
       const t = mon.types;
       if (status === 'brn' && t.indexOf('ember') >= 0) return false;
       if ((status === 'psn' || status === 'tox') && (t.indexOf('nettle') >= 0 || t.indexOf('iron') >= 0)) return false;
-      if (status === 'frz' && t.indexOf('frost') >= 0) return false;
+      if (status === 'frz' && (t.indexOf('frost') >= 0 || t.indexOf('ember') >= 0)) return false;   // Ember Kigu run too hot to freeze (as Fire types in Gen 5)
       const mood = this.weather && B.COND.weather[this.weather.id];
       if (mood && mood.blocksStatus && mood.blocksStatus.indexOf(status) >= 0) return false;
       if (mon.side.conds.safeguard && (!source || source.side !== mon.side)) return false;
@@ -587,6 +588,8 @@
           slot++;
         }
       }
+      // the map's weather (overworld mood) is already blowing when the battle starts, and lasts the whole battle
+      if (this.cfg.mood && B.COND.weather[this.cfg.mood]) this.setWeather(this.cfg.mood, null, -1);
       // entry effects for everyone, fastest first
       for (const m of this.activeBySpeed()) this.enterEffects(m, { initial: true });
     }
@@ -602,7 +605,7 @@
       for (const f of this.sides[1 - side.index].active) {
         if (f && !f.fainted) { f.participants.add(mon); mon.participants.add(f); }
       }
-      this.add({ t: 'in', who: mon, slot, initial: !!o.initial, forced: !!o.forced });
+      this.add({ t: 'in', who: mon, slot, initial: !!o.initial, forced: !!o.forced, hp: mon.hp, status: mon.status });   // a snapshot: the scene plays the turn back after it has all happened
     }
 
     enterEffects(mon, o) {
@@ -611,6 +614,8 @@
       if (!(o && o.initial)) this.runHazards(mon);
       if (mon.fainted) return;
       this.fire('onSwitchIn', mon, { initial: !!(o && o.initial) });
+      const meal = mon.kigu.meal;   // a Tea House dish (src/data/fish.js): its boosts last until the start of her next battle
+      if (meal) { delete mon.kigu.meal; this.msg(mon.label() + ' is still full of energy from her meal!'); this.boost(mon, meal, mon, null); }
       this.checkItems(mon);
       for (const f of mon.foes) this.fire('onFoeSwitchIn', f, { foe: mon });
     }

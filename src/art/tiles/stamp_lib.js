@@ -48,13 +48,35 @@
   };
 
   // ---------------------------------------------------------------------------------------------- facade parts
-  /** wooden plank door with two panels and a golden button knob */
+  /** wooden plank door with two panels and a golden button knob; a tall door (h >= 26) gets a glass upper panel and a lintel */
   S.door = (b, x, y, w, h, o) => {
     o = o || {};
+    if (h >= 26 && !o.arch) {
+      b.fillRect(x - 3, y - 4, w + 6, 3, P.o5);
+      b.fillRect(x - 3, y - 4, w + 6, 1, P.o3);
+      b.fillRect(x - 2, y - 3, w + 4, 1, P.o4);
+    }
     b.fillRect(x - 1, y - 1, w + 2, h + 1, o.frame || P.o6);
     b.fillRect(x, y, w, h, P.o3);
     b.fillRect(x, y, 1, h, P.o2);
     b.fillRect(x + w - 1, y, 1, h, P.o4);
+    if (h >= 26) {
+      const gh = Math.round(h * 0.36), gx = x + 3, gy = y + 3, gw = w - 6;
+      b.fillRect(gx - 1, gy - 1, gw + 2, gh + 2, P.o5);
+      b.fillRect(gx, gy, gw, gh, P.gl3);
+      for (let yy = 0; yy < gh; yy++) for (let xx = 0; xx < gw; xx++) { const d = xx - yy; if (d === 2 || d === 3) b.set(gx + xx, gy + yy, P.gl2); }
+      b.set(gx, gy, P.gl1); b.set(gx + 1, gy, P.gl1); b.set(gx, gy + 1, P.gl1);
+      b.fillRect(gx + (gw >> 1), gy, 1, gh, P.o4);
+      b.fillRect(gx, gy + gh, gw, 1, P.o2);
+      const py = gy + gh + 3, ph = h - (py - y) - 3;
+      b.strokeRect(x + 3, py, w - 6, ph, P.o4);
+      b.fillRect(x + 4, py + 1, w - 8, 1, P.o2);
+      b.fillRect(x + 3, py + (ph >> 1), w - 6, 1, P.o4);
+      b.fillRect(x + w - 5, y + Math.round(h * 0.5), 2, 3, P.gd2);
+      b.set(x + w - 4, y + Math.round(h * 0.5) + 2, P.gd4);
+      b.set(x + w - 5, y + Math.round(h * 0.5), P.gd1);
+      return b;
+    }
     const half = (h - 5) >> 1;
     b.strokeRect(x + 2, y + 2, w - 4, half, P.o4);
     b.strokeRect(x + 2, y + 3 + half, w - 4, h - 5 - half - 1, P.o4);
@@ -131,12 +153,12 @@
   // ---------------------------------------------------------------------------------------------- the cottage builder
   const WALL = { base: 'p1', hi: 'p0', sh: 'p2', dk: 'p3' };
   /**
-   * o: { w, h (tiles), ramp (roof [hi,lt,base,mid,dk,out]), roofTop, roofBottom (px rows, inclusive), inset, doorCol, doorW, doorH,
+   * o: { w, h (tiles), rise (px of wall/roof above the footprint), ramp (roof [hi,lt,base,mid,dk,out]), roofTop, roofBottom (px rows, inclusive), inset, doorCol, doorW, doorH,
    *      wall: {base,hi,sh,dk}, windows: [{x,y,w,h, shutter, curtain}], trimBand, extras(b, ctx), outlineExtra: [[tones,out]] }
    * Returns the finished (outlined) bitmap. The wall is cream plaster with timber corner posts, a stone plinth and a patchwork roof.
    */
   S.house = function (o) {
-    const W = o.w * 16, H = o.h * 16;
+    const W = o.w * 16, H = o.h * 16 + (o.rise || 0);
     const b = K.B(W, H);
     const r = o.ramp;
     const rt = o.roofTop === undefined ? 1 : o.roofTop, rb = o.roofBottom;
@@ -165,11 +187,29 @@
     const dx = (o.doorCol * 16) + ((16 - doorW) >> 1);
     if (o.doorFn) o.doorFn(b, dx, H - doorH, doorW, doorH);
     else S.door(b, dx, H - doorH, doorW, doorH);
+    if (doorH >= 26) {   // stone doorstep, so a tall door sits on the ground
+      b.fillRect(dx - 2, H - 3, doorW + 4, 3, P.c1); b.fillRect(dx - 2, H - 3, doorW + 4, 1, P.c0); b.fillRect(dx - 2, H - 1, doorW + 4, 1, P.c4);
+    }
     for (const wn of o.windows || []) S.window(b, wn.x, wn.y, wn.w, wn.h, wn);
     if (o.extras) o.extras(b, { W, H, rt, rb, dx, doorW, doorH, r });
     // outline: roof dark / wall dark / brick dark
     K.outer(b, S.omap([[tones(r), r[5]], [K.tn('br0', 'br1', 'br2', 'br3', 'br4'), 'br5'], [[P.o2, P.o3, P.o4], P.o6]].concat(o.outlineExtra || []), 'p6'));
     return b;
+  };
+
+  /**
+   * Volume description of a cottage for the 3D view (NP.view3d): the same options S.house takes, reduced to geometry.
+   * The facade art is the front face of a prism; behind it the renderer extrudes the side walls (x = wl / wr, up to the eave at
+   * height Hw), the two roof slopes (eave x = roofL / roofR at Hw up to the ridge inset px further in, at height Ztop) and the flat
+   * cap. Heights are in px above the ground; x runs along the facade. o.awnings = [{ x0, x1, y, c1, c2, edge }] (y = row in the art).
+   */
+  S.houseVol = function (o) {
+    const W = o.w * 16, H = o.h * 16 + (o.rise || 0), rb = o.roofBottom, rt = o.roofTop === undefined ? 1 : o.roofTop;
+    return {
+      w: o.w, h: o.h, W, H, ramp: o.ramp, wall: Object.assign({}, WALL, o.wall || {}), wl: 3, wr: W - 4, roofL: 1, roofR: W - 2,
+      rt, rb, inset: o.inset === undefined ? 10 : o.inset, Hw: H - rb - 1, Ztop: H - rt, windows: o.windows || [], trimBand: o.trimBand || null,
+      doorCol: o.doorCol, awnings: o.awnings || [], opts: o,
+    };
   };
 
   /** small brick chimney with a stone cap, x,y = top-left, 7 wide */

@@ -83,6 +83,19 @@
     return H.done(b, '#6b2a48', 'snack_cake');
   });
 
+  // Hemline honey: a squat jar of golden honey, a gingham cloth lid tied with red string, a drip down the side
+  H.add('honey_jar', 'healing', true, (b) => {
+    const G = R('gold'), C = R('cream'), Rd = R('red');
+    H.rrect(b, 5, 9, 14, 13, 4, G, { mode: 'cyl' });
+    H.rrect(b, 7, 6, 10, 3, 1, G, { mode: 'cyl' });
+    H.rrect(b, 4, 2, 16, 5, 2, C, { mode: 'cyl' });
+    for (let x = 5; x < 19; x += 3) for (let y = 3; y < 6; y++) if (((x / 3 | 0) + y) & 1) b.set(x, y, P('#f08080'));
+    b.hline(5, 6, 14, P(Rd.m)); b.set(18, 7, P(Rd.d1)); b.set(19, 8, P(Rd.d1));
+    H.rrect(b, 8, 12, 8, 6, 2, C, { mode: 'cyl' });                    // label
+    H.pxs(b, [[10, 14, '#d8a020'], [11, 13, '#d8a020'], [12, 14, '#d8a020'], [13, 13, '#d8a020'], [11, 15, '#d8a020'], [12, 16, '#d8a020']]);   // a honeycomb mark
+    H.pxs(b, [[6, 11, '#fff8c0'], [6, 12, '#fff8c0'], [7, 10, '#ffffff'], [17, 9, '#f4c840'], [17, 10, '#f4c840'], [18, 11, '#e0a030']]);
+    return H.done(b, '#5a3a10', 'honey_jar');
+  });
   // fancy cake: two sponge layers, cream, strawberries
   function layerCake(b, o) {
     const x0 = o.x0, x1 = o.x1, cx = (x0 + x1) / 2, rx = (x1 - x0) / 2 + 0.4;

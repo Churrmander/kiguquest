@@ -26,12 +26,20 @@ decisions BIBLE left open (sizes, solid rows, variants). `solid` rows are writte
 | `counter_l/m/r/c` | 1x1 | `#` | 0 | l/m/r tile into one bar; `c` = middle piece with a cash register |
 | `rug_a` / `rug_b` | 3x2 / 2x2 | all `.` | 0 | `layer: 'floor'` (drawn under actors, walkable) |
 | `shrine` | 5x4 | `#####` `#####` `#####` `..D..` | 1 | `default pressed`. The Spindle Shrine: red-roofed hall, giant silk spool on a stone plinth with steps and an arched doorway, lanterns, ribbons. `D` = bottom centre (the approach row either side of it is walkable). `pressed` = drained white/pale blue-grey, threads dead straight, ribbons flat |
+| `arcade_cab` | 1x2 | `#` `#` | 0 | `moth button steam hop off` = the game on its screen (`off` = dark, the Shibuyarn brownout); 2 frames. Top row sits on a wall row like `fridge` |
+| `claw_machine` | 2x2 | all `#` | 0 | `default off`; 2 frames (chasing lights, the claw swings). Place with its top row on a wall row |
+| `prize_shelf` | 2x2 | all `#` | 0 | wall shelving of prizes (plushes, boxed toys, thread, a trophy); place on the two wall rows (y = 0) like `cloth_shelf` |
+| `neon_sign` | 2x1 | `##` | 0 | `default off`; 2 frames. Wall decor (a neon spool and thread) for a wall row |
 | `gate_house` | 5x3 | `##.##` `##.##` `##.##` | 2 | `default pressed`. Stone-and-timber gatehouse: the centre column is an open arch you walk straight through north-south (all three rows walkable); roof, tie-beam and arch (rows 0-1) draw above actors. `default` has a hanging sign, a shuttered window and a red pennant; `pressed` adds the Starch Society banner (white, blue piping, flat stripes, collar crest) over the window and a white-and-blue pennant. No `D`: do not give it `to`/`name` |
 
 Terrains (all from the BIBLE list): `floor_wood` `floor_tile` `floor_stone` plain floors (no autotile); `carpet_red/blue/green` and
 `mat` are autotiles with their own group (a border is drawn on every side not touching the same id); `wall_wood/plaster/stone` are
 solid autotiles in the shared group `wall` (the tile with floor to its south shows the skirting; wall tiles beside floor or in an
 inside corner show the flat wall top); `void` is solid black; `stairs_up/down` are walkable and visual only (a map warp does the work).
+
+`arcade_carpet` (4 position-picked variants, not an autotile): dark navy arcade carpet with small pink zigzags, blue rings and yellow
+stars, each motif inside its own tile so any variant sits beside any other. Used as the floor of the Lucky Spool arcade (`src/maps/shibuyarn_arcade.js`).
+All five arcade pieces live in `src/art/tiles/stamp_arcade.js`.
 
 `bridge_h` / `bridge_v` (not autotiles, 3 position-picked variants each: plain, red cloth patch, ribbon bow): walkable plank bridge over water
 (`water:false`, `step:'wood'`, no encounter). `bridge_h` has rails on the top/bottom edges and planks running left-right; `bridge_v` has rails
@@ -41,6 +49,33 @@ land to land; the end tiles just butt up against the grass.
 
 Caveat for map authors: `tilemap.js` unblocks the default door tile of any stamp that has a `name` or `to` but no `D` in `solid`,
 so a named 1x1 stamp (e.g. a `sign` with `name:`) becomes walkable. Use `to`/`name` only on door stamps.
+
+## Town layout rules (owner's, 2026-10-25): get these right in every new town
+These came from fixing the existing towns by hand. Build new towns to them from the start.
+
+**Doors and lanes.** Every building has a 1-tile door (`D` in the bottom row of its `solid`), and the door art is centred on that tile.
+A lane leading to a door must be **centred on the door tile**, so the lane needs an **odd width**: use **3 tiles** (door column -1 to +1).
+A 2-wide lane is always half a tile off, and that was the bug in 7 doors. A wide street running straight across under the door is fine.
+`tests/doors.test.mjs` checks every door in every map and fails if a lane is off-centre.
+
+| Building | Footprint | Door column (from the stamp's x) | Door art | Lane to the door |
+|---|---|---|---|---|
+| `house_s` | 4x3 | 2 | 18 px | x+1 to x+3, 3 wide |
+| `house_m` | 5x4 | 2 | 18 px | x+1 to x+3 |
+| `house_l` | 6x4 | 3 | 20 px | x+2 to x+4 |
+| `tea_house`, `general_store` | 5x4 | 2 | 18 / 20 px | x+1 to x+3 |
+| `lab`, `salon` | 7x5 | 3 | 22 px | x+2 to x+4 |
+| `dept_store` | 9x6 | 4 | 30 px (double door) | x+3 to x+5 |
+
+For example, `M.building('tea_house', 4, 6, ...)` has its door at x6, so the lane is `M.rect(5, 10, 3, n, 'c')`.
+
+**Other rules:**
+- **Lampposts** stand on the grass at the corners where two roads meet, never mid-verge.
+- **Benches** run parallel to the road beside them. Use `bench` (2x1) beside an east-west road and `bench_v` (1x2) beside a north-south one.
+- **Plaza features** (fountain, `well`) sit dead centre of the plaza, lined up with the lanes that meet there.
+- **Gates** (`gate_house`) are centred on their road, and the road runs straight through the 2-tile arch.
+- **Nothing on a path:** no tree, bench, sign or NPC stands on a road tile or in a fence gap.
+- **Each town shows its story** (e.g. Hemline's skeps, Buzzlets and honey stall), so add props that fit the town's theme.
 
 ## How to add a stamp
 1. Pick the file by theme in `src/art/tiles/` (`stamp_buildings.js`, `stamp_nature.js`, `stamp_props.js`, `stamp_indoor.js`).
@@ -54,3 +89,68 @@ so a named 1x1 stamp (e.g. a `sign` with `name:`) becomes walkable. Use `to`/`na
 * Terrain `paddle: true` (set on `water` only, not `sea`): with Disc: Paddle in the bag, the player can face it, press A and paddle over it. `water: true` alone still blocks.
 * The `bush` stamp is snippable (Disc: Snip): A on it removes it and its collision; the cut is stored as flag `snip:<map>:<x>,<y>`. Any other stamp is a plain obstacle.
 * Props with `gate: 'paddle' | 'snip'` (see `tests/maps.test.mjs`) must be unreachable on foot but reachable once those moves are allowed.
+* Fishing (`src/game/fishing.js`): a rod casts at any tile with `water: true` or `fishable: true` in front of the player, if the map has a `def.fishing` table. `sea` is the fast, unpaddleable water (Hemline Riverside uses it so the river can't be used to skip trainers).
+* `puddle` (cave floor with a shallow pool): walkable, `encounter: 'puddle'`, the cave's tall grass (Ryukoi's cave). `cave_pool`: deep cave water with rock banks, `water: true` + `fishable: true`, not paddleable.
+
+## Battle backgrounds (`NP.art.tiles.battleBg(id)`)
+
+Nine stages, all painted by `src/art/tiles/battle_*.js` on one shared "late-DS stage" layout (see `docs/ART-TARGET.md` §2): a high-key sky (or
+back wall) with a bright haze band at the horizon (y 60; rooms put the wall foot at y 67), a smooth softly lit ground plane, and ONE big oval platform per side. Painted in float
+colour with soft alpha blends and finished with an ordered dither into the 15-bit palette (so they are NOT limited to a tiny palette: roughly
+200-1000 colours each, but no hard pixel noise; `tests/tiles-art.test.mjs` guards both ends).
+
+| id | where | look |
+|---|---|---|
+| `grass` | routes, towns | blue sky + cloud bands, patchwork hills, cloth-bolt windmill, lime trees, mown-stripe meadow, sparse flowers |
+| `forest` | Gingham Woods, Spindle Shrine | leafy canopy with light shafts, hazy tree-lines, strung festival lanterns, mossy floor, framing trunk |
+| `indoor` | houses, shops, Tea House (the `room()` default) | cream wallpaper, wood wainscot, arched window with patchwork curtains, honey plank floor |
+| `cave` | caves (no cave map yet) | violet cavern, stalactites, hazy stalagmites, glowing crystals, misty tunnel glow |
+| `city` | Seamstead streets | pastel shopfronts with striped awnings, lime trees, bunting, pale cobbled plaza with a kerb |
+| `gym` | the three Salons | wine-rose hall, gold-trimmed button banners, warm spotlights, patchwork harlequin quilt floor |
+| `water` | (any sea/lake map) | sea gradient with swell lines, island lighthouse, patchwork-sail boat, foam rings round both platforms |
+| `night` | (any night map) | indigo sky, stars, moon, lit cottages, strung lanterns, fireflies |
+| `society` | Crisp & Co. interiors | cold white-blue pressed-pleat wall, blue frieze, ceiling light panels, flat-iron banner, steam, tiled floor |
+
+Contract: `battleBg(id)` -> `{ id, bg, enemyBase, playerBase, layers, enemyDisc, playerDisc }` (unknown ids fall back to `grass`).
+* `bg` is the finished 256x144 composite (`NP.W` x `NP.BOX_Y`, painted natively, no resampling), opaque, platforms included.
+  `NP.assets.battleBg` passes the whole object through (its flat fallback is also 256x144 with the same anchors).
+* Anchors are the FEET of the battling Kigu and trainers (`src/game/battlescene.js` stands sprites on them): `enemyBase` = (188, 92),
+  `playerBase` = (66, 148) in every stage. Front Kigu are 96x96 (anchor (48,94)), the player's back view 128x128 (anchor (64,126)),
+  trainers 80x80 (anchor (40,78)); the player's feet lie just below the command box top, as on the DS.
+* Platforms (`BB.STAGE`): foe oval 121x23 centred (188, 88) (ends at y 99, just above the player's HP box at y 100); player oval 185x37
+  centred (66, 142), cut off by the command box at y 144. Each has a dark steel-blue interior tinted per stage, a lit rim ring, a soft halo
+  and a contact shadow.
+* Optional extras for a camera sway / intro pan: `layers.sky` (opaque, everything behind the ground), `layers.ground` (transparent above the
+  horizon; the `forest` trunk is the one foreground object on it), `enemyDisc` / `playerDisc` = `{ bmp, x, y }` (translucent platform bitmaps,
+  x/y = top-left in bg coordinates). `bg` = sky, then ground, then enemyDisc, then playerDisc.
+* HUD zones to keep calm: foe HP box (0,10)-(118,38), player HP box (132,100)-(256,140), foe sprite column x 146-230 above y 94,
+  command box y >= 144. `K.bb.free(x, y, margin)` tells decor
+  scatter code where nothing important stands.
+
+To add a stage: write `BB.define(id, { ...BB.stage(tint), sky(b), ground(b) })` in `battle_nature.js` / `battle_places.js` (helpers: `BB.ramp`,
+`vgrad`, `glow`, `shaft`, `streak`, `puff`, `ridge`, `tree`, `lobe`, `poly`, `plane` for perspective floors, `scatter`), then name the id in a map
+def as `battleBg`. Keep the haze band bright, the middle (behind the foe sprite, x 146-230) calm, and put identity in the top-right quadrant and along
+the horizon band (the foe HP box hides most of the top-left).
+
+## 3D overworld view (`NP.view3d`: `src/engine/persp.js`, `persp_raster.js`, `persp_scene.js`)
+
+Outdoor maps are drawn through a tilted perspective camera (see `docs/ART-TARGET.md` §1): sky and haze at the far end, a perspective ground, billboard
+tree clusters, real building volumes, depth-tested sprites. Rooms stay flat. The browser runs it in `auto` mode (3D outdoors, flat indoors); `?flat` in the
+URL forces the old flat renderer everywhere and the `V` key flips between the two. Headless code (tests, tools) stays flat unless it sets
+`NP.view3d.mode = 'auto' | 'on'` or `NP.view3d.on = true`. A map picks its camera with one line, `view: 'street' | 'town' | 'flat-ish'` (street = low camera
+with the horizon and sky in frame; town = higher camera, horizon above the frame; flat-ish = gentle tilt, used if 3D is forced indoors).
+
+What is built from what (all of it is derived from the existing maps; no map data changes, collision is untouched):
+
+| in the map | in 3D |
+|---|---|
+| terrain `treeline` (and the border outside the map), `hedge` | billboard trees (`tiles.tree3d(kind, variant)`: `round` `big` `pine` `bush` `hedge` in `w3d_trees.js`, lime lobes, no outlines) on a dark forest floor; deep forest shows canopy tops (`tiles.floor3d`) |
+| stamps `tree` `tree_big` `pine` `bush` | the same billboards, anchored at the trunk |
+| building stamps (`house_*` `lab` `tea_house` `general_store` `salon` via `vol(variant)`; `gate_house` `shrine` via `EXTRA` in `w3d_volumes.js`) | a prism: the flat facade art on the front face (painted with `paint(variant, frame, '3d')`, so shop awnings are left out), west / east walls with windows, two roof slopes, a flat cap and a back, plus real slanted awnings (`tiles.volume(id, variant)`); lit from the west, shaded on the east |
+| terrain `fence` | posts and rails as geometry (`tiles.fence3d`) |
+| every other stamp, every actor | upright sprites with soft contact shadows |
+
+To give a new building a volume: add `vol: (variant) => S.houseVol(options)` to its `K.stamp` (see `stamp_buildings.js`: the options are shared by the flat and 3D
+paint) or an entry in `EXTRA` in `w3d_volumes.js`. The hero is never hidden: anything nearer than him gets a keyhole round his sprite, trees and buildings that sit
+between the camera and him in the middle of the screen fade out, and big foreground objects dissolve right at the lens (`persp.js` header). Previews:
+`node tools/preview-world3d.mjs set | maps | <map> <x> <y> [dir] [--preset=town] [--q=1]`; tests: `tests/view3d.test.mjs`, `tests/world3d.test.mjs`.

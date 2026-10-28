@@ -90,8 +90,8 @@
     /** Yes/No box at the lower right; returns true for Yes. B = No. */
     *yesno(defaultNo) {
       const m = new ui.Menu({ items: ['Yes', 'No'], x: 176, y: 62, theme: this.theme, cursor: defaultNo ? 1 : 0, cancelable: true });
-      m.x = 240 - m.w - 4;
-      m.y = 112 - m.h - 2;
+      m.x = NP.W - m.w - 4;
+      m.y = NP.BOX_Y - m.h - 2;
       const r = yield* this.menu(m);
       return r.type === 'select' && r.index === 0;
     }
@@ -100,7 +100,7 @@
     *choose(items, o) {
       o = o || {};
       const m = new ui.Menu(Object.assign({ items, theme: this.theme, cancelable: true }, o));
-      if (o.x === undefined && o.y === undefined) { m.x = 240 - m.w - 4; m.y = 112 - m.h - 2; }
+      if (o.x === undefined && o.y === undefined) { m.x = NP.W - m.w - 4; m.y = NP.BOX_Y - m.h - 2; }
       const r = yield* this.menu(m);
       return r.type === 'select' ? r.index : -1;
     }

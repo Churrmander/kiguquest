@@ -32,7 +32,7 @@ console.log('>> running away from a wild battle');
 {
   const { t, NP, ow, G, st } = fresh(2);
   ow.loadMap('route1', 12, 36, 'up', { noEnter: true });
-  ow.spawn((function* () { yield* ow.wildBattle('mittsy', 2); })(), 'w');
+  ow.spawn((function* () { yield* ow.wildBattle('kittabra', 2); })(), 'w');
   const ok = t.mash(() => G.top() instanceof NP.BattleScene && G.top().menus.length > 0, 3000);
   assert.ok(ok, 'action menu');
   t.tap('right'); t.tap('down'); t.tap('a');
@@ -119,7 +119,7 @@ console.log('>> a trainer spots you, walks up and fights (Lia on R');
   st.party[0].level = 20; st.party[0].exp = NP.expForLevel('mediumSlow', 20); st.party[0].hp = NP.Kigu.maxHp(st.party[0]);
   ow.loadMap('route1', 6, 31, 'up', { noEnter: true });
   t.tick(3);
-  t.go('up', 2);                              // now (6,29) -> Lia at (6,25) looks down 4 tiles
+  t.go('up', 6);                              // up the lane to (6,25): Lia at (8,25) looks left across it
   assert.ok(t.mash(() => st.flags.tr_route1_lia && t.idle(), 30000), 'lia beaten');
   assert.ok(st.money > 1000);
   // talking to her afterwards only chats

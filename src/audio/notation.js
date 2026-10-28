@@ -21,30 +21,87 @@
     noi: { vol: 9 },
   };
   const CHORDS = { '': [0, 4, 7, 12], m: [0, 3, 7, 12], 7: [0, 4, 7, 10], m7: [0, 3, 7, 10], maj7: [0, 4, 7, 11], sus: [0, 5, 7, 12], dim: [0, 3, 6, 12], add9: [0, 4, 7, 14] };
-  // Drum kit, shared by the browser synth and the Node renderer. tone: pitch-dropping sine; noise: filtered noise burst.
+  // Drum kit (DS-style, softer hats, deeper kick), shared by the browser synth and the Node renderer.
+  // tone: pitch-dropping sine; noise: filtered noise burst. Optional per-part env, kit-wide pan / rev per drum.
   const DRUMS = {
-    k: { tone: { f: 160, f2: 42, dur: 0.13, vol: 1 }, noise: { filt: 'lp', fc: 500, dur: 0.02, vol: 0.25 } }, // kick
-    s: { tone: { f: 210, f2: 150, dur: 0.06, vol: 0.35 }, noise: { filt: 'bp', fc: 2600, dur: 0.13, vol: 0.85 } }, // snare
-    h: { noise: { filt: 'hp', fc: 7500, dur: 0.035, vol: 0.5 } }, // closed hat
-    o: { noise: { filt: 'hp', fc: 6500, dur: 0.16, vol: 0.5 } }, // open hat
-    x: { noise: { filt: 'hp', fc: 4000, dur: 0.7, vol: 0.6 } }, // crash
-    t: { tone: { f: 240, f2: 90, dur: 0.16, vol: 0.8 } }, // tom
-    m: { tone: { f: 120, f2: 66, dur: 0.24, vol: 0.95 } }, // low tom / timpani
-    w: { tone: { f: 950, f2: 720, dur: 0.05, vol: 0.6 } }, // wood block
-    a: { tone: { f: 1850, f2: 1750, dur: 0.16, vol: 0.3 }, noise: { filt: 'bp', fc: 4300, dur: 0.05, vol: 0.4 } }, // anvil / metal clink
-    g: { noise: { filt: 'hp', fc: 5200, dur: 0.07, vol: 0.28 } }, // shaker
-    c: { noise: { filt: 'bp', fc: 1600, dur: 0.1, vol: 0.85 } }, // clap
+    k: { tone: { f: 115, f2: 40, dur: 0.22, vol: 1 }, noise: { filt: 'lp', fc: 320, dur: 0.018, vol: 0.22 }, rev: 0.03 }, // kick
+    s: { tone: { f: 190, f2: 150, dur: 0.07, vol: 0.38 }, noise: { filt: 'bp', fc: 1900, dur: 0.14, vol: 0.62 }, rev: 0.2 }, // snare
+    h: { noise: { filt: 'hp', fc: 8000, dur: 0.03, vol: 0.32 }, pan: 0.25 }, // closed hat
+    o: { noise: { filt: 'hp', fc: 7000, dur: 0.15, vol: 0.3 }, pan: 0.25 }, // open hat
+    x: { noise: { filt: 'hp', fc: 5000, dur: 0.9, vol: 0.34 }, pan: -0.3, rev: 0.3 }, // crash
+    t: { tone: { f: 200, f2: 100, dur: 0.18, vol: 0.75 }, rev: 0.15 }, // tom
+    m: { tone: { f: 98, f2: 87, dur: 0.5, vol: 0.9 }, noise: { filt: 'lp', fc: 420, dur: 0.05, vol: 0.18 }, rev: 0.3 }, // timpani (G2)
+    p: { tone: { f: 73, f2: 65, dur: 0.6, vol: 0.95 }, noise: { filt: 'lp', fc: 360, dur: 0.05, vol: 0.18 }, rev: 0.3 }, // low timpani (D2)
+    w: { tone: { f: 900, f2: 760, dur: 0.04, vol: 0.45 }, pan: -0.2 }, // wood block
+    a: { tone: { f: 1850, f2: 1750, dur: 0.14, vol: 0.22 }, noise: { filt: 'bp', fc: 4300, dur: 0.04, vol: 0.3 } }, // anvil / metal clink
+    g: { noise: { filt: 'hp', fc: 5200, dur: 0.06, vol: 0.2 }, pan: -0.35 }, // shaker
+    c: { noise: { filt: 'bp', fc: 1500, dur: 0.1, vol: 0.6 }, rev: 0.2 }, // clap
+    i: { tone: { f: 1700, f2: 1600, dur: 0.02, vol: 0.22 }, noise: { filt: 'bp', fc: 3200, dur: 0.02, vol: 0.28 }, pan: -0.15 }, // rim click
+    y: { noise: { filt: 'hp', fc: 4500, dur: 1.2, vol: 0.26, env: 'swell' }, pan: 0.3, rev: 0.35 }, // suspended cymbal swell
+    j: { noise: { filt: 'bp', fc: 7000, dur: 0.09, vol: 0.26 }, pan: 0.35 }, // tambourine
+    e: { tone: { f: 3150, f2: 3150, dur: 0.5, vol: 0.08 }, pan: 0.4, rev: 0.3 }, // orchestral triangle "ting" (quiet)
   };
   const DRUM_KEYS = Object.keys(DRUMS).join('');
-  // Per-voice-type mix constants (amplitude per unit `vol`), calibrated with tools/audio-tune.mjs. Pulse duties are loudness-compensated.
-  const MIX = { p1: 0.13, p2: 0.11, tri: 0.2, sin: 0.18, nz: 0.28, dt: 0.2, dn: 0.32 };
+  // Per-voice-type mix constants (amplitude per unit `vol`) for the legacy voice path (SFX, cries). Pulse duties are loudness-compensated.
+  const MIX = { p1: 0.13, p2: 0.11, tri: 0.2, sin: 0.18, saw: 0.11, sq: 0.11, nz: 0.28, dt: 0.2, dn: 0.32 };
   const PULSE_EXP = 0.9;
-  const ENV_VERSION = 1;
+  const ENV_VERSION = 2;
   const pulseComp = (i) => {
     const d = DUTY[i === undefined ? 2 : i];
     return Math.pow(Math.max(d, 1 - d) / Math.sqrt(d * (1 - d)), PULSE_EXP);
   };
   const ENV_CODES = { h: 'hold', p: 'pluck', d: 'decay', s: 'swell' };
+
+  // ---------- instrument patches (DS-era palette, all synthesised) ----------
+  // A patch = layers of primitive voices. Layer: w wave (pulse|square|sawtooth|triangle|sine|noise), m freq multiple, det cents, a level,
+  // lp abs cutoff Hz or lpk key-tracked cutoff (f*lpk clamped to lp0..lpx), lp2r cutoff ratio reached after lpt s, pan offset, env override.
+  // Noise layer: filt, fm (centre = f*fm), q. Patch: env {a,d,s,s2,r} (s = level after decay, s2 = level at note end, r = release s),
+  // vib {rate, depth (fraction of f), delay s, min note s}, gain (amp per unit vol, calibrated), pan, rev (reverb send), lo..hi midi range.
+  const PATCHES = {
+    // legacy channel defaults (old p1/p2/tri/noi songs): softer, filtered versions of the NES voices
+    lead: { layers: [{ w: 'pulse', lpk: 4.5, lp0: 1300, lpx: 4500, lp2r: 0.75, lpt: 0.4 }], env: { a: 0.012, d: 0.2, s: 0.8, s2: 0.55, r: 0.07 }, vib: { rate: 5.2, depth: 0.006, delay: 0.22, min: 0.3 }, gain: 0.18, rev: 0.18, lo: 36, hi: 100 },
+    ep: { layers: [{ w: 'pulse', lpk: 4, lp0: 1000, lpx: 3500, a: 0.8 }, { w: 'sine', a: 0.5 }], env: { a: 0.004, d: 0.25, s: 0.55, s2: 0.3, r: 0.08 }, gain: 0.145, pan: -0.3, rev: 0.22, lo: 36, hi: 100 },
+    bass: { layers: [{ w: 'triangle', a: 0.8 }, { w: 'sawtooth', lpk: 5, lp0: 250, lpx: 1000, a: 0.3 }], env: { a: 0.004, d: 0.3, s: 0.85, s2: 0.65, r: 0.04 }, gain: 0.3, rev: 0.04, lo: 24, hi: 72 },
+    kit: { drums: true, gain: 1 },
+    // melodic leads
+    flute: { layers: [{ w: 'sine' }, { w: 'triangle', a: 0.3 }, { w: 'sine', m: 2, a: 0.16 }, { w: 'sine', m: 3, a: 0.06 }, { w: 'noise', filt: 'bp', fm: 2, q: 2.5, a: 0.1, env: { a: 0.015, d: 0.12, s: 0.25, s2: 0.12, r: 0.05 } }],
+      env: { a: 0.045, d: 0.2, s: 0.85, s2: 0.7, r: 0.12 }, vib: { rate: 5, depth: 0.007, delay: 0.25, min: 0.35 }, gain: 0.185, rev: 0.28, lo: 55, hi: 91 },
+    warm: { layers: [{ w: 'sawtooth', lpk: 3.2, lp0: 800, lpx: 3200, det: -4, a: 0.6 }, { w: 'square', lpk: 2.4, lp0: 700, lpx: 2600, det: 4, a: 0.4 }],
+      env: { a: 0.02, d: 0.25, s: 0.75, s2: 0.55, r: 0.09 }, vib: { rate: 5.2, depth: 0.006, delay: 0.25, min: 0.35 }, gain: 0.33, rev: 0.22, lo: 48, hi: 91 },
+    reed: { layers: [{ w: 'pulse', duty: 1, lpk: 4, lp0: 1000, lpx: 3400 }, { w: 'sine', a: 0.4 }], env: { a: 0.03, d: 0.2, s: 0.85, s2: 0.7, r: 0.08 },
+      vib: { rate: 5.5, depth: 0.006, delay: 0.2, min: 0.35 }, gain: 0.13, rev: 0.22, lo: 52, hi: 91 },
+    brass: { layers: [{ w: 'sawtooth', lpk: 1.6, lp0: 350, lpx: 1200, lp2r: 2.4, lpt: 0.07 }, { w: 'sawtooth', det: 7, lpk: 1.6, lp0: 350, lpx: 1200, lp2r: 2, lpt: 0.09, a: 0.5 }],
+      env: { a: 0.025, d: 0.2, s: 0.72, s2: 0.55, r: 0.08 }, vib: { rate: 5, depth: 0.004, delay: 0.3, min: 0.45 }, gain: 0.29, rev: 0.22, lo: 40, hi: 86 },
+    // sustained beds
+    strings: { layers: [{ w: 'sawtooth', det: -7, pan: -0.25, lp: 2800 }, { w: 'sawtooth', det: 7, pan: 0.25, lp: 2800 }], env: { a: 0.16, d: 0.4, s: 0.9, s2: 0.8, r: 0.35 },
+      vib: { rate: 4.8, depth: 0.003, delay: 0.3, min: 0.5 }, gain: 0.15, rev: 0.35, lo: 40, hi: 88 },
+    stac: { layers: [{ w: 'sawtooth', det: -6, pan: -0.2, lp: 2000 }, { w: 'sawtooth', det: 6, pan: 0.2, lp: 2000 }], env: { a: 0.01, d: 0.1, s: 0.6, s2: 0.4, r: 0.06 },
+      gain: 0.25, rev: 0.25, lo: 36, hi: 88 },
+    pad: { layers: [{ w: 'sawtooth', det: -5, lp: 1000, a: 0.5, pan: -0.3 }, { w: 'triangle', det: 5, a: 0.8, pan: 0.3 }], env: { a: 0.35, d: 0.5, s: 0.9, s2: 0.85, r: 0.5 },
+      gain: 0.18, rev: 0.4, lo: 40, hi: 84 },
+    // keys and mallets (decaying)
+    piano: { layers: [{ w: 'triangle', lpk: 8, lp0: 1400, lpx: 4000, lp2r: 0.4, lpt: 0.8 }, { w: 'sine', m: 2, a: 0.3, env: { a: 0.002, d: 0.25, s: 0.2, s2: 0.02, r: 0.1 } }],
+      env: { a: 0.003, d: 0.6, s: 0.35, s2: 0.08, r: 0.15 }, gain: 0.24, rev: 0.25, lo: 36, hi: 91 },
+    epiano: { layers: [{ w: 'sine' }, { w: 'triangle', a: 0.25 }, { w: 'sine', m: 3, a: 0.12, env: { a: 0.002, d: 0.12, s: 0.15, s2: 0, r: 0.05 } }],
+      env: { a: 0.004, d: 0.7, s: 0.45, s2: 0.12, r: 0.18 }, gain: 0.17, rev: 0.25, lo: 40, hi: 91 },
+    marimba: { layers: [{ w: 'sine' }, { w: 'sine', m: 4, a: 0.22, env: { a: 0.001, d: 0.05, s: 0.1, s2: 0, r: 0.03 } }],
+      env: { a: 0.002, d: 0.3, s: 0.25, s2: 0.02, r: 0.08 }, gain: 0.3, rev: 0.25, lo: 48, hi: 91 },
+    glock: { layers: [{ w: 'sine' }, { w: 'sine', m: 2.76, a: 0.18, env: { a: 0.001, d: 0.12, s: 0.15, s2: 0, r: 0.05 } }],
+      env: { a: 0.001, d: 0.6, s: 0.3, s2: 0.02, r: 0.2 }, gain: 0.16, rev: 0.35, lo: 60, hi: 96 },
+    // plucked
+    harp: { layers: [{ w: 'triangle', lpk: 6, lp0: 1200, lpx: 3600, lp2r: 0.5, lpt: 0.4 }, { w: 'sine', a: 0.4 }], env: { a: 0.002, d: 0.4, s: 0.35, s2: 0.06, r: 0.25 },
+      gain: 0.27, pan: 0.3, rev: 0.32, lo: 36, hi: 91 },
+    guitar: { layers: [{ w: 'sawtooth', lpk: 5, lp0: 600, lpx: 3400, lp2r: 0.35, lpt: 0.25, a: 0.7 }, { w: 'triangle', a: 0.5 }], env: { a: 0.002, d: 0.25, s: 0.45, s2: 0.1, r: 0.08 },
+      gain: 0.55, rev: 0.2, lo: 40, hi: 84 },
+    pizz: { layers: [{ w: 'sawtooth', lpk: 3, lp0: 400, lpx: 2000, lp2r: 0.4, lpt: 0.15 }], env: { a: 0.002, d: 0.15, s: 0.2, s2: 0.02, r: 0.1 }, gain: 0.6, rev: 0.3, lo: 36, hi: 88 },
+    // basses
+    ebass: { layers: [{ w: 'sine' }, { w: 'sawtooth', lpk: 4, lp0: 180, lpx: 800, lp2r: 0.6, lpt: 0.2, a: 0.35 }], env: { a: 0.004, d: 0.35, s: 0.75, s2: 0.5, r: 0.05 },
+      gain: 0.25, rev: 0.04, lo: 24, hi: 60 },
+    synbass: { layers: [{ w: 'square', lpk: 3, lp0: 200, lpx: 900, lp2r: 0.5, lpt: 0.15, a: 0.5 }, { w: 'sine', a: 0.7 }], env: { a: 0.003, d: 0.2, s: 0.7, s2: 0.5, r: 0.04 },
+      gain: 0.2, rev: 0.04, lo: 24, hi: 60 },
+  };
+  const LEGACY_PATCH = { p1: 'lead', p2: 'ep', tri: 'bass', noi: 'kit' };
+  const SQRT2 = Math.SQRT2;
 
   function midiOf(name) {
     const m = /^([a-g])([#b]?)(-?\d)$/.exec(name);
@@ -63,11 +120,35 @@
   }
 
   // ---------- amplitude envelopes / voice model (shared by engine.js and the Node renderer) ----------
-  /** Piecewise-linear envelope [[t, v], ...] for a note of `dur` seconds and peak `amp`. */
+  const EXPK = 3, EXPN = 4, EXPE = Math.exp(-EXPK);
+  // exponential-looking fall from v0 to v1 over [t0,t1], as EXPN linear pieces
+  function expSeg(pts, t0, t1, v0, v1) {
+    for (let i = 1; i <= EXPN; i++) {
+      const u = i / EXPN;
+      pts.push([t0 + (t1 - t0) * u, v1 + (v0 - v1) * ((Math.exp(-EXPK * u) - EXPE) / (1 - EXPE))]);
+    }
+  }
+  function lerpPts(pts, t) {
+    if (t <= pts[0][0]) return pts[0][1];
+    for (let i = 1; i < pts.length; i++) {
+      if (t <= pts[i][0]) { const [t0, a] = pts[i - 1], [t1, b] = pts[i]; return t1 > t0 ? a + (b - a) * (t - t0) / (t1 - t0) : b; }
+    }
+    return pts[pts.length - 1][1];
+  }
+  /** Piecewise-linear envelope [[t, v], ...] for a voice of `dur` seconds and peak `amp`. env: 'hold'|'pluck'|'decay'|'swell' or
+   *  {a,d,s,s2,r}: attack, decay to s*amp, glide to s2*amp at note end, release r (included in dur). */
   function envPoints(env, dur, amp) {
     const z = 0.0001;
     let pts;
-    if (env === 'swell') pts = [[0, z], [dur * 0.45, amp], [dur * 0.9, amp], [dur, z]];
+    if (env && typeof env === 'object') {
+      const r = Math.min(env.r || 0.02, dur * 0.5), hold = dur - r;
+      const a = env.a || 0.002, d = env.d || 0.1, s = env.s === undefined ? 1 : env.s, s2 = env.s2 === undefined ? s : env.s2;
+      const full = [[0, z], [a, amp]];
+      expSeg(full, a, a + d, amp, amp * s);
+      if (hold > a + d) expSeg(full, a + d, hold, amp * s, amp * s2);
+      pts = full.filter((p) => p[0] < hold);
+      pts.push([hold, lerpPts(full, hold)], [dur, z]);
+    } else if (env === 'swell') pts = [[0, z], [dur * 0.45, amp], [dur * 0.9, amp], [dur, z]];
     else if (env === 'pluck') pts = [[0, z], [0.004, amp], [Math.max(0.02, dur * 0.85), amp * 0.45], [dur, z]];
     else if (env === 'decay') pts = [[0, z], [0.003, amp], [dur * 0.92, amp * 0.12], [dur, z]];
     else pts = [[0, z], [0.004, amp], [Math.max(0.006, dur - 0.012), amp], [dur, z]];
@@ -76,25 +157,112 @@
     return pts;
   }
 
-  /** Turn one compiled event into primitive voices: {k:'osc',wave,duty,f,f2,vib,dur,amp,env} / {k:'noise',filt,fc,fc2,q,dur,amp,env}. */
+  // a legacy %e code on a patch note bends the patch envelope
+  function bendEnv(env, code, dur) {
+    if (!code || code === 'hold') return env;
+    const e = Object.assign({}, env);
+    if (code === 'pluck') { e.s = Math.min(e.s, 0.6); e.s2 = Math.min(e.s2, 0.3); e.d = Math.max(e.d, 0.12); }
+    else if (code === 'decay') { e.s = Math.min(e.s, 0.35); e.s2 = 0.05; }
+    else if (code === 'swell') e.a = Math.max(e.a, dur * 0.4);
+    return e;
+  }
+  const clampPan = (p) => Math.max(-1, Math.min(1, p));
+
+  function patchVoices(e, P, vol) {
+    const out = [];
+    const pan0 = e.pan !== undefined ? e.pan : P.pan || 0;
+    const rev0 = e.rev !== undefined ? e.rev : P.rev || 0;
+    if (P.drums) {
+      const k = DRUMS[e.d];
+      if (!k) return out;
+      const pan = clampPan(pan0 + (k.pan || 0)), rev = Math.min(1, rev0 + (k.rev || 0));
+      const base = vol * (P.gain || 1) * SQRT2;
+      if (k.tone) out.push({ k: 'osc', wave: 'sine', f: k.tone.f, f2: k.tone.f2, dur: k.tone.dur, amp: base * k.tone.vol * MIX.dt, env: k.tone.env || 'decay', pan, rev });
+      if (k.noise) out.push({ k: 'noise', filt: k.noise.filt, fc: k.noise.fc, fc2: k.noise.fc, q: k.noise.filt === 'bp' ? 1.2 : 1, dur: k.noise.dur, amp: base * k.noise.vol * MIX.dn, env: k.noise.env || 'decay', pan, rev });
+      return out;
+    }
+    const env0 = bendEnv(P.env || { a: 0.005, d: 0.1, s: 1, s2: 1, r: 0.03 }, e.env, e.dur);
+    const vb = P.vib && !e.arp && e.dur >= (P.vib.min || 0.3) ? P.vib : null;
+    for (const L of P.layers) {
+      const env = L.env ? bendEnv(L.env, e.env, e.dur) : env0;
+      const dur = e.dur + (env.r || 0.02);
+      const f = e.f * (L.m || 1) * (L.det ? Math.pow(2, L.det / 1200) : 1);
+      const f2 = e.f2 ? e.f2 * (f / e.f) : f;
+      const pan = clampPan(pan0 + (L.pan || 0));
+      const amp = vol * P.gain * (L.a === undefined ? 1 : L.a) * SQRT2;
+      if (L.w === 'noise') {
+        out.push({ k: 'noise', filt: L.filt || 'bp', fc: f * (L.fm || 1), fc2: f2 * (L.fm || 1), q: L.q || 1.2, dur, amp: amp * MIX.dn, env, pan, rev: rev0 });
+        continue;
+      }
+      const v = { k: 'osc', wave: L.w, f, f2, dur, amp, env, pan, rev: rev0 };
+      if (L.w === 'pulse') { v.duty = L.duty !== undefined ? L.duty : e.duty === undefined ? 2 : e.duty; v.amp *= pulseComp(v.duty); }
+      if (L.lp || L.lpk) {
+        v.lp = L.lp || Math.max(L.lp0 || 60, Math.min(L.lpx || 12000, e.f * L.lpk));
+        if (L.lp2r) { v.lp2 = v.lp * L.lp2r; v.lpt = Math.min(L.lpt || dur, dur); }
+      }
+      if (vb) v.vib = { rate: vb.rate, depth: f * vb.depth, delay: vb.delay };
+      else if (e.vib) v.vib = { rate: e.vib.rate, depth: e.vib.depth * (f / e.f), delay: e.vib.delay };
+      out.push(v);
+    }
+    return out;
+  }
+
+  /** Turn one compiled event into primitive voices:
+   *  {k:'osc', wave:'pulse'|'square'|'sawtooth'|'triangle'|'sine', duty, f, f2, vib, dur, amp, env, lp?, lp2?, lpt?, q?, pan?, rev?}
+   *  {k:'noise', filt, fc, fc2, q, dur, amp, env, pan?, rev?}
+   *  Events with `p` (patch name; every compiled music note has one) go through PATCHES; others (SFX, cries) use the legacy channel voices. */
   function voices(e) {
     const g = e.g === undefined ? 1 : e.g;
     const vol = e.vol * g;
+    if (e.p && PATCHES[e.p]) return patchVoices(e, PATCHES[e.p], vol);
     const out = [];
+    const opt = (v) => {
+      if (e.lp) { v.lp = e.lp; if (e.lp2) { v.lp2 = e.lp2; v.lpt = e.lpt || e.dur; } if (e.q !== undefined) v.q = e.q; }
+      if (e.pan !== undefined) { v.pan = e.pan; v.amp *= SQRT2; }
+      if (e.rev) v.rev = e.rev;
+      out.push(v);
+    };
+    const W = { tri: 'triangle', sin: 'sine', saw: 'sawtooth', sq: 'square' };
     if (e.ch === 'p1' || e.ch === 'p2') {
-      out.push({ k: 'osc', wave: 'pulse', duty: e.duty === undefined ? 2 : e.duty, f: e.f, f2: e.f2 || e.f, vib: e.vib, dur: e.dur, amp: vol * MIX[e.ch] * pulseComp(e.duty), env: e.env || 'hold' });
-    } else if (e.ch === 'tri') {
-      out.push({ k: 'osc', wave: 'triangle', f: e.f, f2: e.f2 || e.f, vib: e.vib, dur: e.dur, amp: vol * MIX.tri, env: e.env || 'hold' });
-    } else if (e.ch === 'sin') {
-      out.push({ k: 'osc', wave: 'sine', f: e.f, f2: e.f2 || e.f, vib: e.vib, dur: e.dur, amp: vol * MIX.sin, env: e.env || 'hold' });
+      opt({ k: 'osc', wave: 'pulse', duty: e.duty === undefined ? 2 : e.duty, f: e.f, f2: e.f2 || e.f, vib: e.vib, dur: e.dur, amp: vol * MIX[e.ch] * pulseComp(e.duty), env: e.env || 'hold' });
+    } else if (W[e.ch]) {
+      opt({ k: 'osc', wave: W[e.ch], f: e.f, f2: e.f2 || e.f, vib: e.vib, dur: e.dur, amp: vol * MIX[e.ch], env: e.env || 'hold' });
     } else if (e.ch === 'noi') {
       if (e.d === 'n') {
-        out.push({ k: 'noise', filt: 'bp', fc: e.f, fc2: e.f2 || e.f, q: 1.2, dur: e.dur, amp: vol * MIX.nz, env: e.env || 'decay' });
+        const v = { k: 'noise', filt: e.filt || 'bp', fc: e.f, fc2: e.f2 || e.f, q: e.q !== undefined ? e.q : 1.2, dur: e.dur, amp: vol * MIX.nz, env: e.env || 'decay' };
+        if (e.pan !== undefined) { v.pan = e.pan; v.amp *= SQRT2; }
+        if (e.rev) v.rev = e.rev;
+        out.push(v);
       } else {
         const k = DRUMS[e.d];
         if (k && k.tone) out.push({ k: 'osc', wave: 'sine', f: k.tone.f, f2: k.tone.f2, dur: k.tone.dur, amp: vol * k.tone.vol * MIX.dt, env: 'decay' });
         if (k && k.noise) out.push({ k: 'noise', filt: k.noise.filt, fc: k.noise.fc, fc2: k.noise.fc, q: k.noise.filt === 'bp' ? 1.2 : 1, dur: k.noise.dur, amp: vol * k.noise.vol * MIX.dn, env: 'decay' });
       }
+    }
+    return out;
+  }
+
+  // ---------- shared reverb impulse (ConvolverNode in the browser, FFT convolution in tools/audio-synth.mjs) ----------
+  const REVERB = { seconds: 1.7, rt60: 1.5, pre: 0.012, hi: 5500, lo: 1400 };
+  /** Deterministic stereo impulse response [L, R] (Float32Array) at `rate`: decaying noise that darkens over time, unit energy per channel. */
+  function reverbIR(rate) {
+    const n = Math.round(REVERB.seconds * rate), pre = Math.round(REVERB.pre * rate);
+    const out = [];
+    for (let c = 0; c < 2; c++) {
+      const buf = new Float32Array(n);
+      const r = mulberry(0x5eed + c * 7919);
+      let y = 0, e = 0;
+      for (let i = pre; i < n; i++) {
+        const t = (i - pre) / rate;
+        const fc = REVERB.lo + (REVERB.hi - REVERB.lo) * Math.exp(-t / 0.35);
+        const al = 1 - Math.exp((-2 * Math.PI * fc) / rate);
+        y += al * ((r() * 2 - 1) - y);
+        buf[i] = y * Math.exp((-6.9078 * t) / REVERB.rt60) * Math.min(1, t / 0.008 + 0.15);
+        e += buf[i] * buf[i];
+      }
+      const k = 1 / Math.sqrt(e || 1);
+      for (let i = 0; i < n; i++) buf[i] *= k;
+      out.push(buf);
     }
     return out;
   }
@@ -124,14 +292,14 @@
     return { tokens: stack[0], errs };
   }
 
-  /** Parse one track. kind: 'p1'|'p2'|'tri'|'noi'. Returns {items, steps, bars, errors}. */
+  /** Parse one track. kind: 'noi' for drum tracks, anything else for notes. Returns {items, steps, bars, errors}. */
   function parseTrack(str, kind, inst) {
     const { tokens, errs } = expand(str);
     const errors = errs.slice();
     const items = [];
     const bars = [];
     const drumRe = new RegExp('^[' + DRUM_KEYS + ']+$');
-    let step = 0, len = 2, vol = inst.vol, duty = inst.duty, env = inst.env;
+    let step = 0, len = 2, vol = inst.vol, duty = inst.duty, env = inst.env, patch;
     for (const tok of tokens) {
       if (tok === '|') { bars.push(step); continue; }
       if (tok[0] === '%') {
@@ -139,6 +307,7 @@
         if (c === 'd' && /^[0-3]$/.test(v)) duty = +v;
         else if (c === 'v' && /^\d{1,2}$/.test(v) && +v <= 15) vol = +v;
         else if (c === 'e' && /^[hpds]$/.test(v)) env = ENV_CODES[v];
+        else if (c === 'i' && PATCHES[v] && !PATCHES[v].drums && kind !== 'noi') patch = v;
         else errors.push('bad control ' + tok);
         continue;
       }
@@ -153,26 +322,61 @@
         else errors.push('bad drum ' + tok);
         continue;
       }
-      if (head[0] === '^') {
+      if (head[0] === '^' || head[0] === '=') {
         const ch = chord(head.slice(1));
         if (!ch) { errors.push('bad chord ' + tok); continue; }
-        const rate = inst.arp || 1;
-        for (let i = 0, k = 0; i < len; i += rate, k++) {
-          items.push({ s: step + i, l: Math.min(rate, len - i), midi: ch.tones[k % 4], v: vol, duty, env, arp: true });
+        if (head[0] === '=') { // block chord: all tones at once (triads without the octave doubling)
+          const tones = ch.tones[3] - ch.root === 12 ? ch.tones.slice(0, 3) : ch.tones;
+          for (const m of tones) items.push({ s: step, l: len, midi: m, v: vol, duty, env, p: patch });
+        } else {
+          const rate = inst.arp || 1;
+          for (let i = 0, k = 0; i < len; i += rate, k++) {
+            items.push({ s: step + i, l: Math.min(rate, len - i), midi: ch.tones[k % 4], v: vol, duty, env, arp: true, p: patch });
+          }
         }
         step += len;
         continue;
       }
-      const midi = midiOf(head);
-      if (isNaN(midi)) { errors.push('bad token ' + tok); continue; }
-      items.push({ s: step, l: len, midi, v: vol, duty, env });
+      const ms = head.split('+').map(midiOf); // 'c4+e4' = notes struck together
+      if (ms.some(isNaN)) { errors.push('bad token ' + tok); continue; }
+      for (const midi of ms) items.push({ s: step, l: len, midi, v: vol, duty, env, p: patch });
       step += len;
     }
     return { items, steps: step, bars, errors };
   }
 
-  function instOf(def, ch) {
-    return Object.assign({}, DEFAULT_INST[ch], (def.inst && def.inst[ch]) || {});
+  // ---------- channels ----------
+  // Legacy songs use p1/p2/tri/noi (mapped onto LEGACY_PATCH). Modern songs name any channels in `inst`, each with a `patch`.
+  const isModern = (def) => !!def.inst && Object.keys(def.inst).some((k) => def.inst[k] && def.inst[k].patch);
+  function songChannels(def) {
+    const out = CHANNELS.slice();
+    for (const k of Object.keys(def.inst || {})) if (!out.includes(k)) out.push(k);
+    return out;
+  }
+  function instOf(def, ch, over) {
+    const legacy = DEFAULT_INST[ch] && !(def.inst && def.inst[ch] && def.inst[ch].patch);
+    return Object.assign({}, legacy ? DEFAULT_INST[ch] : { vol: 10, gate: 0.92 }, (def.inst && def.inst[ch]) || {}, over || {});
+  }
+  const patchName = (inst, ch) => inst.patch || LEGACY_PATCH[ch];
+  const isDrumCh = (inst, ch) => { const P = PATCHES[patchName(inst, ch)]; return !!(P && P.drums); };
+  const median = (a) => { a = a.slice().sort((x, y) => x - y); return a.length ? a[a.length >> 1] : 0; };
+  /** Legacy songs only: the old leads sat in octave 6 on bare pulses. When p1 mostly lives at/above G#5 it drops an octave (and p2
+   *  follows when it would otherwise sit on top of the lead). Returns {p1, p2} semitone shifts; inst.p1.tr / inst.p2.tr override. */
+  function legacyLift(def) {
+    if (isModern(def)) return { p1: 0, p2: 0 };
+    const pitches = (ch) => {
+      const out = [];
+      for (const name of Object.keys(def.sections || {})) {
+        const t = def.sections[name][ch];
+        if (!t) continue;
+        for (const it of parseTrack(t, ch, instOf(def, ch)).items) for (let k = 0; k < it.l; k++) out.push(it.midi);
+      }
+      return out;
+    };
+    const p1 = median(pitches('p1')) >= 80 ? -12 : 0;
+    const p2 = p1 && median(pitches('p2')) >= 62 ? -12 : 0;
+    const t = (ch, auto) => (def.inst && def.inst[ch] && def.inst[ch].tr !== undefined ? def.inst[ch].tr : auto);
+    return { p1: t('p1', p1), p2: t('p2', p2) };
   }
 
   // ---------- fingerprints (levels.js is only valid for the data it was measured on) ----------
@@ -181,68 +385,96 @@
     for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); }
     return h >>> 0;
   }
-  const synthSig = () => JSON.stringify([MIX, DRUMS, PULSE_EXP, ENV_VERSION]);
+  const synthSig = () => JSON.stringify([MIX, DRUMS, PULSE_EXP, ENV_VERSION, PATCHES, REVERB]);
   function fingerprint(events, extra) {
     let h = fnvStr(synthSig());
     if (extra) h = fnvStr(String(extra), h);
     for (const e of events) {
-      h = fnvStr([e.t.toFixed(4), e.ch, e.f ? e.f.toFixed(2) : '', e.f2 ? e.f2.toFixed(2) : '', e.d || '', e.dur.toFixed(4), e.vol.toFixed(3),
-        e.duty === undefined ? '' : e.duty, e.env || '', e.vib ? e.vib.rate.toFixed(2) + ',' + e.vib.depth.toFixed(3) + ',' + (e.vib.delay || 0) : ''].join('|') + ';', h);
+      h = fnvStr([e.t.toFixed(4), e.ch, e.p || '', e.f ? e.f.toFixed(2) : '', e.f2 ? e.f2.toFixed(2) : '', e.d || '', e.dur.toFixed(4), e.vol.toFixed(3),
+        e.duty === undefined ? '' : e.duty, e.env || '', e.pan === undefined ? '' : e.pan, e.rev === undefined ? '' : e.rev,
+        e.vib ? e.vib.rate.toFixed(2) + ',' + e.vib.depth.toFixed(3) + ',' + (e.vib.delay || 0) : ''].join('|') + ';', h);
     }
     return h.toString(16).padStart(8, '0');
   }
 
+  /** 'A' or 'A/x' (section A played with variation x = def.vars.x, a map of per-channel inst overrides) */
+  function orderOf(def) {
+    return def.order.trim().split(/\s+/).map((tok) => { const [sec, v] = tok.split('/'); return { tok, sec, v }; });
+  }
+
   const cache = {};
   /** Compile a song definition into { events, total, loopStart, seconds, loops, sections, maxDur, fp }. Times in seconds.
-   *  lv: optional measured level record { g, p1, p2, tri, noi } (see A.levels) that scales each event via e.g. */
+   *  lv: optional measured level record { g, <channel>: gain } (see A.levels) that scales each event via e.g. */
   function compileDef(def, lv) {
     const stepSec = 60 / def.bpm / 4;
     const swing = def.swing || 0;
-    const order = def.order.trim().split(/\s+/);
+    const order = orderOf(def);
+    const chans = songChannels(def);
+    const lift = legacyLift(def);
     const events = [];
     const loopIdx = def.loop === undefined ? 0 : def.loop;
     let t0 = 0, loopStart = 0;
     const sections = [];
-    order.forEach((name, oi) => {
-      const sec = def.sections[name];
+    order.forEach((o, oi) => {
+      const sec = def.sections[o.sec];
+      const vars = (o.v && def.vars && def.vars[o.v]) || {};
       if (oi === loopIdx) loopStart = t0;
       let steps = 0;
-      for (const ch of CHANNELS) {
+      for (const ch of chans) {
         if (!sec[ch]) continue;
-        const inst = instOf(def, ch);
-        const pt = parseTrack(sec[ch], ch, inst);
+        const inst = instOf(def, ch, vars[ch]);
+        const drums = isDrumCh(inst, ch);
+        const pt = parseTrack(sec[ch], drums ? 'noi' : ch, inst);
         steps = Math.max(steps, pt.steps);
+        if (inst.mute) continue;
+        const pn = patchName(inst, ch);
+        const tr = inst.tr !== undefined ? inst.tr : lift[ch] || 0;
         for (const it of pt.items) {
           const off = (it.s % 2 === 1 ? swing * stepSec : 0);
           const t = t0 + it.s * stepSec + off;
-          if (ch === 'noi') {
-            events.push({ t, dur: it.l * stepSec, ch, d: it.drum, vol: it.v / 15 });
+          const ev = { t, ch, p: it.p || pn };
+          if (inst.pan !== undefined) ev.pan = inst.pan;
+          if (inst.rev !== undefined) ev.rev = inst.rev;
+          if (drums) {
+            Object.assign(ev, { dur: it.l * stepSec, d: it.drum, vol: it.v / 15 });
           } else {
             const gate = it.arp ? 0.9 : inst.gate;
-            const dur = Math.max(0.03, it.l * stepSec * gate);
-            const ev = { t, dur, ch, f: hz(it.midi), midi: it.midi, vol: it.v / 15, duty: it.duty, env: it.env };
+            const midi = it.midi + tr;
+            Object.assign(ev, { dur: Math.max(0.03, it.l * stepSec * gate), f: hz(midi), midi, vol: it.v / 15, duty: it.duty, env: it.env });
+            if (it.arp) ev.arp = true;
             const vb = inst.vib;
             if (vb && it.l >= (vb.min || 4) && !it.arp) {
               ev.vib = { rate: vb.rate || 5.5, depth: ev.f * (vb.depth || 0.007), delay: vb.delay === undefined ? 0.14 : vb.delay };
             }
-            events.push(ev);
           }
+          events.push(ev);
         }
       }
-      sections.push({ name, start: t0, steps });
+      sections.push({ name: o.tok, start: t0, steps });
       t0 += steps * stepSec;
     });
-    events.sort((a, b) => a.t - b.t || CHANNELS.indexOf(a.ch) - CHANNELS.indexOf(b.ch));
+    events.sort((a, b) => a.t - b.t || chans.indexOf(a.ch) - chans.indexOf(b.ch));
     const fp = fingerprint(events, def.bpm + ':' + (def.kind || ''));
-    if (lv) for (const e of events) e.g = (lv.g === undefined ? 1 : lv.g) * (lv[e.ch] === undefined ? 1 : lv[e.ch]);
+    const sg = def.gain === undefined ? 1 : def.gain; // optional song-level trim
+    if (lv || sg !== 1) for (const e of events) e.g = sg * (lv ? (lv.g === undefined ? 1 : lv.g) * (lv[e.ch] === undefined ? 1 : lv[e.ch]) : 1);
     const loops = loopIdx >= 0;
     let maxDur = 0;
     for (const e of events) if (e.dur > maxDur) maxDur = e.dur;
-    return { events, total: t0, loopStart: loops ? loopStart : 0, seconds: t0, loops, sections, stepSec, maxDur, fp, gain: lv ? lv.g : 1, resume: def.resume !== false };
+    return { events, total: t0, loopStart: loops ? loopStart : 0, seconds: t0, loops, sections, stepSec, maxDur, fp, gain: lv ? lv.g : 1, resume: def.resume !== false, channels: chans, lift };
   }
 
   // ---------- SFX notation ----------
-  // 'wave freq[>freq2] dur [vol] [@start] [ex]' segments separated by ';' (sequential unless @start given).
+  // 'wave freq[>freq2] dur [vol] [@start] [e<h|p|d|s>] [v<depth>[/<rate>]] [d<cents>] [o[<vol>]] [~<delay>[x<n>]] [lp<hz>]' segments separated
+  // by ';' (sequential unless @start given). The layer fields expand one segment into several events (all on existing voice kinds):
+  //   d<cents> detuned double: the segment plus a copy `cents` higher, each at 0.65 x vol (chorus / width)
+  //   o[<vol>] sub-octave layer: a triangle (sine for s/t) an octave below, at <vol> x vol (default 0.6); skipped if it would go under 50 Hz
+  //   ~<delay>[x<n>] echo: n (default 2) repeats every `delay` s at 0.38^k x vol (a small "room", DS-style)
+  //   lp<hz>[><hz2>] osc lowpass cutoff (sweeping to hz2), passed on as e.lp / e.lp2
+  //   P<-1..1> pan, R<0..1> reverb send, passed on as e.pan / e.rev
+  // Extra waves: nl / nh = low-/high-pass noise (e.filt; freq = cutoff), w = sawtooth, q = square (ch 'saw' / 'sq').
+  // lp, lp2, pan, rev, filt, saw and sq need the DS engine (voices() passes them on); older engines ignore the fields and play
+  // nl/nh as band-pass noise, so every sound must still work without them. Do not use w/q until that engine is merged.
+  const SFX_WAVES = /^(p[0-3]|t|s|n|nl|nh|w|q)$/;
   function parseSfx(str) {
     const events = [];
     const errors = [];
@@ -254,31 +486,71 @@
       const w = tk[0];
       const fm = /^(\d+(?:\.\d+)?)(?:>(\d+(?:\.\d+)?))?$/.exec(tk[1] || '');
       const dur = parseFloat(tk[2]);
-      if (!/^(p[0-3]|t|s|n)$/.test(w) || !fm || !(dur > 0)) { errors.push('bad segment: ' + seg); continue; }
-      let vol = 0.5, at = cursor, env = w === 'n' ? 'decay' : 'hold', vib = null;
+      if (!SFX_WAVES.test(w) || !fm || !(dur > 0)) { errors.push('bad segment: ' + seg); continue; }
+      const nz = w[0] === 'n';
+      let vol = 0.5, at = cursor, env = nz ? 'decay' : 'hold', vib = null, det = 0, sub = 0, echo = null, lp = 0, lp2 = 0, pan = null, rev = null, bad = false;
       for (const x of tk.slice(3)) {
+        let m;
         if (x[0] === '@') at = parseFloat(x.slice(1));
+        else if ((m = /^lp(\d+)(?:>(\d+))?$/.exec(x))) { lp = +m[1]; lp2 = m[2] ? +m[2] : 0; }
+        else if ((m = /^P(-?\d*\.?\d+)$/.exec(x))) pan = Math.max(-1, Math.min(1, +m[1]));
+        else if ((m = /^R(\d*\.?\d+)$/.exec(x))) rev = Math.min(1, +m[1]);
         else if (x[0] === 'e') env = ENV_CODES[x[1]] || env;
-        else if (x[0] === 'v') vib = { rate: 9, depth: parseFloat(x.slice(1)) || 6 };
-        else if (!isNaN(parseFloat(x))) vol = parseFloat(x);
+        else if ((m = /^v(\d*\.?\d*)(?:\/(\d+\.?\d*))?$/.exec(x))) vib = { rate: m[2] ? +m[2] : 9, depth: parseFloat(m[1]) || 6 };
+        else if ((m = /^d(\d+\.?\d*)$/.exec(x))) det = +m[1];
+        else if ((m = /^o(\d*\.?\d*)$/.exec(x))) sub = m[1] ? +m[1] : 0.6;
+        else if ((m = /^~(\d*\.?\d+)(?:x(\d))?$/.exec(x))) echo = { dt: +m[1], n: m[2] ? +m[2] : 2 };
+        else if (/^\d*\.?\d+$/.test(x)) vol = parseFloat(x);
+        else bad = true;
       }
+      if (bad) errors.push('bad field in: ' + seg);
       const f = +fm[1], f2 = fm[2] ? +fm[2] : f;
-      const ev = { t: at, dur, vol, env };
-      if (w[0] === 'p') Object.assign(ev, { ch: 'p1', duty: +w[1], f, f2 });
-      else if (w === 't') Object.assign(ev, { ch: 'tri', f, f2 });
-      else if (w === 's') Object.assign(ev, { ch: 'sin', f, f2 });
-      else Object.assign(ev, { ch: 'noi', d: 'n', f, f2 });
-      if (vib) ev.vib = vib;
-      events.push(ev);
+      const base = { t: at, dur, vol, env };
+      if (w[0] === 'p') Object.assign(base, { ch: 'p1', duty: +w[1], f, f2 });
+      else if (w === 't') Object.assign(base, { ch: 'tri', f, f2 });
+      else if (w === 's') Object.assign(base, { ch: 'sin', f, f2 });
+      else if (w === 'w') Object.assign(base, { ch: 'saw', f, f2 });
+      else if (w === 'q') Object.assign(base, { ch: 'sq', f, f2 });
+      else Object.assign(base, { ch: 'noi', d: 'n', f, f2 }, w === 'nl' ? { filt: 'lp', q: 0 } : w === 'nh' ? { filt: 'hp', q: 0 } : {});
+      if (vib && !nz) base.vib = vib;
+      if (lp && !nz) { base.lp = lp; if (lp2) base.lp2 = lp2; }
+      if (pan !== null) base.pan = pan;
+      if (rev !== null) base.rev = rev;
+      const layer = [base];
+      if (det && !nz) {
+        const r = Math.pow(2, det / 1200);
+        base.vol = vol * 0.65;
+        layer.push(Object.assign({}, base, { f: f * r, f2: f2 * r }, vib ? { vib: { rate: vib.rate * 1.07, depth: vib.depth } } : {}));
+      }
+      if (sub && !nz && Math.min(f, f2) / 2 >= 50) {
+        layer.push(Object.assign({ t: at, dur, vol: Math.min(1, vol * sub), env, ch: w === 's' ? 'sin' : 'tri', f: f / 2, f2: f2 / 2 }, pan !== null ? { pan } : {}, rev !== null ? { rev } : {}));
+      }
+      let last = at + dur;
+      if (echo) {
+        const n = layer.length;
+        for (let k = 1; k <= echo.n; k++) {
+          for (let i = 0; i < n; i++) {
+            const e = layer[i];
+            layer.push(Object.assign({}, e, { t: e.t + k * echo.dt, vol: e.vol * Math.pow(0.38, k) }));
+          }
+        }
+        last = at + dur + echo.n * echo.dt;
+      }
+      for (const e of layer) events.push(e);
       cursor = at + dur;
-      end = Math.max(end, at + dur);
+      end = Math.max(end, last);
     }
     events.sort((a, b) => a.t - b.t);
     return { events, seconds: end, errors, fp: fingerprint(events, 'sfx'), gain: 1 };
   }
 
   // ---------- species cries ----------
+  // A cry is "spoken" from the species' sound-word (NP.data.species[id].cry, e.g. 'Kon!', 'Piiraa!'): each syllable becomes a voiced
+  // segment whose consonants shape the attack/release and whose vowel sets a formant (breath noise band, lowpass). The evolution family
+  // picks the timbre and pitch region, the stage lowers and lengthens the voice, and the species id picks the melodic contour, so a line
+  // sounds related but every species is distinct. Ids without species data get a pseudo-word from the hash. Deterministic throughout.
   function fnv(s) { return fnvStr(String(s)); }
+  function fmix(h) { h ^= h >>> 16; h = Math.imul(h, 0x85ebca6b); h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35); return (h ^ (h >>> 16)) >>> 0; }
   function mulberry(seed) {
     let s = seed >>> 0 || 1;
     return () => {
@@ -288,45 +560,304 @@
       return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
     };
   }
-  /** All the random choices of a cry, derived from the species id (deterministic). */
+  const rngOf = (s) => mulberry(fmix(fnv(s)));
+  const VOWEL_F = { a: 1050, e: 1500, i: 1900, o: 720, u: 520, z: 1700 }; // breath/formant band per vowel
+  // Voice textures (measured against Gen 5 cries: only ~half of a cry is clean tone, the rest rasp, screech, growl or breath).
+  const TEXTURES = ['clean', 'rasp', 'screech', 'breathy', 'warble', 'growl'];
+  const TYPE_TEX = { ember: ['rasp', 'growl', 'rasp'], tide: ['warble', 'clean', 'breathy'], volt: ['screech', 'rasp'], sprout: ['breathy', 'clean'],
+    frost: ['clean', 'screech'], fluff: ['clean', 'warble', 'breathy'], brawl: ['growl', 'rasp'], nettle: ['warble', 'rasp'], terra: ['growl', 'rasp'],
+    gale: ['screech', 'breathy'], dream: ['warble', 'clean'], buzz: ['rasp', 'screech'], pebble: ['growl', 'rasp'], spook: ['breathy', 'warble'],
+    drake: ['growl', 'screech'], shade: ['growl', 'breathy'], iron: ['screech', 'rasp'] };
+  const ONSETS = ['k', 'p', 'm', 'n', 'r', 'ky', 'b', 't', 's', 'w', 'g', 'my', 'py', 'l', 'f', 'ch'];
+  const VOWELS = ['a', 'i', 'u', 'o', 'e', 'ii', 'uu', 'aa', 'oo', 'ai'];
+  const CODAS = ['', '', '', 'n', 'k', 'l', 'p', 'm'];
+  /** Split a sound-word into syllables { on, v, co } ('y' counts as a consonant; a word without vowels is one buzz syllable). */
+  function syllables(word) {
+    const w = String(word).toLowerCase().replace(/[^a-z]/g, '');
+    const out = [];
+    const re = /([^aeiou]*)([aeiou]+)/g;
+    let m, last = 0;
+    while ((m = re.exec(w))) { out.push({ on: m[1], v: m[2], co: '' }); last = re.lastIndex; }
+    const tail = w.slice(last);
+    if (!out.length) return [{ on: w.slice(0, 1), v: 'z', co: w.slice(1).replace(/z/g, ''), buzz: true }];
+    out[out.length - 1].co = tail;
+    // a consonant cluster between vowels: all but the last consonant close the previous syllable (lar-kes-sa, nom-nom)
+    for (let i = 1; i < out.length; i++) if (out[i].on.length > 1 && !/^.y$/.test(out[i].on)) { out[i - 1].co += out[i].on.slice(0, -1); out[i].on = out[i].on.slice(-1); }
+    return out.slice(0, 3);
+  }
+  /** All the choices of a cry (deterministic for the id). */
   function cryParams(id) {
     if (id && typeof id === 'object') id = id.id !== undefined ? id.id : JSON.stringify(id);
-    const r = mulberry(fnv('cry:' + id));
+    const sp = NP.data.species && NP.data.species[id];
+    const was = (NP.data && NP.data.renamedFrom) || {}; // renamed species keep the cry seeded from their old id
+    const seed = was[id] || id;
+    const ri = rngOf('cry:' + seed);
+    let word = sp && sp.cry, family = sp ? sp.family || id : id, stage = sp ? sp.stage || 1 : 1;
+    const famSeed = was[family] || family;
+    if (!word) {
+      const n = 1 + Math.floor(ri() * 2.6);
+      word = '';
+      for (let i = 0; i < n; i++) word += ONSETS[Math.floor(ri() * ONSETS.length)] + VOWELS[Math.floor(ri() * VOWELS.length)];
+      word += CODAS[Math.floor(ri() * CODAS.length)] + (ri() < 0.5 ? '!' : ri() < 0.3 ? '~' : '');
+      stage = 1 + Math.floor(ri() * 3);
+    }
+    const rf = rngOf('cryfam:' + famSeed);
+    const region = 250 * Math.pow(2, rf() * 1.9); // family pitch region ~250..930 Hz (stage 1; Gen 5 cries centre around ~550 Hz)
+    const body = Math.floor(rf() * 3); // 0 pulse + detuned triangle, 1 soft triangle/sine, 2 pulse + sub-octave
+    const duty = [1, 2, 1, 3][Math.floor(rf() * 4)];
+    const det = 7 + rf() * 16; // cents
+    const fshift = 0.85 + rf() * 0.35;
+    const st = Math.max(1, Math.min(3, stage)) - 1;
+    let contour = Math.floor(ri() * 8);
+    const base = region * [1, 0.8, 0.66][st] * (0.93 + ri() * 0.14);
+    if (contour === 4 && st === 0 && base > 300) contour = 3; // small, high voices chirp instead of growling
+    const types = (sp && sp.types) || [];
+    const pool = TYPE_TEX[types[0]] || TEXTURES;
+    let tex = pool[Math.floor(rf() * pool.length)];
+    if (st === 2 && tex === 'clean' && rf() < 0.6) tex = 'rasp'; // final forms get some grit
+    if (contour === 4) tex = 'growl';
+    // gesture = the overall shape of the call; palette = the instrument it is sung with (both drive most of the audible variety)
+    const rg = rngOf('crygest:' + (rf() < 0.55 ? famSeed : seed));
+    // known species are spread evenly over gestures (by dex number) and families over palettes, so no two neighbours sound alike
+    const fam = sp && NP.data.species[family];
+    const cv = (sp && sp.cryVoice) || {}; // optional hand-picked overrides: { gesture, palette, tex }
+    const gesture = cv.gesture || (sp && sp.num ? GESTURES[(sp.num * 5 + 2) % GESTURES.length] : GESTURES[Math.floor(rg() * GESTURES.length)]);
+    const palette = cv.palette || (fam && fam.num ? PALETTES[(fam.num * 3) % PALETTES.length] : PALETTES[Math.floor(rf() * PALETTES.length)]);
+    if (cv.tex) tex = cv.tex;
     return {
-      base: 190 * Math.pow(2, r() * 2.4), // ~190..~1000 Hz
-      contour: Math.floor(r() * 6),
-      duty: Math.floor(r() * 4),
-      dur: 0.2 + r() * 0.22,
-      wob: r() < 0.4,
-      n: 2 + Math.floor(r() * 2),
-      vrate: 10 + r() * 8,
+      gesture, palette, gseed: 'crynotes:' + seed, interval: [3, 4, 5, 6, 7, 12][Math.floor(rg() * 6)],
+      tex, rough: 0.5 + rf() * 0.5,
+      types, word, syl: syllables(word), stage: st + 1, body, duty, det, fshift,
+      base, contour,
+      speed: [1, 1.12, 1.25][st] * (0.9 + ri() * 0.22),
+      wob: ri() < 0.35,
+      bang: /!$/.test(word), ask: /\?$/.test(word), trill: /~$/.test(word),
     };
   }
-  /** Build the events of a cry from its parameters (also used by the tuner to measure each contour/duty). */
-  function cryFromParams(p) {
-    const { base, contour, duty, dur, wob, n, vrate } = p;
-    const ev = [];
-    const add = (o) => ev.push(Object.assign({ t: 0, vol: 0.9, env: 'hold', ch: 'p1', duty }, o));
-    switch (contour) {
-      case 0: add({ dur, f: base, f2: base * 1.6 }); break; // rising "mew"
-      case 1: add({ dur, f: base * 1.5, f2: base * 0.75 }); break; // falling
-      case 2: add({ dur: dur * 0.5, f: base, f2: base * 1.5 }); add({ t: dur * 0.5, dur: dur * 0.5, f: base * 1.5, f2: base * 0.8 }); break; // arch
-      case 3: { const d = dur / n; for (let i = 0; i < n; i++) add({ t: i * d, dur: d * 0.7, f: base * (1 + 0.25 * (i % 2)), f2: base * (1.1 + 0.2 * (i % 2)) }); break; } // staccato chirps
-      case 4: // growl
-        add({ dur, f: base * 0.6, f2: base * 0.5, ch: 'tri', vol: 1 });
-        add({ dur: dur * 0.9, f: base * 0.3, f2: base * 0.22, duty: 0, vol: 0.55 });
-        ev.push({ t: 0, dur: dur * 0.5, ch: 'noi', d: 'n', f: 900, f2: 400, vol: 0.25, env: 'decay' });
-        break;
-      default: add({ dur, f: base, f2: base, vib: { rate: vrate, depth: base * 0.08 } }); add({ dur: dur * 0.7, f: base * 1.5, f2: base * 1.5, vol: 0.4, ch: 'tri' }); // warble
+  // ---------- non-spoken cry gestures ----------
+  // Gen 5 cries are not all "words": many are trills, howls with a leap, sirens, two-voice calls, chatter, roars or coos.
+  const GESTURES = ['spoken', 'spoken', 'trill', 'call', 'siren', 'chord', 'chatter', 'roar', 'coo', 'bleat', 'chirp'];
+  const PALETTES = ['pure', 'reedy', 'brassy', 'hollow', 'glassy', 'metal', 'nasal', 'pulse'];
+  /** One sung note in the family's palette: {t, dur, f, f2, vol, env, vib}. */
+  function paletteNote(ev, p, n) {
+    const fz = (f) => Math.min(4000, Math.max(55, f));
+    const base = { t: n.t, dur: n.dur, env: n.env || 'hold', f: fz(n.f), f2: fz(n.f2 || n.f) };
+    const vib = n.vib ? { vib: { rate: n.vib.rate, depth: n.f * n.vib.depth } } : {};
+    const add = (o, k) => ev.push(Object.assign({}, base, vib, o, { vol: Math.min(1, n.vol * k) }));
+    switch (p.palette) {
+      case 'pure': add({ ch: 'sin' }, 0.9); add({ ch: 'tri', f: fz(n.f * 2), f2: fz((n.f2 || n.f) * 2) }, 0.25); break;
+      case 'reedy': add({ ch: 'p1', duty: 0, lp: 3000 }, 0.75); add({ ch: 'tri' }, 0.4); break;
+      case 'brassy': add({ ch: 'saw', lp: 900, lp2: 3200, lpt: Math.min(0.12, n.dur) }, 0.7); add({ ch: 'sin' }, 0.35); break;
+      case 'hollow': add({ ch: 'sq', lp: 1800 }, 0.55); add({ ch: 'sin', f: fz(n.f / 2), f2: fz((n.f2 || n.f) / 2) }, 0.35); break;
+      case 'glassy': add({ ch: 'sin', env: 'decay' }, 0.8); add({ ch: 'sin', f: fz(n.f * 2.76), f2: fz((n.f2 || n.f) * 2.76), env: 'decay' }, 0.3); add({ ch: 'tri' }, 0.3); break;
+      case 'metal': add({ ch: 'sin', vib: { rate: n.f * 1.41, depth: n.f * 0.9 } }, 0.6); add({ ch: 'tri' }, 0.4); break; // FM: inharmonic, bell/metal-like
+      case 'nasal': add({ ch: 'p1', duty: 1, lp: 2200 }, 0.6); ev.push({ t: n.t, dur: n.dur, ch: 'noi', d: 'n', f: 1200, f2: 1100, vol: n.vol * 0.25, env: 'hold' }); break;
+      default: add({ ch: 'p1', duty: 2, lp: 2600 }, 0.65); add({ ch: 'tri', f: fz(n.f * 1.005), f2: fz((n.f2 || n.f) * 1.005) }, 0.45);
     }
-    if (wob && contour < 4) ev.forEach((e) => { if (e.ch === 'p1') e.vib = { rate: 14, depth: e.f * 0.04 }; });
+  }
+  function gestureNotes(p) {
+    const r = rngOf(p.gseed), b = p.base, L = [0.5, 0.8, 1.1][p.stage - 1] * (0.8 + r() * 0.4), up = r() < 0.5 ? 1 : -1;
+    const iv = Math.pow(2, p.interval / 12), N = [];
+    switch (p.gesture) {
+      case 'trill': { // rapid repeats on a moving line
+        const rate = 9 + r() * 9, k = Math.max(4, Math.round(L * rate)), drift = up * (0.2 + r() * 0.4);
+        for (let i = 0; i < k; i++) { const x = i / k; N.push({ t: i / rate, dur: 0.7 / rate, f: b * (1 + drift * x), vol: 0.75, env: 'pluck' }); }
+        break;
+      }
+      case 'call': // a held note, a sliding leap, a held note (a howl / yodel)
+        N.push({ t: 0, dur: L * 0.4, f: b, f2: b * 1.03, vol: 0.8, env: 'swell', vib: { rate: 6, depth: 0.02 } });
+        N.push({ t: L * 0.38, dur: L * 0.62, f: b * 1.03, f2: up > 0 ? b * iv : b / iv, vol: 0.8, env: 'hold', vib: { rate: 6.5, depth: 0.03 } });
+        break;
+      case 'siren': // one continuous sweep there and back
+        N.push({ t: 0, dur: L * 0.5, f: b, f2: up > 0 ? b * iv : b / iv, vol: 0.8, env: 'swell' });
+        N.push({ t: L * 0.48, dur: L * 0.52, f: up > 0 ? b * iv : b / iv, f2: b * 0.9, vol: 0.8, env: 'hold' });
+        break;
+      case 'chord': { // two voices sliding together (a tritone or second for eerie beating)
+        const f2 = up > 0 ? 1.12 : 0.85;
+        N.push({ t: 0, dur: L, f: b, f2: b * f2, vol: 0.6, env: 'swell', vib: { rate: 5, depth: 0.015 } });
+        N.push({ t: 0.03, dur: L - 0.03, f: b * iv, f2: b * iv * f2, vol: 0.5, env: 'swell', vib: { rate: 5.5, depth: 0.015 } });
+        break;
+      }
+      case 'chatter': { // a few staccato blips on random pitches
+        const k = 3 + Math.floor(r() * 3) + (p.stage - 1) * 2; let t = 0;
+        for (let i = 0; i < k; i++) { const d = (0.04 + r() * 0.06) * (1 + (p.stage - 1) * 0.3); N.push({ t, dur: d, f: b * Math.pow(2, (r() * 10 - 3) / 12), vol: 0.75, env: 'pluck' }); t += d + 0.02 + r() * 0.05; }
+        break;
+      }
+      case 'roar': // a low swell under a big band of noise that opens and closes
+        N.push({ t: 0, dur: L, f: b * 0.5, f2: b * 0.42, vol: 0.7, env: 'swell', vib: { rate: 24, depth: 0.04 }, roar: true });
+        break;
+      case 'coo': // soft, slow vibrato, a gentle dip
+        N.push({ t: 0, dur: L * 0.45, f: b, f2: b * 0.9, vol: 0.7, env: 'swell', vib: { rate: 4.5, depth: 0.02 } });
+        N.push({ t: L * 0.5, dur: L * 0.5, f: b * 0.92, f2: b * 0.85, vol: 0.6, env: 'swell', vib: { rate: 4.5, depth: 0.025 } });
+        break;
+      case 'bleat': // a nasal note with a deep fast wobble
+        N.push({ t: 0, dur: L * 0.8, f: b, f2: b * (up > 0 ? 1.1 : 0.9), vol: 0.8, env: 'hold', vib: { rate: 7 + r() * 4, depth: 0.07 } });
+        break;
+      default: { // chirp: fast up-sweeps, repeated
+        const k = 2 + Math.floor(r() * 2) + (p.stage - 1), sp = 0.12 + (p.stage - 1) * 0.05;
+        for (let i = 0; i < k; i++) N.push({ t: i * sp, dur: sp * 0.7, f: b * 0.8, f2: b * (1.4 + r() * 0.5), vol: 0.75, env: 'pluck' });
+      }
+    }
+    return N;
+  }
+  function gestureCry(p) {
+    const ev = [];
+    for (const n of gestureNotes(p)) {
+      paletteNote(ev, p, n);
+      if (n.roar) { ev.push({ t: n.t, dur: n.dur, ch: 'noi', d: 'n', f: 500, f2: 1800, vol: 0.55, env: 'swell' }); ev.push({ t: n.t + n.dur * 0.5, dur: n.dur * 0.5, ch: 'noi', d: 'n', f: 1800, f2: 400, vol: 0.4, env: 'decay' }); }
+    }
+    // the family's voice texture still colours the gesture
+    const T = Math.max(...ev.map((e) => e.t + e.dur));
+    if (p.tex === 'breathy') ev.push({ t: 0, dur: T, ch: 'noi', d: 'n', f: 1600, f2: 1100, vol: 0.35, env: 'swell' });
+    if (p.tex === 'rasp' || p.tex === 'growl') ev.push({ t: 0, dur: T, ch: 'saw', f: Math.max(55, p.base / 2), f2: Math.max(55, p.base / 2.2), vol: 0.22 * p.rough, env: 'hold', lp: 1500, vib: { rate: 31, depth: 4 } });
     return ev;
+  }
+  // word-level pitch curves, x in 0..1 across the whole cry
+  const CONTOURS = [
+    (x) => 1 + 0.32 * x, // rising
+    (x) => 1.28 - 0.45 * x, // falling
+    (x) => 1 + 0.38 * Math.sin(Math.PI * x) - 0.12 * x, // arch
+    (x) => 1 + 0.18 * x, // chirpy (each syllable also flicks up)
+    (x) => 0.62 - 0.08 * x, // growl
+    (x) => 1.05 - 0.12 * x, // warble
+    (x) => (x < 0.22 ? 1.5 - 1.7 * x : 1.13 - 0.3 * (x - 0.22)), // yip-call
+    (x) => 1 - 0.24 * Math.sin(Math.PI * x) + 0.1 * x, // coo (dip)
+  ];
+  const CRY_PW = 0.13, CRY_PW_SPOKEN = 0.1; // target power estimate for gesture cries (tuned against the render tool's LUFS)
+  const CRY_GAIN = 1.35; // cries sit at the top of the SFX loudness ladder (~ -20 LUFS short-term)
+  // rough loudness match: cries differ a lot in how much sound they make, so scale each to a common power estimate (+-3 LU in practice)
+  function levelCry(ev, target) {
+    const W = { p1: MIX.p1, sin: MIX.sin, tri: MIX.tri, saw: MIX.saw, sq: MIX.sq, noi: MIX.nz * 0.6 };
+    const T = Math.max(...ev.map((e) => e.t + e.dur));
+    const pw = ev.reduce((a, e) => a + Math.pow(e.vol * (W[e.ch] || 0.15), 2) * e.dur * (e.env === 'hold' ? 1 : 0.5), 0) / Math.max(0.25, T);
+    const k = Math.max(0.5, Math.min(4, target / Math.sqrt(pw + 1e-9)));
+    for (const e of ev) { e.vol = Math.min(1, e.vol * CRY_GAIN * k); if (e.rev === undefined) e.rev = 0.12; }
+    return ev;
+  }
+  /** Build the events of a cry from its parameters. */
+  function cryFromParams(p) {
+    if (p.gesture !== 'spoken') {
+      const ge = gestureCry(p);
+      addMotifs(ge, p);
+      return levelCry(ge, CRY_PW);
+    }
+    const ev = [];
+    const P = CONTOURS[p.contour] || CONTOURS[0];
+    const syl = p.syl.length ? p.syl : [{ on: '', v: 'a', co: '' }];
+    const n = syl.length;
+    // syllable lengths: long vowels and buzzes are longer, the last syllable is drawn out
+    // (Gen 5 cries run ~0.3-1.7 s and evolved forms are much longer, so stage stretches the word and raises the cap)
+    const stretch = [1.45, 2.0, 2.6][p.stage - 1], cap = [0.55, 0.85, 1.15][p.stage - 1];
+    let lens = syl.map((s, i) => (s.buzz ? 0.26 : s.v.length > 1 ? 0.2 : 0.12) * (i === n - 1 ? 1.55 : 1) * p.speed * stretch);
+    const total = lens.reduce((a, b) => a + b, 0);
+    if (total > cap) lens = lens.map((l) => (l * cap) / total);
+    const sum = lens.reduce((a, b) => a + b, 0);
+    const fz = (f) => Math.min(4000, Math.max(55, f));
+    const noise = (t, dur, f, f2, vol, env) => ev.push({ t, dur, ch: 'noi', d: 'n', f: fz(f), f2: fz(f2), vol, env: env || 'decay' });
+    const growl = p.contour === 4 || p.tex === 'growl';
+    let t = 0, x = 0;
+    syl.forEach((s, i) => {
+      const L = lens[i], x0 = x / sum, x1 = (x + L) / sum;
+      x += L;
+      const on = s.on, co = s.co, last = i === n - 1;
+      const plos = /^[pbtdkgcq]/.test(on), nasal = /^[mn]/.test(on), glide = /^[lrwy]/.test(on) || /^.y/.test(on), fric = /^[sfhzv]|^ch/.test(on);
+      const F = VOWEL_F[s.v[0]] * p.fshift * (1 - 0.08 * (p.stage - 1));
+      const F2 = VOWEL_F[s.v[s.v.length - 1]] * p.fshift * (1 - 0.08 * (p.stage - 1));
+      // consonant onset
+      let t0 = t;
+      if (plos) noise(t, 0.028, /^[pb]/.test(on) ? 800 : /^[td]/.test(on) ? 2300 : 1400, 600, 0.4);
+      if (fric) { noise(t, 0.05, /^s/.test(on) ? 2450 : /^z/.test(on) ? 2000 : 1300, 1500, 0.22, 'swell'); t0 = t + 0.035; }
+      // voiced segments (split at a turn of the curve so arches and yips keep their shape)
+      let a = p.base * P(x0), b = p.base * P(x1);
+      const mid = p.base * P((x0 + x1) / 2);
+      if (p.contour === 3) b *= 1.22;
+      if (last && p.bang) b *= 0.86;
+      if (last && p.ask) b *= 1.25;
+      if (plos) a *= 0.94;
+      if (glide) a *= 0.82;
+      const segs = Math.abs(mid / Math.sqrt(a * b) - 1) > 0.04 && L > 0.08 ? [[a, mid, 0, 0.5], [mid, b, 0.5, 1]] : [[a, b, 0, 1]];
+      const dur = L - (t0 - t);
+      const vib = s.buzz || /z/.test(on) ? { rate: 38, depth: 0.09 } : growl ? { rate: 27, depth: 0.07 * p.rough + 0.02 } : p.tex === 'rasp' ? { rate: 33 + 12 * p.rough, depth: 0.05 * p.rough + 0.02 }
+        : p.tex === 'warble' || p.contour === 5 || p.trill ? { rate: 7 + 4 * p.rough, depth: 0.05 } : p.wob && L > 0.15 ? { rate: 6, depth: 0.025 } : null;
+      const env = nasal ? 'swell' : plos ? 'pluck' : 'hold';
+      for (const [f, f2, u0, u1] of segs) {
+        const st = t0 + dur * u0 - (u0 > 0 ? 0.008 : 0);
+        const d = dur * (u1 - u0) + (u0 > 0 ? 0.008 : 0);
+        const e = u0 > 0 ? 'hold' : env;
+        const lp = Math.round(Math.min(4500, Math.max(1600, F * (p.tex === 'screech' ? 4.5 : 3.5))));
+        const v = (vb, ff) => (vb ? { vib: { rate: vb.rate, depth: ff * vb.depth } } : {});
+        const add = (o) => ev.push(Object.assign({ t: st, dur: d, env: e, lp }, o));
+        const r = Math.pow(2, p.det / 1200);
+        if (p.body === 0) {
+          add(Object.assign({ ch: 'p1', duty: p.duty, f: fz(f), f2: fz(f2), vol: 0.7 }, v(vib, f)));
+          add(Object.assign({ ch: 'tri', f: fz(f * r), f2: fz(f2 * r), vol: 0.5 }, v(vib, f)));
+        } else if (p.body === 1) {
+          add(Object.assign({ ch: 'tri', f: fz(f), f2: fz(f2), vol: 0.85 }, v(vib, f)));
+          add(Object.assign({ ch: 'sin', f: fz(f * r), f2: fz(f2 * r), vol: 0.6 }, v(vib, f)));
+          add(Object.assign({ ch: 'p1', duty: 1, f: fz(f), f2: fz(f2), vol: 0.22 }, v(vib, f)));
+        } else {
+          add(Object.assign({ ch: 'p1', duty: p.duty, f: fz(f), f2: fz(f2), vol: 0.7 }, v(vib, f)));
+          if (Math.min(f, f2) / 2 >= 60) add(Object.assign({ ch: 'tri', f: f / 2, f2: f2 / 2, vol: 0.7 }, v(vib, f / 2)));
+          else add(Object.assign({ ch: 'tri', f: fz(f * r), f2: fz(f2 * r), vol: 0.7 }, v(vib, f)));
+        }
+      }
+      // texture layers
+      if (p.tex === 'rasp' || p.tex === 'screech') {
+        const h = p.tex === 'screech' ? 2 : 1; // screech: a bright saw an octave up; rasp: a buzzy saw on the voice
+        ev.push({ t: t0, dur, ch: 'saw', f: fz(a * h), f2: fz(b * h), vol: (p.tex === 'screech' ? 0.3 : 0.35) * p.rough, env: 'hold', lp: p.tex === 'screech' ? 4200 : 2600,
+          vib: { rate: 41, depth: a * h * 0.04 * p.rough } });
+        // a second saw ~35 Hz off beats against it: the throaty roughness of a real rasp
+        ev.push({ t: t0, dur, ch: 'saw', f: fz(a * h + 35), f2: fz(b * h + 35), vol: 0.25 * p.rough, env: 'hold', lp: 2600 });
+        noise(t0, dur, p.tex === 'screech' ? 3200 : 1800, 2400, 0.45 * p.rough, 'hold');
+      }
+      // breath through the vowel's formant (louder for growls, buzzes and breathy voices)
+      noise(t0, dur * 0.9, F, F2 * (b / a > 1 ? 1.1 : 0.9), growl || s.buzz ? 0.42 : p.tex === 'breathy' ? 0.6 : 0.28, p.tex === 'breathy' ? 'hold' : 'pluck');
+      if (growl) { noise(t0, dur, 380, 300, 0.3, 'hold'); ev.push({ t: t0, dur, ch: 'saw', f: fz(a / 2), f2: fz(b / 2), vol: 0.3, env: 'hold', lp: 1400 }); ev.push({ t: t0, dur, ch: 'saw', f: fz(a / 2 + 28), f2: fz(b / 2 + 28), vol: 0.22, env: 'hold', lp: 1400 }); }
+      // coda
+      const te = t0 + dur;
+      if (/^[nm]/.test(co)) ev.push({ t: te - 0.01, dur: 0.07, ch: 'sin', f: fz(b * 0.94), f2: fz(b * 0.88), vol: 0.55, env: 'decay' });
+      else if (/^[kgtpdbc]/.test(co)) noise(te - 0.005, 0.025, /^[tdc]/.test(co) ? 2200 : /^[pb]/.test(co) ? 750 : 1400, 900, 0.32);
+      else if (/^[fsh]/.test(co)) noise(te - 0.01, 0.06, co[0] === 's' ? 2400 : 1300, 1000, 0.2);
+      else if (/^z/.test(co)) noise(t0, dur, 1800, 1500, 0.2, 'hold');
+      t = t0 + dur + (last ? 0 : 0.018);
+    });
+    addMotifs(ev, p);
+    return levelCry(ev, CRY_PW_SPOKEN);
+  }
+  // Type motifs: a short accent per type layered into the cry (primary type full, secondary at 0.6), so a Kigu's type can be heard
+  // in its voice, the way Gen 5 cries hint at fire, water or electricity. T = voiced length, b = base pitch, k = level scale.
+  const MOTIFS = {
+    ember: (T, b, k, n, o) => { n(T * 0.1, T * 0.9, 600, 350, 0.18 * k, 'swell'); [0.35, 0.6, 0.82, 1.02].forEach((x, i) => n(T * x, 0.014, 2300 - i * 150, 2000, 0.3 * k)); },
+    tide: (T, b, k, n, o) => { [0, 0.07, 0.14].forEach((d, i) => o({ t: T + d - 0.02, dur: 0.05, ch: 'sin', f: 380 + i * 90, f2: 760 + i * 160, vol: 0.4 * k, env: 'pluck' })); },
+    volt: (T, b, k, n, o) => { o({ t: 0, dur: T, ch: 'sq', f: Math.max(70, b / 2), f2: Math.max(70, b / 2.2), vol: 0.22 * k, env: 'hold', lp: 1800, vib: { rate: 42, depth: b * 0.05 } }); n(0, 0.03, 2400, 1600, 0.28 * k); },
+    sprout: (T, b, k, n, o) => { n(0, T, 1900, 1300, 0.14 * k, 'swell'); n(T - 0.02, 0.06, 2300, 1500, 0.18 * k); },
+    frost: (T, b, k, n, o) => { [0, 0.06, 0.12].forEach((d, i) => o({ t: T - 0.02 + d, dur: 0.08, ch: 'sin', f: [1568, 2093, 1760][i], vol: 0.2 * k * (1 - i * 0.25), env: 'decay' })); },
+    fluff: (T, b, k, n, o) => { o({ t: 0, dur: T, ch: 'sin', f: Math.max(60, b / 2), f2: Math.max(60, b / 2.1), vol: 0.35 * k, env: 'swell' }); n(0, 0.06, 700, 400, 0.15 * k); },
+    brawl: (T, b, k, n, o) => { o({ t: 0, dur: 0.07, ch: 'sin', f: 160, f2: 70, vol: 0.6 * k, env: 'decay' }); n(0, T, 340, 280, 0.2 * k, 'hold'); },
+    nettle: (T, b, k, n, o) => { o({ t: T - 0.03, dur: 0.1, ch: 'tri', f: b * 0.8, f2: b * 0.5, vol: 0.4 * k, env: 'decay', vib: { rate: 18, depth: b * 0.05 } }); n(T - 0.02, 0.08, 600, 300, 0.2 * k); },
+    terra: (T, b, k, n, o) => { o({ t: 0, dur: T, ch: 'sin', f: 75, f2: 60, vol: 0.45 * k, env: 'swell', vib: { rate: 9, depth: 3 } }); n(0, T, 260, 160, 0.18 * k, 'swell'); },
+    gale: (T, b, k, n, o) => { o({ t: T * 0.3, dur: T * 0.8, ch: 'sin', f: Math.min(1600, b * 2), f2: Math.min(2000, b * 2.6), vol: 0.14 * k, env: 'swell' }); n(0, T, 800, 2000, 0.16 * k, 'swell'); },
+    dream: (T, b, k, n, o) => { o({ t: 0, dur: T, ch: 'sin', f: b * 1.5, f2: b * 1.45, vol: 0.18 * k, env: 'swell', vib: { rate: 5, depth: b * 0.04 } }); o({ t: T - 0.02, dur: 0.12, ch: 'tri', f: 1047, vol: 0.25 * k, env: 'decay' }); },
+    buzz: (T, b, k, n, o) => { o({ t: 0, dur: T, ch: 'saw', f: 170, f2: 160, vol: 0.2 * k, env: 'hold', lp: 1200, vib: { rate: 36, depth: 8 } }); },
+    pebble: (T, b, k, n, o) => { o({ t: 0, dur: 0.03, ch: 'tri', f: 520, f2: 380, vol: 0.5 * k, env: 'decay' }); o({ t: T - 0.01, dur: 0.03, ch: 'tri', f: 440, f2: 330, vol: 0.45 * k, env: 'decay' }); },
+    spook: (T, b, k, n, o) => { o({ t: T * 0.5, dur: T * 0.6, ch: 'tri', f: b * 0.75, f2: b * 0.6, vol: 0.28 * k, env: 'swell', vib: { rate: 5, depth: b * 0.03 } }); },
+    drake: (T, b, k, n, o) => { o({ t: 0, dur: T, ch: 'saw', f: Math.max(60, b / 2), f2: Math.max(55, b / 2.4), vol: 0.24 * k, env: 'swell', lp: 700, vib: { rate: 16, depth: 3 } }); n(0, T, 420, 220, 0.2 * k, 'swell'); },
+    shade: (T, b, k, n, o) => { o({ t: T * 0.2, dur: T, ch: 'sin', f: Math.max(60, b / 2), f2: Math.max(55, b / 3), vol: 0.35 * k, env: 'decay' }); n(0, T, 500, 250, 0.12 * k, 'swell'); },
+    iron: (T, b, k, n, o) => { o({ t: T - 0.02, dur: 0.12, ch: 'tri', f: 880, vol: 0.25 * k, env: 'decay' }); o({ t: T - 0.02, dur: 0.1, ch: 'tri', f: 1245, vol: 0.15 * k, env: 'decay' }); n(0, 0.03, 2200, 1500, 0.2 * k); },
+  };
+  function addMotifs(ev, p) {
+    const T = Math.min(1.2, Math.max(...ev.map((e) => e.t + e.dur)));
+    const fz = (f) => Math.min(2500, Math.max(55, f));
+    const n = (t, dur, f, f2, vol, env) => ev.push({ t, dur, ch: 'noi', d: 'n', f: fz(f), f2: fz(f2), vol, env: env || 'decay' });
+    const o = (e) => ev.push(e);
+    p.types.slice(0, 2).forEach((ty, i) => { if (MOTIFS[ty]) MOTIFS[ty](T, p.base, i ? 0.6 : 1, n, o); });
+    for (const e of ev) if (e.t + e.dur > 1.4) e.dur = Math.max(0.01, 1.4 - e.t); // keep the cry under the length cap
   }
   /** Deterministic short "voice" for a species id. Returns { events, seconds, params, fp, gain }. */
   function cryEvents(id) {
     const p = cryParams(id);
-    const ev = cryFromParams(p);
-    const g = (A.levels.c || {})[p.contour + '.' + p.duty];
+    const ev = cryFromParams(p).sort((a, b) => a.t - b.t);
+    const g = (A.levels.c || {})[p.contour + '.' + p.body];
     if (g !== undefined) ev.forEach((e) => { e.g = g; });
     return { events: ev, seconds: Math.max(...ev.map((e) => e.t + e.dur)), params: p, gain: g === undefined ? 1 : g };
   }
@@ -390,34 +921,54 @@
     if (!(def.bpm >= 40 && def.bpm <= 240)) bad('bpm out of range');
     const bar = def.bar || 16;
     if (![4, 8, 12, 16, 24].includes(bar)) bad('unusual bar length ' + bar);
+    if (def.gain !== undefined && !(def.gain > 0 && def.gain <= 2)) bad('gain out of range');
     if (!def.order || !def.sections) { bad('no order/sections'); return out; }
-    const order = def.order.trim().split(/\s+/);
+    const order = orderOf(def);
     if (jingle ? def.loop !== -1 : !(Number.isInteger(def.loop) && def.loop >= 0 && def.loop < order.length)) bad('bad loop index');
-    if (def.inst) {
-      for (const ch of Object.keys(def.inst)) {
-        if (!CHANNELS.includes(ch)) { bad('unknown inst channel ' + ch); continue; }
-        const v = def.inst[ch];
-        if (v.vol !== undefined && !(v.vol >= 0 && v.vol <= 15)) bad(`inst.${ch}.vol out of range`);
-        if (v.duty !== undefined && ![0, 1, 2, 3].includes(v.duty)) bad(`inst.${ch}.duty out of range`);
-        if (v.env !== undefined && !Object.values(ENV_CODES).includes(v.env)) bad(`inst.${ch}.env unknown`);
-      }
-    }
-    for (const name of order) {
-      const sec = def.sections[name];
-      if (!sec) { bad('unknown section ' + name); continue; }
+    const modern = isModern(def);
+    const chans = songChannels(def);
+    const checkInst = (where, ch, v) => {
+      if (!chans.includes(ch)) { bad(`unknown ${where} channel ${ch}`); return; }
+      if (!CHANNELS.includes(ch) && where === 'inst' && !v.patch) bad(`inst.${ch} needs a patch`);
+      if (v.patch !== undefined && !PATCHES[v.patch]) bad(`${where}.${ch}.patch unknown: ${v.patch}`);
+      if (v.vol !== undefined && !(v.vol >= 0 && v.vol <= 15)) bad(`${where}.${ch}.vol out of range`);
+      if (v.duty !== undefined && ![0, 1, 2, 3].includes(v.duty)) bad(`${where}.${ch}.duty out of range`);
+      if (v.env !== undefined && !Object.values(ENV_CODES).includes(v.env)) bad(`${where}.${ch}.env unknown`);
+      if (v.pan !== undefined && !(v.pan >= -1 && v.pan <= 1)) bad(`${where}.${ch}.pan out of range`);
+      if (v.rev !== undefined && !(v.rev >= 0 && v.rev <= 1)) bad(`${where}.${ch}.rev out of range`);
+    };
+    if (def.inst) for (const ch of Object.keys(def.inst)) checkInst('inst', ch, def.inst[ch]);
+    for (const vn of Object.keys(def.vars || {})) for (const ch of Object.keys(def.vars[vn])) checkInst('vars.' + vn, ch, def.vars[vn][ch]);
+    const lift = legacyLift(def);
+    for (const o of order) {
+      const name = o.tok;
+      const sec = def.sections[o.sec];
+      if (!sec) { bad('unknown section ' + o.sec); continue; }
+      if (o.v && !(def.vars && def.vars[o.v])) bad('unknown variation ' + o.v);
+      const vars = (o.v && def.vars && def.vars[o.v]) || {};
+      for (const k of Object.keys(sec)) if (!chans.includes(k)) bad(`section ${o.sec} has unknown channel ${k}`);
       let steps = -1;
-      for (const ch of CHANNELS) {
-        if (!sec[ch]) { if (!jingle || ch === 'p1') bad(`section ${name} lacks ${ch}`); continue; }
-        const pt = parseTrack(sec[ch], ch, instOf(def, ch));
+      for (const ch of chans) {
+        if (!sec[ch]) { if (!modern && CHANNELS.includes(ch) && (!jingle || ch === 'p1')) bad(`section ${name} lacks ${ch}`); continue; }
+        const inst = instOf(def, ch, vars[ch]);
+        const P = PATCHES[patchName(inst, ch)];
+        if (!P) continue;
+        const pt = parseTrack(sec[ch], P.drums ? 'noi' : ch, inst);
         for (const e of pt.errors) bad(`${name}.${ch}: ${e}`);
         if (pt.steps % bar) bad(`${name}.${ch}: ${pt.steps} steps is not a multiple of bar=${bar}`);
         pt.bars.forEach((b, i) => { if (b % bar) bad(`${name}.${ch}: bar ${i + 1} ends at step ${b} (bar=${bar})`); });
         if (steps < 0) steps = pt.steps;
         else if (pt.steps !== steps) bad(`${name}.${ch}: ${pt.steps} steps, expected ${steps}`);
+        const tr = inst.tr !== undefined ? inst.tr : lift[ch] || 0;
+        const custom = !CHANNELS.includes(ch) || (def.inst && def.inst[ch] && def.inst[ch].patch);
         for (const it of pt.items) {
           if (it.midi === undefined) continue;
-          const lo = ch === 'tri' ? 24 : 36, hi = ch === 'tri' ? 72 : 100;
-          if (it.midi < lo || it.midi > hi) bad(`${name}.${ch}: note ${nameOf(it.midi)} out of range`);
+          const m = it.midi + tr;
+          const IP = PATCHES[it.p] || P;
+          const lo = custom ? IP.lo : ch === 'tri' ? 24 : 36, hi = custom ? IP.hi : ch === 'tri' ? 72 : 100;
+          if (m < lo || m > hi) bad(`${name}.${ch}: note ${nameOf(m)} out of range`);
+          // DS-style songs keep the top end gentle: nothing above E6, and no held notes above C6
+          if (custom && (m > 88 || (m > 84 && it.l >= 4 && IP.env && IP.env.s2 > 0.2))) bad(`${name}.${ch}: shrill note ${nameOf(m)}:${it.l}`);
         }
       }
     }
@@ -484,6 +1035,13 @@
       }).join(' ')).join(' ');
     }).join(' | ') + ' |';
   }
+  // block(['C','Am','F,G'], 3) -> '=C3:16 | =Am3:16 | =F3:8 =G3:8 |'  (held block chords, e.g. for strings / pad)
+  // stab(['C','G'], 'X:2 r:2 X:4 r:8', 3) -> chord hits: every X becomes the bar's block chord (=Chord)
+  function dslBlock(chords, oct, bar) {
+    bar = bar || 16;
+    return chords.map((c) => { const p = split(c); return p.map((x) => '=' + x + oct + ':' + bar / p.length).join(' '); }).join(' | ') + ' |';
+  }
+  function dslStab(chords, pat, oct, bar) { return dslComp(chords, pat, oct, bar).replace(/\^/g, '='); }
   // weave(['Bb','Gm'], 4, [0,1,2,1], 16, 1) -> explicit broken-chord notes using chord-tone indexes (0 root,1 third,2 fifth,3 octave/7th)
   function dslWeave(chords, oct, pat, bar, len) {
     bar = bar || 16; pat = pat || [0, 1, 2, 1]; len = len || 1;
@@ -532,7 +1090,7 @@
     });
   }
   A.dsl = {
-    arp: dslArp, bass: dslBass, comp: dslComp, weave: dslWeave, tr: dslTr, dtr: dslDtr,
+    arp: dslArp, bass: dslBass, comp: dslComp, weave: dslWeave, tr: dslTr, dtr: dslDtr, block: dslBlock, stab: dslStab,
     rep: (s, n) => '[ ' + s + ' ]x' + n,
     x: (s, n) => (s + ' ').repeat(n).trim(), // plain repetition (keeps '|' bar markers visible to the validator)
   };
@@ -553,6 +1111,6 @@
   A.MIX = MIX;
   A.notation = {
     midiOf, nameOf, hz, chord, parseTrack, expand, compileDef, parseSfx, cryParams, cryFromParams, voices, envPoints, pulseComp, fingerprint,
-    DUTY, CHANNELS, DRUMS, DEFAULT_INST, MIX, ENV_CODES,
+    songChannels, orderOf, legacyLift, reverbIR, DUTY, CHANNELS, DRUMS, DEFAULT_INST, MIX, ENV_CODES, PATCHES, LEGACY_PATCH, REVERB,
   };
 })(typeof globalThis !== 'undefined' ? globalThis : window);

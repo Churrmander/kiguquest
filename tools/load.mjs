@@ -65,5 +65,7 @@ export function loadNP(opts = {}) {
     vm.runInContext(fs.readFileSync(p, 'utf8'), ctx, { filename: p });
     loaded.push(f);
   }
+  // headless runs (tests, previews) are always at midday, so nothing depends on when they're run; tests set NP.Clock.fake themselves
+  if (ctx.NP && ctx.NP.Clock) ctx.NP.Clock.fake = 12;
   return { NP: ctx.NP, ctx, files: loaded };
 }

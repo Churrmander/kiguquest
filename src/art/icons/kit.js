@@ -368,7 +368,7 @@
     },
     fxNames() { return Object.keys(reg.fx); },
     logo() { return cached('logo', () => (reg.logo ? reg.logo() : unknown(200, 56))); },
-    titleScene() { return cached('title', () => (reg.titleScene ? reg.titleScene() : unknown(240, 160))); },
+    titleScene() { return cached('title', () => (reg.titleScene ? reg.titleScene() : unknown(NP.W, NP.H))); },
 
     items() { return itemOrder.slice(); },
     itemGroup(id) { return reg.item[id] ? reg.item[id].group : null; },

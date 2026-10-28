@@ -24,6 +24,18 @@
       battle.add({ t: 'exp', who: m, amount, levels });
       if (levels.length) m.refresh();
     }
+    // Exp Share (5th-gen-and-later style): every other Kigu still standing gets half of what a lone battler would have earned
+    if (!battle.cfg.expShare) return;
+    const rest = pl.mons.filter((m) => !m.fainted && parts.indexOf(m) < 0);
+    if (!rest.length) return;
+    const list = [];
+    for (const m of rest) {
+      const amount = Math.max(1, Math.floor(B.expGain(foe.level, sp.expYield, m.level, !battle.wild, 1) / 2));
+      const levels = NP.Kigu.gainExp(m.kigu, amount);
+      if (levels.length) m.refresh();
+      list.push({ who: m, amount, levels });
+    }
+    battle.add({ t: 'expShare', list });
   };
 
   B.useItemInBattle = function (battle, mon, ch) {
@@ -32,6 +44,7 @@
     if (!d || !d.use || !target) { battle.msg('But it had no effect.'); return false; }
     const who = mon.side.isPlayer ? 'You' : mon.side.trainer ? mon.side.trainer.name : 'The foe';
     battle.msg(who + ' used ' + d.name + '!');
+    battle.add({ t: 'use', who: mon, target, item: ch.item }); // the scene pops the item up over the target
     if (battle.cfg.consume) battle.cfg.consume(ch.item);
     const u = d.use;
     if (u.revive) {
@@ -83,6 +96,12 @@
     }
     const foe = mon.foes[0];
     if (!foe) return;
+    if (battle.cfg.noCatch) {   // a story battle with a wild Kigu who has somewhere she needs to be
+      const nc = battle.cfg.noCatch;   // true, or { first, again } lines of her own (Ryukoi at Hemline Lake)
+      if (typeof nc === 'object') battle.msg(battle.spoolTries++ ? nc.again : nc.first);
+      else battle.msg(foe.label() + ' batted the spool away! She has other things on her mind.');
+      return;
+    }
     const sp = d.use.spool;
     battle.msg('You offered a ' + d.name + ' to ' + foe.label() + '!');
     const r = B.spoolRoll(battle, foe.kigu, foe.hp, foe.maxhp, sp.ball, foe.status);

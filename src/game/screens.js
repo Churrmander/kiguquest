@@ -31,7 +31,7 @@
         const pk = has ? NP.State.peek() : null;
         this.peek = pk;
         const m = new ui.Menu({ items, theme: 'light', x: 0, y: 0, cancelable: false });
-        m.x = 120 - (m.w >> 1); m.y = 104;
+        m.x = (NP.W - m.w) >> 1; m.y = 128;
         const r = yield* this.menu(m);
         const k = r.item.k;
         if (k === 'continue') {
@@ -64,28 +64,28 @@
       const ow = new NP.Overworld();
       NP.Game.reset(ow);
       const p = st.pos;
-      if (isNew) ow.loadMap('lab', 5, 9, 'up');
-      else ow.loadMap(p.map, p.x, p.y, p.dir, { noEnter: true });
+      if (isNew) ow.loadMap('player_house', 6, 3, 'down');   // the first morning: Mom wakes you
+      else ow.loadMap(p.map, p.x, p.y, p.dir);   // run onEnter: it syncs story NPCs (e.g. Seamstead's Salon lane) to the flags
       NP.Game.fadeTo(0, 20);
     }
     draw(fb) {
       const f = NP.Game.frame;
       if (this.scene) fb.blit(this.scene, 0, 0);
       else {
-        for (let y = 0; y < 160; y++) fb.fillRect(0, y, 240, 1, y < 100 ? NP.Color.mix('#ffb8d0', '#9ad4f0', y / 100) : '#78c058');
+        for (let y = 0; y < NP.H; y++) fb.fillRect(0, y, NP.W, 1, y < 120 ? NP.Color.mix('#ffb8d0', '#9ad4f0', y / 120) : '#78c058');
       }
-      if (this.logo) fb.blit(this.logo, 120 - (this.logo.w >> 1), 14);
+      if (this.logo) fb.blit(this.logo, (NP.W - this.logo.w) >> 1, 20);
       else {
-        Font.draw(fb, 'KIGU QUEST', 120, 34, { color: '#ffffff', shadow: '#c04878', outline: '#602040', align: 'center' });
+        Font.draw(fb, 'KIGU QUEST', NP.W / 2, 40, { color: '#ffffff', shadow: '#c04878', outline: '#602040', align: 'center' });
       }
-      if (this.stage === 0 && (f >> 5) % 2 === 0) Font.draw(fb, 'PRESS START', 120, 120, { color: '#ffffff', shadow: '#00000080', outline: '#302040', align: 'center' });
+      if (this.stage === 0 && (f >> 5) % 2 === 0) Font.draw(fb, 'PRESS START', NP.W / 2, 150, { color: '#ffffff', shadow: '#00000080', outline: '#302040', align: 'center' });
       if (this.stage === 1 && this.peek) {
         const p = this.peek;
-        ui.frame(fb, 50, 70, 140, 30, 'light');
-        ui.text(fb, p.name + '   Buttons ' + p.badges, 60, 76, 'light');
-        ui.text(fb, 'Sketchbook ' + p.dex + '   ' + NP.util.pad(Math.floor(p.frames / 216000), 1) + 'h ' + NP.util.pad(Math.floor(p.frames / 3600) % 60, 2) + 'm', 60, 87, 'light', { color: '#707890', shadow: null });
+        ui.frame(fb, 58, 88, 140, 30, 'light');
+        ui.text(fb, p.name + '   Buttons ' + p.badges, 68, 94, 'light');
+        ui.text(fb, 'Sketchbook ' + p.dex + '   ' + NP.util.pad(Math.floor(p.frames / 216000), 1) + 'h ' + NP.util.pad(Math.floor(p.frames / 3600) % 60, 2) + 'm', 68, 105, 'light', { color: '#707890', shadow: null });
       }
-      Font.draw(fb, 'Befriend Kigu. Stitch your story.', 120, 150, { color: '#ffffffb0', shadow: '#00000060', align: 'center' });
+      Font.draw(fb, 'Befriend Kigu. Stitch your story.', NP.W / 2, NP.H - 12, { color: '#ffffffb0', shadow: '#00000060', align: 'center' });
       this.drawUI(fb, f);
     }
   }
@@ -98,7 +98,7 @@
     *run() {
       yield;
       yield* this.say('Welcome to the land of Tsumugi, where Kigu and people stitch their lives together.');
-      const g = yield* this.choose(['Boy', 'Girl'], { x: 160, y: 50 });
+      const g = yield* this.choose(['Boy', 'Girl'], { x: 176, y: 60 });
       if (g < 0) { NP.Game.pop(); return; }
       this.gender = g === 0 ? 'm' : 'f';
       this.stage = 1;
@@ -115,7 +115,7 @@
           if (this.cy < ROWS.length) {
             if (this.name.length < 8) { this.name += ROWS[this.cy][this.cx]; NP.snd.sfx('select'); } else NP.snd.sfx('error');
           } else if (this.cx === 0) { this.name = this.name.slice(0, -1); NP.snd.sfx('cancel'); }
-          else if (this.cx === 1) { this.name = this.gender === 'm' ? 'Ren' : 'Yuki'; NP.snd.sfx('select'); }
+          else if (this.cx === 1) { this.name = NP.State.defaultName(this.gender); NP.snd.sfx('select'); }
           else {
             if (!this.name.trim()) { NP.snd.sfx('error'); } else { NP.snd.sfx('select'); this.result = { name: this.name.trim(), gender: this.gender }; NP.Game.pop(); return; }
           }
@@ -127,32 +127,32 @@
     draw(fb) {
       bgFill(fb, '#fbe4ec', '#f6d8e4');
       if (this.stage === 0) { this.drawUI(fb); return; }
-      ui.text(fb, 'What is your name?', 120, 6, 'light', { align: 'center' });
+      ui.text(fb, 'What is your name?', NP.W / 2, 6, 'light', { align: 'center' });
       const look = this.gender === 'm' ? 'hero_m' : 'hero_f';
-      const s = A().human(look).frames.down[0];
-      fb.blit(s, 8, 8);
-      ui.frame(fb, 50, 18, 120, 20, 'light');
+      const s = A().human(look).frames.down[0]; // 32x32 cell, feet on the bottom row
+      fb.blit(s, 26, 46 - s.h);
+      ui.frame(fb, 68, 22, 120, 20, 'light');
       for (let i = 0; i < 8; i++) {
         const ch = this.name[i];
-        fb.hline(62 + i * 12, 33, 9, '#8090b0');
-        if (ch) ui.text(fb, ch, 64 + i * 12, 23, 'light', { shadow: null });
+        fb.hline(80 + i * 12, 37, 9, '#8090b0');
+        if (ch) ui.text(fb, ch, 82 + i * 12, 27, 'light', { shadow: null });
       }
-      ui.frame(fb, 6, 44, 228, 88, 'light');
+      ui.frame(fb, 6, 52, NP.W - 12, 108, 'light');
       for (let y = 0; y < ROWS.length; y++) {
         for (let x = 0; x < 13; x++) {
           const sel = this.cy === y && this.cx === x;
-          const px = 14 + x * 17, py = 50 + y * 14;
+          const px = 18 + x * 18, py = 60 + y * 17;
           if (sel) fb.fillRect(px - 3, py - 3, 15, 13, '#ffe8a0');
           ui.text(fb, ROWS[y][x], px + Math.floor((8 - Font.width(ROWS[y][x])) / 2) - 1, py, 'light', { shadow: null });
         }
       }
       ['Delete', 'Default', 'OK'].forEach((t, i) => {
         const sel = this.cy === ROWS.length && this.cx === i;
-        const px = 30 + i * 70;
-        if (sel) fb.fillRect(px - 4, 122 - 4 + 0, 60, 14, '#ffe8a0');
-        ui.text(fb, t, px, 120, 'light', { shadow: null });
+        const px = 34 + i * 74;
+        if (sel) fb.fillRect(px - 4, 145 - 4, 60, 14, '#ffe8a0');
+        ui.text(fb, t, px, 145, 'light', { shadow: null });
       });
-      ui.text(fb, 'A: pick    B: delete', 120, 142, 'light', { align: 'center', color: '#9098b0', shadow: null });
+      ui.text(fb, 'A: pick    B: delete', NP.W / 2, NP.H - 18, 'light', { align: 'center', color: '#9098b0', shadow: null });
     }
   }
 
@@ -179,9 +179,9 @@
       bgFill(fb, '#f4ecd8', '#ece2c8');
       const ids = NP.data.speciesIds, dex = NP.state.dex;
       const seen = Object.keys(dex.seen).length, caught = Object.keys(dex.caught).length;
-      ui.frame(fb, 4, 4, 100, 152, 'light');
-      const top = Math.max(0, Math.min(this.cur - 5, ids.length - 11));
-      for (let i = 0; i < 11 && top + i < ids.length; i++) {
+      ui.frame(fb, 4, 4, 100, NP.H - 8, 'light');
+      const top = Math.max(0, Math.min(this.cur - 6, ids.length - 13));
+      for (let i = 0; i < 13 && top + i < ids.length; i++) {
         const id = ids[top + i], y = 10 + i * 13;
         if (top + i === this.cur) ui.cursor(fb, 8, y, 'light');
         const sp = NP.data.species[id];
@@ -189,41 +189,62 @@
         ui.text(fb, dex.seen[id] ? sp.name : '-----', 38, y, 'light');
         if (dex.caught[id]) fb.fillRect(92, y + 2, 5, 5, '#e85a5a');
       }
-      ui.frame(fb, 108, 4, 128, 152, 'light');
+      ui.frame(fb, 108, 4, NP.W - 112, NP.H - 8, 'light');
       const id = ids[this.cur], sp = NP.data.species[id];
       if (dex.seen[id]) {
-        fb.blit(A().kiguFront(id), 140, 10);
-        ui.text(fb, sp.name, 114, 78, 'light');
-        sp.types.forEach((t, i) => fb.blit(A().typePill(t), 114 + i * 36, 90));
-        Font.wrap(sp.dex, 116).slice(0, 4).forEach((l, i) => ui.text(fb, l, 114, 106 + i * 10, 'light', { color: '#505870', shadow: null }));
+        { const f = A().kiguFront(id, false, (NP.Game.frame / 9) | 0); fb.blit(f, 182 - (f.w >> 1), 8); }
+        ui.text(fb, sp.name, 114, 106, 'light');
+        sp.types.forEach((t, i) => fb.blit(A().typePill(t), 114 + i * 36, 118));
+        Font.wrap(sp.dex, NP.W - 128).slice(0, 4).forEach((l, i) => ui.text(fb, l, 114, 134 + i * 10, 'light', { color: '#505870', shadow: null }));
       } else {
-        fb.blit(A().kiguFront(id).silhouette('#40485a'), 140, 10);
-        ui.text(fb, '?????', 114, 78, 'light');
+        { const f = A().kiguFront(id).silhouette('#40485a'); fb.blit(f, 182 - (f.w >> 1), 8); }
+        ui.text(fb, '?????', 114, 106, 'light');
       }
-      ui.text(fb, 'Seen ' + seen + '  Friends ' + caught, 114, 146, 'light', { color: '#9098b0', shadow: null });
+      ui.text(fb, 'Seen ' + seen + '  Friends ' + caught, 114, NP.H - 14, 'light', { color: '#9098b0', shadow: null });
     }
   }
 
   // ===================================================================================== Tailor card
   class CardScene extends Scene {
-    constructor() { super('light'); }
-    enter() { this.spawn((function* (s) { yield; while (!Input.pressed.b && !Input.pressed.a) yield; NP.snd.sfx('cancel'); NP.Game.pop(); })(this)); }
-    draw(fb) {
+    constructor() { super('light'); this.page = 0; }
+    enter() {
+      this.spawn((function* (s) {
+        yield;
+        while (!Input.pressed.b && !Input.pressed.a) {
+          // Left/Right turns to the plush shelf won at the Shibuyarn arcade (src/game/arcade/cards.js)
+          const d = Input.menuDir();
+          if (NP.arcade && NP.arcade.drawPlushShelf && (d === 'left' || d === 'right')) { s.page ^= 1; NP.snd.sfx('cursor'); }
+          yield;
+        }
+        NP.snd.sfx('cancel'); NP.Game.pop();
+      })(this));
+    }
+    draw(fb, frame) {
       bgFill(fb, '#e0e8f8', '#d4def2');
       const st = NP.state;
-      ui.frame(fb, 8, 8, 224, 144, 'light');
+      if (NP.arcade && NP.arcade.drawCardFrame) NP.arcade.drawCardFrame(fb, 8, 8, NP.W - 16, NP.H - 16);
+      else ui.frame(fb, 8, 8, NP.W - 16, NP.H - 16, 'light');
+      if (this.page === 1) { NP.arcade.drawPlushShelf(fb, 8, 8, NP.W - 16, NP.H - 16, frame | 0); return; }
       ui.text(fb, 'TAILOR CARD', 20, 16, 'light', { color: '#d83838' });
-      fb.blit(A().human(NP.State.lookId()).frames.down[0], 24, 44);
+      // the approved AutoSprite hero (same art as the battle send-out); the older generated portrait only as a fallback
+      const as = NP.art.autosprite && NP.art.autosprite.trainer && NP.art.autosprite.trainer(NP.State.lookId());
+      const tr = as && as.bmp ? as.bmp : A().humanFront(NP.State.lookId()); // bottom-centre anchor
+      fb.blit(tr, 40 - (tr.w >> 1), 112 - tr.h);
       ui.text(fb, 'Name   ' + st.name, 70, 32, 'light');
       ui.text(fb, 'Money  $' + st.money, 70, 46, 'light');
       ui.text(fb, 'Friends ' + Object.keys(st.dex.caught).length + ' (seen ' + Object.keys(st.dex.seen).length + ')', 70, 60, 'light');
       ui.text(fb, 'Time   ' + NP.State.timeString(), 70, 74, 'light');
-      ui.text(fb, 'Buttons', 20, 100, 'light', { color: '#707890' });
+      if (st.flags.stamp_fishing_master && NP.Fishing) NP.Fishing.drawStamp(fb, 202, 12);   // shown a rare fish to the Fishing Master
+      // Button case: two rows of four 32 px Buttons (NP.art.icons badges.js); an empty stitched slot until the Salon is won
+      ui.text(fb, 'Buttons', 78, 88, 'light', { color: '#707890' });
+      // recessed felt tray: dark lip top-left, light lip bottom-right
+      fb.fillRect(74, 99, 166, 78, '#5a1e3a'); fb.fillRect(75, 100, 164, 76, '#8a3058');
+      fb.fillRect(75, 100, 164, 2, '#6a2244'); fb.fillRect(75, 100, 2, 76, '#6a2244');
+      fb.fillRect(75, 175, 164, 1, '#b85a80'); fb.fillRect(238, 100, 1, 76, '#b85a80');
       for (let i = 0; i < 8; i++) {
-        const x = 20 + i * 26, y = 114;
-        const b = A().badge(st.badges[i] ? i + 1 : 0, false);
-        if (b) fb.blit(b, x, y);
-        else { fb.ellipse(x + 8, y + 8, 8, 8, st.badges[i] ? '#f0c030' : '#c8d0e0', true); fb.ellipse(x + 8, y + 8, 8, 8, '#606880', false); }
+        const x = 80 + (i & 3) * 40, y = 102 + (i >> 2) * 38;
+        const icon = A().badge(st.badges[i] ? i + 1 : 0, true);
+        if (icon) fb.blit(icon, x, y);
       }
     }
   }
@@ -240,6 +261,7 @@
         { name: 'Battle style', vals: ['Shift', 'Set'], get: () => (o.battleStyle === 'set' ? 1 : 0), set: (v) => { o.battleStyle = v ? 'set' : 'shift'; NP.Game.opts.battleStyle = o.battleStyle; } },
         { name: 'Music', vals: ['Off', 'Low', 'Med', 'High'], get: () => (o.music === undefined ? 2 : o.music), set: (v) => { o.music = v; this.vol(); } },
         { name: 'Sound fx', vals: ['Off', 'Low', 'Med', 'High'], get: () => (o.sfx === undefined ? 2 : o.sfx), set: (v) => { o.sfx = v; this.vol(); } },
+        { name: 'Time of day', vals: ['Auto', 'Morning', 'Day', 'Evening', 'Night'], get: () => o.clock || 0, set: (v) => { o.clock = v; NP.Game.opts.clock = v; } },
         { name: 'Done', vals: [], get: () => 0, set: () => {} },
       ];
     }
@@ -266,65 +288,134 @@
     }
     draw(fb) {
       bgFill(fb, '#e8e4f4', '#dcd8ee');
-      ui.frame(fb, 12, 10, 216, 132, 'light');
+      ui.frame(fb, 12, 10, NP.W - 24, NP.H - 20, 'light');
       ui.text(fb, 'OPTIONS', 24, 18, 'light', { color: '#d83838' });
       this.rows().forEach((r, i) => {
         const y = 36 + i * 17;
         if (i === this.cur) ui.cursor(fb, 20, y, 'light');
         ui.text(fb, r.name, 30, y, 'light');
-        r.vals.forEach((v, j) => ui.text(fb, v, 120 + j * 28, y, 'light', { color: r.get() === j ? '#d83838' : '#a0a8c0', shadow: r.get() === j ? undefined : null }));
+        r.vals.forEach((v, j) => ui.text(fb, v, 128 + j * 30, y, 'light', { color: r.get() === j ? '#d83838' : '#a0a8c0', shadow: r.get() === j ? undefined : null }));
       });
     }
   }
 
   // ===================================================================================== Evolution
+  const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
+  /** Evolution, 5th-gen pacing (round 4: it used to be over in two seconds). About ten seconds from "is evolving!" to the
+   *  reveal: she glows white, old and new shapes trade places faster and faster while sparkles rise, a white flash, then the new
+   *  form with a burst. B during the change stops it (she will try again at her next level). */
   class EvolutionScene extends Scene {
-    constructor(k, to) { super('dark'); this.k = k; this.to = to; this.form = k.species; this.sil = 0; this.sparkle = 0; }
+    constructor(k, to) {
+      super('dark');
+      this.k = k; this.to = to; this.form = k.species;
+      this.white = 0; this.flash = 0; this.glowP = 0; this.parts = []; this.burst = 0; this.t = 0;
+    }
     enter() { this.spawn(this.run(), 'evolve'); }
+    *say(text, auto) {
+      this.msg.begin(text, { auto, box: { x: 0, y: NP.BOX_Y, w: NP.W, h: 48 } });
+      while (this.msg.active) { this.msg.update(); yield; }
+    }
+    rise(n) {
+      for (let i = 0; i < n; i++) this.parts.push({ x: NP.W / 2 + (Math.random() - 0.5) * 120, y: NP.BOX_Y + 4, vy: -0.6 - Math.random() * 1.2, life: 60 + Math.random() * 50 });
+    }
     *run() {
       const k = this.k, from = K().sp(k), name = K().displayName(k);
-      NP.Game.fadeTo(0, 10);
-      this.msg.begin('What? ' + name + ' is changing!', { auto: 40, box: { x: 0, y: 112, w: 240, h: 48 } });
-      while (this.msg.active) { this.msg.update(); yield; }
-      NP.snd.sfx('evolve');
-      for (let i = 0; i < 120; i++) {
-        this.sil = Math.min(1, i / 30);
-        if (i > 30) this.form = Math.floor(i / Math.max(4, 14 - i / 10)) % 2 ? this.to : k.species;
-        if (i >= 110) this.form = this.to;
-        this.sparkle = i > 60 ? (i - 60) : 0;
+      NP.Game.fadeTo(0, 16);
+      yield* this.wait(20);
+      NP.snd.cry(k.species);
+      yield* this.say('What? ' + name + ' is evolving!');
+      NP.snd.play('evolution', { restart: true });
+      // 1) she fills with light (1.5 s)
+      for (let i = 0; i < 90; i++) { this.white = i / 90; this.glowP = i / 90; if (i % 10 === 0) this.rise(1); yield; }
+      this.white = 1;
+      // 2) old and new shapes swap, slow at first, then faster and faster (about 7 s); B stops it
+      let stopped = false, swap = 0, flip = false;
+      const N = 430;
+      for (let i = 0; i < N; i++) {
+        const period = Math.max(3, Math.round(34 - 31 * Math.pow(i / N, 0.8)));
+        if (++swap >= period) { swap = 0; flip = !flip; this.form = flip ? this.to : k.species; }
+        if (i % Math.max(2, 9 - ((i / 60) | 0)) === 0) this.rise(1);
+        if (i > 20 && Input.pressed.b) { stopped = true; break; }
         yield;
       }
-      this.sil = 0; this.form = this.to;
+      if (stopped) {
+        NP.snd.stop(200);
+        this.form = k.species;
+        for (let i = 0; i < 30; i++) { this.white = 1 - i / 30; yield; }
+        this.white = 0;
+        k.evoStop = k.level;
+        yield* this.say('Huh? ' + name + ' stopped evolving!');
+        NP.snd.cry(k.species);
+        yield* this.wait(20);
+        NP.Game.fadeTo(1, 16, '#000000');
+        yield* this.wait(18);
+        NP.Game.pop();
+        return;
+      }
+      // 3) a white flash, and she steps out in her new form
+      NP.snd.sfx('evolve');
+      for (let i = 0; i < 24; i++) { this.flash = i / 24; yield; }
+      this.form = this.to; this.flash = 1;
+      yield* this.wait(20);
+      this.white = 0; this.glowP = 0;
+      for (let i = 0; i < 40; i++) { this.flash = 1 - i / 40; this.burst = i; yield; }
+      this.flash = 0;
+      for (let i = 40; i < 70; i++) { this.burst = i; yield; }
+      this.burst = 0;
       const res = K().evolve(k, this.to);
       NP.State.caught(this.to);
       const toName = NP.data.species[this.to].name;
+      NP.snd.stop(0);
+      NP.snd.cry(this.to);
+      yield* this.wait(50);
       NP.snd.jingle('j_evolve');
-      this.msg.begin('Congratulations! ' + (k.nickname || from.name) + ' evolved into ' + toName + '!', { auto: 60, box: { x: 0, y: 112, w: 240, h: 48 } });
-      while (this.msg.active) { this.msg.update(); yield; }
+      yield* this.say('Congratulations! ' + (k.nickname || from.name) + ' evolved into ' + toName + '!');
       for (const id of res.evoMoves) {
         if (K().knows(k, id)) continue;
-        if (K().learnMove(k, id)) {
-          this.msg.begin(K().displayName(k) + ' learned ' + NP.data.moves[id].name + '!', { auto: 40, box: { x: 0, y: 112, w: 240, h: 48 } });
-          while (this.msg.active) { this.msg.update(); yield; }
-        }
+        if (K().learnMove(k, id)) yield* this.say(K().displayName(k) + ' learned ' + NP.data.moves[id].name + '!');
       }
+      NP.Game.fadeTo(1, 16, '#000000');
+      yield* this.wait(18);
       NP.Game.pop();
+    }
+    update() {
+      super.update();
+      this.t++;
+      for (const p of this.parts) { p.y += p.vy; p.life--; }
+      this.parts = this.parts.filter((p) => p.life > 0 && p.y > -4);
     }
     draw(fb) {
       fb.clear('#181828');
-      const bg = A().battleBg('indoor');
-      fb.blit(bg.bg, 0, 0, { alpha: 0.35 });
-      const spr = A().kiguFront(this.form, this.k.alt);
-      const x = 88, y = 26;
-      if (this.sil > 0 && this.sil < 1) { fb.blit(spr, x, y); fb.blit(spr, x, y, { fill: '#ffffff', alpha: this.sil }); }
-      else if (this.sparkle > 0) { fb.blit(spr, x, y, { fill: '#ffffff', alpha: Math.max(0, 1 - this.sparkle / 50) * 0.9 + 0.1 }); }
-      else fb.blit(spr, x, y);
-      if (this.sparkle > 0) {
-        for (let i = 0; i < 12; i++) {
-          const a = i * 0.52 + this.sparkle * 0.08, r = this.sparkle * 1.2 % 70;
-          fb.fillRect(Math.round(120 + Math.cos(a) * r), Math.round(58 + Math.sin(a) * r * 0.8), 2, 2, '#fff8c0');
+      if (!this.glow) { // soft dithered glow behind her (built once)
+        const g = (this.glow = new NP.Bitmap(NP.W, NP.BOX_Y)), cx = NP.W / 2, cy = NP.BOX_Y / 2 + 10;
+        const c1 = NP.Color.parse('#3a3460'), c2 = NP.Color.parse('#28264a');
+        for (let y = 0; y < NP.BOX_Y; y++) for (let x = 0; x < NP.W; x++) {
+          const r = Math.hypot((x - cx) / 1.4, y - cy), b = BAYER[(y & 3) * 4 + (x & 3)];
+          if (r < 38 + b * 0.8) g.u32[y * NP.W + x] = c1; else if (r < 62 + b * 0.9) g.u32[y * NP.W + x] = c2;
         }
       }
+      fb.blit(this.glow, 0, 0);
+      const spr = A().kiguFront(this.form, this.k.alt, this.white > 0 ? 0 : (NP.Game.frame / 9) | 0);
+      const x = (NP.W - spr.w) >> 1, y = Math.max(4, NP.BOX_Y - 12 - spr.h);
+      const cx = NP.W / 2, cy = y + spr.h / 2;
+      // a pulsing ring of light while she changes
+      if (this.glowP > 0) {
+        const r = 30 + Math.sin(this.t / 8) * 4;
+        for (let i = 0; i < 24; i++) {
+          const a = i / 24 * Math.PI * 2 + this.t * 0.02;
+          fb.fillRect(Math.round(cx + Math.cos(a) * r * 1.3), Math.round(cy + Math.sin(a) * r), 2, 2, this.glowP > 0.5 ? '#c8c0ff' : '#8078c8');
+        }
+      }
+      fb.blit(spr, x, y);
+      if (this.white > 0) fb.blit(spr, x, y, { fill: '#ffffff', alpha: this.white });
+      for (const p of this.parts) fb.fillRect(Math.round(p.x), Math.round(p.y), 2, 2, p.life % 12 < 6 ? '#fff8c0' : '#c8e8ff');
+      if (this.burst > 0) {
+        for (let i = 0; i < 16; i++) {
+          const a = i * 0.39 + this.burst * 0.03, r = this.burst * 1.6;
+          fb.fillRect(Math.round(cx + Math.cos(a) * r * 1.2), Math.round(cy + Math.sin(a) * r * 0.9), 2, 2, '#fff8c0');
+        }
+      }
+      if (this.flash > 0) fb.blendRect(0, 0, NP.W, NP.H, '#ffffff', this.flash);
       this.drawUI(fb);
     }
   }

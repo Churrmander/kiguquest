@@ -9,7 +9,7 @@ const { NP, G } = t;
 const ow = NP.quickStart('Ren', 'f');
 const st = NP.state;
 Object.assign(st.flags, { intro_done: true, has_starter: true, tomo_left_lab: true, rival1_done: true, rival2_done: true, badge1: true, presser1_done: true });
-st.starter = 'konko'; st.rivalStarter = 'ottopi';
+st.starter = 'konko'; st.rivalStarter = 'sprubun';
 st.badges = [true];
 st.party.push(NP.Kigu.create('konko', 30, { ot: 'Ren' }), NP.Kigu.create('ottopi', 30, { ot: 'Ren' }));
 st.bag.bond_spool = 5; st.bag.snack_cake = 5;
@@ -23,11 +23,11 @@ const faceUp = () => { t.tap('up'); t.tick(6); };
 const t0 = Date.now();
 
 // ---- Thimble: the Presser guards stand down once, then the road to Route 2 is open
-assert.ok(t.travel(22, 4), 'walk up to the guards; at ' + t.pos());
+assert.ok(t.travel(17, 4), 'walk up to the guards; at ' + t.pos());
 faceUp(); t.tap('a');
 assert.ok(t.mash(() => t.idle() && st.flags.route2_open, 6000), 'guards stand down');
 assert.ok(t.ow.find('guard1').hidden && t.ow.find('guard2').hidden, 'guards are gone from the road');
-assert.ok(t.travel(22, 0, 200), 'walk the road north');
+assert.ok(t.travel(17, 0, 200), 'walk the road north');
 at('route2');
 
 // ---- Route 2: south bank, then the inspectors on the bridge
@@ -44,22 +44,22 @@ assert.ok(t.travel(14, 0, 1500), 'cross the woods; at ' + t.pos());
 at('spindle_shrine');
 assert.ok(!st.flags.shrine1_done);
 assert.equal(t.ow.map.def.stamps.find((s) => s.id === 'shrine').variant, 'pressed', 'the shrine looks pressed before the incident');
-assert.equal(t.ow.find('cocoona').look, 'cocoona_pressed');
+assert.equal(t.ow.find('vowspun').look, 'cocoona_pressed');
 
 // ---- the incident: Pin, Welt, then Pleat Crease; Mimi's Soft Rinse
 assert.ok(t.travel(9, 13, 100), 'walk up to the clearing; at ' + t.pos());
 t.go('up');
 assert.ok(t.mash(() => t.idle() && st.flags.shrine1_done, 60000), 'shrine incident resolves; flags ' + JSON.stringify(st.flags));
 assert.ok(st.flags.shrine_pin && st.flags.shrine_welt && st.flags.rinse_done);
-assert.equal(t.ow.find('cocoona').look, 'cocoona', 'the Soft Rinse worked');
+assert.equal(t.ow.find('vowspun').look, 'vowspun', 'the Soft Rinse worked');
 assert.ok(!t.ow.find('crease').visible, 'Crease has gone');
 assert.equal(t.ow.map.placements.find((p) => p.id === 'shrine').variant, 'default', 'the shrine looks like itself again');
-// the Cocoona now rests your Kigu
+// the Vowspun now rests your Kigu
 st.party[0].hp = 1;
-assert.ok(t.travel(9, 10), 'step up to the Cocoona; at ' + t.pos());
+assert.ok(t.travel(9, 10), 'step up to the Vowspun; at ' + t.pos());
 faceUp(); t.tap('a');
 assert.ok(t.mash(() => t.idle(), 5000));
-assert.equal(st.party[0].hp, NP.Kigu.maxHp(st.party[0]), 'the Cocoona healed the party');
+assert.equal(st.party[0].hp, NP.Kigu.maxHp(st.party[0]), 'the Vowspun healed the party');
 console.log('shrine done', Date.now() - t0, 'ms');
 
 // ---- Hemline
@@ -97,6 +97,6 @@ assert.ok(back.badges[0] && back.badges[1]);
 assert.ok(back.flags.route2_open && back.flags.shrine1_done && back.flags.route2_insp_done && back.flags.badge2);
 assert.equal(back.bag.everspool_silk, 1);
 // the way back: Thimble keeps its guards gone and the road to Route 2 stays open
-t.ow.loadMap('thimble', 22, 1, 'down'); t.tick(40);
+t.ow.loadMap('thimble', 17, 1, 'down'); t.tick(40);
 assert.ok(!t.ow.find('guard1').visible && !t.ow.find('guard2').visible, 'the bridge guards stay gone');
 console.log('chapter2 ok in', Date.now() - t0, 'ms; badges', st.badges, 'party', st.party.map((k) => k.species + k.level).join(' '), 'money', st.money);

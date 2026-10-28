@@ -25,8 +25,8 @@
     }
     get visible() {
       if (this.hidden) return false;
-      const h = this.def && this.def.hideIf;
-      return !(h && NP.state.flags[h]);
+      const h = this.def && this.def.hideIf, sh = this.def && this.def.showIf;   // showIf: only there once a story flag is set
+      return !(h && NP.state.flags[h]) && !(sh && !NP.state.flags[sh]);
     }
     get px() { return this.x * 16 + this.ox; }
     get py() { return this.y * 16 + this.oy; }
@@ -73,20 +73,27 @@
         return;
       }
       const spr = A().human(this.look);
-      const set = spr.frames[this.dir] || spr.frames.down;
-      const f = this.moving ? (this.parity ? 1 : 2) : 0;
+      const vd = NP.view3d ? NP.view3d.viewDir(this.dir) : this.dir;
+      const set = spr.frames[vd] || spr.frames.down;
+      // 5th-gen walk: the stride frame for the first half of each step, standing for the second half, so the legs visibly open
+      // and close (side views used to hold one stride the whole way, which read as sliding)
+      const f = this.moving && Math.abs(this.ox) + Math.abs(this.oy) > 8 ? (this.parity ? 1 : 2) : 0;
       const bmp = set[Math.min(f, set.length - 1)];
-      if (this.swim) { // paddling: a ripple ring instead of a shadow, and she sits a little lower in the water
-        const bob = (frame >> 4) & 1;
-        fb.blendRect(X + 1, Y + 13, 14, 3, '#7fc8ff', 0.55);
-        fb.blendRect(X + 3, Y + 12, 10, 1, '#ffffff', 0.35);
-        fb.blendRect(X + 3, Y + 16, 10, 1, '#2a6fb0', 0.45);
-        fb.blit(bmp, X, Y - 6 - bob);
+      // the sprite cell (32x32) is centred on the tile with the feet on the tile's bottom row: (X - 8, Y - 16)
+      const sx = X + ((16 - bmp.w) >> 1), sy = Y + 16 - bmp.h;
+      if (this.swim) { // paddling: a ripple ring instead of a shadow; she sits lower and the water hides her legs
+        const bob = (frame >> 4) & 1, wl = Y + 13, top = sy + 6 + bob;
+        fb.blendRect(X, Y + 12, 16, 4, '#7fc8ff', 0.55);
+        fb.blendRect(X + 2, Y + 16, 12, 1, '#2a6fb0', 0.45);
+        fb.blit(bmp, sx, top, { sh: Math.max(0, wl - top) });
+        fb.blendRect(X + 2, wl - 1, 12, 1, '#ffffff', 0.35);
         return;
       }
-      // soft shadow
-      fb.blendRect(X + 3, Y + 12, 10, 3, '#000000', 0.22);
-      fb.blit(bmp, X, Y - 8 - Math.round(this.hop));
+      // soft oval shadow under the feet
+      fb.blendRect(X + 4, Y + 13, 8, 1, '#000000', 0.2);
+      fb.blendRect(X + 2, Y + 14, 12, 1, '#000000', 0.22);
+      fb.blendRect(X + 4, Y + 15, 8, 1, '#000000', 0.2);
+      fb.blit(bmp, sx, sy - Math.round(this.hop));
     }
   }
 
@@ -119,6 +126,9 @@
     placeNpc(w, x, y, dir) { const a = this.who(w); a.x = x; a.y = y; a.ox = a.oy = 0; if (dir) a.dir = dir; }
     showNpc(id) { const a = this.who(id); if (a) a.hidden = false; }
     hideNpc(id) { const a = this.who(id); if (a) a.hidden = true; }
+    /** an NPC walks behind the player, one tile back, until unfollow (Tuck in the Spark Cellar). Lasts until the map changes. */
+    follow(w) { const a = this.who(w); if (!a) return; a.solid = false; a.hidden = false; this.ow.follower = a; }
+    unfollow() { const a = this.ow.follower; if (a) a.solid = true; this.ow.follower = null; }
     hideProp(id) { this.hideNpc(id); const a = this.who(id); if (a && a.def && a.def.hideIf) NP.state.flags[a.def.hideIf] = true; }
     music(id) { NP.snd.play(id); }
     *jingleWait(id) {
@@ -158,10 +168,12 @@
     }
     *heal(text) { NP.State.healAll(); NP.snd.sfx('save'); if (text) yield* this.say(text); this.setHealPoint(); }
     *shop(list) { const s = new NP.ShopScene(list); NP.Game.push(s); yield* this.ow.waitFor(() => s.finished); }
+    /** the Shibuyarn arcade: a cabinet ('cab_1'..), 'coins' or 'prizes' (src/game/arcade/core.js) */
+    *arcade(id, o) { return yield* NP.arcade.run(this, id, o); }
     *pc() { const s = new NP.BoxScene(); NP.Game.push(s); yield* this.ow.waitFor(() => s.finished); }
     *warp(map, x, y, dir) { yield* this.ow.teleport(map, x, y, dir); }
     *trainerBattle(def) { return yield* this.ow.trainerBattle(def); }
-    *wildBattle(sp, lv) { return yield* this.ow.wildBattle(sp, lv); }
+    *wildBattle(sp, lv, o) { return yield* this.ow.wildBattle(sp, lv, o); }
     /** Field move Paddle: offer to step off the shore onto calm water (needs Disc: Paddle). */
     *paddle(dir) {
       if (yield* this.ask('The water looks calm.\\nPaddle across it?')) { NP.snd.sfx('splash'); yield* this.walk('player', [dir, 1]); }
@@ -195,6 +207,119 @@
     }
   };
 
+  /** shortest open path (map directions) from actor a to any tile in `goals` ('x,y' strings), round walls, ledges and people */
+  function pathTo(ow, a, goals) {
+    const m = ow.map, D = [['up', 0, -1], ['down', 0, 1], ['left', -1, 0], ['right', 1, 0]];
+    const start = a.x + ',' + a.y;
+    if (goals.has(start)) return [];
+    const prev = new Map([[start, null]]), q = [[a.x, a.y]];
+    while (q.length && prev.size < 6000) {
+      const [x, y] = q.shift();
+      for (const [d, dx, dy] of D) {
+        const nx = x + dx, ny = y + dy, k = nx + ',' + ny;
+        if (prev.has(k) || !m.inBounds(nx, ny) || m.solid(nx, ny) || m.ledge(nx, ny) || ow.actorAt(nx, ny, a)) continue;
+        prev.set(k, [x + ',' + y, d]);
+        if (goals.has(k)) { const out = []; for (let c = k; prev.get(c); c = prev.get(c)[0]) out.unshift(prev.get(c)[1]); return out; }
+        q.push([nx, ny]);
+      }
+    }
+    return null;
+  }
+  const FACE = { up: 'down', down: 'up', left: 'right', right: 'left' };
+  /** walk w to (x, y) by the shortest open path. False if there is no way. */
+  Ctx.prototype.walkTo = function* (w, x, y) {
+    const a = this.who(w), path = pathTo(this.ow, a, new Set([x + ',' + y]));
+    if (!path) return false;
+    yield* this.walk(a, path);
+    return true;
+  };
+  /** w comes over to stand next to the player (or `to`), and the two turn to face each other, so a scene's speaker is always
+   *  on screen beside you (owner's note: "Mimi is talking to me, but is nowhere to be found"). */
+  Ctx.prototype.approach = function* (w, to) {
+    const a = this.who(w), t = this.who(to || 'player');
+    const goals = new Set([[0, -1], [0, 1], [-1, 0], [1, 0]].map(([dx, dy]) => (t.x + dx) + ',' + (t.y + dy)));
+    const path = pathTo(this.ow, a, goals);
+    if (path && path.length) yield* this.walk(a, path);
+    const dx = t.x - a.x, dy = t.y - a.y;
+    const d = Math.abs(dx) >= Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
+    a.dir = d; t.dir = FACE[d];
+    yield* this.ow.wait(4);
+  };
+  /** a hidden NPC walks in from `o.dist` tiles away (first open spot in the `o.from` directions) and comes over to the player */
+  Ctx.prototype.enter = function* (w, o) {
+    o = o || {};
+    const a = this.who(w), p = this.ow.player, m = this.ow.map, dist = o.dist || 5;
+    const V = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
+    let spot = null;
+    for (const d of o.from || ['right', 'left', 'down', 'up']) {
+      for (let r = dist; r >= 2 && !spot; r--) {
+        const x = p.x + V[d][0] * r, y = p.y + V[d][1] * r;
+        if (!m.inBounds(x, y) || m.solid(x, y) || m.ledge(x, y) || this.ow.actorAt(x, y, a)) continue;
+        a.x = x; a.y = y;
+        if (pathTo(this.ow, a, new Set([(p.x - V[d][0]) + ',' + (p.y - V[d][1]), (p.x + 1) + ',' + p.y, (p.x - 1) + ',' + p.y, p.x + ',' + (p.y + 1), p.x + ',' + (p.y - 1)]))) spot = [x, y];
+      }
+      if (spot) break;
+    }
+    if (!spot) { a.x = p.x + 1; a.y = p.y; }
+    a.ox = a.oy = 0; a.hidden = false;
+    yield* this.approach(a);
+  };
+
+  /** w walks off `dist` tiles from the player (the nearest open spot that far) and is hidden: the end of a walk-on scene */
+  Ctx.prototype.leave = function* (w, dist) {
+    const a = this.who(w), p = this.ow.player, m = this.ow.map, far = dist || 5;
+    const goals = new Set();
+    for (let y = 0; y < m.h; y++) for (let x = 0; x < m.w; x++) if (Math.abs(x - p.x) + Math.abs(y - p.y) === far && !m.solid(x, y)) goals.add(x + ',' + y);
+    const path = pathTo(this.ow, a, goals);
+    if (path) yield* this.walk(a, path);
+    a.hidden = true;
+  };
+
+  /** A pushed ore cart rolls along the rails until something stops it: the end of the line, a person, another cart, a rock.
+   *  At points (a rail tile joined three or four ways) a cart coming from the trunk takes the branch its lever is set to; from a
+   *  branch it always runs on to the trunk. Points: def.railPoints = [{x, y, trunk, a, b, flag}] (flag set = branch b).
+   *  def.onCartStop(c, cart, hit) runs when it stops; `hit` is the solid tile it ran into ({x, y}) or null. */
+  Ctx.prototype.rollCart = function* (p, d) {
+    const ow = this.ow, m = ow.map, V = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
+    let dir = d, hit = null, n = 0;
+    NP.snd.sfx('ledge');
+    while (n++ < 200) {
+      const nx = p.x + V[dir][0], ny = p.y + V[dir][1];
+      if (!m.isRail(nx, ny)) break;                                            // the end of the line
+      if (m.solid(nx, ny) || ow.actorAt(nx, ny)) { hit = { x: nx, y: ny }; break; }
+      m.moveStamp(p, nx, ny);
+      if (n % 2) NP.snd.sfx('step');
+      yield* this.wait(3);
+      const exits = m.railDirs(nx, ny).filter((e) => e !== OPP[dir]);
+      if (!exits.length) break;
+      const pt = (m.def.railPoints || []).find((q) => q.x === nx && q.y === ny);
+      if (pt && OPP[dir] === pt.trunk) dir = NP.state.flags[pt.flag] ? pt.b : pt.a;   // facing the points: the lever decides
+      else if (pt) dir = pt.trunk;                                                    // trailing through them
+      else if (!exits.includes(dir)) dir = exits[0];                                  // round a bend
+    }
+    NP.snd.sfx(hit ? 'bump' : 'door');
+    if (p.homeX === undefined) { p.homeX = p.x; p.homeY = p.y; }
+    NP.state.flags['shove:' + m.id + ':' + p.homeX + ',' + p.homeY] = p.x + ',' + p.y;
+    if (m.def.onCartStop) yield* m.def.onCartStop(this, p, hit);
+  };
+
+  /** A remembered scene (def.memory): warm sepia with a soft vignette, so it reads as the past. The message box is drawn after. */
+  function memoryTone(fb, vigH) {
+    const d = fb.data, W = fb.w, H = fb.h, cx = W / 2, cy = vigH / 2, rr = Math.hypot(cx, cy);
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const i = (y * W + x) * 4;
+      const l = d[i] * 0.3 + d[i + 1] * 0.59 + d[i + 2] * 0.11;
+      // the text box keeps half its own colour (cream, not butter-yellow) and no vignette; the scene keeps a quarter, so leaves
+      // stay a little green against the wood
+      const box = y >= vigH, keep = box ? 0.5 : 0.15;
+      // warm light from the middle of the scene, falling off to dark corners
+      const v = box ? 1 : 1.14 - 0.86 * Math.pow(Math.min(1, Math.hypot(x - cx, y - cy) / rr), 1.3);
+      const r = Math.min(255, l * 0.95 + 44), g = Math.min(255, l * 0.82 + 26), bl = Math.min(255, l * 0.6 + 10);
+      d[i] = Math.min(255, (r * (1 - keep) + d[i] * keep) * v); d[i + 1] = Math.min(255, (g * (1 - keep) + d[i + 1] * keep) * v);
+      d[i + 2] = Math.min(255, (bl * (1 - keep) + d[i + 2] * keep) * v);
+    }
+  }
+
   // --------------------------------------------------------------------------------------- the scene
   class Overworld extends Scene {
     constructor() {
@@ -226,8 +351,10 @@
       o = o || {};
       this.map = this.tileMap(id);
       this.map.syncSnips(NP.state.flags);
+      this.map.syncShoves(NP.state.flags);
       (NP.state.visited = NP.state.visited || {})[id] = 1;
       const def = this.map.def;
+      if (NP.view3d && NP.view3d.enter) NP.view3d.enter(def);   // 3D or flat, and the camera preset, for this map
       this.actors = [];
       for (const n of def.npcs || []) this.actors.push(new Actor({ id: n.id, kind: 'npc', x: n.x, y: n.y, dir: n.dir || 'down', look: n.look, def: n, hidden: !!n.hidden }));
       for (const p of def.props || []) this.actors.push(new Actor({ id: p.id, kind: 'prop', x: p.x, y: p.y, def: p }));
@@ -240,6 +367,9 @@
       else if (want && !NP.snd.song) NP.snd.play(want);
       this.popup = def.indoor ? 0 : 110;
       this.stepsSinceMap = 0;
+      this.shoveHint = false;
+      this.weather = NP.Weather.now = NP.Weather ? NP.Weather.roll(def) : null;
+      NP.Weather.dark = !!def.dark;   // caves count as night for evolutions   // rolled each time you enter (src/game/weather.js)
       if (def.onEnter && !o.noEnter) this.runScript(def.onEnter);
     }
 
@@ -259,6 +389,7 @@
       const self = this;
       const gen = (function* () {
         try { yield* f(self.ctx, npc); } catch (e) { if (e !== ABORT) throw e; }
+        if (self.restAfterScene) { self.restAfterScene = false; yield* self.toTeaHouse(false); }
       })();
       return this.spawn(gen, 'script');
     }
@@ -329,7 +460,12 @@
       yield* this.waitFor(() => scene.finished);
       const res = scene.result || { winner: 1 };
       yield* this.wait(2);
-      if (res.winner === 1) {
+      if (res.winner === 1 && cfg.canLose) {
+        // a story fight that is allowed to go either way (rivals, Society scenes): no blackout and no lost money. The scene carries
+        // on, and when it ends you're taken to the Tea House to rest (runScript). Healed now too, so nothing can strand a fainted team.
+        NP.State.healAll();
+        this.restAfterScene = true;
+      } else if (res.winner === 1) {
         NP.snd.stop(0);
         yield* this.blackout(cfg);
         throw ABORT;
@@ -361,8 +497,19 @@
 
     *blackout(cfg) {
       const st = NP.state;
+      // the battle scene leaves the screen faded to black: clear the fade and draw a plain black backdrop, or the message is hidden under it
+      this.blackBg = true;
+      NP.Game.fadeTo(0, 0);
       yield* this.say('{player} is out of usable Kigu!\\p{player} blacked out...');
       st.money = Math.floor(st.money / 2);
+      yield* this.toTeaHouse(true);
+    }
+
+    /** Take the player (and her tired Kigu) to the nearest Tea House and rest them: after a blackout, and after a story fight she
+     *  lost once its scene has played out (owner's note: losing to the rival used to leave you standing there with a fainted team). */
+    *toTeaHouse(blackedOut) {
+      const st = NP.state;
+      if (!blackedOut) { this.msg.close(); NP.Game.fadeTo(1, 14); yield* this.wait(16); }
       NP.State.healAll();
       // the nearest unlocked Tea House; else the last place she rested (her bedroom at the start); else anywhere that exists,
       // so a bad or missing heal point can never leave the game stuck
@@ -371,6 +518,8 @@
       const spawns = NP.maps[id].spawns || {};
       const sp = spawns[tea ? 'door' : (hp && hp.spawn)] || spawns.door || { x: 1, y: 1, dir: 'down' };
       this.msg.close();
+      if (blackedOut) NP.Game.fadeTo(1, 0);
+      this.blackBg = false;
       this.loadMap(id, sp.x, sp.y, sp.dir, { noEnter: true });
       NP.snd.play(this.musicId, { restart: true });
       NP.Game.fadeTo(0, 14);
@@ -378,28 +527,51 @@
       yield* this.say(tea ? 'You hurried to the nearest Tea House.\\pYour Kigu were tucked in and had a good nap.' : 'You hurried back to the last place you rested.\\pYour Kigu were tucked in and had a good nap.');
     }
 
-    *wildBattle(sp, lv) {
-      const foe = NP.Kigu.create(sp, lv);
-      const st = NP.state;
-      yield* this.transitionToBattle('battle_wild');
-      const res = yield* this.runBattle({ wild: true, foe: [foe], bg: this.map.def.battleBg || 'grass', music: 'battle_wild' });
+    *wildBattle(sp, lv, o) {
+      o = o || {};
+      const foe = NP.Kigu.create(sp, lv, o.kigu);   // o.kigu: Kigu.create options (the gold Ryukoi's colourway and IVs)
+      const music = o.music || 'battle_wild';
+      yield* this.transitionToBattle(music);
+      // noCatch: true, or { first, again } lines for a Kigu who won't take a spool yet; canLose: no blackout (the scene carries on)
+      const res = yield* this.runBattle({ wild: true, foe: [foe], bg: o.bg || this.battleBg(), music, mood: this.weather, noCatch: o.noCatch || false, canLose: !!o.canLose });
       return res;
     }
 
     *trainerBattle(def) {
-      const party = def.team.map((t) => NP.Kigu.create(t.sp, t.lv, { ot: def.name }));
+      const party = def.team.map((t) => NP.Kigu.create(t.sp, t.lv, { ot: def.name, moves: t.moves, item: t.item, nature: t.nature }));   // L.team's moves/item/nature options
       yield* this.transitionToBattle(def.music || (def.cls === 'Rival' ? 'battle_rival' : 'battle_tailor'));
       let res;
       try {
-        res = yield* this.runBattle({ wild: false, foe: party, trainer: { name: NP.fmt(def.name), cls: def.cls, look: def.look || 'tailor_f', ai: def.ai === undefined ? 1 : def.ai, reward: def.reward || 5, master: !!def.master, lose: def.lose }, bg: this.map.def.battleBg || 'grass', music: def.music });
+        res = yield* this.runBattle({ wild: false, foe: party, trainer: { name: NP.fmt(def.name), cls: def.cls, look: def.look || 'tailor_f', ai: def.ai === undefined ? 1 : def.ai, reward: def.reward || 5, master: !!def.master, lose: def.lose }, bg: this.battleBg(), music: def.music, canLose: !!def.canLose, mood: this.weather });
       } catch (e) { throw e; }
       if (res.winner === 0) {
-        const money = (def.reward || 5) * Math.max.apply(null, def.team.map((t) => t.lv));
+        let money = (def.reward || 5) * Math.max.apply(null, def.team.map((t) => t.lv));
+        if (NP.arcade && NP.arcade.moneyBonus) money = NP.arcade.moneyBonus(money);
         NP.state.money += money;
         yield* this.say('{player} got $' + money + ' for winning!');
         return true;
       }
       return false;
+    }
+
+    /** Level-up evolutions owed from the last battle. Runs only when nothing else is going on (no script, no message), so a
+     *  trainer's parting words and any cutscene after the fight finish first. A Kigu stopped with B waits for her next level. */
+    *evolutions() {
+      const due = NP.state.party.filter((k) => k.hp > 0 && k.evoStop !== k.level && NP.Kigu.evolutionFor(k, { trigger: 'level' }));
+      if (!due.length) return;
+      yield* this.wait(10);
+      NP.snd.stop(300);
+      yield* this.fadeOut(16);
+      for (const k of due) {
+        const ev = NP.Kigu.evolutionFor(k, { trigger: 'level' });
+        if (!ev) continue;
+        const s = new NP.EvolutionScene(k, ev.to);
+        NP.Game.push(s);
+        yield* this.waitFor(() => s.finished);
+      }
+      NP.Game.fadeTo(1, 0);
+      NP.snd.play(this.musicId, { restart: true, fadeMs: 400 });
+      yield* this.fadeIn(16);
     }
 
     // ---- collision / queries
@@ -427,6 +599,7 @@
     // ---- player control
     update() {
       NP.state.frames++;
+      if (NP.Fishing) NP.Fishing.tick(this);   // the contest clock at Hemline Lake
       this.stepTasks();
       if (this.popup > 0) this.popup--;
       const p = this.player;
@@ -435,15 +608,36 @@
       const finished = p.update();
       if (finished) this.onPlayerStep();
       if (this.busy || this.menus.length) return;
+      if (NP.state.evoPending) { NP.state.evoPending = false; this.spawn(this.evolutions(), 'evolve'); return; }
       this.npcAI();
       if (p.moving) return;
       if (Input.pressed.start) { this.runMenu(); return; }
       if (Input.pressed.a) { this.interact(); return; }
-      const d = Input.dir();
-      if (!d) { this.turnT = 0; return; }
+      if (Input.pressed.select && this.useRegistered()) return;   // Select: the key item registered in the Bag (a rod; bikes later)
+      const v3 = NP.view3d;
+      if (v3 && v3.on) v3.q = v3.quarterFor(this.map, p.x, p.y);
+      // a held key keeps its map direction while the camera swings (a camera zone turning mid-walk must not bend your path)
+      const sd = Input.dir();
+      if (sd !== this.heldScreen) { this.heldScreen = sd; this.heldMap = v3 ? v3.screenToMap(sd) : sd; }
+      const d = this.heldMap;
+      if (!d) { this.turnT = 0; this.shoveT = 0; return; }
       if (d !== p.dir && this.turnT === 0) { p.dir = d; this.turnT = 6; return; }
       if (this.turnT > 0) { this.turnT--; if (this.turnT > 0) return; }
       this.tryMove(d);
+    }
+
+    /** Select uses the key item registered to it in the Bag (NP.state.registered) */
+    useRegistered() {
+      const id = NP.state.registered, d = id && NP.data.items[id];
+      if (!d || !NP.State.count(id)) {
+        if (Object.keys(NP.state.bag).some((k) => NP.data.items[k] && NP.data.items[k].register)) {
+          this.runScript(function* (c) { yield* c.sayT('field.select.none', 'You can register a key item to Select. Choose it in the Bag and pick "Register".'); });
+          return true;
+        }
+        return false;
+      }
+      if (d.use && d.use.rod) { const rod = d.use.rod; this.runScript(function* (c) { yield* NP.Fishing.cast(c, rod); }); return true; }
+      return false;
     }
 
     runMenu() { NP.snd.sfx('menu_open'); this.spawn(this.startMenu(), 'menu'); }
@@ -455,8 +649,42 @@
       const run = NP.Game.opts.run === 'hold' ? Input.held.b : true;
       const led = this.map.ledge(nx, ny);
       if (led) {
-        if (led === d && !this.map.solid(nx + dx, ny + dy) && !this.actorAt(nx + dx, ny + dy)) { NP.snd.sfx('ledge'); p.hopStep(d, 2); return; }
+        if (led === d && !this.map.solid(nx + dx, ny + dy) && !this.actorAt(nx + dx, ny + dy)) { NP.snd.sfx('ledge'); p.hopStep(d, 2); this.followStep(nx, ny, 1); return; }
         this.bump();
+        return;
+      }
+      // an ore cart on the rails: lean on it and it rolls off along the track (no Disc needed: it's on wheels)
+      const cart = this.map.cartAt(nx, ny);
+      if (cart) {
+        const m = this.map, fx = nx + dx, fy = ny + dy;
+        const free = m.isRail(fx, fy) && m.railDirs(nx, ny).includes(d) && !m.solid(fx, fy) && !this.actorAt(fx, fy);
+        if (free && (this.shoveT = (this.shoveT || 0) + 1) > 8) {
+          this.shoveT = 0;
+          this.runScript(function* (c) { yield* c.rollCart(cart, d); });
+          return;
+        }
+        if (!free) this.bump();
+        return;
+      }
+      // field move Shove: walking into a loose rock pushes it one tile, if the far side is clear (needs Disc: Shove)
+      const rock = this.map.shoveAt(nx, ny);
+      if (rock && NP.state.bag.disc_shove) {
+        const fx = nx + dx, fy = ny + dy, m = this.map;
+        const clear = m.inBounds(fx, fy) && !m.solid(fx, fy) && !m.ledge(fx, fy) && !m.warpAt(fx, fy) && !this.actorAt(fx, fy) && !m.tdef(fx, fy).gust;
+        if (clear && (this.shoveT = (this.shoveT || 0) + 1) > 8) {   // lean on it for a moment first, as in the old games
+          this.shoveT = 0;
+          NP.snd.sfx('ledge');
+          m.moveStamp(rock, fx, fy);
+          NP.state.flags['shove:' + m.id + ':' + rock.homeX + ',' + rock.homeY] = fx + ',' + fy;
+          if (m.def.onShove) this.runScript(function* (c) { yield* m.def.onShove(c, rock); });
+          return;
+        }
+        if (!clear) this.bump();
+        return;
+      }
+      if (rock) {   // no Disc yet: a friendly hint, once per visit
+        this.bump();
+        if (!this.shoveHint) { this.shoveHint = true; this.runScript(function* (c) { yield* c.sayT('field.shove.no', 'It\'s a big loose rock. It wobbles a little when you lean on it.\\pA strong Kigu could probably Shove it out of the way.'); }); }
         return;
       }
       if (!this.canEnter(p, nx, ny, d)) {
@@ -464,7 +692,18 @@
         this.bump();
         return;
       }
+      const px = p.x, py = p.y;
       p.step(d, run && !this.paddling() ? 2 : 1, false);
+      this.followStep(px, py, p.spd);
+    }
+
+    /** the follower steps onto the tile the player just left (or pops there if it fell behind) */
+    followStep(tx, ty, spd) {
+      const f = this.follower;
+      if (!f || !f.visible || this.actors.indexOf(f) < 0) { this.follower = null; return; }
+      const dx = tx - f.x, dy = ty - f.y;
+      if (Math.abs(dx) + Math.abs(dy) === 1) f.step(dx > 0 ? 'right' : dx < 0 ? 'left' : dy > 0 ? 'down' : 'up', spd, true);
+      else if (dx || dy) { f.x = tx; f.y = ty; f.ox = f.oy = 0; }
     }
 
     bump() {
@@ -489,6 +728,18 @@
           return;
         }
       }
+      // wind: a gust tile blows you one tile on in its direction (chains across a run of gusts, like ice); the trainer check
+      // and wild grass wait until you land
+      const gust = m.tdef(p.x, p.y).gust;
+      if (gust) {
+        const [gx, gy] = DIRV[gust];
+        if (this.canEnter(p, p.x + gx, p.y + gy, gust) && !m.ledge(p.x + gx, p.y + gy)) {
+          if (!this.gustSfx) { NP.snd.sfx('leaf'); this.gustSfx = 20; }
+          const face = p.dir;
+          p.step(gust, 1.5, false); p.dir = face;
+          return;
+        }
+      }
       // trainers who can see the player
       for (const a of this.actors) {
         const tr = a.def && a.def.trainer;
@@ -496,7 +747,10 @@
         if (this.sees(a, tr.sight || 3)) { this.spawn(this.trainerEncounter(a, true), 'trainer'); return; }
       }
       // wild encounters
-      const enc = m.def.encounters && m.def.encounters[kind];
+      let enc = m.def.encounters && m.def.encounters[kind];
+      if (enc && m.def.encFilter) enc = m.def.encFilter(enc);   // e.g. Tumbleyarn only while the dust blows
+      if (enc && NP.Clock) enc = NP.Clock.filter(enc);   // entries with time: 'night' etc.
+      if (enc && !enc.length) enc = null;
       if (enc && st.repel <= 0 && this.stepsSinceMap > 2 && st.steps - this.lastBattleStep > 3 && NP.rng.chance(0.11)) {
         const pick = NP.rng.weighted(enc);
         const lv = NP.rng.range(pick.min, pick.max);
@@ -550,6 +804,7 @@
         if (won) {
           NP.state.flags[key] = true;
           yield* this.ctx.sayT(tk + '.win', tr.win);
+          if (tr.then) yield* this.resolveScript(tr.then)(this.ctx, a);   // a trainer with more to say once beaten (Gus gives you a rod)
         }
       } catch (e) { if (e !== ABORT) throw e; }
     }
@@ -573,7 +828,7 @@
           a.dir = OPP[p.dir];
           const tr = d.trainer;
           if (tr) {
-            if (NP.state.flags['tr_' + m.id + '_' + a.id]) this.runScript(function* (c) { yield* c.sayT(m.id + '.' + a.id + '.after', tr.after); });
+            if (NP.state.flags['tr_' + m.id + '_' + a.id]) this.runScript(tr.then || function* (c) { yield* c.sayT(m.id + '.' + a.id + '.after', tr.after); }, a);
             else this.spawn(this.trainerEncounter(a, false), 'trainer');
             return;
           }
@@ -616,10 +871,21 @@
         a.step(dir, 1, true);
       }
       if (this.bumpT > 0) this.bumpT--;
+      if (this.gustSfx > 0) this.gustSfx--;
+    }
+
+    // grass battles outdoors at night get the night background
+    battleBg() {
+      const def = this.map.def, bg = def.battleBg || 'grass';
+      return bg === 'grass' && NP.Clock && NP.Clock.outdoors(def) && NP.Clock.phase() === 'night' ? 'night' : bg;
     }
 
     // ---- start menu
     *startMenu() {
+      this.showClock = true;
+      try { yield* this.startMenuLoop(); } finally { this.showClock = false; }
+    }
+    *startMenuLoop() {
       const st = NP.state;
       let cur = 0;
       for (;;) {
@@ -627,7 +893,7 @@
         if (NP.State.flag('has_starter') || st.party.length) items.push({ label: 'Kigu', k: 'party' });
         items.push({ label: 'Sketchbook', k: 'dex' }, { label: 'Bag', k: 'bag' }, { label: st.name, k: 'card' }, { label: 'Save', k: 'save' }, { label: 'Options', k: 'opts' }, { label: 'Close', k: 'close' });
         const m = new ui.Menu({ items, theme: 'light', x: 0, y: 4, visible: 8, cursor: cur });
-        m.x = 240 - m.w - 4;
+        m.x = NP.W - m.w - 4;
         const r = yield* this.menu(m);
         if (r.type === 'cancel' || r.item.k === 'close') break;
         cur = r.index;
@@ -637,6 +903,7 @@
         } else if (k === 'bag') {
           const s = new NP.BagScene({ mode: 'field' }); NP.Game.push(s); yield* this.waitFor(() => s.finished);
           if (s.result && s.result.escape) { yield* this.useEscape(); break; }
+          if (s.result && s.result.rod) { const rod = s.result.rod; this.runScript(function* (c) { yield* NP.Fishing.cast(c, rod); }); break; }
         } else if (k === 'dex') {
           const s = new NP.DexScene(); NP.Game.push(s); yield* this.waitFor(() => s.finished);
         } else if (k === 'card') {
@@ -668,29 +935,39 @@
     // ---- drawing
     camera() {
       const p = this.player, m = this.map;
-      let cx = Math.round(p.px + 8 - 120), cy = Math.round(p.py + 8 - 80);
+      let cx = Math.round(p.px + 8 - NP.W / 2), cy = Math.round(p.py + 8 - NP.H / 2);
+      if (NP.view3d && NP.view3d.on) return [cx, cy]; // the 3D view pivots on the player and draws a border margin round the map
       const mw = m.w * 16, mh = m.h * 16;
-      cx = mw <= 240 ? -Math.floor((240 - mw) / 2) : Math.max(0, Math.min(mw - 240, cx));
-      cy = mh <= 160 ? -Math.floor((160 - mh) / 2) : Math.max(0, Math.min(mh - 160, cy));
+      cx = mw <= NP.W ? -Math.floor((NP.W - mw) / 2) : Math.max(0, Math.min(mw - NP.W, cx));
+      cy = mh <= NP.H ? -Math.floor((NP.H - mh) / 2) : Math.max(0, Math.min(mh - NP.H, cy));
       return [cx, cy];
     }
 
     draw(fb, frame) {
+      if (this.blackBg) { fb.clear('#000000'); this.drawUI(fb, frame); return; }
       const [cx, cy] = this.camera();
+      if (NP.view3d && NP.view3d.on) NP.view3d.aim(this.map, this.player.x, this.player.y);
       fb.clear('#000000');
       const list = [];
       const fr = NP.Game.frame;
       for (const a of this.actors) {
         if (!a.visible) continue;
-        list.push({ sortY: a.py + 16 + (a.kind === 'prop' ? 0 : 0), draw: (f, X, Y) => a.draw(f, X, Y, fr) });
+        list.push({ sortY: a.py + 16, x: a.px + 8, draw: (f, X, Y) => a.draw(f, X, Y, fr) });
       }
       const p = this.player;
       p.swim = this.paddling();
-      list.push({ sortY: p.py + 16.5, draw: (f, X, Y) => p.draw(f, X, Y, fr) });
+      if (!this.map.def.hidePlayer) list.push({ sortY: p.py + 16.5, x: p.px + 8, hero: true, draw: (f, X, Y) => p.draw(f, X, Y, fr) });
       this.map.draw(fb, cx, cy, fr, list);
+      if (NP.Fishing && (this.bobber || this.contest)) NP.Fishing.draw(this, fb, cx, cy);
+      if (NP.Clock && !this.map.def.memory) NP.Clock.draw(fb, this.map.def, cx, cy);   // day-night tint + lamp glow (src/game/clock.js)
+      if (this.weather) NP.Weather.draw(fb, this.weather, fr);
       // emotes
       for (const a of this.actors.concat([p])) {
-        if (a.emoteT > 0 && a.visible) fb.blit(A().emote(a.emote), Math.round(a.px - cx), Math.round(a.py - cy) - 22);
+        if (a.emoteT > 0 && a.visible) {
+          const q = NP.view3d && NP.view3d.on ? NP.view3d.project(a.px + 8, a.py + 16) : null;
+          if (NP.view3d && NP.view3d.on) { if (q) fb.blit(A().emote(a.emote), Math.round(q.x) - 8, Math.round(q.y - 36 * q.scale) - 8); }
+          else fb.blit(A().emote(a.emote), Math.round(a.px - cx), Math.round(a.py - cy) - 28);
+        }
       }
       if (this.popup > 0 && this.map.def.name) {
         const slide = Math.min(1, this.popup / 10, (110 - this.popup) / 10 + 0.0);
@@ -701,6 +978,12 @@
         ui.text(fb, name, 12, y + 5, 'light');
       }
       this.drawUI(fb, frame);
+      if (this.showClock && NP.Clock) {   // the time, top left, while the start menu is open
+        const t = NP.Clock.LABEL[NP.Clock.phase()] + '  ' + NP.Clock.text(), w = NP.Font.width(t) + 16;
+        ui.frame(fb, 4, 4, w, 18, 'light');
+        ui.text(fb, t, 12, 9, 'light');
+      }
+      if (this.map.def.memory) memoryTone(fb, this.msg.active ? NP.BOX_Y : fb.h);   // emotes and the text box go sepia too
     }
   }
 
