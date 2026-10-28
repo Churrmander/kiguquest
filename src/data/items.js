@@ -27,7 +27,7 @@
   I('numb_away', 'Numb Away', 'items', 200, 'Cures paralysis.', { cure: ['par'] }, BF);
   I('all_cure', 'All-Cure', 'items', 250, 'Cures any status.', { cure: 'all' }, BF);
   I('honey_jar', 'Hemline Honey', 'items', 250, 'Bryn\'s bees made it. Restores 50 HP.', { hp: 50 }, BF);
-  I('sugar_cube', 'Sugar Cube', 'items', 0, 'Restores 10 PP to one move.', { pp: 10 }, BF);
+  I('sugar_cube', 'Sugar Cube', 'items', 500, 'Restores 10 PP to one move.', { pp: 10 }, BF);
   I('wish_candy', 'Wish Candy', 'items', 0, 'Raises a Kigu one level.', { level: 1 }, F);
   I('scent_spray', 'Scent Spray', 'items', 350, 'Keeps wild Kigu away for 100 steps.', { repel: 100 }, F);
   I('thread_ball', 'Thread Ball', 'items', 550, 'Escape from a cave or building.', { escape: true }, F);
