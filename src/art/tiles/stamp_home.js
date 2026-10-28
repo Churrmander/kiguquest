@@ -42,55 +42,63 @@
   // ============================================================================================ kitchen
   // A base cabinet with a pale stone worktop; it tiles into a run like the shop counters (no side outlines).
   K.stamp('kitchen_counter', {
-    w: 1, h: 1, variants: ['plain', 'cakes', 'crumbs'],
+    w: 1, h: 1,
+    // content x ends: '' = a middle piece (no side outline, tiles seamlessly), _l / _r = the run's west / east end, _lr = a single counter
+    variants: ['plain', 'cakes', 'crumbs'].flatMap((c) => [c, c + '_l', c + '_r', c + '_lr']),
     paint: (v) => {
       const b = K.B(16, 16);
-      // tiled backsplash along the wall, then its contact shadow on the worktop
+      const [what, ends] = v.split('_');
+      // tiled backsplash along the wall
       b.fillRect(0, 0, 16, 2, P.c0); for (const x of [3, 7, 11, 15]) b.vline(x, 0, 2, P.c2); b.hline(0, 1, 16, P.c2);
-      b.fillRect(0, 2, 16, 6, P.c1); b.hline(0, 2, 16, P.c2);                                       // stone worktop
+      b.hline(0, 2, 16, P.o6);                                                                      // the slab's back edge, inked
+      b.fillRect(0, 3, 16, 5, P.c1); b.hline(0, 3, 16, P.c2);                                       // stone worktop, its back in shade
       b.set(4, 5, P.c2); b.set(12, 4, P.c2);
-      b.hline(0, 8, 16, P.c0);                                                                      // the lit front lip of the slab
-      b.hline(0, 9, 16, P.o6);                                                                      // its shadow on the cabinet
-      b.fillRect(0, 10, 16, 5, P.o3); b.hline(0, 10, 16, P.o4);                                    // cabinet
-      b.strokeRect(2, 11, 12, 3, P.o4); b.fillRect(7, 12, 2, 1, P.gd2);                           // door + brass pull
+      b.hline(0, 7, 16, P.c0);                                                                      // the lit front edge of the slab
+      b.hline(0, 8, 16, P.c2);                                                                      // the slab's front face
+      b.hline(0, 9, 16, P.o6);                                                                      // dark lip where it meets the cabinet
+      // cabinet: lit left column, shaded right column and bottom row, a recessed door with a brass pull
+      b.fillRect(0, 10, 16, 5, P.o3); b.vline(0, 10, 5, P.o2); b.vline(15, 10, 5, P.o4); b.hline(0, 14, 16, P.o4); b.hline(0, 10, 16, P.o4);
+      b.strokeRect(2, 11, 12, 3, P.o4); b.hline(3, 11, 10, P.o2); b.fillRect(7, 12, 2, 1, P.gd2);
       b.hline(0, 15, 16, P.o6);
-      if (v === 'plain') {
-        // a red kettle with a dark outline, its spout to the right and a soft shadow on the stone
-        b.hline(4, 7, 8, P.c2);
+      if (ends && ends.includes('l')) b.vline(0, 2, 14, P.o6);
+      if (ends && ends.includes('r')) b.vline(15, 2, 14, P.o6);
+      if (what === 'plain') {
+        // a red kettle with a dark outline, its spout to the right, a white glint and a contact shadow on the stone
+        b.hline(4, 7, 8, P.c3);
         K.stick(b, 3, 0, [
           '..kkk.....',
           '.k...k....',
-          '.kllllk...',
-          'klwrrrdk.k',
+          '.kwlllk...',
+          'kwlrrrdk.k',
           'klrrrrdkk.',
           'krrrrrrdk.',
           '.kkkkkkk..',
         ], { k: P.red4, l: P.red1, w: P.white, r: P.red2, d: P.red3 });
-      } else if (v === 'cakes') {
+      } else if (what === 'cakes') {
         // a glass cake dome on a stand: pale glass, a white glint top-left, two iced cakes inside
-        b.hline(2, 7, 12, P.n3); b.hline(3, 6, 10, P.white);                                        // the stand
-        for (let y = 0; y <= 5; y++) for (let x = 2; x <= 13; x++) {
-          const d = ((x - 7.5) / 5.5) ** 2 + ((y - 6) / 6) ** 2;
-          if (d <= 1) b.set(x, y, d > 0.72 ? P.n3 : P.gl1);
+        b.hline(3, 7, 11, P.c3);                                                                    // its shadow on the stone
+        b.hline(2, 6, 11, P.n3); b.hline(3, 5, 9, P.white);                                         // the stand
+        for (let y = 0; y <= 5; y++) for (let x = 2; x <= 12; x++) {
+          const d = ((x - 7) / 5.5) ** 2 + ((y - 5) / 5.2) ** 2;
+          if (d <= 1 && y < 5) b.set(x, y, d > 0.7 ? P.n3 : P.gl1);
         }
-        for (const [x, y] of [[4, 2], [5, 1], [3, 3], [3, 4]]) b.set(x, y, P.white);                // the glint
-        b.set(7, 0, P.n3); b.set(8, 0, P.n3);                                                       // the knob
+        for (const [x, y] of [[4, 1], [3, 2], [3, 3]]) b.set(x, y, P.white);                        // the glint
+        b.set(7, 0, P.n3);                                                                          // the knob
         for (const x of [4, 8]) {
-          b.fillRect(x, 3, 3, 1, P.pk1); b.set(x, 3, P.white);                                        // icing
-          b.fillRect(x, 4, 3, 2, P.o1); b.set(x + 2, 4, P.o2); b.set(x + 2, 5, P.o2);               // sponge, shaded right
-          b.set(x + 1, 2, P.red2);                                                                  // cherry
+          b.fillRect(x, 2, 3, 1, P.pk1); b.set(x, 2, P.white);                                      // icing
+          b.fillRect(x, 3, 3, 2, P.o1); b.set(x + 2, 3, P.o2); b.set(x + 2, 4, P.o2);               // sponge, shaded right
+          b.set(x + 1, 1, P.red2);                                                                  // cherry
         }
       } else {
-        // Mom has given the cakes away: one plate left with a dab of icing, and a few tan crumb clusters
-        for (let y = 3; y <= 7; y++) for (let x = 2; x <= 10; x++) {
-          const d = ((x - 6) / 4.2) ** 2 + ((y - 5) / 2.2) ** 2;
-          if (d <= 1) b.set(x, y, d > 0.6 ? P.n2 : P.p0);
+        // Mom has given the cakes away: one plate left with a dab of icing, and a cluster of crumbs
+        b.hline(3, 7, 8, P.c3);
+        for (let y = 3; y <= 6; y++) for (let x = 2; x <= 10; x++) {
+          const d = ((x - 6) / 4.2) ** 2 + ((y - 4.5) / 2) ** 2;
+          if (d <= 1) b.set(x, y, d > 0.55 ? P.n3 : P.white);
         }
-        b.hline(4, 7, 5, P.n3); b.set(4, 4, P.white);
-        b.set(6, 5, P.pk1); b.set(7, 5, P.o2);
-        for (const [x, y] of [[12, 4], [13, 4], [12, 5]]) b.set(x, y, P.o2);
-        b.set(13, 5, P.o4);
-        for (const [x, y] of [[13, 6], [14, 6]]) b.set(x, y, P.o2);
+        b.set(4, 4, P.c0); b.set(6, 4, P.pk1); b.set(7, 4, P.o2);
+        for (const [x, y, c] of [[12, 4, P.o1], [13, 4, P.o2], [12, 5, P.o2], [13, 5, P.o3], [14, 6, P.o2]]) b.set(x, y, c);
+        b.set(12, 6, P.c3); b.set(13, 6, P.c3); b.set(14, 7, P.c3);                                 // the crumbs' shadow
       }
       return b;
     },
@@ -147,23 +155,29 @@
     w: 1, h: 1, layer: 'floor', solid: ['.'],
     paint: () => {
       const b = K.B(16, 16);
-      // an oval cushion bed: a soft rim (lit top, darker front), a dark hollow, a pink pillow and a folded blue blanket
-      K.stick(b, 1, 2, [
-        '....aaaaaa....',
-        '..aaaaaaaaaa..',
-        '.aaaHHHHHHaab.',
-        'aaaHHHHHHHHHab',
-        'aaHHppppPHHHbb',
-        'aaHpppppppHHbb',
-        'aaHPPPPPBBBlbb',
-        'aaHHPPPBBlBLbb',
-        'aabHHHBBBBLLbb',
-        '.bbbbbbbbbbbb.',
-        '..bbbbbbbbbb..',
-        '....bbbbbb....',
-      ], { a: P.o1, b: P.o3, H: P.o4, p: P.pk1, P: P.pk2, B: P.bl1, l: P.bl0, L: P.bl3 });
-      b.hline(5, 2, 6, P.o0); b.set(3, 3, P.o0); b.set(4, 3, P.o0);
+      // an oval padded bed: the rim shaded in 3 tones lit from the top left, a dark hollow, a pink pillow and a folded blue blanket
+      const cx = 7.5, cy = 7.5;
+      for (let y = 1; y <= 14; y++) for (let x = 0; x <= 15; x++) {
+        const dx = (x - cx) / 7, dy = (y - cy) / 6;
+        const d = dx * dx + dy * dy; if (d > 1) continue;
+        const ix = (x - cx) / 5, iy = (y - cy + 0.5) / 3.8;
+        if (ix * ix + iy * iy <= 1) { b.set(x, y, iy < -0.45 ? P.o5 : P.o4); continue; }       // the hollow, shaded under the back rim
+        const l = -(dx + dy * 1.2) / Math.sqrt(d + 0.001);
+        b.set(x, y, l > 0.55 ? P.o0 : l > -0.45 ? P.o1 : P.o2);
+      }
+      for (let x = 4; x <= 11; x++) b.set(x, 13, P.o3);                                             // the cushion's darker south underside
+      for (const y of [11, 12]) { b.set(14, y, P.o3); b.set(1, y, P.o2); }
+      // pink pillow at the back left
+      K.stick(b, 4, 5, ['.ppp.', 'pPPPp', '.PPP.'], { p: P.pk1, P: P.pk2 });
+      // a folded blue blanket: two tones and a fold line, its corner turned back
+      K.stick(b, 7, 7, [
+        'BBBBBl',
+        'BBBBlL',
+        'LLLLLL',
+        'BBBBBL',
+      ], { B: P.bl1, l: P.bl0, L: P.bl3 });
       K.outer(b, 'o6');
+      K.shadow(b, 9, 15, 6, 1);
       return b;
     },
   });
@@ -192,23 +206,29 @@
     w: 1, h: 1, variants: ['w', 'e', 's', 's_tincan'],
     paint: (v) => {
       let b = K.B(16, 16);
+      const glass = (x, y, w, h) => {
+        b.fillRect(x, y, w, h, P.gl2); b.vline(x, y, h, P.gl1); b.hline(x, y, w, P.gl1);
+        b.vline(x + w - 1, y + 1, h - 1, P.gl3); b.set(x + 1, y + 1, P.gl0); b.set(x + 2, y + 2, P.gl0);
+      };
       if (v === 'w' || v === 'e') {
-        b.fillRect(8, 1, 7, 14, P.p0);                       // white frame
-        b.fillRect(9, 2, 4, 12, P.gl2); b.vline(9, 2, 12, P.gl1); b.set(10, 3, P.gl0); b.set(11, 4, P.gl1);
-        b.hline(9, 8, 4, P.p0);                              // muntin
-        b.fillRect(14, 1, 2, 14, P.p2); b.vline(15, 1, 14, P.p3);   // sill on the room side
-        b.vline(7, 1, 14, P.o5); b.hline(7, 0, 9, P.o5); b.hline(7, 15, 9, P.o5);
+        // a dark frame edge against the planks, a white frame, 5px of glass with a muntin, and a sill on the room side
+        b.fillRect(5, 0, 11, 16, P.o6);
+        b.fillRect(6, 1, 7, 14, P.p0);
+        glass(7, 2, 5, 5); glass(7, 8, 5, 6);
+        b.fillRect(13, 0, 2, 16, P.p2); b.vline(13, 0, 16, P.p1); b.vline(14, 1, 14, P.p3);      // the sill, lit on top
         if (v === 'e') b = b.flippedX();
         return b;
       }
-      b.fillRect(1, 1, 14, 7, P.p0);
-      b.fillRect(2, 2, 12, 4, P.gl2); b.hline(2, 2, 12, P.gl1); b.set(3, 3, P.gl0); b.set(4, 3, P.gl1);
-      b.vline(8, 2, 4, P.p0);
-      b.fillRect(0, 6, 16, 2, P.p2); b.hline(0, 7, 16, P.p3);   // sill on the room (north) side
-      b.hline(0, 0, 16, P.o5); b.vline(0, 0, 8, P.o5); b.vline(15, 0, 8, P.o5);
+      // bottom-wall window: a dark frame line top and bottom separates it from the planks
+      b.fillRect(0, 0, 16, 10, P.o6);
+      b.fillRect(1, 1, 14, 6, P.p0);
+      glass(2, 2, 6, 4); glass(9, 2, 5, 4);
+      b.fillRect(0, 7, 16, 2, P.p2); b.hline(0, 7, 16, P.p1); b.hline(0, 8, 16, P.p3);           // sill on the room (north) side
       if (v === 's_tincan') {
-        b.fillRect(9, 4, 3, 4, P.n2); b.vline(9, 4, 4, P.n1); b.vline(11, 4, 4, P.n3); b.hline(9, 4, 3, P.n0);
-        b.line(12, 5, 15, 2, P.p3); b.set(13, 4, P.p4);       // the string runs out through the frame
+        // a tin can on the sill (3x4, lit left, a rim and a highlight) with its string running out through the frame to the east
+        K.stick(b, 9, 4, ['nNn', 'hmd', 'hmd', 'mmd'], { n: P.n3, N: P.n4, h: P.n0, m: P.n2, d: P.n4 });
+        b.line(10, 3, 12, 1, P.red2); b.hline(13, 1, 3, P.red2); b.set(15, 0, P.red2);
+        b.set(10, 4, P.red3);
       }
       return b;
     },
@@ -221,12 +241,24 @@
     paint: () => {
       const b = K.B(16, 16);
       b.hline(5, 14, 6, P.o3); b.set(5, 14, P.o2);                                                 // foot
-      b.ellipse(7.5, 7, 6.5, 3, P.o3, true);                                                         // the rim's thickness
-      b.ellipse(7.5, 6, 6.5, 3, P.o1, true); b.hline(3, 4, 5, P.o0); b.set(2, 5, P.o0);              // the lit round top
-      // a small photo frame on its easel back: two kids holding a kite with a wonky tail, and its shadow on the top
-      b.vline(11, 3, 5, P.o3); b.hline(6, 8, 5, P.o3);
-      b.fillRect(6, 2, 5, 6, P.o5); b.fillRect(7, 3, 3, 4, P.sk1);
-      b.hline(7, 6, 3, P.g2); b.set(7, 5, P.yl2); b.set(9, 5, P.bl2); b.set(8, 3, P.red2);
+      b.ellipse(7.5, 7, 6.5, 3, P.o4, true);                                                         // the rim's thickness, in shade
+      b.ellipse(7.5, 6, 6.5, 3, P.o2, true);                                                         // the round top
+      b.ellipse(7, 5.6, 5.4, 2.2, P.o1, true);
+      for (const [x, y] of [[3, 4], [4, 4], [5, 3], [6, 3], [7, 3], [2, 5], [2, 6]]) b.set(x, y, P.o0);   // lit NW rim
+      for (const [x, y] of [[13, 7], [12, 8], [11, 8], [10, 9], [9, 9], [14, 6]]) b.set(x, y, P.o3);    // dark SE rim
+      // a small photo frame with a dark outline: a red-and-yellow kite in a blue sky over green grass
+      b.vline(11, 3, 5, P.o3);
+      K.stick(b, 5, 0, [
+        'kkkkkkk',
+        'kssRsak',
+        'ksRRYak',
+        'kRRRYYk',
+        'ksRRYak',
+        'kssYsak',
+        'kggggak',
+        'kkkkkkk',
+      ], { k: P.o6, s: P.sk1, a: P.sk2, R: P.red2, Y: P.yl2, g: P.g2 });
+      b.hline(6, 8, 6, P.o3);                                                                        // its shadow on the top
       K.outer(b, WOOD_OUT);
       b.vline(7, 11, 3, P.o2); b.vline(8, 11, 3, P.o4); b.vline(6, 12, 2, P.o6); b.vline(9, 12, 2, P.o6);   // pedestal leg
       K.shadow(b, 8, 15, 5, 1);
@@ -308,18 +340,34 @@
     paint: () => {
       const b = K.B(64, 16);
       const r = tn('teal');
-      b.fillRect(1, 1, 62, 14, r[3]);
-      for (let i = 0; i < 4; i++) { const x = 6 + i * 13; b.fillRect(x, 2, 12, 5, r[1]); b.hline(x, 2, 12, r[0]); b.hline(x, 6, 12, r[2]); }   // seat cushions
-      b.fillRect(1, 7, 62, 7, r[2]); b.hline(1, 7, 62, r[1]); b.hline(1, 13, 62, r[4]);             // backrest
-      for (const x of [1, 57]) { b.fillRect(x, 1, 6, 13, r[2]); b.hline(x, 1, 6, r[0]); b.vline(x, 1, 13, r[1]); b.vline(x + 5, 2, 12, r[3]); }   // arms
-      // a knitted throw: zigzag stripes of cream, mustard and rose draped over the back
-      for (let x = 30; x < 50; x++) for (let y = 6; y <= 14 + ((x & 1) ? 1 : 0); y++) {
-        const band = ((y + (x % 4 < 2 ? 0 : 1)) >> 1) % 3;
-        b.set(x, y, band === 0 ? P.p0 : band === 1 ? P.yl2 : P.pk2);
+      // seat cushions beyond the backrest (the sofa faces north, at the TV): four cushions split by dark seams, lit top-left
+      b.fillRect(7, 2, 50, 4, r[2]);
+      for (let i = 0; i < 4; i++) {
+        const x = 7 + i * 12 + (i > 1 ? 1 : 0), w = 12;
+        b.fillRect(x, 2, w - 1, 3, r[1]); b.hline(x, 2, w - 2, r[0]); b.vline(x, 2, 3, r[0]);
+        b.vline(x + w - 1, 2, 4, r[4]);                                                            // seam
       }
-      for (let x = 30; x < 50; x += 2) b.set(x, 15, P.p2);                                          // fringe
-      for (const x of [3, 59]) b.fillRect(x, 14, 2, 2, P.o5);                                        // feet
-      K.outer(b, S.omap([[r, K.ramp('teal')[5]], [[P.p0, P.yl2, P.pk2, P.p2], P.o6]], 'ink'));
+      // the backrest seen from behind: a lit top roll, then a tall darker back face with a shaded bottom row
+      b.fillRect(1, 5, 62, 3, r[1]); b.hline(1, 5, 62, r[0]); b.hline(1, 7, 62, r[2]);
+      b.fillRect(1, 8, 62, 5, r[3]); b.hline(1, 12, 62, r[4]);
+      for (const x of [16, 32, 48]) b.vline(x, 9, 3, r[4]);                                         // panel seams on the back
+      // arms: blocks at each end standing above the seat, a lit top and a shaded inner side
+      for (const x of [1, 57]) {
+        b.fillRect(x, 1, 6, 7, r[1]); b.hline(x, 1, 6, r[0]); b.vline(x, 1, 7, r[0]);
+        b.vline(x === 1 ? x + 5 : x, 2, 4, x === 1 ? r[3] : r[2]);
+        b.fillRect(x, 8, 6, 5, r[3]); b.hline(x, 12, 6, r[4]); b.vline(x === 1 ? 6 : 57, 8, 5, r[4]);
+      }
+      // a knitted throw over the east arm, two tones of mustard with a cream fringe
+      for (let y = 1; y <= 13; y++) for (let x = 54; x <= 60; x++) {
+        if (y > 9 && x > 59 - (y - 10)) continue;
+        b.set(x, y, ((x + (y >> 1)) % 4) < 2 ? P.yl2 : P.yl3);
+      }
+      b.vline(54, 1, 13, P.yl3);
+      for (let x = 54; x <= 58; x += 2) b.set(x, 14, P.p0);
+      for (const x of [3, 59]) b.fillRect(x, 13, 2, 2, P.o5);                                        // short dark feet
+      for (const x of [22, 41]) b.fillRect(x, 13, 2, 1, P.o5);
+      K.outer(b, S.omap([[r, K.ramp('teal')[5]], [[P.yl2, P.yl3, P.p0], P.o6]], 'ink'));
+      K.shadowRect(b, 2, 15, 60, 1);
       return b;
     },
   });
@@ -329,15 +377,26 @@
     w: 1, h: 1,
     paint: () => {
       const b = K.B(16, 16);
-      b.fillRect(2, 8, 12, 6, P.o2); b.hline(2, 8, 12, P.o1); b.hline(2, 13, 12, P.o4);
-      for (let y = 9; y < 13; y++) for (let x = 2 + (y & 1); x < 14; x += 2) b.set(x, y, P.o3);      // weave
-      b.fillRect(4, 4, 3, 4, P.bl2); b.vline(4, 4, 4, P.bl1); b.hline(3, 3, 5, P.o1); b.hline(3, 7, 5, P.o3);   // a spool of blue thread
-      b.circle(10, 6, 2, P.red1, true); b.set(9, 5, P.red0); b.set(11, 7, P.red2);                   // tomato pincushion...
-      b.hline(9, 3, 3, P.f3); b.set(10, 2, P.f2);                                                     // ...with its green cap
-      b.line(1, 7, 4, 2, P.o3);                                                                       // the lid, propped open
-      K.outer(b, S.omap([[WOOD, P.o6], [[P.red0, P.red1, P.red2, P.bl1, P.bl2, P.f2, P.f3], P.o6]], 'o6'));
-      b.line(12, 5, 14, 2, P.n1); b.set(14, 1, P.n3); b.line(11, 4, 12, 1, P.n1);                    // two needles sticking out of it
-      K.shadow(b, 8, 14, 6, 1);
+      // a wicker basket in 3 tones: a light rolled rim, a mid weave, a dark base row
+      b.fillRect(2, 9, 12, 5, P.o2);
+      for (let y = 10; y < 13; y++) for (let x = 2 + (y & 1); x < 14; x += 2) b.set(x, y, P.o3);
+      b.hline(2, 13, 12, P.o4); b.vline(13, 10, 3, P.o4);
+      // a spool of blue thread peeking out at the back left
+      b.fillRect(3, 5, 3, 3, P.bl2); b.vline(3, 5, 3, P.bl1); b.hline(2, 4, 5, P.o1); b.hline(2, 8, 5, P.o3);
+      // a round red yarn ball: 2 tones, a highlight and a wrap line across it
+      K.stick(b, 6, 3, [
+        '.hrrr.',
+        'hrrrrd',
+        'wrrrdd',
+        'rwwrdd',
+        'rrrwwd',
+        '.rddd.',
+      ], { h: P.red0, r: P.red1, d: P.red2, w: P.red3 });
+      b.fillRect(1, 8, 14, 2, P.o1); b.hline(2, 8, 12, P.o0); b.hline(1, 9, 14, P.o2);             // the rim band
+      K.outer(b, S.omap([[WOOD, P.o6], [[P.red0, P.red1, P.red2, P.red3], P.o6], [[P.bl1, P.bl2], P.o6]], 'o6'));
+      // two knitting needles poking up out of the yarn at an angle
+      b.line(10, 5, 14, 1, P.n1); b.set(14, 1, P.n3); b.line(9, 4, 11, 0, P.n1); b.set(11, 0, P.n3);
+      K.shadow(b, 8, 15, 7, 1);
       return b;
     },
   });
@@ -349,24 +408,20 @@
     paint: () => {
       const b = K.B(16, 16);
       const r = tn('pink');
-      // a tall back with one embroidered flower, two raised arms, the seat sunk between them; lit from the top left
-      K.stick(b, 1, 1, [
-        '00000000000001',
-        '01111111111112',
-        '12222222222223',
-        '1222222w222223',
-        '001222wYw22002',
-        '0113222w222013',
-        '01132222222313',
-        '01131111113013',
-        '01131111113013',
-        '01131111113013',
-        '01131111113013',
-        '22242222222443',
-        '33343333333444',
-        'ff..........ff',
-      ], { 0: r[0], 1: r[1], 2: r[2], 3: r[3], 4: r[4], w: P.p0, Y: P.yl2, f: P.o5 });
-      K.outer(b, S.omap([[r.concat([P.p0, P.yl2]), K.ramp('pink')[5]]], 'o6'));
+      // a tall darker back along the north, two rolled arms that rise above the seat, a plump seat cushion with a button,
+      // a darker front face and stubby legs; lit from the top left, same build as the sofa
+      b.fillRect(2, 1, 12, 5, r[3]); b.hline(2, 1, 12, r[1]); b.hline(2, 2, 12, r[2]); b.vline(2, 1, 5, r[2]);   // the back
+      b.vline(13, 2, 4, r[4]);
+      for (const x of [1, 12]) {                                                                     // arm rolls
+        b.fillRect(x, 4, 3, 8, r[2]); b.hline(x, 4, 3, r[0]); b.vline(x, 5, 6, r[1]);
+        b.vline(x + 2, 5, 6, x === 1 ? r[3] : r[2]);
+      }
+      b.fillRect(4, 6, 8, 5, r[1]); b.hline(4, 6, 8, r[0]); b.vline(4, 6, 4, r[0]); b.hline(4, 10, 8, r[2]);   // seat cushion
+      b.set(8, 8, r[3]);                                                                             // a 1px button
+      b.fillRect(1, 11, 14, 3, r[3]); b.hline(1, 11, 14, r[2]); b.hline(1, 13, 14, r[4]);           // front face
+      b.fillRect(2, 14, 2, 1, P.o5); b.fillRect(12, 14, 2, 1, P.o5);                                  // legs
+      K.outer(b, S.omap([[r, K.ramp('pink')[5]]], 'o6'));
+      K.shadowRect(b, 1, 15, 14, 1);
       return b;
     },
   });
@@ -376,41 +431,36 @@
     w: 2, h: 1, variants: ['satchel', 'empty'],
     paint: (v) => {
       const b = K.B(32, 16);
-      // one piece of hall furniture: a planked back board joins the side posts, the peg rail and the shoe shelf
-      b.fillRect(3, 3, 26, 10, P.o4); for (const x of [9, 16, 23]) b.vline(x, 3, 10, P.o5);
-      for (const x of [1, 29]) { b.fillRect(x, 1, 2, 14, P.o3); b.vline(x, 1, 14, P.o2); }
-      b.fillRect(1, 1, 30, 2, P.o3); b.hline(1, 1, 30, P.o1); b.hline(3, 3, 26, P.o5);            // peg rail and its shadow
-      for (const x of [7, 15, 25]) { b.set(x, 3, P.gd3); b.set(x, 2, P.gd2); }
-      // coats hung by the collar: a V collar notch, a button placket, sleeve seams, cuffs, a darker right side
-      const coat = (x, c) => K.stick(b, x, 4, [
+      // a wooden peg rail screwed straight onto the wall (no box), three brass pegs
+      b.fillRect(1, 2, 30, 2, P.o2); b.hline(1, 2, 30, P.o1); b.hline(1, 3, 30, P.o3);
+      b.set(2, 2, P.gd3); b.set(29, 2, P.gd3);                                                       // screws
+      // coats hung by the collar from the outer pegs: narrow shoulders, wider hems, a darker fold line and buttons
+      const coat = (x, c) => K.stick(b, x, 5, [
         '..abbc..',
-        '.abb4bc.',
-        'aab343cc',
-        'a3bb4b4c',
-        'a3bbgb4c',
-        'a3bb4b4c',
-        '33bbgb44',
-        '..3344..',
+        '.abbbbc.',
+        '.ab3bbc.',
+        'aab3bgcc',
+        'abb3bbbc',
+        'abb3bgbc',
+        'ab33bbcc',
+        'a33bbbcc',
+        '44444444',
       ], { a: c[1], b: c[2], 3: c[3], 4: c[4], c: c[3], g: P.gd2 });
-      coat(4, K.ramp('red'));
+      coat(3, K.ramp('red'));
       coat(21, K.ramp('blue'));
       if (v === 'satchel') {
-        // the hero's satchel hangs in front on the middle peg: a thin strap, a flap with a brass buckle
-        b.line(15, 3, 12, 6, P.b0); b.line(15, 3, 18, 6, P.b0);
-        K.stick(b, 12, 6, [
-          'aaaaaaa',
-          'abbbbbc',
-          'abbgbbc',
-          'cccdccc',
-          'eeeeeee',
+        // the hero's satchel hangs from the middle peg by its strap: a flap with a brass buckle
+        b.line(16, 5, 13, 9, P.b2); b.line(16, 5, 19, 9, P.b2);
+        K.stick(b, 12, 9, [
+          'aaaaaaaa',
+          'abbbbbbc',
+          'abbbgbbc',
+          'cccdcccc',
+          'eeeeeeee',
         ], { a: P.b0, b: P.b1, c: P.b2, g: P.gd2, d: P.gd3, e: P.b3 });
       }
-      // the shoe shelf between the posts, two pairs on it
-      b.fillRect(3, 13, 26, 2, P.o2); b.hline(3, 13, 26, P.o1); b.hline(3, 14, 26, P.o4);
-      for (const [x, c, cl] of [[6, P.red2, P.red0], [19, P.bl2, P.bl0]]) for (const dx of [0, 4]) {
-        b.fillRect(x + dx, 11, 3, 2, c); b.set(x + dx, 11, cl); b.hline(x + dx, 12, 3, P.p1); b.set(x + dx + 2, 11, P.ink2);
-      }
-      K.outer(b, S.omap([[WOOD, P.o6], [[P.b0, P.b1, P.b2, P.b3, P.b4, P.gd2, P.gd3], P.b4], [S.tones(K.ramp('red')).concat([P.red0, P.red1, P.red2, P.red3]), P.red4], [S.tones(K.ramp('blue')).concat([P.bl0, P.bl1, P.bl2, P.bl3]), P.bl4], [[P.p0, P.p1, P.p2, P.p3], P.o6]], 'o6'));
+      K.outer(b, S.omap([[WOOD, P.o6], [[P.b0, P.b1, P.b2, P.b3, P.b4, P.gd2, P.gd3], P.b4], [S.tones(K.ramp('red')), P.red4], [S.tones(K.ramp('blue')), P.bl4]], 'o6'));
+      for (const x of [7, 16, 25]) { b.set(x, 4, P.gd2); b.set(x, 5, P.gd3); b.set(x - 1, 4, P.gd1); }   // the pegs, over the collars
       return b;
     },
   });
@@ -447,24 +497,34 @@
     w: 3, h: 1, variants: PINS,
     paint: (v) => {
       const b = K.B(48, 16);
-      b.fillRect(1, 1, 46, 14, P.o3); b.hline(1, 1, 46, P.o1); b.hline(1, 14, 46, P.o5);           // wooden frame
-      b.fillRect(2, 2, 44, 12, P.bl1);                                                              // the sea
-      for (const [x, y] of [[4, 3], [44, 12], [33, 3]]) b.hline(x, y, 2, P.bl0);
-      // the main island with a darker coast, a small one to the east, and a blue river down the middle
-      const land = (cx, cy, rx, ry) => { b.ellipse(cx, cy, rx, ry, P.g3, true); b.ellipse(cx - 0.5, cy - 0.5, rx - 1, ry - 1, P.g1, true); };
-      land(21, 8, 18.5, 4.8); land(41, 8, 4, 4);
-      b.hline(1, 14, 46, P.o5); b.hline(1, 1, 46, P.o1); b.vline(1, 1, 14, P.o3); b.vline(46, 1, 14, P.o3);   // keep the land inside the frame
-      for (const [x, y] of [[8, 6], [12, 10], [26, 6], [30, 11]]) { b.set(x, y, P.g2); b.set(x + 1, y, P.g2); }
-      for (const [x, y] of [[19, 3], [19, 4], [20, 5], [20, 6], [21, 7], [21, 8], [20, 9], [20, 10], [21, 11], [21, 12]]) b.set(x, y, P.bl2);
-      // the road (a tan line) joining the eight Salon towns (white dots)
-      for (let i = 1; i < PIN_SPOTS.length; i++) b.line(PIN_SPOTS[i - 1][0], PIN_SPOTS[i - 1][1], PIN_SPOTS[i][0], PIN_SPOTS[i][1], P.d3);
-      for (const [x, y] of PIN_SPOTS) b.set(x, y, P.white);
-      // a round-headed pin in each town already won: coloured head with a highlight, a grey needle down to the town
+      b.fillRect(1, 1, 46, 14, P.o3); b.hline(1, 1, 46, P.o1); b.vline(1, 1, 14, P.o2); b.hline(1, 14, 46, P.o5);   // wooden frame
+      b.fillRect(2, 2, 44, 12, P.o5);                                                               // dark inner bevel
+      b.fillRect(3, 3, 42, 10, P.bl1);                                                              // the sea
+      for (const [x, y] of [[5, 4], [43, 11], [33, 3]]) b.hline(x, y, 2, P.bl0);
+      // the Tsumugi region: a sand coastline, green land, dark forest clumps, a river and the road between the towns
+      const land = (cx, cy, rx, ry) => {
+        for (let y = 3; y <= 12; y++) for (let x = 3; x <= 44; x++) {
+          const d = ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2;
+          if (d <= 1) b.set(x, y, d > 0.72 ? P.s2 : P.g2);
+        }
+      };
+      land(21, 8, 18.5, 5); land(41, 8, 4, 4.4);
+      for (let y = 3; y <= 12; y++) for (let x = 3; x <= 44; x++) {                                 // the coast's sea-side edge
+        if (b.get(x, y) !== P.bl1) continue;
+        if ([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => b.get(x + dx, y + dy) === P.s2)) b.set(x, y, P.bl2);
+      }
+      for (const [x, y] of [[7, 7], [12, 9], [26, 5], [30, 9], [17, 6]]) {                          // forest clumps
+        b.fillRect(x, y, 3, 2, P.g4); b.set(x, y, P.g3); b.set(x + 2, y + 1, P.f5);
+      }
+      for (const [x, y] of [[20, 4], [20, 5], [21, 6], [21, 7], [22, 8], [21, 9], [21, 10], [22, 11]]) b.set(x, y, P.bl2);   // river
+      for (let i = 1; i < PIN_SPOTS.length; i++) b.line(PIN_SPOTS[i - 1][0], PIN_SPOTS[i - 1][1], PIN_SPOTS[i][0], PIN_SPOTS[i][1], P.d4);
+      for (const [x, y] of PIN_SPOTS) b.set(x, y, P.white);                                          // the eight Salon towns
+      // a red push pin (2x2 head, white highlight, dark under-side, a grey needle) in each town already won
       const n = PINS.indexOf(v);
       PIN_SPOTS.forEach(([x, y], i) => {
         if (i >= n) return;
-        const r = K.ramp(PIN_COLS[i]);
-        b.fillRect(x, y - 3, 2, 2, r[2]); b.set(x, y - 3, r[0]); b.set(x + 1, y - 2, r[4]); b.set(x, y - 1, P.n3);
+        b.fillRect(x, y - 3, 2, 2, P.red2); b.set(x, y - 3, P.white); b.set(x + 1, y - 2, P.red4); b.set(x, y - 2, P.red3);
+        b.set(x, y - 1, P.n3);
       });
       for (const [x, y] of [[2, 2], [45, 2], [2, 13], [45, 13]]) b.set(x, y, P.gd2);                // brass tacks
       K.outer(b, S.omap([], 'o6'));
@@ -477,13 +537,17 @@
     w: 1, h: 1,
     paint: () => {
       const b = K.B(16, 16);
-      b.set(8, 0, P.n4);                                                                            // nail
-      b.fillRect(3, 1, 10, 3, P.red2); b.hline(3, 1, 10, P.red1);
-      b.fillRect(3, 4, 10, 10, P.p0); b.hline(3, 13, 10, P.p2);
-      for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) b.set(4 + c * 2 + (c > 1 ? 1 : 0), 5 + r * 2, P.n3);
-      b.ellipse(10, 9, 2, 1, P.red2, false);                                                        // the circled date
-      b.set(5, 11, P.l3); b.set(5, 12, P.l2); b.set(6, 12, P.l3); b.set(5, 10, P.ink2);             // lantern doodle
-      K.outer(b, S.omap([], 'o5'));
+      // hangs from a nail on a 1px string; a red header, a cream page with a 4x3 grid of day cells, one Lantern Festival lantern
+      b.line(8, 1, 4, 3, P.p4); b.line(8, 1, 11, 3, P.p4); b.set(8, 0, P.n2); b.set(8, 1, P.n4);
+      b.fillRect(3, 4, 10, 3, P.red2); b.hline(3, 4, 10, P.red1); b.hline(3, 6, 10, P.red3);
+      b.set(5, 4, P.n3); b.set(10, 4, P.n3);                                                         // binding rings
+      b.fillRect(3, 7, 10, 7, P.p0); b.hline(3, 13, 10, P.p2);
+      for (let r = 0; r < 3; r++) for (let c = 0; c < 4; c++) b.set(5 + c * 2, 8 + r * 2, P.n3);
+      // the lantern on the festival day: a 2x2 glyph, orange top and red bottom, in place of a day cell
+      b.fillRect(10, 11, 2, 1, P.l3); b.fillRect(10, 12, 2, 1, P.red2);
+      K.outer(b, S.omap([[[P.p4, P.n2, P.n4], 0]], 'o5'));
+      b.set(8, 0, P.n2); b.set(8, 1, P.n4);
+      K.shadowRect(b, 14, 5, 1, 10); K.shadowRect(b, 4, 15, 10, 1);
       return b;
     },
   });
@@ -521,32 +585,33 @@
     w: 1, h: 1, variants: ['overflow', 'folded'],
     paint: (v) => {
       const b = K.B(16, 16);
+      // the wicker basket in 3 tones: a light rolled rim, a mid weave, a dark base row
+      const basket = () => {
+        b.fillRect(2, 9, 12, 5, P.o2);
+        for (let y = 10; y < 13; y++) for (let x = 2 + (y & 1); x < 14; x += 2) b.set(x, y, P.o3);
+        b.hline(2, 13, 12, P.o4); b.vline(13, 10, 3, P.o3);
+        b.fillRect(1, 8, 14, 2, P.o1); b.hline(1, 9, 14, P.o2);
+      };
+      const layer = (rows, x, y, map, ink) => { const l = K.B(16, 16); K.stick(l, x, y, rows, map); K.outer(l, ink); b.blit(l, 0, 0); };
       if (v === 'folded') {
-        b.fillRect(2, 8, 12, 6, P.o2); b.hline(2, 8, 12, P.o1); b.hline(2, 13, 12, P.o4);
-        for (let y = 9; y < 13; y++) for (let x = 2 + (y & 1); x < 14; x += 2) b.set(x, y, P.o3);
-        b.fillRect(3, 5, 10, 3, P.p0); b.hline(3, 7, 10, P.p2);                                     // folded sheets
-        b.fillRect(4, 3, 8, 2, P.pk1); b.hline(4, 4, 8, P.pk2); b.fillRect(5, 1, 6, 2, P.bl1); b.hline(5, 2, 6, P.bl2);
+        basket();
+        // folded laundry stacked on top: sheets, a pink top and a blue shirt, each with a fold line and a shaded underside
+        layer(['cccccdcccc', 'eeeeeeeeee'], 3, 6, { c: P.p0, d: P.p2, e: P.p2 }, P.p4);
+        layer(['pppppppp', 'pppqpppp', 'qqqqqqqq'], 4, 3, { p: P.pk1, q: P.pk2 }, P.pk3);
+        layer(['bbbbbb', 'bbBbbb'], 5, 1, { b: P.bl1, B: P.bl2 }, P.bl3);
         K.outer(b, S.omap([[WOOD, P.o6]], 'o6'));
-        K.shadow(b, 8, 14, 6, 1);
+        K.shadow(b, 8, 15, 7, 1);
         return b;
       }
-      // the bedroom's wicker basket with clothes heaped in it: a yellow towel, a red t-shirt whose sleeve hangs over the rim,
-      // and a pink sock dangling down the side
-      b.fillRect(2, 8, 12, 6, P.o2); b.hline(2, 13, 12, P.o4); b.vline(13, 9, 4, P.o3);
-      for (let y = 10; y < 13; y++) for (let x = 2 + (y & 1); x < 13; x += 2) b.set(x, y, P.o3);
-      b.fillRect(1, 8, 14, 2, P.o1); b.hline(1, 9, 14, P.o3); b.hline(2, 8, 12, P.o0);              // rolled rim
-      K.stick(b, 3, 3, [
-        '...rrrr...',
-        'yyrRrrrrd.',
-        'yYyrrrrrd.',
-        'yyyyyrrd..',
-        'ddddd.....',
-      ], { y: P.yl1, Y: P.yl0, d: P.yl3, r: P.red1, R: P.p0 });
-      b.set(10, 6, P.red2); b.set(11, 5, P.red2); b.set(9, 7, P.red2);
-      K.stick(b, 2, 7, ['rr', 'rR', 'rR', '.r'], { r: P.red1, R: P.red2 });                         // the sleeve over the rim
-      K.stick(b, 12, 6, ['pp.', '.pP', '.pP', '.pP', '.qq'], { p: P.pk1, P: P.pk2, q: P.pk2 });    // the sock
+      // overflowing: a yellow towel and a red t-shirt heaped in it, the shirt's sleeve hanging over the right rim,
+      // and a pink sock dangling over the left; dark lines between each piece
+      layer(['.yyyy.', 'yyyyyy', 'yyTyyy', 'yTyyyy'], 3, 4, { y: P.yl1, T: P.yl3 }, P.o6);
+      layer(['.rr..rr.', 'rrrrrrrR', 'rrrrrrRR', '.rrrrRR.', '.rrrRRR.'], 6, 3, { r: P.red1, R: P.red2 }, P.red4);
+      basket();
+      layer(['rr', 'rR', 'rR', 'R.'], 12, 8, { r: P.red1, R: P.red2 }, P.red4);
+      layer(['pp', 'pq', 'pq', 'qq'], 2, 8, { p: P.pk1, q: P.pk2 }, P.o6);
       K.outer(b, S.omap([[WOOD, P.o6]], 'o6'));
-      K.shadow(b, 8, 14, 6, 1);
+      K.shadow(b, 8, 15, 7, 1);
       return b;
     },
   });
@@ -557,30 +622,31 @@
     w: 2, h: 2,
     paint: () => {
       const b = K.B(32, 32);
-      const hi = col('#f6b67a'), mid = col('#f48c40'), dk = col('#c8642c'), sh = col('#a84c24');
-      // one slumped teardrop: narrow rounded top, wide soft base, lit from the top left
+      const r = K.ramp('orange');
+      // one slumped teardrop in hard tones: a lit crown at the top left, a mid body, a dark south-east base
       for (let y = 5; y <= 27; y++) {
         const t = (y - 5) / 22;
-        const hw = Math.min(13.5 * Math.sqrt(Math.max(0, 1 - ((y - 19.5) / 8.6) ** 2)) * 1, 4 + 11 * Math.sqrt(t));
+        const hw = Math.min(13.5 * Math.sqrt(Math.max(0, 1 - ((y - 19.5) / 8.6) ** 2)), 4 + 11 * Math.sqrt(t));
         for (let x = 0; x < 32; x++) {
           const dx = x + 0.5 - 16;
           if (Math.abs(dx) > hw) continue;
-          const l = dx / 14 + (y - 16) / 13;
-          b.set(x, y, l < -0.5 ? hi : l < 0.55 ? mid : dk);
+          const l = dx / 14 + (y - 16) / 11;
+          b.set(x, y, l < -0.75 ? r[1] : l < 0.5 ? r[2] : l < 1.15 ? r[3] : r[4]);
         }
       }
-      // the sitting dent: a darker oval in the upper middle with a lit lower lip
-      for (let y = 9; y <= 17; y++) for (let x = 10; x <= 23; x++) {
+      for (const [x, y] of [[13, 7], [14, 7], [12, 8], [13, 8], [11, 9]]) if (K.opaque(b, x, y)) b.set(x, y, r[0]);          // crown sheen
+      // the sitting dent: a darker oval with a lit lip along its south edge
+      for (let y = 9; y <= 18; y++) for (let x = 10; x <= 23; x++) {
         const d = ((x + 0.5 - 16.5) / 5.5) ** 2 + ((y + 0.5 - 13) / 3.4) ** 2;
-        if (d <= 1) b.set(x, y, d < 0.55 ? sh : dk);
-        else if (d <= 1.35 && y > 13) b.set(x, y, hi);
+        const ds = ((x + 0.5 - 16.5) / 6.3) ** 2 + ((y + 0.5 - 13.6) / 3.9) ** 2;
+        if (d <= 1) b.set(x, y, y < 12 ? r[4] : r[3]);
+        else if (ds <= 1 && y > 13) b.set(x, y, r[1]);
       }
-      // one light crease from the top left towards the centre
-      for (const [x, y] of [[9, 12], [10, 13], [11, 14], [12, 15], [13, 16], [14, 17]]) b.set(x, y, hi);
-      for (const [x, y] of [[10, 14], [12, 16]]) b.set(x, y, dk);
-      b.hline(8, 27, 17, sh);
-      K.outer(b, K.ramp('orange')[5]);
-      K.shadow(b, 16, 28, 12, 1, 56);
+      // two fabric creases running out from the dent, each a dark fold with a lit edge
+      for (const [x, y] of [[10, 16], [9, 17], [8, 18], [8, 19], [7, 20]]) { b.set(x, y, r[3]); b.set(x - 1, y, r[1]); }
+      for (const [x, y] of [[22, 17], [23, 18], [24, 19], [24, 20], [25, 21]]) { b.set(x, y, r[4]); b.set(x - 1, y, r[2]); }
+      K.outer(b, r[5]);
+      K.shadow(b, 16, 29, 14, 1, 110);
       return b;
     },
   });
@@ -590,13 +656,19 @@
     w: 1, h: 1, variants: ['empty', 'plush', 'card', 'trophy'],
     paint: (v) => {
       const b = K.B(16, 16);
-      // the same cubby for every variant: posts, a top board, a mid-brown back wall lit along its top-left, a lit shelf lip
+      // the same wall cubby for every variant: a 1px post each side, a top board, a mid-brown back lit along its top-left inner
+      // edge with a thin shadow under the top board, and a lit 2px shelf lip
       b.fillRect(1, 1, 14, 14, P.o4);
-      b.fillRect(3, 3, 10, 9, P.o4); b.hline(3, 3, 10, P.o3); b.vline(3, 3, 9, P.o3);
-      b.fillRect(1, 1, 2, 12, P.o2); b.vline(1, 1, 12, P.o1); b.fillRect(13, 1, 2, 12, P.o3); b.vline(14, 1, 12, P.o4);
+      b.vline(1, 1, 12, P.o2); b.vline(14, 1, 12, P.o3);
       b.fillRect(1, 1, 14, 2, P.o2); b.hline(1, 1, 14, P.o1);
-      b.hline(3, 11, 10, P.o5);                                                                     // contact shadow on the shelf
-      b.hline(1, 12, 14, P.o0); b.fillRect(1, 13, 14, 2, P.o2); b.hline(1, 14, 14, P.o4);          // shelf lip
+      b.hline(2, 3, 12, P.o5); b.hline(3, 4, 10, P.o3); b.vline(2, 4, 8, P.o3);                    // bevel under the board, lit NW inner edge
+      b.hline(2, 11, 12, P.o5);                                                                     // contact shadow on the shelf
+      b.hline(1, 12, 14, P.o0); b.fillRect(1, 13, 14, 2, P.o2); b.hline(1, 14, 14, P.o3);          // shelf lip
+      if (v === 'empty') {
+        for (const [x, y] of [[9, 5], [10, 5], [11, 6]]) b.set(x, y, P.o3);                          // a sheen on the back panel
+        K.stick(b, 5, 6, ['ccccc', '.rRr.', '.rRr.', '.rrr.', 'ccccc'], { c: P.o1, r: P.red2, R: P.red1 });   // one spool of thread
+        b.hline(6, 11, 4, P.o6);
+      }
       if (v === 'plush') {
         K.stick(b, 3, 3, [
           '.e......e.',
@@ -628,11 +700,11 @@
           'd.gGggggd.d'.slice(0, 10),
           '.d.gggggd.',
           '...dgggd..',
-          '....ggd...',
-          '....gd....',
-          '..wwwwww..',
-          '..ooooOO..',
-        ], { g: P.gd2, G: P.gd0, d: P.gd3, w: P.o1, o: P.o3, O: P.o5 });
+          '....gdd...',
+          '....ddD...',
+          '..OOOOOO..',
+          '..OooooO..',
+        ], { g: P.gd2, G: P.gd0, d: P.gd3, D: P.gd4, o: P.o5, O: P.o6 });
       }
       K.outer(b, S.omap([[WOOD, P.o6]], 'o6'));
       return b;
@@ -665,36 +737,42 @@
     w: 2, h: 3, variants: ['sleeping', 'unmade', 'made'],
     paint: (v) => {
       const b = K.B(32, 48);
-      b.fillRect(1, 1, 30, 46, P.o3); b.hline(1, 1, 30, P.o1);                                      // frame
-      b.fillRect(1, 1, 30, 3, P.o2); b.hline(1, 3, 30, P.o4);                                       // a low foot rail (north)
+      // frame: lit west rail, a darker 1px frame edge on the east, a footboard at the north end with a lit top and a 2px dark face
+      b.fillRect(1, 1, 30, 43, P.o3); b.vline(1, 1, 43, P.o2); b.vline(2, 4, 40, P.o2);
+      b.vline(29, 4, 40, P.o4); b.vline(30, 1, 43, P.o5);
+      b.hline(1, 1, 30, P.o1); b.fillRect(1, 2, 30, 2, P.o4); b.hline(1, 3, 30, P.o5);
       // the mattress: a lit top-left edge, darker right edge
       b.fillRect(3, 4, 26, 33, P.p1); b.hline(3, 4, 26, P.p0); b.vline(3, 4, 33, P.p0); b.vline(28, 5, 32, P.p2); b.hline(3, 36, 26, P.p3);
       if (v === 'sleeping') {
-        // the sheet turned down at the pillow end, with a few soft folds in it
-        for (const [x0, y0, x1, y1] of [[7, 9, 11, 15], [20, 7, 23, 13], [12, 18, 18, 22]]) b.line(x0, y0, x1, y1, P.p2);
+        // the sheet turned down at the pillow end, with three soft horizontal folds in it
+        for (const [x, y, w] of [[6, 9, 9], [15, 14, 10], [7, 19, 11]]) { b.hline(x, y, w, P.p2); b.hline(x + 1, y - 1, w - 2, P.p0); }
         sheetFold(b);
       }
       if (v === 'unmade') { quilt(b, 1, false); b.fillRect(3, 13, 25, 2, P.p0); b.hline(3, 15, 25, P.p3); }   // thrown back: a lit fold on a shadow line
       if (v === 'made') madeQuilt(b);
       b.hline(3, 30, 26, P.p3);                                                                     // the sheet's shadow at the pillows
-      // pillows: rounded, a diagonal crease, the lower edge shaded in two tones, a shadow round them on the mattress
+      // pillows: outlined in grey, white on top with a pale blue shade row and a crease
       for (const x of [5, 17]) K.stick(b, x, 31, [
-        '.eeeeeeee.',
-        'ewwwwwwwwf',
-        'ewwwwwcwwf',
-        'ewwwwwwcwf',
-        'fppppppppf',
-        '.nnnnnnnn.',
-      ], { w: P.p0, c: P.p2, p: P.p1, n: P.n1, e: P.p2, f: P.p3 });
-      // the headboard (south): tall with a rounded top and two panels
+        '.oooooooo.',
+        'owwwwwwwwo',
+        'owwwwwcwwo',
+        'owwwwwwcwo',
+        'obbbbbbbbo',
+        '.oooooooo.',
+      ], { w: P.p0, c: P.sk1, b: P.sk2, o: P.n3 });
+      // the headboard (south): a solid capped rail, rounded at the ends, no panels
       K.stick(b, 1, 37, [
-        '...oooooooooooooooooooooooo...',
-        '.ooaaaaaaaaaaaaaaaaaaaaaaaaoo.',
-      ], { o: P.o0, a: P.o1 });
-      b.fillRect(1, 39, 30, 7, P.o2); b.hline(1, 46, 30, P.o4);
-      for (const x of [4, 17]) { b.strokeRect(x, 40, 11, 5, P.o3); b.hline(x + 1, 41, 9, P.o1); }
-      for (const [x, y] of [[1, 37], [2, 37], [3, 37], [1, 38], [30, 37], [29, 37], [28, 37], [30, 38]]) b.set(x, y, 0);
-      K.outer(b, S.omap([[WOOD, P.o6], [[P.p0, P.p1, P.p2, P.p3, P.n1], P.p5]], 'o6'));
+        '..aaaaaaaaaaaaaaaaaaaaaaaaaa..',
+        '.abbbbbbbbbbbbbbbbbbbbbbbbbbc.',
+        'abbbbbbbbbbbbbbbbbbbbbbbbbbbbc',
+        'cccccccccccccccccccccccccccccd',
+        'eeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+        'eeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+        'ffffffffffffffffffffffffffffff',
+      ], { a: P.o0, b: P.o1, c: P.o2, d: P.o3, e: P.o3, f: P.o5 });
+      for (const x of [2, 28]) b.fillRect(x, 44, 2, 2, P.o5);                                       // its feet
+      K.outer(b, S.omap([[WOOD, P.o6], [[P.p0, P.p1, P.p2, P.p3, P.n3, P.sk1, P.sk2], P.p5]], 'o6'));
+      K.shadowRect(b, 4, 46, 24, 1);
       return b;
     },
   });
@@ -717,23 +795,27 @@
     paint: () => {
       const b = K.B(16, 16);
       const s = K.ramp('sky');
-      // a sky-blue painted chest lit from the top left: a lighter lid top, a lid seam with a brass latch, a star on the front,
-      // and a pink plush paw poking out of the gap
-      K.stick(b, 1, 3, [
+      // a sky-blue chest: a lighter lid face lit along its NW edge, a dark lid seam 4px down with a pink plush paw poking out,
+      // a darker front face, and a gold star clasp outlined in dark
+      K.stick(b, 1, 2, [
         '00000000000001',
         '01111111111112',
+        '01111111111112',
         '11111111111112',
+        'kkkkpPkkkkkkkk',
         '22222222222223',
-        'kkkpPkkkgkkkkk',
-        '0111111d111123',
-        '0111111y111123',
-        '011111yyy11123',
-        '01111yyyyyy123',
-        '011111yyyy1123',
-        '011111y11y1123',
+        '22222222222223',
+        '22222222222223',
+        '22222222222223',
+        '22222222222223',
+        '22222222222223',
+        '22222222222223',
         '33333333333334',
-      ], { 0: s[0], 1: s[1], 2: s[2], 3: s[3], 4: s[4], k: P.o6, p: P.pk1, P: P.pk2, g: P.gd2, d: P.gd3, y: P.yl2 });
+      ], { 0: s[0], 1: s[1], 2: s[2], 3: s[3], 4: s[4], k: P.o6, p: P.pk1, P: P.pk2 });
       K.outer(b, s[5]);
+      const star = K.B(16, 16);
+      K.stick(star, 5, 8, ['...h...', 'hhhyyyy', '.yyyyd.', '..yyd..', '.yy.dd.'], { h: P.gd1, y: P.gd2, d: P.gd3 });
+      K.outer(star, P.o6); b.blit(star, 0, 0);
       K.shadow(b, 8, 15, 7, 1);
       return b;
     },
@@ -744,29 +826,28 @@
     w: 1, h: 1, variants: ['lamp', 'alarm'],
     paint: (v) => {
       const b = K.B(16, 16);
-      // 12px wide: a lit top surface, one drawer with a brass knob
-      b.fillRect(2, 6, 12, 2, P.o1); b.hline(2, 6, 12, P.o0);
-      b.fillRect(2, 8, 12, 6, P.o3); b.vline(2, 8, 6, P.o2); b.vline(13, 8, 6, P.o4); b.hline(2, 13, 12, P.o4);
-      b.strokeRect(4, 9, 8, 3, P.o4); b.hline(5, 9, 6, P.o2); b.set(7, 10, P.gd2); b.set(8, 10, P.gd3);
+      // 12px wide 3/4 cabinet: a lit 2px top surface, then the front with one drawer and a brass knob
+      b.fillRect(2, 7, 12, 2, P.o1); b.hline(2, 7, 12, P.o0);
+      b.fillRect(2, 9, 12, 5, P.o3); b.hline(2, 9, 12, P.o4); b.vline(2, 10, 4, P.o2); b.vline(13, 10, 4, P.o4); b.hline(2, 13, 12, P.o4);
+      b.strokeRect(4, 10, 8, 3, P.o4); b.hline(5, 10, 6, P.o2); b.set(7, 11, P.gd2); b.set(8, 11, P.gd3);
       if (v === 'lamp') {
-        b.fillRect(6, 6, 4, 1, P.o5); b.hline(6, 7, 4, P.o3);                                       // base on the top, its shadow
-        b.fillRect(7, 3, 2, 3, P.o4); b.set(7, 3, P.o3);
-        K.stick(b, 4, 0, ['.wwwwww.', 'wwwwwwyy', 'yyyyyyyy'], { w: P.yl0, y: P.yl1 });
-        b.set(5, 0, P.p0);
+        b.fillRect(6, 6, 4, 2, P.o5); b.hline(6, 6, 4, P.o4);                                       // base on the top
+        b.fillRect(7, 4, 2, 2, P.o4); b.set(7, 4, P.o3);                                             // stem
+        K.stick(b, 4, 1, ['.wwwwww.', 'wwwyyyyy', 'dddddddd'], { w: P.yl0, y: P.yl1, d: P.yl3 });     // shade, darker underside
       } else {
         K.stick(b, 4, 0, [
           '.g...g..',
           '.rrrrr..',
           'rrwwwrr.',
-          'rwwkwwr.'.replace('.', 'R'),
+          'rwwkwwq.',
           'rwwkkwr.',
-          'rrwwwrR.',
-          '.rr.rR..',
-        ].map((r) => r.replace('R', 'q')), { g: P.gd2, r: P.red2, q: P.red3, w: P.p0, k: P.ink2 });
-        b.hline(5, 7, 6, P.o3);
+          'rrwwwrq.',
+          '.rr.rq..',
+        ], { g: P.gd2, r: P.red2, q: P.red3, w: P.p0, k: P.ink2 });
+        b.hline(5, 7, 6, P.o2);
       }
-      K.outer(b, S.omap([[WOOD, P.o6]], 'ink'));
-      K.shadow(b, 8, 14, 6, 1);
+      K.outer(b, S.omap([[WOOD, P.o6], [[P.yl0, P.yl1, P.yl3], P.yl4]], 'ink'));
+      K.shadow(b, 8, 15, 7, 1);
       return b;
     },
   });
@@ -785,10 +866,16 @@
       } else if (v === 'socks') {      // two odd socks
         b.fillRect(2, 4, 3, 6, P.yl1); b.fillRect(2, 9, 5, 2, P.yl1); b.hline(2, 4, 3, P.red1); b.set(3, 6, P.red1);
         b.fillRect(10, 6, 3, 5, P.pu1); b.fillRect(8, 10, 5, 2, P.pu1); b.hline(10, 6, 3, P.p0); b.set(11, 8, P.f1);
-      } else if (v === 'controller') { // a game controller and snack cake wrappers
-        b.fillRect(3, 6, 9, 4, P.n2); b.fillRect(2, 7, 2, 4, P.n2); b.fillRect(11, 7, 2, 4, P.n2); b.hline(3, 6, 9, P.n1);
-        b.set(4, 8, P.ink2); b.set(10, 7, P.red2); b.set(11, 8, P.bl2); b.line(7, 6, 9, 2, P.n4);
-        b.fillRect(11, 12, 4, 2, P.pk1); b.set(12, 12, P.p0); b.fillRect(1, 12, 3, 2, P.yl1); b.set(2, 13, P.red1);
+      } else if (v === 'controller') { // a game controller: grey body with its grips, a d-pad, coloured buttons, and its cord in one curve
+        K.stick(b, 2, 7, [
+          '.hhhhhhhhhh.',
+          'hnknnnnnnrnd',
+          'kkknnnnnbnyd',
+          'hnknnnnnngnd',
+          'nnnd....nnnd',
+          '.dd......dd.',
+        ], { h: P.n1, n: P.n2, d: P.n3, k: P.ink2, r: P.red2, b: P.bl2, y: P.yl2, g: P.f2 });
+        for (const [x, y] of [[7, 6], [7, 5], [8, 4], [9, 3], [10, 3], [11, 2], [12, 2]]) b.set(x, y, P.n4);
       } else if (v === 'figures') {    // tiny Konko, Ottopi and Sprubun figures mid-fight
         for (const [x, y, c] of [[3, 6, 'orange'], [8, 4, 'blue'], [11, 9, 'green']]) { const r = K.ramp(c); b.fillRect(x, y, 3, 4, r[2]); b.hline(x, y, 3, r[1]); b.set(x + 1, y + 1, P.p0); b.fillRect(x, y + 4, 3, 1, P.n3); }
         b.set(7, 8, P.yl2); b.set(10, 7, P.yl2);                                                    // little action sparks
@@ -798,24 +885,35 @@
         b.circle(11, 10, 3, P.b1, true); b.set(8, 8, P.b2); b.set(14, 8, P.b2); b.fillRect(9, 5, 5, 2, P.p0); b.hline(9, 7, 5, P.p2);   // homemade Nibblenna: ears, chef hat
         b.set(10, 10, P.ink); b.set(12, 10, P.ink); b.set(11, 11, P.pk2);
         b.set(13, 12, P.pk2); b.set(12, 12, P.p0);                                                  // a wonky stitched seam
-      } else if (v === 'comic') {      // an open comic, face down
-        b.fillRect(2, 6, 6, 6, P.red1); b.fillRect(8, 6, 6, 6, P.red2); b.vline(8, 6, 6, P.red3); b.hline(2, 6, 12, P.red0);
-        b.fillRect(9, 8, 3, 2, P.yl1); b.set(4, 9, P.p0);
+      } else if (v === 'comic') {      // an open comic, face down: a two-colour cover with a panel, a dark spine, white page edges
+        K.stick(b, 2, 5, [
+          'aaaaaakbbbbb',
+          'ayyyaakbbbbb',
+          'ayyyaakbyyyb',
+          'aaaaaakbyyyb',
+          'aaaaaakbbbbb',
+          'wwwwwwkwwwww',
+          'pppppp.ppppp',
+        ], { a: P.red1, b: P.bl2, y: P.yl1, k: P.ink2, w: P.p0, p: P.p2 });
       } else if (v === 'sneakers') {   // sneakers, one on its side
         b.fillRect(2, 5, 4, 7, P.p0); b.hline(2, 11, 4, P.bl2); b.set(3, 6, P.red2); b.set(4, 7, P.red2);
         b.fillRect(8, 9, 7, 3, P.p0); b.hline(8, 12, 7, P.bl2); b.set(10, 9, P.red2); b.set(9, 10, P.ink2);
-      } else if (v === 'pebbles') {
-        for (const [x, y] of [[3, 5], [10, 8], [5, 11], [12, 3]]) { b.fillRect(x, y, 2, 2, P.c2); b.set(x, y, P.c0); b.set(x + 1, y + 1, P.c4); b.hline(x, y + 2, 2, P.d4); }   // stones, each with its shadow
+      } else if (v === 'pebbles') {    // one cluster of four pebbles, lit top-left
+        for (const [x, y] of [[5, 7], [8, 6], [7, 9], [10, 9]]) { b.fillRect(x, y, 2, 2, P.c2); b.set(x, y, P.c0); b.set(x + 1, y + 1, P.c4); }
+        outline = 'c5';
+      } else if (v === 'petals') {     // a little drift of five petals in two pinks
+        for (const [x, y, d] of [[5, 6, 0], [8, 5, 1], [6, 9, 1], [9, 8, 0], [11, 6, 1]]) { b.set(x, y, P.pk1); b.set(x + 1, y + d, P.pk1); b.set(x + 1, y + 1 - d, P.pk3); }
         outline = null;
-      } else if (v === 'petals') {
-        for (const [x, y, d] of [[3, 4, 0], [9, 6, 1], [5, 10, 1], [12, 11, 0], [11, 2, 1]]) { b.set(x, y, P.pk1); b.set(x + 1, y + d, P.pk1); b.set(x + 1, y + 1 - d, P.pk3); b.set(x + 2, y + d, P.pk3); }   // petals in two pinks
-        outline = null;
-      } else {                         // a small grass tuft
-        for (const [x, h] of [[5, 4], [6, 6], [7, 5], [8, 7], [9, 4], [10, 5]]) b.vline(x, 12 - h, h, x & 1 ? P.g3 : P.g2);
-        b.set(8, 5, P.g1); b.set(6, 6, P.g1); b.hline(5, 12, 6, P.g4);
+      } else {                         // a dense grass tuft, lit tips
+        for (const [x, h] of [[5, 4], [6, 6], [7, 5], [8, 7], [9, 4], [10, 5]]) b.vline(x, 12 - h, h, x & 1 ? P.g4 : P.g2);
+        b.set(8, 5, P.g1); b.set(6, 6, P.g1); b.set(10, 7, P.g1); b.hline(5, 12, 6, P.g5);
         outline = null;
       }
-      if (outline) K.outer(b, S.omap([], 'o6'));
+      if (outline) K.outer(b, S.omap([], outline === 'ink' ? 'o6' : outline));
+      // every variant gets the same soft contact shadow under its lowest row
+      let x0 = 16, x1 = -1, y1 = -1;
+      for (let y = 0; y < 16; y++) for (let x = 0; x < 16; x++) if (K.opaque(b, x, y)) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y1 = Math.max(y1, y); }
+      if (y1 >= 0 && y1 < 15) K.shadow(b, (x0 + x1) / 2, y1 + 1, (x1 - x0) / 2 + 1, 1, 70);
       return b;
     },
   });

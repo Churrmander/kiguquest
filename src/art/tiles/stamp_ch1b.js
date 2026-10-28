@@ -35,8 +35,8 @@
       while (op(x0 - 1, y)) x0--;
       while (op(x1 + 1, y)) x1++;
       const t = (x - x0) / Math.max(1, x1 - x0);
-      let c = t < 0.3 ? 1 : t < 0.65 ? 2 : t < 0.88 ? 3 : 4;
-      if (!op(x, y - 1) && t < 0.45) c = 0;
+      let c = t < 0.34 ? 1 : t < 0.78 ? 2 : 3;                                                       // 4 hard tones: lit, mid, shade (+ the top-edge highlight)
+      if (!op(x, y - 1) && t < 0.5) c = 0;
       else if (!op(x, y + 1) && c < 4) c++;
       l.set(x, y, ramp[c]);
     }
@@ -47,6 +47,10 @@
   const fillRows = (l, y0, y1, cx, hw) => { for (let y = y0; y <= y1; y++) { const h = hw(y); l.hline(Math.round(cx - h), y, Math.round(2 * h) + 1, MB[2]); } };
   /** a robed figure standing on the plinth (hem at y 47): narrow sloped shoulders, a girdled waist at y 33, the skirt flaring to the hem */
   const bodyHW = (y) => y <= 22 ? 1.5 : y === 23 ? 4 : y <= 26 ? 6 : y <= 33 ? 6 - (y - 26) * 2 / 7 : 4 + (y - 33) * 6 / 14;
+  /** Astara's straight column gown: square shoulders, barely flaring */
+  const columnHW = (y) => y <= 22 ? 1.5 : y === 23 ? 4.5 : y <= 33 ? 5.5 : 5.5 + (y - 33) * 2 / 14;
+  /** Anwela's A-line gown: a narrow waist and a skirt that flares wide to the hem */
+  const flareHW = (y) => y <= 22 ? 1.5 : y === 23 ? 3.5 : y <= 26 ? 5 : y <= 31 ? 5 - (y - 26) * 2 / 5 : 3 + (y - 31) * 8.5 / 16;
   /** skirt folds (a crease with a lit edge), the girdle, the hem, and the lowered arm as a crease down her side with the hand at the hip */
   function robeDetail(l, cx, offs, armSide) {
     for (const o of offs) {
@@ -69,7 +73,7 @@
   /** Astara (west): her hair up in a bun, the near arm raised to hold the Everspool's west end, the other at her side */
   function astara(b, ribbons) {
     const cx = 19;
-    part(b, (l) => fillRows(l, 22, 47, cx, bodyHW), MB, (l) => {
+    part(b, (l) => fillRows(l, 22, 47, cx, columnHW), MB, (l) => {
       robeDetail(l, cx, [-7, -3, 2, 6], -1);
       if (ribbons) for (let i = 0; i <= 12; i++) {                                                   // a crimson sash over the shoulder to the hip, following the body
         const t = i / 12, x = Math.round(cx - 4 + 9 * t - 1.2 * Math.sin(Math.PI * t)), y = Math.round(24 + 9 * t);
@@ -80,7 +84,8 @@
     part(b, (l) => {                                                                                    // hair: a cap swept to one side, a bun on top
       for (let y = 10; y <= 16; y++) for (let x = cx - 6; x <= cx + 6; x++) if ((x - cx) ** 2 + (y - 16) ** 2 <= 38 && (y < 13 || Math.abs(x - cx) >= 5 || (y === 13 && x > cx - 2))) l.set(x, y, MB[2]);
       l.circle(cx - 1, 8, 3, MB[2], true);
-    }, HAIR, (l) => { l.line(cx - 2, 8, cx, 10, MB[4]); l.set(cx - 2, 6, MB[2]); });
+      for (const [x, y] of [[cx - 7, 14], [cx - 7, 16], [cx + 6, 15], [cx + 3, 6]]) l.set(x, y, MB[2]);   // curls escaping the updo
+    }, HAIR, (l) => { l.line(cx - 2, 8, cx, 10, MB[4]); l.set(cx - 2, 6, MB[2]); l.set(cx - 2, 9, MB[4]); l.set(cx + 1, 7, MB[4]); });
   }
   /** Anwela (east): long hair falling past her shoulders, the near arm raised to the Everspool's east end */
   function anwela(b, ribbons) {
@@ -89,12 +94,12 @@
       for (let y = 15; y <= 31; y++) { const w = y < 20 ? 6.5 : 6.5 + (y - 20) * 0.08; l.hline(Math.round(cx - w), y, Math.round(2 * w) + 1, MB[2]); }
       for (const x of [cx - 7, cx + 7]) l.set(x, 31, 0);
     }, HAIR, (l) => { for (const x of [cx - 5, cx + 5]) l.line(x, 21, x + (x < cx ? -1 : 1), 30, MB[4]); });
-    part(b, (l) => fillRows(l, 22, 47, cx, bodyHW), MB, (l) => {
-      robeDetail(l, cx, [-6, -2, 3, 7], 1);
+    part(b, (l) => fillRows(l, 22, 47, cx, flareHW), MB, (l) => {
+      robeDetail(l, cx, [-9, -4, 3, 9], 1);
       if (ribbons) {
         const x0 = cx - 4, x1 = cx + 4;
         for (let x = x0; x <= x1; x++) { const y = 32 + Math.round(1.3 * Math.sin(Math.PI * (x - x0) / (x1 - x0))); l.set(x, y, R('blue')[2]); l.set(x, y + 1, R('blue')[3]); }
-        for (let y = 35; y <= 45; y++) { const x = Math.round(cx + bodyHW(y) - 2); l.set(x, y, R('blue')[2]); l.set(x - 1, y, R('blue')[1]); }   // a tail falling along her skirt's edge
+        for (let y = 35; y <= 45; y++) { const x = Math.round(cx + flareHW(y) - 2); l.set(x, y, R('blue')[2]); l.set(x - 1, y, R('blue')[1]); }   // a tail falling along her skirt's edge
       }
     });
     headPart(b, cx, 17);
@@ -159,16 +164,20 @@
       b.fillRect(2, 56, 60, 7, g[3]); b.fillRect(2, 56, 60, 2, g[1]); b.hline(2, 56, 60, g[0]); b.hline(2, 62, 60, g[4]); b.vline(2, 58, 4, g[2]);
       b.fillRect(7, 46, 50, 10, g[2]); b.fillRect(7, 46, 50, 3, g[1]); b.hline(7, 46, 50, g[0]); b.hline(7, 49, 50, g[3]);
       b.vline(7, 49, 7, g[1]); b.fillRect(55, 49, 2, 7, g[3]); b.hline(8, 55, 48, g[3]);
-      for (const [x, y] of [[12, 52], [48, 51], [19, 53], [44, 53]]) b.set(x, y, g[3]);
-      b.fillRect(25, 50, 14, 5, P.gd3); b.fillRect(26, 51, 12, 3, P.gd2); b.hline(26, 51, 12, P.gd1); b.hline(28, 52, 8, P.gd4);
+      for (let y = 50; y < 55; y++) for (let x = 9; x < 55; x++) { const h = K.h32(x, y, 31) % 13; if (h === 0) b.set(x, y, g[3]); else if (h === 1) b.set(x, y, g[0]); }   // stone grain
+      b.strokeRect(10, 50, 44, 5, g[3]); b.hline(11, 50, 42, g[4]); b.vline(10, 50, 5, g[4]);                // a carved border, cut in (dark top-left inner edge)
+      for (let x = 4; x < 60; x += 7) b.vline(x, 59, 3, g[4]);                                                // the base step's blocks
+      b.fillRect(24, 49, 16, 7, P.gd3); b.fillRect(25, 50, 14, 5, P.gd2); b.hline(25, 50, 14, P.gd1); b.vline(25, 50, 5, P.gd1);
+      for (const [x, y, w] of [[27, 51, 3], [31, 51, 2], [34, 51, 3], [26, 53, 2], [29, 53, 4], [34, 53, 3]]) b.hline(x, y, w, P.gd4);   // the inscription
       if (v === 'ribbons') {
         anwela(b, true); astara(b, true);
         everspool(b);
         // the raised arms, drawn last so their hands hold the spool's ends; a red ribbon spirals up Astara's sleeve
-        part(b, (l) => { l.polygon([[21, 24], [24, 24], [26, 13], [24, 13]], MB[2]); l.fillRect(24, 10, 3, 4, MB[2]); }, MB, (l) => {
+        part(b, (l) => { l.polygon([[21, 24], [24, 24], [28, 12], [26, 12]], MB[2]); l.fillRect(26, 8, 3, 5, MB[2]); }, MB, (l) => {
+          l.hline(26, 9, 3, MB[3]); l.hline(26, 11, 3, MB[3]);                                          // fingers curled round the flange
           for (const y of [21, 17]) { l.set(22, y, R('red')[2]); l.set(23, y - 1, R('red')[2]); l.set(24, y - 2, R('red')[3]); }
         });
-        part(b, (l) => { l.polygon([[40, 24], [43, 24], [40, 13], [38, 13]], MB[2]); l.fillRect(38, 10, 3, 4, MB[2]); });
+        part(b, (l) => { l.polygon([[40, 24], [43, 24], [38, 12], [36, 12]], MB[2]); l.fillRect(36, 8, 3, 5, MB[2]); }, MB, (l) => { l.hline(36, 9, 3, MB[3]); l.hline(36, 11, 3, MB[3]); });
         bow(b, 24, 33, R('pink')); bow(b, 41, 13, R('yellow')); bow(b, 14, 45, R('yellow')); bow(b, 50, 45, R('pink'));
       } else {
         const l = K.B(64, 64); wrapped(l); b.blit(l, 0, 3);
@@ -208,13 +217,19 @@
     w: 1, h: 1, rise: 12,
     paint: () => {
       const b = K.B(16, 28), t = R('teal');
-      b.fillRect(2, 6, 12, 20, P.o2); b.vline(2, 6, 20, P.o1); b.fillRect(12, 6, 2, 20, P.o4); b.hline(2, 25, 12, P.o5);
-      b.fillRect(1, 4, 14, 3, P.o3); b.hline(1, 4, 14, P.o1);                                        // top
-      b.fillRect(4, 8, 8, 6, P.ink2); b.fillRect(5, 9, 6, 4, t[1]); b.hline(5, 9, 6, t[0]); b.set(6, 11, t[3]); b.set(8, 11, t[3]);   // screen
-      for (let x = 4; x < 12; x += 3) b.fillRect(x, 16, 2, 1, P.p0);                                 // keys
-      b.fillRect(4, 19, 8, 5, P.o3); b.strokeRect(4, 19, 8, 5, P.o4); b.fillRect(7, 21, 2, 1, P.gd2); // drawer
-      b.fillRect(6, 1, 4, 3, P.pk1); b.hline(5, 1, 6, P.o2); b.hline(5, 3, 6, P.o2);                // spool badge
-      out(b, [[S.tones(t), t[5]], [[P.ink2], P.ink], [[P.pk1], P.o6]]);
+      // a 3D wooden kiosk: a light top strip, a lit front, a darker 2px east side face
+      b.fillRect(2, 8, 10, 18, P.o2); b.vline(2, 8, 18, P.o1); b.hline(2, 25, 10, P.o4);
+      b.fillRect(12, 7, 2, 19, P.o3); b.vline(13, 8, 18, P.o4);
+      b.fillRect(2, 6, 12, 2, P.o0); b.hline(2, 7, 12, P.o1); b.set(13, 6, P.o1);
+      // the glowing screen: a dark bezel, a cyan face lighter in the centre, a white glint
+      b.fillRect(3, 9, 8, 6, P.ink2); b.fillRect(4, 10, 6, 4, t[2]); b.fillRect(5, 11, 4, 2, t[0]); b.set(4, 10, P.p0); b.hline(4, 13, 6, t[3]);
+      for (let x = 4; x < 10; x += 2) b.set(x, 16, P.p0);                                            // keys
+      b.fillRect(3, 19, 8, 5, P.o3); b.strokeRect(3, 19, 8, 5, P.o4); b.fillRect(6, 21, 2, 1, P.gd2); // drawer
+      // a sign panel on top: a thread-spool icon so it reads as the storage PC
+      b.vline(4, 4, 2, P.o4); b.vline(11, 4, 2, P.o4);
+      b.fillRect(3, 0, 10, 4, t[3]); b.hline(3, 0, 10, t[2]);
+      K.stick(b, 6, 0, ['wwww', '.pp.', '.pp.', 'wwww'].slice(0, 4), { w: P.p0, p: P.pk2 });
+      out(b, [[S.tones(t), t[5]], [[P.ink2], P.ink], [[P.pk2, P.p0], P.o6]]);
       K.shadow(b, 8, 27, 7, 1);
       return b;
     },
@@ -225,22 +240,23 @@
     w: 1, h: 1, rise: 14,
     paint: () => {
       const b = K.B(16, 30), r = R('red');
-      // parasol dome with alternating panels, a darker underside band and a finial on top
-      for (let y = 2; y < 9; y++) {
-        const half = Math.round(Math.sqrt(Math.max(0, 1 - ((8 - y) / 7) ** 2)) * 7);
-        for (let x = 8 - half; x <= 7 + half; x++) b.set(x, y, ((x - 1) >> 2) & 1 ? (y === 8 ? P.p2 : P.p0) : (y === 8 ? r[3] : r[2]));
+      // parasol: alternating red and white gores, each with a darker underside row, and a finial on top
+      for (let y = 2; y < 10; y++) {
+        const half = Math.round(Math.sqrt(Math.max(0, 1 - ((9 - y) / 8) ** 2)) * 7);
+        for (let x = 8 - half; x <= 7 + half; x++) {
+          const red = ((x - 1) >> 2) & 1;
+          b.set(x, y, y >= 8 ? (red ? r[4] : P.p3) : red ? (x < 8 && y < 6 ? r[1] : r[2]) : (y < 5 ? P.p0 : P.p2));
+        }
       }
-      for (let x = 1; x < 15; x++) b.set(x, 9, x & 1 ? r[4] : 0);
-      b.hline(5, 2, 6, r[1]); b.set(7, 1, P.o3); b.set(8, 1, P.o3); b.set(7, 0, P.o1);                 // finial
-      b.vline(7, 9, 12, P.n3); b.vline(8, 9, 12, P.n4);                                              // pole, meeting the table's centre
-      // the table top with a 2px edge and a cloth hanging over it
-      b.ellipse(7.5, 21, 6, 2, P.p0, true); b.hline(3, 20, 6, P.p0);
-      b.fillRect(2, 22, 12, 2, r[2]); for (let x = 2; x < 14; x += 2) b.set(x, 23, P.p0); b.hline(2, 24, 12, r[4]);
+      b.set(7, 1, P.p3); b.set(8, 1, P.p3); b.set(7, 0, P.p0);                                        // finial
+      // the pole runs down through the table to a round base foot
+      b.vline(7, 10, 17, P.n3); b.vline(8, 10, 17, P.n4);
+      b.ellipse(7.5, 21, 5.5, 2, P.p0, true); b.hline(4, 22, 8, P.p2); b.hline(5, 23, 6, P.p3);       // round white tabletop, shaded front
       b.set(7, 21, P.n3); b.set(8, 21, P.n4);
-      b.fillRect(7, 25, 2, 3, P.n3); b.set(8, 26, P.n4);
-      b.fillRect(4, 19, 2, 2, P.pk1); b.set(11, 20, P.o3);                                            // cup and a biscuit
-      out(b, [[S.tones(r), r[5]], [[P.p0, P.p2], P.p5], [[P.n3, P.n4], P.n5], [[P.pk1], P.p5]]);
-      K.shadow(b, 8, 28, 6, 1);
+      b.hline(5, 27, 6, P.n3); b.hline(6, 28, 4, P.n4);                                             // the base foot
+      b.fillRect(4, 20, 2, 2, P.pk1); b.set(10, 20, P.o3);                                            // cup and a biscuit
+      out(b, [[S.tones(r), r[5]], [[P.p0, P.p2, P.p3], P.p5], [[P.n3, P.n4], P.n5], [[P.pk1], P.p5]]);
+      K.shadow(b, 8, 26, 7, 2);
       return b;
     },
   });
@@ -328,20 +344,16 @@
     w: 1, h: 1, rise: 4,
     paint: () => {
       const b = K.B(16, 20);
-      // a low, wide backless bench: two trestle legs (splayed, with a foot rail), then a seat of three planks with dark gaps
-      for (const x of [2, 11]) { K.stick(b, x, 13, ['.ab.', '.ab.', 'a..b', 'a..b', 'cc.cc'.slice(0, 4)], { a: P.o3, b: P.o4, c: P.o5 }); }
-      b.hline(4, 15, 8, P.o4);
-      b.fillRect(0, 8, 16, 6, P.o2);
-      for (const y of [8, 10, 12]) b.hline(0, y, 16, P.o1);
-      for (const y of [9, 11]) b.hline(0, y, 16, P.o2);
-      b.hline(0, 10, 16, P.o5); b.hline(0, 12, 16, P.o5);                                               // the gaps between the planks
-      b.hline(0, 8, 16, P.o0); b.hline(0, 11, 16, P.o1); b.hline(0, 13, 16, P.o1);
-      b.hline(0, 14, 16, P.o4);                                                                         // the front edge in shade
-      for (const x of [1, 14]) for (const y of [9, 11, 13]) b.set(x, y, P.o4);                          // nail heads
-      // Gran's little wicker picnic basket at one end
-      K.stick(b, 9, 3, ['.kkkk.', 'k....k', 'wwwwww', 'wvwvwv', 'vvvvvv'], { k: P.o4, w: P.o1, v: P.o3 });
+      // a short backless bench in the bench:default woods: a seat of two planks with a lit top edge and a shaded front, two short legs
+      for (const x of [3, 11]) { b.fillRect(x, 13, 2, 4, P.o4); b.vline(x, 13, 4, P.o3); }
+      b.fillRect(1, 9, 14, 4, P.o2); b.hline(1, 9, 14, P.o0); b.hline(1, 10, 14, P.o1); b.hline(1, 11, 14, P.o4); b.hline(1, 12, 14, P.o3);
+      b.hline(1, 13, 14, P.o4);
+      // Gran's wicker picnic basket on it: a handle arch, a lit rim, a 2-tone weave
+      K.stick(b, 8, 2, ['..hh..', '.h..h.', 'rrrrrr', 'wvwvwv', 'vwvwvw', 'vvvvvv'], { h: P.o3, r: P.o0, w: P.o1, v: P.o3 });
+      b.set(9, 7, P.o4); b.set(12, 7, P.o4);
       out(b);
-      K.shadow(b, 8, 19, 8, 1);
+      b.set(10, 3, 0); b.set(11, 3, 0);                                                                 // see through the handle
+      K.shadow(b, 8, 18, 7, 1);
       return b;
     },
   });
@@ -378,19 +390,20 @@
     w: 1, h: 1, rise: 6, frames: 4, animSpeed: 10,
     paint: (v, f) => {
       const b = K.B(16, 22);
-      b.ellipse(8, 15, 7, 4, P.n2, true); b.ellipse(8, 15, 7, 4, P.n3, false); b.hline(3, 11, 10, P.n1);
-      b.ellipse(8, 15, 5, 2, P.w3, true); b.hline(5, 14, 6, P.w2);
-      b.ellipse(8, 15, 3 + (f & 1), 1, P.w1, false);                                                   // a lighter ripple ring, breathing
+      // the basin: a stone rim lit along its NW edge, the water inside with a darker row at its far edge
+      b.ellipse(8, 15, 7, 4, P.n2, true); b.ellipse(8, 15, 7, 4, P.n3, false);
+      for (const [x, y] of [[2, 13], [3, 12], [4, 12], [5, 11], [6, 11], [7, 11], [1, 14]]) b.set(x, y, P.n0);
+      b.ellipse(8, 15, 5, 2, P.w3, true); b.hline(5, 13, 6, P.w4); b.hline(6, 16, 5, P.w2);
+      b.ellipse(8, 15, 3 + (f & 1), 1, P.w2, false);                                                   // a ripple ring, breathing
       b.fillRect(1, 17, 14, 3, P.n3); b.hline(1, 17, 14, P.n2); b.hline(2, 19, 12, P.n4);
       b.fillRect(7, 8, 2, 7, P.n2); b.set(7, 8, P.n1); b.vline(8, 9, 6, P.n3); b.fillRect(6, 7, 4, 2, P.n1); b.set(9, 8, P.n3);   // spout pillar
-      K.outer(b, S.omap([[STONE, P.n5], [[P.w1, P.w2, P.w3], P.n5]], 'n5'));
-      // the jet: a 1px white-and-light-blue line up from the spout that opens into two falling arcs, droplets at their ends
-      for (let y = 1; y < 7; y++) b.set(8, y, y & 1 ? P.w0 : P.w1);
-      const arc = [[7, 1], [6, 1], [5, 2], [4, 3], [4, 4], [3, 6]];
-      for (const [x, y] of arc) { b.set(x, y, y < 3 ? P.w0 : P.w1); b.set(16 - x, y, y < 3 ? P.w0 : P.w1); }
-      const drop = [[3, 8], [3, 9], [4, 10], [2, 7]][f];
-      b.set(drop[0], drop[1], P.w0); b.set(16 - drop[0], drop[1] + ((f + 1) & 1), P.w0);
-      b.set(4 + ((f + 2) & 3), 14 + (f & 1), P.w0);                                                     // splash rings where they land
+      K.outer(b, S.omap([[STONE, P.n5], [[P.w1, P.w2, P.w3, P.w4], P.n5]], 'n5'));
+      // the jet: a solid pale-blue line up from the spout that opens into two solid falling arcs (2 tones), a droplet off each end
+      b.vline(8, 1, 6, P.w1); b.vline(7, 2, 5, P.w2);
+      const arc = [[7, 1], [6, 1], [5, 2], [4, 3], [4, 4], [3, 5], [3, 6]];
+      for (const [x, y] of arc) { b.set(x, y, y < 3 ? P.w1 : P.w2); b.set(16 - x, y, y < 3 ? P.w1 : P.w2); }
+      const drop = [[3, 8], [3, 9], [2, 10], [3, 11]][f];
+      b.set(drop[0], drop[1], P.w1); b.set(16 - drop[0] - 1 + 1, [9, 10, 11, 8][f], P.w1);
       K.shadow(b, 8, 21, 7, 1);
       return b;
     },
@@ -401,26 +414,25 @@
     w: 1, h: 1, rise: 4,
     paint: () => {
       const b = K.B(16, 20), o = R('orange'), rust = R('brown')[3];
-      // a lumpy heap: three rounded mounds on a flat base, filled with little 2px leaves in red, orange and yellow
+      // a lumpy heap of clustered 2px leaves in three tones: a light crown, a mid body, a dark base row
       const inHeap = (x, y) => ((x - 4) / 4) ** 2 + ((y - 13) / 4) ** 2 <= 1 || ((x - 8.5) / 5) ** 2 + ((y - 11) / 5) ** 2 <= 1 || ((x - 12.5) / 3.5) ** 2 + ((y - 13.5) / 3.5) ** 2 <= 1 || (y >= 14 && y <= 17 && x >= 1 && x <= 15);
-      for (let y = 5; y <= 17; y++) for (let x = 0; x < 16; x++) if (inHeap(x, y)) b.set(x, y, o[3]);
-      const LEAF = [P.red2, o[2], P.yl2];
+      const tone = (x, y) => (y + x * 0.3 < 10.5 ? 0 : y + x * 0.2 < 14.5 ? 1 : 2);
+      const BASE = [o[1], o[2], P.red3], LEAF = [P.yl2, o[3], rust];
+      for (let y = 5; y <= 17; y++) for (let x = 0; x < 16; x++) if (inHeap(x, y)) b.set(x, y, BASE[tone(x, y)]);
+      // leaf shapes: little 2px diagonal leaves, a shade darker than the tone they sit in, packed in clusters
       for (let y = 6; y <= 15; y++) for (let x = 1; x < 15; x++) {
         if (!inHeap(x, y) || !inHeap(x + 1, y + 1)) continue;
-        const h = K.h32(x, y, 77);
-        if (h % 3) continue;
-        const c = LEAF[(h >> 4) % 3], lit = x + y < 15;
-        b.set(x, y, lit && c === o[2] ? P.yl2 : c); b.set(x + 1, y + 1, c === P.yl2 ? o[2] : c === o[2] ? P.red2 : R('red')[3]);
+        const h = K.h32(x, y, 91);
+        if (h % 5) continue;
+        const t = tone(x, y), c = (h >> 5) & 1 ? LEAF[t] : BASE[Math.max(0, t - 1)];
+        b.set(x, y, c); if ((h >> 7) & 1) b.set(x + 1, y + 1, c); else b.set(x + 1, y, c);
       }
-      b.hline(1, 16, 15, rust); b.hline(1, 17, 15, rust); b.hline(2, 15, 13, o[3]);                    // a darker base band
-      for (const [x, c] of [[3, P.red2], [8, P.yl2], [12, o[2]]]) b.set(x, 16, c);
-      out(b, [[[P.yl2, o[2], o[3], rust, P.red2, R('red')[3]], o[5]]], o[5]);
-      // the rake leaning on it: a tan handle, a bar, and six 1px dark tines with gaps
-      // the rake leaning on its side, head up: a tan handle down to the ground, a bar, and six 1px dark tines against the sky
-      b.line(11, 4, 14, 17, P.o2); b.line(12, 4, 15, 16, P.o3);
-      b.hline(6, 3, 10, P.o1); b.hline(6, 4, 10, P.o3);
-      for (let x = 6; x < 16; x += 2) { b.set(x, 1, P.ink); b.set(x, 2, P.ink); }
-      b.set(15, 2, P.ink);
+      b.hline(1, 16, 15, rust); b.hline(1, 17, 15, rust);                                              // the dark base band
+      out(b, [[[P.yl2, o[1], o[2], o[3], rust, P.red3], o[5]]], o[5]);
+      // the rake: its head lying on the crown with the tines in the leaves, the 1px handle running diagonally out of the pile
+      b.hline(5, 6, 7, P.o3); b.hline(5, 5, 7, P.o1);
+      for (let x = 5; x <= 11; x += 2) b.set(x, 7, P.ink);
+      b.line(11, 5, 15, 1, P.o2); b.set(15, 0, P.o3);
       K.shadow(b, 8, 19, 8, 1, 80);
       return b;
     },
@@ -437,23 +449,27 @@
       b.ellipse(16, 35, 12, 5, P.w3, true); b.hline(8, 32, 16, P.w2);
       b.fillRect(1, 37, 30, 5, P.n3); b.hline(1, 37, 30, P.n2); b.hline(2, 41, 28, P.n4);
       b.ellipse(16, 36, 15, 7, P.n1, false); b.fillRect(1, 36, 1, 5, P.n2); b.fillRect(30, 36, 1, 5, P.n4);
-      b.fillRect(13, 38, 6, 3, P.gd3); b.hline(14, 39, 4, P.gd1);                                     // plaque
+      b.fillRect(12, 38, 8, 4, P.gd4); b.fillRect(13, 39, 6, 2, P.gd3); b.hline(14, 39, 4, P.gd1);   // plaque, set into a darker inset
       // the thimble: straight, slightly tapered sides, a rounded dome cap, and a rolled rim band at the base
       const half = (y) => y < 11 ? Math.sqrt(Math.max(0, 1 - ((11 - y) / 6.5) ** 2)) * 7.5 : 7.5 + (y - 11) * 0.05;
+      const toneAt = [];
       for (let y = 5; y < 30; y++) {
         const hw = half(y), x0 = Math.round(16 - hw), x1 = Math.round(16 + hw) - 1;
         for (let x = x0; x <= x1; x++) {
           const l = (x - x0) / Math.max(1, x1 - x0), top = y < 11 ? (11 - y) / 6 : 0;
-          b.set(x, y, l < 0.16 + top * 0.25 && y > 5 ? g[0] : l < 0.4 ? g[1] : l < 0.68 ? g[2] : l < 0.86 ? g[3] : g[4]);
+          const k = l < 0.16 + top * 0.25 && y > 5 ? 0 : l < 0.4 ? 1 : l < 0.68 ? 2 : l < 0.86 ? 3 : 4;
+          b.set(x, y, g[k]); toneAt[y * W + x] = k;
         }
       }
-      // dimples in rows, crisp on the lit side and fading out into the shadow side
-      for (let y = 8; y < 28; y += 3) for (let x = 10 + ((y / 3) & 1) * 2; x < 23; x += 3) {
-        const hw = half(y), e = (x - 16) / hw;
-        if (Math.abs(e) > 0.8 || e > 0.45) continue;
-        if (y < 10 && Math.abs(e) > 0.4) continue;
-        b.set(x, y, e > 0.15 ? g[3] : g[2]); if (e < 0 && y > 11) b.set(x, y + 1, g[1]);
+      // a grid of dimples over the whole dome and sides in staggered rows: each one tone darker than the gold round it, with a
+      // lit lower lip on the light side
+      for (let y = 8; y < 28; y += 2) for (let x = 9 + ((y >> 1) & 1); x < 24; x += 2) {
+        const k = toneAt[y * W + x];
+        if (k === undefined || k >= 4 || toneAt[y * W + x - 1] === undefined || toneAt[y * W + x + 1] === undefined) continue;
+        if (y < 10 && Math.abs(x - 16) > 3) continue;
+        b.set(x, y, g[k + 1]);
       }
+      b.hline(8, 29, 16, g[4]);                                                                      // a dark groove above the rim
       // the rolled rim band: 2px, lighter gold, wider than the sides
       b.fillRect(7, 30, 18, 2, g[1]); b.hline(7, 30, 18, g[0]); b.fillRect(21, 30, 4, 2, g[2]); b.set(24, 30, g[3]); b.set(24, 31, g[3]);
       b.hline(7, 32, 18, g[3]);
@@ -462,8 +478,9 @@
       K.outer(b, S.omap([[g, P.gd5], [STONE, P.n5], [[P.w0, P.w1, P.w2, P.w3], P.w4]], 'n5'));
       // (after the outline, so they stay 1px) streams arching off the spout and falling clear of the sides; the droplets move each frame
       const streams = [[[14, 2], [12, 1], [10, 1], [8, 2], [6, 3], [5, 5]], [[17, 2], [19, 1], [21, 1], [23, 2], [25, 3], [26, 5]]];
-      for (const st of streams) for (let i = 0; i < st.length; i++) b.set(st[i][0], st[i][1], (i + f) % 3 === 0 ? P.w0 : P.w2);
-      for (let y = 6; y < 30; y++) { b.set(4 + (y > 18 ? 0 : 1) - (y > 26 ? 1 : 0), y, (y + f) % 4 === 0 ? P.w0 : P.w2); b.set(27 - (y > 18 ? 0 : 1) + (y > 26 ? 1 : 0), y, (y + f + 2) % 4 === 0 ? P.w0 : P.w2); }
+      for (const st of streams) for (let i = 1; i < st.length; i++) b.line(st[i - 1][0], st[i - 1][1], st[i][0], st[i][1], i < 3 ? P.w1 : P.w2);   // solid 1px jets
+      for (let y = 6; y < 30; y++) { b.set(4 + (y > 18 ? 0 : 1) - (y > 26 ? 1 : 0), y, P.w2); b.set(27 - (y > 18 ? 0 : 1) + (y > 26 ? 1 : 0), y, P.w2); }
+      for (const y of [8 + f * 5, 10 + ((f + 2) & 3) * 5]) { b.set(5 - (y > 26 ? 1 : 0) - (y > 18 ? 1 : 0), y, P.w0); b.set(26 + (y > 18 ? 1 : 0) + (y > 26 ? 1 : 0), y, P.w0); }   // droplets running down
       b.set(5 + f, 34, P.w0); b.set(26 - f, 34, P.w0); b.set(9 + f, 33, P.w1); b.set(23 - f, 33, P.w1);   // splashes in the basin
       return b;
     },
@@ -474,35 +491,35 @@
     w: 1, h: 1, rise: 6, variants: ['napping'], frames: 2, animSpeed: 40,
     paint: (v, f) => {
       const b = K.B(16, 22);
-      // basket: weave, with a lighter rim band on top
-      b.fillRect(2, 15, 12, 5, P.o2); b.hline(2, 19, 12, P.o3);
-      for (let y = 17; y < 19; y++) for (let x = 2 + (y & 1); x < 14; x += 2) b.set(x, y, P.o3);
-      b.hline(1, 15, 14, P.o1); b.hline(1, 16, 14, P.o2);
-      // the Kittabra, a girl in a tuxedo-cat onesie, curled up asleep on the yarn: hood ears up, her face tucked down on her white
-      // mittens, closed eyes as two little lines, the costume tail wrapped round the front. She breathes: up 1px on frame 1.
+      // the basket, 7px tall in 3 tones: a light rolled rim, a mid weave, a dark base row
+      b.fillRect(1, 14, 14, 7, P.o2);
+      for (let y = 16; y < 20; y++) for (let x = 1 + (y & 1); x < 15; x += 2) b.set(x, y, P.o3);
+      b.hline(1, 14, 14, P.o0); b.hline(1, 15, 14, P.o1); b.hline(1, 20, 14, P.o4); b.vline(14, 16, 4, P.o3);
+      // the Kittabra, a girl in a tuxedo-cat onesie, curled up asleep on the yarn: hood ears with pink insides, her face with one
+      // closed-eye line each side, a big white bib, the black body curled behind, and the costume tail wrapped round the front with a
+      // white tip. She breathes: up 1px on frame 1.
       const k = K.B(16, 22);
-      K.stick(k, 2, 7 - f, [
-        '.k...k.......',
-        'kKk.kKk......',
-        'kKKKKKkkkkk..',
-        'kKsssssKKKkkk',
-        'kKaasaaKkkkkk',
-        'kwsssssw.kkkt',
-        '.kkkkkkkkkkkt',
-        'ttttttttttttt',
-      ], { k: P.ink2, K: P.ink3, s: SKIN, a: P.ink, w: P.p0, t: P.ink2 });
-      k.set(2, 14 - f, P.p0);                                                                           // the tail's white tip
+      K.stick(k, 3, 5 - f, [
+        '.k..k......',
+        'kpkkpk.....',
+        'kKKKKkkkk..',
+        'ksssskKKkk.',
+        'kaasaakkkkk',
+        'kssssskkkkk',
+        'kwwwwwkkkkk',
+        'kwwwwwkkkkk',
+        '.wwwwkkkkkk',
+        '...Wtttttttt'.slice(0, 11),
+      ], { k: P.ink2, K: P.ink3, s: SKIN, a: P.ink, w: P.p0, W: P.p0, t: P.ink3, p: P.pk2 });
       K.outer(k, P.ink);
       b.blit(k, 0, 0);
-      // three round balls of yarn sitting at the rim in front of her, each with a wrap line
+      // balls of yarn at the rim's two sides, clear of her, each with a wrap line
       const yb = K.B(16, 22);
-      for (const [x, y, c] of [[0, 13, [P.bl1, P.bl2]], [11, 13, [P.pk1, P.pk2]], [6, 15, [P.yl1, P.yl2]]]) {
-        K.stick(yb, x, y, ['.aa.', 'abaa', 'aaba', '.bb.'], { a: c[0], b: c[1] });
-      }
+      for (const [x, y, c] of [[0, 11, [P.bl1, P.bl2]], [12, 11, [P.pk1, P.pk2]]]) K.stick(yb, x, y, ['.aa.', 'abaa', 'aaba', '.bb.'], { a: c[0], b: c[1] });
       K.outer(yb, 'o6');
       b.blit(yb, 0, 0);
-      // a small sleep "z": a 3x3 white glyph up and to the right, clear of her ear
-      K.stick(b, 12, f ? 1 : 2, ['zzz', '.z.', 'z..', 'zzz'], { z: P.p0 });
+      // a small sleep "z", offset up and to the right
+      K.stick(b, 13, f ? 0 : 1, ['zzz', '..z', '.z.', 'zzz'], { z: P.p0 });
       K.shadow(b, 8, 21, 7, 1);
       return b;
     },
@@ -511,16 +528,24 @@
   K.stamp('notice_board', {
     w: 1, h: 1, rise: 8,
     paint: () => {
-      const b = K.B(16, 24);
-      b.fillRect(3, 14, 2, 9, P.o3); b.fillRect(11, 14, 2, 9, P.o4);                                 // legs
-      b.fillRect(1, 3, 14, 12, P.o4); b.fillRect(2, 4, 12, 10, P.o1);                                 // frame + cork
-      for (const [x, y] of [[4, 6], [9, 9], [11, 5], [6, 11]]) b.set(x, y, P.o2);
-      b.fillRect(1, 1, 14, 2, R('red')[2]); b.hline(1, 1, 14, R('red')[1]);                           // little roof
-      b.fillRect(3, 5, 4, 5, P.p0); b.hline(4, 7, 2, P.p3); b.hline(4, 8, 2, P.p3); b.set(5, 5, R('red')[2]);
-      b.fillRect(8, 6, 5, 4, P.yl1); b.hline(9, 8, 3, P.o4); b.set(10, 6, R('blue')[2]);
-      b.fillRect(6, 10, 4, 3, P.pk1); b.set(7, 10, P.ink2);
-      out(b, [[T5('red'), R('red')[5]], [[P.p0, P.p3, P.yl1, P.pk1], P.o6]]);
-      K.shadow(b, 8, 23, 6, 1);
+      const b = K.B(16, 24), r = R('red');
+      // two posts, lit on the west, shaded on the east
+      for (const x of [3, 11]) { b.fillRect(x, 15, 2, 8, P.o3); b.vline(x, 15, 8, P.o2); b.set(x + 1, 22, P.o4); }
+      // the board: a 3-tone frame (lit top-left, dark bottom-right) round a cork panel
+      b.fillRect(1, 3, 14, 12, P.o2); b.hline(1, 3, 14, P.o1); b.vline(1, 3, 12, P.o1); b.hline(1, 14, 14, P.o4); b.vline(14, 4, 11, P.o4);
+      b.fillRect(2, 4, 12, 10, P.o1); b.hline(2, 4, 12, P.o3); b.vline(2, 4, 10, P.o3);                // cork, in the frame's shadow at top-left
+      for (const [x, y] of [[6, 12], [12, 11], [10, 4], [4, 13]]) b.set(x, y, P.o2);
+      // a small roof over it: a lit red cap with a darker underside
+      b.fillRect(0, 0, 16, 3, r[2]); b.hline(0, 0, 16, r[1]); b.hline(0, 2, 16, r[4]);
+      // pinned sheets of different sizes at slight angles, each with 1px text lines and a coloured pin
+      K.stick(b, 3, 5, ['wwwww', 'wtttw', 'wwwww', 'wttww', 'wwwww', 'wtttw', 'wwwww'], { w: P.p0, t: P.p3 });
+      b.set(5, 5, r[2]);
+      K.stick(b, 9, 5, ['.yyy', 'yyyy', 'yttyy'.slice(0, 4), 'yyyy', 'yyy.'], { y: P.yl1, t: P.o3 });     // tilted: corners clipped on a slant
+      b.set(9, 6, P.yl1); b.set(10, 5, P.bl2);
+      K.stick(b, 8, 11, ['.ppppp', 'ptttpp'.slice(0, 6), 'ppppp.'], { p: P.pk1, t: P.pk3 });
+      b.set(11, 11, P.bl2);
+      out(b, [[[r[1], r[2], r[4]], r[5]], [[P.p0, P.p3, P.yl1, P.pk1, P.pk3], P.o6]]);
+      K.shadow(b, 8, 23, 7, 1);
       return b;
     },
   });
@@ -537,19 +562,20 @@
   }
   const CROP = {
     wheat: (b, x, y) => { for (let i = -2; i <= 2; i += 2) { b.vline(x + i, y - 5, 6, P.hy3); b.fillRect(x + i - 1, y - 8, 2, 4, P.hy1); b.set(x + i, y - 9, P.hy0); } },
-    corn: (b, x, y) => {   // a tall 2px stalk, two long drooping leaves each side in two greens, one cob in its husk, a tassel
-      b.fillRect(x, y - 13, 2, 14, P.f3); b.vline(x, y - 13, 14, P.f2);
-      for (const [ly, dir] of [[10, -1], [6, 1], [3, -1]]) {
+    corn: (b, x, y) => {   // a 2px stalk 10px tall, long drooping leaves in two greens that reach over the next row, an outlined cob, a tassel
+      const bb = b; b = { set: (px, py, c) => { if (px >= 2 && px <= 29 && py >= 2 && py <= 29) bb.set(px, py, c); }, fillRect: (...a) => bb.fillRect(...a), vline: (...a) => bb.vline(...a) };
+      b.fillRect(x, y - 10, 2, 11, P.f3); b.vline(x, y - 10, 11, P.f2);
+      for (const [ly, dir] of [[8, -1], [5, 1], [2, -1], [1, 1]]) {
         const sx = dir < 0 ? x - 1 : x + 2;
-        b.set(sx, y - ly, P.f1); b.set(sx + dir, y - ly + 0, P.f1); b.set(sx + dir * 2, y - ly + 1, P.f2); b.set(sx + dir * 3, y - ly + 2, P.f3);
-        b.set(sx + dir, y - ly + 1, P.f3);
+        b.set(sx, y - ly, P.f1); b.set(sx + dir, y - ly, P.f1); b.set(sx + dir * 2, y - ly + 1, P.f2); b.set(sx + dir * 3, y - ly + 2, P.f3); b.set(sx + dir * 3, y - ly + 3, P.f3);
       }
-      b.fillRect(x + 2, y - 9, 2, 4, P.yl2); b.set(x + 2, y - 9, P.yl1); b.set(x + 3, y - 6, P.yl3); b.set(x + 3, y - 9, P.f2);   // the cob
-      b.set(x, y - 14, P.hy1); b.set(x + 1, y - 15, P.hy1); b.set(x - 1, y - 15, P.hy2);
+      K.stick(bb, x + 2, y - 8, ['.kk.', 'kYyk', 'kyyk', 'kyyk', '.kk.'], { k: P.o5, Y: P.yl1, y: P.yl2 });
+      b.set(x, y - 11, P.hy1); b.set(x + 1, y - 12, P.hy1); b.set(x - 1, y - 12, P.hy2);
     },
-    potato: (b, x, y) => {   // low, spreading dark leaves with small white flowers
-      b.ellipse(x, y - 1, 2.5, 1.5, P.f4, true); b.hline(x - 1, y - 2, 2, P.f3); b.set(x + 1, y - 1, P.f3); b.hline(x - 2, y, 5, P.f5);
-      b.set(x - 1, y - 3, P.p0); b.set(x + 1, y - 3, P.p0); b.set(x + 2, y - 2, P.p0); b.set(x + 1, y - 2, P.yl2);
+    potato: (b, x, y) => {   // a leafy mid-green mound, lit top-left, with tiny pale-purple flowers
+      b.ellipse(x, y - 1, 2.5, 2, P.f2, true); b.hline(x - 2, y + 1, 5, P.f4); b.set(x + 2, y, P.f3); b.set(x + 1, y + 1, P.f3);
+      b.set(x - 1, y - 2, P.f1); b.set(x - 2, y - 1, P.f1); b.set(x, y - 1, P.f3);
+      b.set(x - 1, y - 3, P.pu1); b.set(x + 1, y - 2, P.pu1);
     },
     carrot: (b, x, y) => { b.fillRect(x - 1, y - 1, 3, 2, R('orange')[2]); b.hline(x - 1, y - 1, 2, R('orange')[1]); b.set(x - 1, y - 1, R('orange')[0]); for (const dx of [-2, 0, 2]) b.line(x, y - 2, x + dx, y - 6, P.f2); b.set(x, y - 6, P.f1); },
     cabbage: (b, x, y) => {   // dark outer leaves, lighter inner leaves, a pale core with a little swirl
@@ -557,22 +583,23 @@
       b.ellipse(x - 0.5, y - 2.5, 2, 1.5, P.f0, true);
       b.set(x - 1, y - 3, P.g0); b.set(x, y - 3, P.g0); b.set(x, y - 2, P.f1); b.set(x + 1, y - 2, P.f1); b.set(x - 1, y - 2, P.g0);
     },
-    tomato: (b, x, y) => {   // a tan stake, lobed leaves up it, clusters of 2px red fruit with a highlight
-      for (const [lx, ly, rx, ry] of [[-1, -11, 2, 1.5], [2, -8, 2, 1.5], [-2, -6, 2, 1.5], [1, -3, 2.5, 1.5], [-2, -1, 2, 1]]) {
+    tomato: (b, x, y) => {   // a clear 1px tan stake rising above the plant, lobed leaves kept inside the plot, three 2px tomatoes
+      b.vline(x, y - 15, 16, P.o1); b.set(x, y - 15, P.o0);
+      for (const [lx, ly, rx, ry] of [[-1, -9, 2, 1.5], [1, -6, 2, 1.5], [-1, -3, 2.5, 1.5], [1, -1, 2, 1]]) {
         b.ellipse(x + lx, y + ly, rx, ry, P.f3, true); b.set(x + lx - 1, y + ly - 1, P.f1); b.set(x + lx + 1, y + ly + 1, P.f4);
       }
-      b.vline(x, y - 13, 14, P.o1); b.set(x, y - 13, P.o0);
-      for (const [dx, dy] of [[-3, -8], [-1, -7], [2, -5], [3, -4], [-3, -3]]) { b.fillRect(x + dx, y + dy, 2, 2, P.red2); b.set(x + dx, y + dy, P.red0); }
+      b.vline(x, y - 15, 5, P.o1);
+      for (const [dx, dy] of [[-3, -7], [1, -4], [-2, -2]]) { b.fillRect(x + dx, y + dy, 2, 2, P.red2); b.set(x + dx, y + dy, P.red0); b.set(x + dx + 1, y + dy + 1, P.red3); }
     },
     onion: (b, x, y) => { b.fillRect(x - 1, y - 2, 3, 3, P.p0); b.set(x + 1, y, P.p2); for (const dx of [-1, 0, 1]) b.vline(x + dx, y - 7 + Math.abs(dx), 5 - Math.abs(dx), dx ? P.f3 : P.f2); },
   };
   const cropOutline = [[K.TN.leaf, P.f6], [K.TN.leafLight, P.f5], [[P.f1, P.f2, P.f3, P.f4], P.f6], [[P.hy0, P.hy1, P.hy2, P.hy3, P.yl1, P.yl2, P.yl3], P.o5],
-    [S.tones(R('orange')), R('orange')[5]], [[P.red0, P.red1, P.red2], P.red4], [[P.p0, P.p2], P.f6], [[P.d2, P.d3, P.d4, P.d5], P.d5], [[P.g0], P.f6]];
+    [S.tones(R('orange')), R('orange')[5]], [[P.red0, P.red1, P.red2, P.red3], P.red4], [[P.p0, P.p2, P.pu1], P.f6], [[P.d2, P.d3, P.d4, P.d5], P.d5], [[P.g0], P.f6]];
   K.stamp('crop_plot', {
     w: 2, h: 2, variants: ['wheat', 'corn', 'potato', 'carrot', 'cabbage'],
     paint: (v) => {
       const b = K.B(32, 32);
-      const rows = v === 'corn' ? [16, 30] : v === 'wheat' ? [9, 16, 23, 30] : [8, 14, 20, 26, 30].slice(0, 5);
+      const rows = v === 'corn' ? [13, 21, 29] : v === 'wheat' ? [9, 16, 23, 30] : v === 'potato' ? [9, 18, 27] : [8, 14, 20, 26, 30];
       soil(b, 32, 32, rows);
       if (v === 'wheat') {
         // dense golden tufts in four clear rows: darker stems, a lighter head on each, a small gap between tufts
@@ -583,10 +610,10 @@
           b.fillRect(x, y - 5 - tall, 1, 3, x % 2 ? P.hy1 : P.hy2); b.set(x, y - 5 - tall, P.hy0);
         }
       } else if (v === 'corn') {
-        for (const y of rows) for (let x = 7; x < 27; x += 8) CROP.corn(b, x + ((y >> 3) & 1) * 2, y);
+        for (const y of rows) for (let x = 4; x < 25; x += 6) CROP.corn(b, x + (rows.indexOf(y) & 1) * 2, y);
       } else {
-        const dx = 6;
-        for (const y of rows) for (let x = 5; x < 29; x += dx) CROP[v](b, x + ((y >> 2) & 1), y);
+        const dx = v === 'potato' ? 7 : 6;
+        for (const y of rows) for (let x = 5; x < 29; x += dx) CROP[v](b, x + (v === 'potato' ? (rows.indexOf(y) & 1) * 3 : (y >> 2) & 1), y);
       }
       out(b, cropOutline, 'd5');
       return b;
@@ -598,7 +625,7 @@
     paint: (v) => {
       const b = K.B(32, 16 + ROW_RISE), s = K.B(32, 16);
       soil(s, 32, 16); b.blit(s, 0, ROW_RISE);
-      for (let x = 5; x < 29; x += v === 'tomato' ? 8 : 4) CROP[v](b, x, ROW_RISE + 12);
+      for (let x = v === 'tomato' ? 7 : 5; x < 29; x += v === 'tomato' ? 9 : 4) CROP[v](b, x, ROW_RISE + 12);
       out(b, cropOutline, 'd5');
       return b;
     },
@@ -649,27 +676,29 @@
     w: 1, h: 1, rise: 12,
     paint: () => {
       const b = K.B(16, 28), pk = R('pink');
-      b.vline(8, 10, 17, P.o3); b.vline(7, 10, 17, P.o2);                                              // post, right down to the ground
-      b.fillRect(1, 10, 14, 2, P.o2);                                                                   // crossbar
-      b.fillRect(4, 10, 8, 9, pk[2]); b.vline(4, 10, 9, pk[1]); b.vline(11, 10, 9, pk[3]);              // cardigan
-      b.fillRect(1, 10, 3, 4, pk[2]); b.hline(1, 10, 3, pk[1]); b.fillRect(12, 10, 3, 4, pk[3]);        // sleeves
-      for (const [x, y, c] of [[0, 14, P.hy1], [1, 14, P.hy2], [2, 15, P.hy1], [13, 14, P.hy2], [14, 15, P.hy1], [15, 14, P.hy2]]) b.set(x, y, c);   // straw out of the cuffs
-      b.fillRect(5, 13, 3, 3, R('blue')[2]);                                                            // a patch
-      for (const y of [12, 14, 16]) b.set(8, y, P.p0);                                                  // buttons
-      // the burlap sack head: two tones, button eyes, a stitched smile, tied at the neck with straw poking out
+      b.vline(8, 11, 16, P.o3); b.vline(7, 11, 16, P.o2);                                              // post, right down to the ground
+      b.fillRect(1, 11, 14, 2, P.o2);                                                                   // crossbar
+      // the cardigan: lit left, a darker fold down the right, a stitched blue patch, buttons
+      b.fillRect(4, 11, 8, 8, pk[2]); b.vline(4, 11, 8, pk[1]); b.vline(11, 11, 8, pk[3]); b.vline(9, 13, 5, pk[3]);
+      b.fillRect(1, 11, 3, 4, pk[2]); b.hline(1, 11, 3, pk[1]); b.fillRect(12, 11, 3, 4, pk[3]);        // sleeves
+      b.fillRect(5, 14, 3, 3, R('blue')[2]); b.set(7, 16, P.o5);            // a patch with a stitch
+      for (const y of [13, 15, 17]) b.set(8, y, P.p0);                                                  // buttons
+      // straw tufts out of both cuffs and the collar
+      for (const [x, y, c] of [[0, 15, P.hy1], [1, 15, P.hy2], [2, 16, P.hy1], [13, 15, P.hy2], [14, 16, P.hy1], [15, 15, P.hy2], [4, 10, P.hy1], [11, 10, P.hy2], [3, 11, P.hy1]]) b.set(x, y, c);
+      // a round burlap sack head: two tones, two button eyes, a stitched 1px mouth, tied at the neck
       K.stick(b, 4, 3, [
-        '.aaaab..',
-        'aaaaabbb',
-        'aekaakbb'.replace('e', 'a'),
+        '..aaab..',
+        '.aaaaabb',
+        'aakaakbb',
         'aaaaaabb',
-        'asasasbb'.replace(/s/g, 's'),
+        'asasasbb',
         '.aaaabb.',
-        'h.tttt.h',
-      ], { a: P.hy2, b: P.hy3, k: P.ink, s: P.o5, t: P.o4, h: P.hy1 });
-      b.set(5, 5, P.ink);
-      b.fillRect(2, 2, 12, 2, P.hy1); b.hline(2, 3, 12, P.hy2); b.fillRect(5, 0, 6, 2, P.hy2); b.hline(5, 0, 6, P.hy1); b.hline(5, 2, 6, pk[3]);   // straw hat with a band
+        '..tttt..',
+      ], { a: P.hy2, b: P.hy3, k: P.ink, s: P.o5, t: P.o5 });
+      // a straw hat whose brim is wider than the head, with a pink band
+      b.fillRect(1, 2, 14, 2, P.hy1); b.hline(1, 3, 14, P.hy2); b.fillRect(5, 0, 6, 2, P.hy2); b.hline(5, 0, 6, P.hy1); b.hline(5, 1, 6, pk[3]);
       out(b, [[S.tones(pk), pk[5]], [[P.hy1, P.hy2, P.hy3], P.o5], [[P.p0], P.o6]]);
-      K.shadow(b, 8, 27, 4, 1);
+      K.shadow(b, 8, 27, 5, 1, 120);
       return b;
     },
   });
@@ -678,22 +707,20 @@
     w: 1, h: 1, variants: ['carrots'],
     paint: () => {
       const b = K.B(16, 16), o = R('orange');
-      // two handle rails running back (west) to dark grips, two legs, then the tray: its open top a lighter trapezoid, its side a darker band
-      b.line(1, 6, 4, 8, P.o3); b.line(1, 9, 4, 10, P.o3);
-      b.fillRect(0, 5, 2, 2, P.o5); b.fillRect(0, 8, 2, 2, P.o5);
-      b.line(5, 12, 5, 14, P.o4); b.line(8, 12, 8, 14, P.o4);
-      b.polygon([[3, 6], [14, 6], [12, 9], [4, 9]], P.o1);
-      b.hline(3, 6, 12, P.o0);
-      b.polygon([[4, 10], [12, 10], [11, 12], [5, 12]], P.o3); b.hline(4, 10, 9, P.o4); b.hline(5, 12, 7, P.o4);
-      // carrots heaped in the tray: orange shoulders, a darker tip, leafy tops
-      for (const [x, yy] of [[5, 3], [8, 2], [11, 3]]) {
-        b.set(x, yy + 1, o[2]); b.set(x + 1, yy + 1, o[2]); b.set(x, yy + 2, o[2]); b.set(x + 1, yy + 2, o[3]); b.set(x, yy + 3, o[2]); b.set(x + 1, yy + 3, o[3]);
-        b.set(x, yy, P.f2); b.set(x + 1, yy - 1, P.f3);
+      // two clear handle lines running back west to dark grips, two legs, then a 12x6 tray: a lit rim, a darker inner tray, its side face
+      b.vline(5, 12, 3, P.o4); b.vline(9, 12, 2, P.o4);
+      b.fillRect(3, 5, 12, 6, P.o3);                                                                   // the tray's inside, in shade
+      b.hline(3, 5, 12, P.o0); b.vline(3, 5, 6, P.o1); b.vline(14, 5, 6, P.o2); b.hline(3, 6, 11, P.o4);   // lit rim, its far inner wall dark
+      b.fillRect(3, 11, 11, 2, P.o2); b.hline(3, 12, 11, P.o4);                                       // the side face below the rim
+      // carrots in the tray: 2px orange cones (shaded right) with green tops, clearly apart
+      for (const [x, y] of [[4, 6], [7, 5], [10, 6]]) {
+        b.set(x, y + 1, o[2]); b.set(x + 1, y + 1, o[2]); b.set(x, y + 2, o[2]); b.set(x + 1, y + 2, o[3]); b.set(x, y + 3, o[3]);
+        b.set(x, y, P.f2); b.set(x + 1, y - 1, P.f3);
       }
-      for (const x of [6, 9]) { b.set(x, 7, o[2]); b.set(x + 1, 7, o[3]); }
-      // the wheel at the front: a round dark tyre, a light hub
-      K.stick(b, 11, 10, ['.rrr.', 'rhnrr', 'rnwnr', 'rrnrr', '.rrr.'], { r: P.ink2, h: P.n2, n: P.n2, w: P.n0 });
-      out(b, [[[P.f2, P.f3], P.ink], [[P.ink2, P.n0, P.n2], P.ink]]);
+      // the wheel at the front: dark grey rubber, a lighter hub
+      K.stick(b, 11, 10, ['.rrr.', 'rrhrr', 'rhhhr', 'rrhrr', '.rrr.'], { r: P.n4, h: P.n2 });
+      out(b);
+      b.line(0, 4, 2, 6, P.o2); b.line(0, 11, 2, 9, P.o2); b.set(0, 4, P.o5); b.set(0, 11, P.o5);         // handles out west, dark grips
       K.shadow(b, 8, 15, 7, 1);
       return b;
     },
