@@ -81,4 +81,17 @@ NP.state.flags = {};
 forced('hemline_river', [11, 1], [[10, 45], [11, 45], [12, 45]], 'Hemline Lake (the riverside path)');
 NP.state.flags = { sal4_a1: true, sal4_a2: true };
 forced('quarry_salon', [5, 14], [[10, 5], [11, 6]], 'lever 3 (past Mica)', ['sal4_t2']);
+// Ribbon Loop (Ch1): the Ribbon Maze is closed by two Society guards standing in its gates until Poppy is beaten, so the whole loop
+// and all four Tailors are forced on the way from Basting Green to Thimble; after Poppy (badge1) the guards are gone and the maze opens
+NP.state.flags = {};
+forced('ribbon_loop', [2, 20], [[0, 4], [0, 5]], "Thimble's east gate (past Tam, Pim, Oki and Rio)");
+assert.ok(!reach('ribbon_loop', [2, 20], [[13, 11]], false), 'ribbon_loop: the maze centre can be reached before Poppy (a gate is open)');
+assert.ok(!reach('ribbon_loop', [2, 4], [[13, 11]], false), 'ribbon_loop: the maze centre can be reached from the top lane before Poppy');
+NP.state.flags = { badge1: true };
+assert.ok(reach('ribbon_loop', [2, 20], [[14, 11], [12, 11]], false), 'ribbon_loop: the maze centre is still shut after Poppy');
+// the blind corners with the hidden items (the lost Kittabra stands in H5, so check the tile in front of her)
+for (const [x, y] of [[4, 8], [6, 7], [12, 7], [10, 11], [20, 9], [6, 15]]) {
+  assert.ok(reach('ribbon_loop', [2, 20], [[x, y]], false), 'ribbon_loop: blind corner ' + x + ',' + y + ' unreachable after Poppy');
+}
+NP.state.flags = {};
 console.log('routing ok');
