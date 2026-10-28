@@ -224,9 +224,11 @@
       for (const p of this.objs) {
         if (!visible(p)) continue;
         list.push({ sortY: (p.y + p.h) * T, order: 0, p });
-        // a building's roof overhang (`rise` above a stamp with a 3D volume) is a back layer: it sorts just above the footprint's
-        // top row, so a prop or a person standing in the row(s) behind the building is drawn over the roof instead of vanishing
-        if (p.def.vol && p.def.rise > 0 && !p.over) list.push({ sortY: p.y * T - 1, order: 0, p, roof: true });
+        // a building's roof overhang (`rise` above a stamp with a 3D volume) is its own layer. It sorts just after the row in front of
+        // the footprint's top edge, so anything standing in the band the roof covers (the ceil(rise/16) rows behind the building) is
+        // drawn UNDER the roof and clipped by it, the way a building hides what is behind it. (Sorting it before that row put people
+        // and washing lines on top of the shingles.) Things further north never overlap the roof, so their order does not matter.
+        if (p.def.vol && p.def.rise > 0 && !p.over) list.push({ sortY: p.y * T + 1, order: 0, p, roof: true });
       }
       for (const a of actors || []) list.push({ sortY: a.sortY, order: 1, a });
       if (this.edges.size) for (const w of this.edgeArt()) list.push({ sortY: w.sortY, order: 0, w });

@@ -87,7 +87,8 @@
 
   const M = L.map({
     id: 'ribbon_loop', name: 'Ribbon Loop', music: 'route_meadow', battleBg: 'grass', border: 'treeline', w: W, h: H,
-    view: 'street',
+    // flat3d: in 3D the hedge maze turned into one sea of treeline canopy and its paths couldn't be read, so this map stays flat
+    view: 'street', flat3d: true,
     legend: { '.': 'grass', T: 'treeline', H: 'hedge', p: 'path', ',': 'tallgrass', f: 'flowers' },
     // tree shake (approved 2026-10-28): Chirpadee common, Lyripip rare and under-levelled for the route (her level is an open owner question for the Ch1 balance pass).
     treeShake: [{ sp: 'chirpadee', min: 3, max: 5, w: 7 }, { sp: 'lyripip', min: 5, max: 6, w: 1 }],
@@ -147,7 +148,7 @@
     script: function* (c) { if (NP.snd && NP.snd.cry) NP.snd.cry('kittabra'); yield* c.sayT('ribbon_loop.rl_kitty_home', 'Kittabra purrs and won\'t leave her Tailor\'s side.'); } });
 
   // ---------------------------------------------------------------------------------------------------------- things to find
-  M.pickup('maze_silk', 13, 11, 'silk_spool', 3, '3 Silk Spools by the fountain in the maze centre');
+  M.pickup('maze_silk', 12, 13, 'silk_spool', 3, '3 Silk Spools by the fountain in the maze centre');
   M.def.props.push(
     { id: 'rl_spool', x: 22, y: 15, icon: 'item:bond_spool', hideIf: 'rl_spool', note: '2 Bond Spools, the first blind corner past the south gate',
       script: function* (c) { c.set('rl_spool'); yield* c.giveItem('bond_spool', 2, { found: true }); } },

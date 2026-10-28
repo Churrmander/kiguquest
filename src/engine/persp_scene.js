@@ -83,9 +83,17 @@
       return depth[y * W + x];
     };
     // ---- billboard trees on forest tiles near open ground (every tile: the canopies overlap into a wall of foliage)
+    // a stamp tucked into the forest edge can keep a few forest tiles free of billboard trees (`clear3d: [dx, dy, w, h]`, tiles
+    // relative to the stamp), so the trees in front of it don't hide it (Button Town's pond grotto arch)
+    const cleared = new Set();
+    for (const p of tm.objs) {
+      const c = p.def.clear3d;
+      if (c) for (let y = p.y + c[1]; y < p.y + c[1] + c[3]; y++) for (let x = p.x + c[0]; x < p.x + c[0] + c[2]; x++) cleared.add(x + ',' + y);
+    }
     if (tiles.tree3d) {
       for (let y = -R; y < tm.h + R; y++) for (let x = -R; x < tm.w + R; x++) {
         const id = tm.idAt(x, y), d = sc.depthAt(x, y);
+        if (cleared.size && cleared.has(x + ',' + y)) continue;
         if (id === 'hedge') { addTree(sc, tiles, x * T + 8, y * T + 14, 'hedge', h32(x, y, 5), h32(x, y, 6), 0); continue; }
         if (d < 1 || d > DEPTH_TREES) continue;
         if (!forest(x, y)) continue;

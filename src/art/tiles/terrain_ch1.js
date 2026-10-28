@@ -71,14 +71,20 @@
     variants: 2, step: 'stone',
     paint: (m, f, v) => {
       const b = K.B(T, T);
-      for (let i = 0; i < 256; i++) {
-        const x = i & 15, y = i >> 4;
-        const n = hf(x >> 1, y >> 1, 141 + v) * 0.6 + hf(x, y, 143 + v) * 0.4;
-        b.u32[i] = n > 0.88 ? P.v2 : n > 0.4 ? P.v4 : n > 0.12 ? P.v5 : P.v6;
+      // flat rock slabs fitted together, each in 3 tones lit from the top left (a lit top and left edge, a mid face, a shaded right
+      // and bottom edge), with dark cracks between them; the two variants lay the slabs out differently so the floor doesn't repeat
+      b.fillRect(0, 0, T, T, P.v6);
+      const SLABS = v === 0
+        ? [[0, 0, 9, 7], [10, 0, 6, 5], [10, 6, 6, 10], [0, 8, 4, 8], [5, 8, 4, 8]]
+        : [[0, 0, 5, 9], [6, 0, 10, 6], [6, 7, 5, 9], [12, 7, 4, 9], [0, 10, 5, 6]];
+      for (const [x, y, w, h] of SLABS) {
+        const ww = Math.min(w, T - x) - (x + w >= T ? 0 : 1), hh = Math.min(h, T - y) - (y + h >= T ? 0 : 1);
+        b.fillRect(x, y, ww, hh, P.v4);
+        b.hline(x, y, ww - 1, P.v3); b.vline(x, y, hh - 1, P.v3); b.set(x, y, P.v2);
+        b.hline(x + 1, y + hh - 1, ww - 1, P.v5); b.vline(x + ww - 1, y + 1, hh - 1, P.v5);
       }
-      // a damp sheen and a couple of pebbles
-      b.hline(3 + v * 4, 5, 3, P.v3); b.set(4 + v * 4, 4, P.v2);
-      for (const [x, y] of [[11 - v * 6, 11], [6, 13 - v * 3]]) { b.set(x, y, P.v1); b.set(x + 1, y, P.v2); b.set(x, y + 1, P.v6); b.set(x + 1, y + 1, P.v6); }
+      // a few pebbles, each a lit pixel with a shadow pixel under it to the right
+      for (const [x, y] of v === 0 ? [[3, 3], [12, 11], [6, 12]] : [[2, 4], [9, 3], [14, 12]]) { b.set(x, y, P.v2); b.set(x + 1, y + 1, P.v6); }
       return b;
     },
   });

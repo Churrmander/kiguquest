@@ -15,6 +15,36 @@
       ['belly', { mat: 'sub' }],
       ['bell', { at: 'head', dy: 7, dx: 6, r: 2 }],
     ],
+    // the 32 px back view was a nearly blank white blob: add the hood's ear backs, her tail curling out to the right, and a
+    // two-tone shadow down her right side
+    owBack: (b, col) => {
+      const W = b.w, op = (x, y) => x >= 0 && y >= 0 && x < W && y < b.h && b.u32[y * W + x] >>> 24;
+      const ink = col('#2c2a3c'), sh1 = col('#c4c8d8'), sh2 = col('#9aa0b4'), grey = col('#9aa0b4'), pink = col('#ffb7c5');
+      const lum = (c) => (c & 255) + ((c >> 8) & 255) + ((c >> 16) & 255);
+      // two-tone shade on the right side: per row, the light pixels in the right third step down one or two tones
+      for (let y = 0; y < b.h; y++) {
+        let x0 = -1, x1 = -1;
+        for (let x = 0; x < W; x++) if (op(x, y)) { if (x0 < 0) x0 = x; x1 = x; }
+        if (x0 < 0 || x1 - x0 < 6) continue;
+        for (let x = x1 - 1; x > x1 - (x1 - x0) * 0.4; x--) {
+          const c = b.u32[y * W + x];
+          if (!(c >>> 24) || lum(c) < 600) continue;
+          b.u32[y * W + x] = x > x1 - (x1 - x0) * 0.18 ? sh2 : sh1;
+        }
+      }
+      // the ear backs: on the top corners of the hood, a grey triangle with a pink inner edge, outlined
+      let top = 0; while (top < b.h && ![...Array(W).keys()].some((x) => op(x, top))) top++;
+      let hx0 = W, hx1 = 0; for (let x = 0; x < W; x++) if (op(x, top + 3)) { hx0 = Math.min(hx0, x); hx1 = Math.max(hx1, x); }
+      for (const [ex, dir] of [[hx0 + 2, 1], [hx1 - 2, -1]]) {
+        for (let i = 0; i < 3; i++) for (let j = 0; j <= 2 - i; j++) { const x = ex + dir * j, y = top + 2 - i; if (y >= 0) b.u32[y * W + x] = j === 0 && i < 2 ? pink : grey; }
+        b.u32[Math.max(0, top - 1) * W + ex] = ink;
+      }
+      // the tail: out of her lower back on the right, curving up and out, a grey tip
+      const pts = [[1, 0], [2, 0], [3, -1], [3, -2], [4, -3], [4, -4], [4, -5], [3, -6]];
+      let by = b.h - 1; while (by > 0 && !op(W >> 1, by)) by--;
+      const ty = by - 5; let tx = W - 1; while (tx > 0 && !op(tx, ty)) tx--;   // from her right side, low on the back
+      pts.forEach(([dx, dy], i) => { const x = tx + dx, y = ty + dy; if (x < W - 1 && y > 0) { b.u32[y * W + x] = i > 5 ? grey : sh1; if (!op(x + 1, y)) b.u32[y * W + x + 1] = ink; if (!op(x, y - 1)) b.u32[(y - 1) * W + x] = ink; } });
+    },
   });
   D('wiskedabra', {
     name: 'Wiskedabra', stage: 2, size: 80, rise: 11, pal: Object.assign({}, CAT, { main: '#33334a', sub: '#ffffff', hair: '#55556e', mitt: '#ffffff', foot: '#ffffff', acc: '#d8405a', eye: '#f0c030' }),
@@ -80,6 +110,16 @@
       ['shapes', { stage: 'front', at: 'handL', g: 'songbook', list: [['r', -3, -4, 7, 6, 'note'], ['r', -2, -3, 5, 4, 'page'], ['d', 0, -2, 'note']] }],
     ],
   });
+  // at 32 px (overworld) she was wide and busy: smaller plain wings, no songbook, a single crest tuft
+  K.looks.lyripip.ow = {
+    parts: [
+      ['wings', { kind: 'feather', mat: 'hair', mat2: 'hair', sz: 0.45, over: false }],
+      ['skirt', { mat: 'main', len: 3, flare: 3, scallop: 6, up: 8, trim: 'sub' }],
+      ['belly', { mat: 'sub' }],
+      ['hat', { kind: 'tuft', n: 2, mat: 'hair', lean: 1.2 }],
+      ['hat', { kind: 'headband', mat: 'acc2' }],
+    ],
+  };
   D('larkestra', {
     name: 'Larkestra', stage: 3, size: 85, rise: 11, pal: Object.assign({}, SPR, { main: '#c88a4a', hair: '#7a4a2a', sub: '#fff0c8', acc2: '#5ab0f0', gold: '#f4c542' }),
     hood: { type: 'none' },

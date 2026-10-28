@@ -193,7 +193,7 @@
   R.stamp('tv_wide', 3, 5, 'console').stamp('beanbag', 3, 6);
   // east side
   R.stamp('window_edge', 14, 4, 'e').stamp('window_edge', 14, 5, 'e');
-  for (let y = 6; y <= 10; y++) R.stamp('trophy_shelf', 13, y, 'empty');
+  for (let y = 6; y <= 10; y++) R.stamp('trophy_shelf', 13, y, y === 6 ? 'empty' : 'empty' + (y - 6));   // a different keepsake on each
   // the bed against the south wall, pillows south
   R.stamp('bed_double', 5, 8); L.variantByFlag(R.def.stamps[R.def.stamps.length - 1], 'woke', 'sleeping', 'unmade');
   R.stamp('bed_blanket', 5, 8, null, { goneIf: 'woke' });

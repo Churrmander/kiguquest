@@ -41,8 +41,9 @@
   const T = 16, SW = NP.W, SH = NP.H, CX = SW / 2, CY = SH / 2, MARGIN = 14;
 
   /** maps the 3D view can't show faithfully stay flat: the player's house has thin partition walls on tile edges (def.edgeWalls) that
-   *  only the flat renderer draws, and in 3D they'd be invisible walls */
-  const flatOnly = (def) => !!(def && def.edgeWalls && def.edgeWalls.length);
+   *  only the flat renderer draws, and in 3D they'd be invisible walls; `def.flat3d` opts a map out (Ribbon Loop's hedge maze, whose
+   *  paths can't be read as billboard foliage) */
+  const flatOnly = (def) => !!(def && (def.flat3d || (def.edgeWalls && def.edgeWalls.length)));
 
   const PRESETS = {
     street: { f: 185, hz: 22, pivotRow: 124, fogStart: 110, fogEnd: 640, fog: '#d2e7f7', sky: ['#6eb4ec', '#d2e7f7'], nearFade: [0.52, 0.58], fadeBand: 10, behindFrom: 16, behindSpan: 5, behindBand: 58 },

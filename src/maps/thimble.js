@@ -204,7 +204,7 @@
   });
 
   // -- the rest of the village
-  M.stamp('well', 6, 9).stamp('birdbath', 4, 10);
+  M.stamp('well', 6, 9).stamp('birdbath', 4, 9);   // birdbath one row up, clear of the yellow roof
   M.stamp('cloth_line', 7, 13).stamp('laundry_basket', 8, 12, 'folded');
   M.stamp('mailbox', 7, 14).stamp('mailbox', 17, 15);
   M.stamp('firewood', 8, 4).stamp('barrel', 8, 6);

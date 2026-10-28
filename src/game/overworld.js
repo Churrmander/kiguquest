@@ -70,7 +70,7 @@
         if (d.icon === 'spool') bmp = A().spool('bond', (frame >> 3) & 3);
         else if (d.icon && d.icon.indexOf('item:') === 0) { bmp = A().itemIcon(d.icon.slice(5)); dx = -4; dy = -6; }
         if (bmp) fb.blit(bmp, X + dx, Y + dy);
-        if (d.glint) drawGlint(fb, X + 8, Y + 2, frame);   // a periodic sparkle so a far-off item catches the eye
+        if (d.glint) drawGlint(fb, X + 8 + (d.glintDx | 0), Y + 2, frame);   // a periodic sparkle so a far-off item catches the eye
         return;
       }
       // asleep in bed (the opening): just the head on the pillow, eyes closed, centred on a 2-wide bed (+8 px), no shadow

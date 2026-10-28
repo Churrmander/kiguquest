@@ -85,7 +85,8 @@
   K.stamp('bench_v', {
     // the same park bench turned side-on (1x2), for a path that runs north-south. default: seat facing west, backrest on the east;
     // east: the mirror image, seat facing east and backrest on the west (a pair of benches facing each other across a square)
-    w: 1, h: 2, variants: ['default', 'east'],
+    // ground3d: side-on it is a low seat, so the 3D view bakes it flat into the ground (as a 32 px billboard it stood up like a door)
+    w: 1, h: 2, variants: ['default', 'east'], ground3d: true,
     paint: (v) => {
       const b = K.B(16, 32);
       // backrest (east): two rails with a dark gap, joined to the seat by a dark post at each end

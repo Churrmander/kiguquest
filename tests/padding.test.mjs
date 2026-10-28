@@ -44,8 +44,8 @@ assert.ok(said.some((s) => /you('re| are) early/.test(s)), 'Bobbin is not ready 
 assert.ok(!st.flags.intro_done, 'the lab intro waits for the morning');
 
 // the washing line: the kite, the tree house promise, the race
-assert.ok(t.travel(7, 2, 400), 'behind the house');
-t.tap('down'); t.tick(4); t.tap('a');
+assert.ok(t.travel(8, 2, 400), 'behind the house');
+t.tap('left'); t.tick(4); t.tap('a');
 settle(8000);
 assert.ok(st.flags.morning_done, 'the morning scene finished');
 assert.ok(said.some((s) => /Every Salon, together/.test(s)), 'the tree house promise');

@@ -128,7 +128,7 @@ console.log('>> a trainer spots you, walks up and fights (Lia on R');
 console.log('>> text override hook');
 {
   const { t, NP, ow, G, st } = fresh(7);
-  ow.loadMap('button_town', 16, 12, 'down', { noEnter: true });   // kid_a stands at (16,13)
+  ow.loadMap('button_town', 15, 12, 'up', { noEnter: true });   // kid_a stands at (15,11)
   t.tick(3);
   t.tap('a'); t.tick(4);
   assert.ok(ow.msg.screens.flat().join(' ').includes('someday'), 'inline dialogue without NP.text');

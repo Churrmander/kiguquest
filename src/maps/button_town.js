@@ -45,8 +45,8 @@
     yield* c.face(t, toward(t, c.player));
     yield* c.sayT('button_town.morning.1', '{rival}: {player}! Thank goodness. My kite went straight into your washing line.\\pIt\'s all tangled up in the pegs. I only touched the sheets a little.');
     yield* c.ow.fadeOut(10);
-    c.placeNpc('player', 7, 2, 'down');   // the row behind the washing line (the taller house fills the old spot at 7,4)
-    c.placeNpc(t, 7, 3, 'up');
+    c.placeNpc('player', 8, 2, 'left');   // beside the washing line on row C, clear of the roof band behind the house
+    c.placeNpc(t, 7, 2, 'right');
     yield* c.wait(10);
     yield* c.ow.fadeIn(10);
     yield* c.sayT('button_town.morning.2', '{player} and {rival} pegged up the sheets and teased the kite string free.');
@@ -57,8 +57,9 @@
     // the hint for the hidden path at K1-K4 (plan v13, exact sentence)
     yield* c.sayT('button_town.morning.hint', '{rival}: Our old shortcut\'s still there, you know. Through the trees, west of your house.');
     yield* c.sayT('button_town.morning.8', '{rival}: Race you to the lab!');
-    // (7,3) east along row D past the tree and the flower strip, down the main road, along row J, up the lab's lane to its door (25,7)
-    yield* c.walk(t, ['right', 5, 'down', 6, 'right', 13, 'up', 2]);
+    // (7,2) down behind the house, east along row D past the tree and the flower strip, down the main road, along row J, up the
+    // lab's lane to its door (25,7)
+    yield* c.walk(t, ['down', 1, 'right', 5, 'down', 6, 'right', 13, 'up', 2]);
     c.hideNpc('tomo_bt');
     NP.snd.sfx('door');
     c.set('morning_done');
@@ -82,8 +83,8 @@
     yield* c.sayT('button_town.morning.6', 'Two small pinkies hooked together, and that made it official.\\p"Every Salon, together."');
     yield* c.wait(30);
     yield* c.ow.fadeOut(30, '#fff4e0');
-    c.ow.loadMap('button_town', 7, 2, 'down', { noEnter: true });
-    c.placeNpc(c.npc('tomo_bt'), 7, 3, 'up');
+    c.ow.loadMap('button_town', 8, 2, 'left', { noEnter: true });
+    c.placeNpc(c.npc('tomo_bt'), 7, 2, 'right');
     yield* c.wait(16);
     yield* c.ow.fadeIn(24);
   }
@@ -137,10 +138,10 @@
   M.stamp('rowhouse_shop', 22, 14, 'haberdashery');                      // R5
 
   // -- the west side: washing line, kite scrap, Mom's planters, picnic table, well, firewood
-  M.stamp('cloth_line', 5, 3);
+  M.stamp('cloth_line', 5, 2);                                           // row C: the roof hides row D behind the house
   M.stamp('kite_snag', 8, 1);                                            // a scrap of old kite string on the branch at C9 (walk-over)
   M.stamp('herb_planter', 9, 5, 'herbs').stamp('herb_planter', 9, 6, 'tomato');
-  M.stamp('picnic_table', 7, 10).stamp('well', 9, 11).stamp('flowerbed', 6, 11).stamp('firewood', 9, 16);
+  M.stamp('picnic_table', 5, 18).stamp('well', 9, 11).stamp('flowerbed', 9, 14).stamp('firewood', 9, 16);   // clear of the blue roof
   M.stamp('mailbox', 9, 8);
 
   // -- street furniture: lamps on the corners where the side roads meet the main road, the bench beside row J
@@ -163,13 +164,13 @@
   M.stamp('boat_fishing', 15, 20).stamp('boat_cargo', 19, 20);
 
   // -- story interactions
-  M.interact(5, 3, morning, 'washing line: the first morning').interact(6, 3, morning, 'washing line: the first morning');
+  M.interact(5, 2, morning, 'washing line: the first morning').interact(6, 2, morning, 'washing line: the first morning');
   M.interact(13, 21, parcel, 'pier crate: Bobbin\'s parcel');
 
   // -- people
-  M.npc('tomo_bt', 7, 3, 'rival', 'left', null, { hideIf: 'morning_done', script: morning });
+  M.npc('tomo_bt', 7, 2, 'rival', 'right', null, { hideIf: 'morning_done', script: morning });
   M.npc('villager_a', 9, 13, 'villager_f1', 'up', 'Oh, good morning! The sea breeze dries sheets in ten minutes.\\pI have never once needed a clothes peg. Don\'t tell the peg.', { move: 'wander', range: 1 });
-  M.npc('kid_a', 16, 13, 'child_m', 'left', 'Is that {player}? Are you getting a Kigu today?\\pI\'m going to have one someday. Mom says I must be taller first.', { move: 'turn' });
+  M.npc('kid_a', 15, 11, 'child_m', 'down', 'Is that {player}? Are you getting a Kigu today?\\pI\'m going to have one someday. Mom says I must be taller first.', { move: 'turn' });
   M.npc('elder_a', 10, 15, 'elder_f', 'right', 'A Kigu chooses the people she trusts, you know.\\pYou can\'t force it, and you shouldn\'t try.');
   M.npc('park_kid_tag', 15, 4, 'child_f', 'down', 'Tag! You\'re it! ...Oh, you\'ve got a Kigu now? Okay, she can be it too.', { move: 'turn', showIf: 'has_starter' });
   M.npc('park_kid_beam', 19, 6, 'child_m', 'down', 'I did the balance beam without falling off! Well, I fell off once. Twice.', { move: 'turn' });
@@ -186,7 +187,7 @@
 
   // -- the secret: a Wish Candy glinting in the pond grotto, visible from the shore, reached only by paddling
   M.pickup('wish_candy', 30, 13, 'wish_candy', 1, 'glinting in the pond grotto, Paddle only');
-  Object.assign(M.def.props[M.def.props.length - 1], { gate: 'paddle', glint: true });
+  Object.assign(M.def.props[M.def.props.length - 1], { gate: 'paddle', glint: true, glintDx: -3 });   // glint inside the cave, clear of the pillar
 
   // -- ways in and out
   // the nudge sits on row B (inside the tree gap), not row C, so walking along row C past the road behind your house is never stopped
