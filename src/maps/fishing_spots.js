@@ -17,7 +17,6 @@
   const SPOTS = {
     button_town: { water: 'salt', kigu: { 1: [['fugubun', 5, 8, 100]], 2: [['fugubun', 18, 22, 60], ['kelpony', 18, 22, 40]], 3: [['swellegant', 32, 36, 60], ['kelpony', 30, 34, 40]] } },
     route1: FRESH(4, 18, 30),
-    ribbon_loop: FRESH(4, 18, 30),
     route2: FRESH(5, 18, 30, { river: true }),
     // the desert pools: only the little pupfish (and, with a better rod, a Kiskat in the mud at the bottom)
     sun_flats: { water: 'fresh', only: ['desert_pupfish'], kigu: { 2: [['kiskat', 22, 25, 100]] } },
@@ -28,7 +27,6 @@
   const PADDLE = {
     button_town: [['clawdet', 12, 16, 50], ['jellybob', 12, 16, 25], ['waddlecoat', 12, 16, 25]],
     route1: [['kerochapu', 12, 15, 60], ['waddlecoat', 12, 15, 40]],
-    ribbon_loop: [['kerochapu', 12, 15, 60], ['waddlecoat', 12, 15, 40]],
     route2: [['kerochapu', 13, 16, 45], ['waddlecoat', 13, 16, 25], ['jellybob', 13, 16, 20], ['alligrunt', 13, 15, 10]],
     sun_flats: [['kerochapu', 21, 24, 100]],
     dust_oasis: [['kerochapu', 22, 25, 100]],

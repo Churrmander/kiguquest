@@ -45,7 +45,7 @@ const run = (t, ow, fn) => { ow.runScript(fn); settle(t); };
     for (const e of f.extra || []) assert.ok(NP.data.items[e.item], id + ' extra ' + e.item);
     assert.ok(F.fishFor(Object.assign({ water: f.water }, f), id, 3, false).length, id + ' has fish to land');
   }
-  assert.ok(spots >= 11, 'fishing spots: ' + spots);
+  assert.ok(spots >= 10, 'fishing spots: ' + spots);   // 10 since Ribbon Loop's pond became the Ribbon Maze (Ch1 plan v3)
   // the three starter lines never turn up in the wild: grass, Paddling, puddles or rods (owner, 2026-10-27)
   const STARTERS = new Set(['konko', 'kitsuri', 'kyuubelle', 'ottopi', 'ottelia', 'ottomarine', 'sprubun', 'lapinlily', 'lapinade']);
   for (const [id, def] of Object.entries(NP.maps)) {
