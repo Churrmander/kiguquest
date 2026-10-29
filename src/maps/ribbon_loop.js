@@ -47,7 +47,7 @@
     yield* c.sayT('ribbon_loop.hay.1', 'A wild Acolarva is happily munching leaves beside the hay.\\pShe hums a little between bites.');
     if (!(yield* c.ask('Say hello to the Acolarva?'))) return;
     c.set('rl_silkie');
-    yield* c.wildBattle('acolarva', 5);
+    yield* c.wildBattle('acolarva', 9);
   }
 
   // ---- the Worried Tailor by the south gate and her lost Kittabra (a small quest for after Poppy; reward: a Plum Treat)
@@ -90,8 +90,9 @@
     // flat3d: in 3D the hedge maze turned into one sea of treeline canopy and its paths couldn't be read, so this map stays flat
     view: 'street', flat3d: true,
     legend: { '.': 'grass', T: 'treeline', H: 'hedge', p: 'path', ',': 'tallgrass', f: 'flowers' },
-    // tree shake (approved 2026-10-28): Chirpadee common, Lyripip rare and under-levelled for the route (her level is an open owner question for the Ch1 balance pass).
-    treeShake: [{ sp: 'chirpadee', min: 3, max: 5, w: 7 }, { sp: 'lyripip', min: 5, max: 6, w: 1 }],
+    // tree shake (approved 2026-10-28): Chirpadee common, Lyripip rare and under-levelled for the route
+    // (Ch1 level retune: the Chirpadee match the grass, the Lyripip a level above; her level is still an open question for the owner).
+    treeShake: [{ sp: 'chirpadee', min: 7, max: 9, w: 7 }, { sp: 'lyripip', min: 9, max: 10, w: 1 }],
   });
   M.ascii(0, 0, ROWS);
 
@@ -114,20 +115,20 @@
     .spawn('north', 2, 4, 'right');  // Thimble's east gate lands here
   M.edge('w', 20, 21, 'basting_green', 'east').edge('w', 4, 5, 'thimble', 'east');
 
-  M.enc('grass', [['chirpadee', 3, 5, 25], ['nibblit', 3, 5, 25], ['kittabra', 4, 5, 25], ['acolarva', 4, 5, 25]]);
+  M.enc('grass', [['chirpadee', 7, 9, 25], ['nibblit', 7, 9, 25], ['kittabra', 8, 10, 25], ['acolarva', 7, 9, 25]]);
 
   // ---------------------------------------------------------------------------------------------------------- the four Tailors
   // One on each lane, each with a tree (or Oki's tree) behind them so the verge is no way round.
-  M.trainer('tam', 9, 22, 'hiker', 'up', { cls: 'Hiker', name: 'Tam', sight: 2, reward: 6, ai: 0, team: [['nibblit', 4], ['nibblit', 5]],
+  M.trainer('tam', 9, 22, 'hiker', 'up', { cls: 'Hiker', name: 'Tam', sight: 2, reward: 6, ai: 0, team: [['nibblit', 9], ['nibblit', 9]],
     intro: 'Taking the long way round? So am I, every year! Fancy a battle on the way?', win: 'Ha! You walk faster than I do, too.',
     after: 'The parade will be gone by tomorrow, but the loop is here every day.' });
-  M.trainer('pim', 17, 22, 'picnicker', 'up', { cls: 'Picnicker', name: 'Pim', sight: 2, reward: 6, ai: 0, team: [['chirpadee', 5], ['kittabra', 4]],
+  M.trainer('pim', 17, 22, 'picnicker', 'up', { cls: 'Picnicker', name: 'Pim', sight: 2, reward: 6, ai: 0, team: [['chirpadee', 7], ['kittabra', 10]],
     intro: 'I set my picnic up right where the parade would see it.\\pThen they went and folded my blanket! Battle me, I need to shake off the grumps.',
     win: 'Much better! I feel nicely crumpled again.', after: 'Have a sandwich crust. ...No? More for Chirpadee.' });
-  M.trainer('oki', 26, 12, 'sailor', 'left', { cls: 'Sailor', name: 'Oki', sight: 2, reward: 7, ai: 1, team: [['kerochapu', 6]],
+  M.trainer('oki', 26, 12, 'sailor', 'left', { cls: 'Sailor', name: 'Oki', sight: 2, reward: 7, ai: 1, team: [['kerochapu', 10]],
     intro: 'Ahoy! My ship is in Seamstead, but I like a good long walk on my day off.\\pShow me your sea legs!',
     win: 'Sunk! You sail a fine battle, matey.', after: 'Kerochapu misses the water, but she says the loop makes a nice change. Ribbit.' });
-  M.trainer('rio', 14, 3, 'net_kid', 'down', { cls: 'Net Kid', name: 'Rio', sight: 2, reward: 5, ai: 0, team: [['acolarva', 4], ['kittabra', 5]],
+  M.trainer('rio', 14, 3, 'net_kid', 'down', { cls: 'Net Kid', name: 'Rio', sight: 2, reward: 5, ai: 0, team: [['acolarva', 10], ['kittabra', 11]],
     intro: 'I came all this way to befriend the leaf-munching Acolarva.\\pShe won\'t stop eating. Battle me while I wait!', win: 'Even my Kittabra wants a snack now.',
     after: 'I dropped a Sugar Cube somewhere in the Ribbon Maze and never found it.' });
 

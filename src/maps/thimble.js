@@ -57,7 +57,7 @@
     yield* c.sayT('thimble.inspect.5', '{player}\'s Kigu tugged her sleeve away from the Presser.');
     yield* c.sayT('thimble.inspect.6', 'Tuck: Resisting an inspection? That is... untidy.\\pStay in line, Tailor!');
     // levels are placeholders for the one-pass Chapter 1 retune ("apprentices and Tuck raised")
-    const won = yield* c.trainerBattle({ cls: 'Presser', name: 'Tuck', look: 'grunt_m', ai: 1, reward: 8, music: 'battle_society', canLose: true, team: L.team([['kittabra', 12], ['acolarva', 11]]) });
+    const won = yield* c.trainerBattle({ cls: 'Presser', name: 'Tuck', look: 'grunt_m', ai: 1, reward: 8, music: 'battle_society', canLose: true, team: L.team([['kittabra', 14], ['acolarva', 13]]) });
     if (won) {
       yield* c.sayT('thimble.inspect.win.1', 'Tuck: Flat is fair... flat is fair... I was only supposed to count planks.');
       yield* c.sayT('thimble.inspect.win.2', 'Fold: Please don\'t tell the Inspector.\\pI\'d honestly rather be baking.');
@@ -322,19 +322,23 @@
       // Mimi, first visit only: showing Poppy her costume drawing (scene 1)
       { id: 'mimi_salon', x: 3, y: 3, look: 'mimi', dir: 'right', hideIf: 'mimi_salon', script: function* (c) { yield* NP.scripts.mimiSalon(c); } },
       { id: 'salon_t1', x: 5, y: 9, look: 'tailor_m', dir: 'left',
-        trainer: { cls: 'Tailor', name: 'Ren', sight: 3, reward: 7, ai: 1, team: L.team([['nibblit', 10], ['kittabra', 10]]),
+        trainer: { cls: 'Tailor', name: 'Ren', sight: 3, reward: 7, ai: 1, team: L.team([['nibblit', 12], ['kittabra', 12]]),
           intro: 'Poppy teaches us that every stitch counts. Show me yours!', win: 'Such neat work!', after: 'Poppy is at the back. Don\'t underestimate her Kigu.' } },
       { id: 'salon_t2', x: 4, y: 6, look: 'tailor_f', dir: 'right',
-        trainer: { cls: 'Tailor', name: 'Noa', sight: 3, reward: 8, ai: 1, team: L.team([['chirpadee', 11], ['nibblit', 11]]),
+        trainer: { cls: 'Tailor', name: 'Noa', sight: 3, reward: 8, ai: 1, team: L.team([['chirpadee', 12], ['nibblit', 11]]),
           intro: 'Halt! Nobody gets to Poppy without getting past me first.', win: 'You got that one exactly right...', after: 'Go on, Poppy is waiting.' } },
     ],
   });
   // Poppy's ace (approved 2026-10-28): Wiskedabra, Jolly, holding the Lucky Thimble so Flurry Swipe lands 4 or 5 hits.
   // Her Chirpadee sticks to Fluff moves so the Gale ones don't flatten a Sprubun starter.
+  // Ch1 level retune (tools/balance-bot.mjs): the ace is Lv14, the low end of the approved "about Lv15". At Lv15 even a
+  // well-prepared Ottopi or Sprubun team (Lv16 lead, a full team, Snack Cakes, set-up moves) won only 10-20% of the time,
+  // because both starters evolve at Lv17; at Lv14 a careless or under-levelled team still loses and a prepared one wins
+  // with every starter (Ottopi and Sprubun about 60%, Konko nearly always).
   NP.maps.salon.poppyTeam = L.team([
     ['nibblit', 12],
     ['chirpadee', 13, { moves: ['pounce', 'tail_wag', 'sweet_talk'] }],
-    ['wiskedabra', 15, { moves: ['quick_dash', 'sweet_talk', 'flurry_swipe', 'snack_time'], nature: 'jolly', item: 'lucky_thimble' }],
+    ['wiskedabra', 14, { moves: ['quick_dash', 'sweet_talk', 'flurry_swipe', 'snack_time'], nature: 'jolly', item: 'lucky_thimble' }],
   ]);
 
   // -------------------------------------------------------------------------------------- houses

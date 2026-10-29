@@ -55,8 +55,9 @@
     id: 'route1', name: 'Route 1  Meadow Lane', music: 'route_meadow', battleBg: 'grass', border: 'treeline', w: W, h: H,
     view: 'street',   // 3D camera preset (street | town | flat-ish), see src/engine/persp.js
     legend: { '.': 'grass', T: 'treeline', p: 'path', ',': 'tallgrass', f: 'flowers', w: 'water', d: 'ledge_d', s: 'sand', g: 'grass' },
-    // tree shake (approved 2026-10-28): Chirpadee common, Lyripip rare. The rare Lyripip is kept under-levelled to fit the route (open question for the owner: her level in the Ch1 balance pass).
-    treeShake: [{ sp: 'chirpadee', min: 3, max: 5, w: 7 }, { sp: 'lyripip', min: 4, max: 5, w: 1 }],
+    // tree shake (approved 2026-10-28): Chirpadee common, Lyripip rare. The rare Lyripip is kept under-levelled to fit the route
+    // (Ch1 level retune: a level above the route's wild Kigu; her level is still an open question for the owner).
+    treeShake: [{ sp: 'chirpadee', min: 3, max: 5, w: 7 }, { sp: 'lyripip', min: 5, max: 6, w: 1 }],
   });
   M.ascii(0, 0, ROWS);
 
@@ -78,8 +79,8 @@
   M.warp({ xs: [12, 13], y: 0, to: 'basting_green', spawn: 'south', sound: 'none' });
 
   M.enc('grass', [
-    ['chirpadee', 2, 4, 30], ['nibblit', 2, 4, 30],   // a Lv5 starter should win these comfortably
-    ['kittabra', 3, 5, 25], ['acolarva', 3, 4, 10],
+    ['chirpadee', 3, 5, 30], ['nibblit', 3, 5, 30],   // a Lv5 starter should win these comfortably
+    ['kittabra', 4, 6, 25], ['acolarva', 4, 5, 10],
   ]);
 
   // ---------------------------------------------------------------------------------------------------------- items
@@ -113,11 +114,11 @@
   // ---------------------------------------------------------------------------------------------------------- people
   M.npc('hiker', 11, 36, 'elder_m', 'right', 'Tall grass is where wild Kigu nap in the sun.\\pWeaken one first, since a sleepy Kigu is much easier to befriend.');
   M.npc('kid', 9, 19, 'child_f', 'down', 'My Chirpadee learned Quick Dash!\\pNow she always gets to the snacks first.', { move: 'turn' });
-  M.trainer('lia', 8, 25, 'tailor_f', 'left', { cls: 'Tailor', name: 'Lia', sight: 2, reward: 6, ai: 0, team: [['chirpadee', 3], ['nibblit', 3]],
+  M.trainer('lia', 8, 25, 'tailor_f', 'left', { cls: 'Tailor', name: 'Lia', sight: 2, reward: 6, ai: 0, team: [['chirpadee', 3], ['nibblit', 4]],
     intro: 'You have a Kigu too? Let\'s compare stitches!', win: 'Oh! Your seams are tighter than mine.', after: 'My Chirpadee has forgiven you. I\'m still working on it.' });
-  M.trainer('bo', 13, 17, 'net_kid', 'right', { cls: 'Net Kid', name: 'Bo', sight: 2, reward: 5, ai: 0, team: [['kittabra', 4]],
+  M.trainer('bo', 13, 17, 'net_kid', 'right', { cls: 'Net Kid', name: 'Bo', sight: 2, reward: 5, ai: 0, team: [['kittabra', 6]],
     intro: 'I befriended my Kittabra in this very grass!', win: 'She fell asleep on me...', after: 'Kittabra naps a lot, but she naps fiercely.' });
-  M.trainer('suzu', 11, 5, 'picnicker', 'right', { cls: 'Picnicker', name: 'Suzu', sight: 2, reward: 6, ai: 1, team: [['sprubun', 4], ['chirpadee', 4]],
+  M.trainer('suzu', 11, 5, 'picnicker', 'right', { cls: 'Picnicker', name: 'Suzu', sight: 2, reward: 6, ai: 1, team: [['sprubun', 6], ['chirpadee', 7]],
     intro: 'My picnic is over, so now it\'s battle time! Ready?', win: 'My sandwiches are going to get cold...', after: 'There\'s a Salon in Thimble with a real Master Tailor. Pack a snack first!' });
 
   // ---------------------------------------------------------------------------------------------------------- Mimi (plan MI)
@@ -175,7 +176,7 @@
       yield* c.approach(t);
       yield* c.say('{rival}: Thimble first, {player}? I\'ve been practising since the kite.\\pCome on, then. Show me your best, and I\'ll show you mine!');
       const rs = c.state.rivalStarter || 'ottopi';
-      const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'rival', ai: 2, reward: 10, canLose: true, team: L.team([[rs, 5], ['chirpadee', 4]]) });
+      const won = yield* c.trainerBattle({ cls: 'Rival', name: '{rival}', look: 'rival', ai: 2, reward: 10, canLose: true, team: L.team([[rs, 7], ['chirpadee', 6]]) });
       c.set('rival1_done');
       if (won) yield* c.say('{rival}: Whoa! Okay, your Kigu are tougher than I thought.\\pNice one, {player}. I\'ll be right behind you in Thimble Village!');
       else yield* c.say('{rival}: Told you they were tough! But you were brilliant, {player}.\\pYou should rest up. Rematch at the Salon? Deal?');
