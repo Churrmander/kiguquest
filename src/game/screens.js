@@ -372,7 +372,23 @@
       yield* this.say('Congratulations! ' + (k.nickname || from.name) + ' evolved into ' + toName + '!');
       for (const id of res.evoMoves) {
         if (K().knows(k, id)) continue;
-        if (K().learnMove(k, id)) yield* this.say(K().displayName(k) + ' learned ' + NP.data.moves[id].name + '!');
+        const nm = K().displayName(k), mv = NP.data.moves[id];
+        if (K().learnMove(k, id)) { yield* this.say(nm + ' learned ' + mv.name + '!'); continue; }
+        // four moves already: the same choice as a level-up in battle
+        this.msg.begin(nm + ' wants to learn ' + mv.name + ', but already knows four moves. Forget a move?', { keep: true, box: { x: 0, y: NP.BOX_Y, w: NP.W, h: 48 } });
+        while (this.msg.active) { this.msg.update(); yield; }
+        let learned = false;
+        if (yield* this.yesno()) {
+          const idx = yield* this.choose(k.moves.map((m) => NP.data.moves[m.id].name).concat(['Keep old moves']), { x: 100, y: 20 });
+          if (idx >= 0 && idx < 4) {
+            const old = NP.data.moves[k.moves[idx].id].name;
+            K().forgetAndLearn(k, idx, id);
+            this.msg.close();
+            yield* this.say(nm + ' forgot ' + old + ' and learned ' + mv.name + '!');
+            learned = true;
+          }
+        }
+        if (!learned) { this.msg.close(); yield* this.say(nm + ' did not learn ' + mv.name + '.'); }
       }
       NP.Game.fadeTo(1, 16, '#000000');
       yield* this.wait(18);

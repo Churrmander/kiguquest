@@ -125,7 +125,8 @@
   M.trainer('pim', 17, 22, 'picnicker', 'up', { cls: 'Picnicker', name: 'Pim', sight: 2, reward: 6, ai: 0, team: [['chirpadee', 7], ['kittabra', 10]],
     intro: 'I set my picnic up right where the parade would see it.\\pThen they went and folded my blanket! Battle me, I need to shake off the grumps.',
     win: 'Much better! I feel nicely crumpled again.', after: 'Have a sandwich crust. ...No? More for Chirpadee.' });
-  M.trainer('oki', 26, 12, 'sailor', 'left', { cls: 'Sailor', name: 'Oki', sight: 2, reward: 7, ai: 1, team: [['kerochapu', 10]],
+  // Oki's lane is forced and her Kerochapu is Tide against a Konko: Lv9, not 10 (QA: a solo Lv13 Konko won 24% against Lv10, 74% against Lv9)
+  M.trainer('oki', 26, 12, 'sailor', 'left', { cls: 'Sailor', name: 'Oki', sight: 2, reward: 7, ai: 1, team: [['kerochapu', 9]],
     intro: 'Ahoy! My ship is in Seamstead, but I like a good long walk on my day off.\\pShow me your sea legs!',
     win: 'Sunk! You sail a fine battle, matey.', after: 'Kerochapu misses the water, but she says the loop makes a nice change. Ribbit.' });
   M.trainer('rio', 14, 3, 'net_kid', 'down', { cls: 'Net Kid', name: 'Rio', sight: 2, reward: 5, ai: 0, team: [['acolarva', 10], ['kittabra', 11]],

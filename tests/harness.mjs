@@ -15,7 +15,11 @@ export function boot(seed) {
     const look = m && (m[1] === '{rival}' ? 'rival' : m[1].toLowerCase());
     if (look && (look === 'rival' || looks[look]) && this.player && this.map && !(this.map.def.memory)) {
       const p = this.player;
-      const near = this.actors.some((a) => a !== p && a.look === look && !a.hidden && Math.abs(a.x - p.x) <= 6 && a.y - p.y >= -5 && a.y - p.y <= 4);
+      // measured from the middle of the view, not from the player: the flat camera stops at the map edge (Overworld.camera), so
+      // near an edge the player is off centre and a speaker further along her row is still on screen
+      const [cx, cy] = this.camera ? this.camera() : [p.px + 8 - NP.W / 2, p.py + 8 - NP.H / 2];
+      const mx = (cx + NP.W / 2 - 8) / 16, my = (cy + NP.H / 2 - 8) / 16;
+      const near = this.actors.some((a) => a !== p && a.look === look && !a.hidden && Math.abs(a.x - mx) <= 6 && a.y - my >= -5 && a.y - my <= 4);
       if (!near) {
         const k = this.map.id + ' | ' + String(text).slice(0, 60);
         if (!offscreen.includes(k)) offscreen.push(k);

@@ -184,7 +184,7 @@
       n++;
       battle.add({ t: 'hit', who: target, from: mon, move: move.id, eff: r.eff, crit: r.crit });
       if (r.eff === 0) { battle.msg("It doesn't affect " + target.label() + '...'); return; }
-      const dealt = battle.damage(target, r.dmg, { cause: 'hit', source: mon, move });
+      const dealt = battle.damage(target, r.dmg, { cause: 'hit', source: mon, move, holdFaint: true });
       total += dealt;
       target.lastHit = { amount: dealt, category: move.category, source: mon, move: move.id, turn: battle.turn };
       if (r.crit) battle.msg('A critical hit!');
@@ -194,6 +194,8 @@
       }
     }
     if (move.multi && n > 1) battle.msg('Hit ' + n + ' times!');
+    // a knockout is announced after the hit's own lines, so 'A critical hit!' and 'Hit 4 times!' never follow 'too sleepy to go on'
+    if (target.fainted) battle.faint(target, { cause: 'hit', source: mon, move });
     // secondary effects
     if (move.drain && total > 0 && !mon.fainted) {
       battle.heal(mon, Math.max(1, Math.floor(total * move.drain)), { cause: 'drain' });

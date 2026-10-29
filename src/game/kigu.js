@@ -227,7 +227,10 @@
       k.species = toId;
       const after = Kigu.stats(k);
       if (k.hp > 0) k.hp = Math.min(after.hp, k.hp + (after.hp - before.hp));
+      // her evolution-only moves, then whatever the new form learns at this very level (Vowspun's Lv10 Nibble when an Acolarva
+      // evolves at Lv10): the level-up that triggered the evolution was checked against the old form's learnset
       const evoMoves = Kigu.movesLearnedAt(toId, 0);
+      for (const id of Kigu.movesLearnedAt(toId, k.level)) if (evoMoves.indexOf(id) < 0) evoMoves.push(id);
       return { before, after, evoMoves };
     },
 

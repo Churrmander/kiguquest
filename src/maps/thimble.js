@@ -335,9 +335,12 @@
   // well-prepared Ottopi or Sprubun team (Lv16 lead, a full team, Snack Cakes, set-up moves) won only 10-20% of the time,
   // because both starters evolve at Lv17; at Lv14 a careless or under-levelled team still loses and a prepared one wins
   // with every starter (Ottopi and Sprubun about 60%, Konko nearly always).
+  // QA fixes (2026-10-29): her Chirpadee is Lv12 (the low end of the approved Lv12-13), and Ottopi learns Paddle Slap at Lv15 instead of
+  // 17 (species.js), because Ottopi had only 40-power moves until she evolved. The ace is unchanged; how strong she should be for a
+  // player who arrives one level short of the starter's evolution is still the owner's call.
   NP.maps.salon.poppyTeam = L.team([
     ['nibblit', 12],
-    ['chirpadee', 13, { moves: ['pounce', 'tail_wag', 'sweet_talk'] }],
+    ['chirpadee', 12, { moves: ['pounce', 'tail_wag', 'sweet_talk'] }],
     ['wiskedabra', 14, { moves: ['quick_dash', 'sweet_talk', 'flurry_swipe', 'snack_time'], nature: 'jolly', item: 'lucky_thimble' }],
   ]);
 

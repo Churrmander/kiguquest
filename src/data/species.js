@@ -39,7 +39,7 @@
 
   sp('ottopi', 'Ottopi', ['tide'], [55, 56, 50, 52, 48, 47], { growth: 'mediumSlow', catch: 45, exp: 62, ab: ['torrent'], cry: 'Pii!',
     evo: [{ to: 'ottelia', level: 17 }],
-    ls: [[1, 'pounce'], [1, 'tail_wag'], [4, 'bubble_pop'], [8, 'shell_guard'], [12, 'aqua_dash'], [17, 'paddle_slap']],
+    ls: [[1, 'pounce'], [1, 'tail_wag'], [4, 'bubble_pop'], [8, 'shell_guard'], [12, 'aqua_dash'], [15, 'paddle_slap']],
     dex: 'A teal otter onesie with a pink shell hugged to her tummy. She cracks snacks on it.' });
   sp('ottelia', 'Ottelia', ['tide'], [75, 78, 68, 72, 66, 61], { growth: 'mediumSlow', catch: 45, exp: 142, ab: ['torrent'], cry: 'Piiru!', stage: 2, family: 'ottopi',
     evo: [{ to: 'ottomarine', level: 36 }],

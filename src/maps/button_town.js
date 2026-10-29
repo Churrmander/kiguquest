@@ -326,7 +326,7 @@
             yield* c.giveItem('town_map', 1);
             yield* c.sayT('lab.errand.share.1', 'Oh, one more thing! This is an Exp Share.\\pWith it, Kigu who wait on the bench still learn from every battle.\\pThey get half the Exp. Points, so nobody gets left behind.');
             yield* c.giveItem('exp_share', 1);
-            yield* c.sayT('lab.errand.share.2', 'It\'s switched on already. If you\'d rather one Kigu did all the learning,\\pyou can switch it off in your Key Items.');
+            yield* c.sayT('lab.errand.share.2', 'It\'s switched on already.\\pIf you\'d rather one Kigu did all the learning, you can switch it off in your Key Items.');
             yield* c.heal('And let me patch up your partner after her first adventure.\\pYour Kigu are feeling much better!');
             c.set('errand_done');
             yield* c.sayT('lab.errand.5', 'Meadow Lane is just north of town, and Thimble Village is past Basting Green.\\p{rival} has a head start, but I doubt that will last. Off you go!');

@@ -102,6 +102,10 @@ assert.equal(t.ow.map.id, 'salon');
 assert.ok(t.travel(4, 4, 600), 'walk to poppy again, at ' + t.pos());
 t.tap('up'); t.tick(6);
 t.tap('a');
+assert.ok(t.mash(() => t.idle(), 60000), 'basket handed back');
+// the hand-in is a talk of its own (Ren and Noa may have left the team hurt, and the Tea House is next door); the next talk is the fight
+assert.ok(st.flags.poppy_basket_back && !st.badges[0] && !st.flags.poppy_fought, 'handing back the basket does not start the fight');
+t.tap('a');
 assert.ok(t.mash(() => t.idle(), 60000), 'poppy fight resolves');
 assert.ok(st.badges[0], 'got the first Button');
 assert.ok(st.bag.disc_snip);

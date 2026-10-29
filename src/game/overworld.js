@@ -535,6 +535,9 @@
       const st = NP.state;
       if (!blackedOut) { this.msg.close(); NP.Game.fadeTo(1, 14); yield* this.wait(16); }
       NP.State.healAll();
+      // evolutions owed from a lost battle (or by a Kigu who fainted in a won one) play once she's rested: Thimble has no grass, so
+      // a Konko who reached Lv16 while losing to Poppy would otherwise face every rematch unevolved
+      st.evoPending = true;
       // the nearest unlocked Tea House; else the last place she rested (her bedroom at the start); else anywhere that exists,
       // so a bad or missing heal point can never leave the game stuck
       const tea = this.nearestTeaHouse(), hp = st.healPoint;

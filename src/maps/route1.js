@@ -79,8 +79,10 @@
   M.warp({ xs: [12, 13], y: 0, to: 'basting_green', spawn: 'south', sound: 'none' });
 
   M.enc('grass', [
-    ['chirpadee', 3, 5, 30], ['nibblit', 3, 5, 30],   // a Lv5 starter should win these comfortably
-    ['kittabra', 4, 6, 25], ['acolarva', 4, 5, 10],
+    // QA fixes: nothing tops out above the Lv5 starter. Chirpadee (Gale beats Sprout) and Acolarva stay at Lv3-4, because at Lv5 a fresh
+    // Sprubun beat them only 2-6% of the time, and a Lv6 Kittabra beat a fresh Ottopi two times in three (1v1 sims, wild AI)
+    ['chirpadee', 3, 4, 30], ['nibblit', 3, 5, 30],
+    ['kittabra', 4, 5, 25], ['acolarva', 3, 4, 10],
   ]);
 
   // ---------------------------------------------------------------------------------------------------------- items
@@ -118,7 +120,9 @@
     intro: 'You have a Kigu too? Let\'s compare stitches!', win: 'Oh! Your seams are tighter than mine.', after: 'My Chirpadee has forgiven you. I\'m still working on it.' });
   M.trainer('bo', 13, 17, 'net_kid', 'right', { cls: 'Net Kid', name: 'Bo', sight: 2, reward: 5, ai: 0, team: [['kittabra', 6]],
     intro: 'I befriended my Kittabra in this very grass!', win: 'She fell asleep on me...', after: 'Kittabra naps a lot, but she naps fiercely.' });
-  M.trainer('suzu', 11, 5, 'picnicker', 'right', { cls: 'Picnicker', name: 'Suzu', sight: 2, reward: 6, ai: 1, team: [['sprubun', 6], ['chirpadee', 7]],
+  // Suzu comes straight after the rival with no rest in between, and both her Kigu resist Sprout: Chirpadee Lv6, not 7 (QA: a solo Lv9-10
+  // Sprubun won 14-58% against Lv7; 29-88% against Lv6)
+  M.trainer('suzu', 11, 5, 'picnicker', 'right', { cls: 'Picnicker', name: 'Suzu', sight: 2, reward: 6, ai: 1, team: [['sprubun', 6], ['chirpadee', 6]],
     intro: 'My picnic is over, so now it\'s battle time! Ready?', win: 'My sandwiches are going to get cold...', after: 'There\'s a Salon in Thimble with a real Master Tailor. Pack a snack first!' });
 
   // ---------------------------------------------------------------------------------------------------------- Mimi (plan MI)
