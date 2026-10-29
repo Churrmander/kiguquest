@@ -5,13 +5,15 @@
   const D = K.define;
 
   // Kittabra's 32 px overworld views, drawn by hand from her battle sprite (rows 4-30, feet outline on row 30): a pale lilac-white
-  // hood lit from the top left with two tall pointed cat ears (pink inside from the front, a dark crease line along their base from
-  // behind), dark grey hair framing the face, small blue sleepy eyes with blush, a gold bell on the collar and a soft shadow under
-  // her chin. From the front she raises one paw beside her face, beckoning (the other arm hangs at her side); the white belly patch
-  // is shaded along its lower-right edge; her right arm and leg sit in a cool grey-violet shade, and her grey tail curls up on her
-  // right with a hooked darker tip. From behind, a seam runs down the middle of the hood, the right side falls into two shade
-  // tones, a dark rim band at the neck separates the hood from the onesie, and the tail grows out of the rump, runs right behind
-  // her mitt and curls up.
+  // hood lit from the top left with two tall pointed cat ears (pink inside from the front), light grey hair framing the face (her
+  // battle sprite's hair), sleepy half-closed blue eyes (a 2 px lid line over a 1 px pupil) with blush, a gold bell on the collar
+  // and a soft shadow under her chin. From the front she raises one paw beside her cheek, the mitt over the hood's edge so she stays
+  // about 24 px wide like the other Kigu; the white belly patch is shaded along its lower-right edge; her right arm and leg sit in a
+  // cool grey-violet shade, and her grey tail rises behind her right arm in a small S and curls in at the top with a darker hooked
+  // tip. From behind (about 21 px wide): the hood is a dome, its crown bulging up between the ears, with darker ear tips and a pink
+  // edge on the ears' outer sides, a seam down the middle, a mid tone and two shade tones falling to a dark rim down the right side,
+  // and a dark band where the hood's edge meets the onesie; a fringe of grey hair shows at the nape under it, and the tail rises
+  // beside her right mitt and curls in towards the hood.
   const KITTABRA_OW = {
     down: [
       '.........OO..........OO.........',
@@ -23,16 +25,16 @@
       '.......OLHGGGGGGGGGGGGHSO.......',
       '.......OLGGgGGGgGGGgGGGSO.......',
       '.......OLGGKgKKKKgKKKGGSO.......',
-      '.......OLGGKKOKKKKOKKGGSO.OOOO..',
-      '.......OLGGKKeKKKKeKKGGSOOTTTRO.',
-      '...OOO.OLGgKBBKkkKBBKgGSOOTTORO.',
-      '..OMMMOOHGgkKKKKKKKKkgGSO.OTTOO.',
-      '..OMMRO.OSHRRRRYYRRRRHSO..OTTO..',
-      '...ORRO.OLLSSSSSSSSSSSRO..OTTO..',
-      '...OLHOOLLOHHHWWWWHHSOSRO.OTTO..',
-      '...OLHHHLLOHHWWWWWWHSOSROOTTO...',
-      '....OSSSSOOHHWWWWWWHSOSROTTO....',
-      '.....OOOO.OHHWWWWWwHSOSROTO.....',
+      '.......OLGGKOOKKKKOOKGGSOOOO....',
+      '.......OLGGKKeKKKKeKKGGSORTTO...',
+      '......OOOGgKBBKkkKBBKgGSOROTO...',
+      '.....OMMMOgkKKKKKKKKkgGSOOTRO...',
+      '.....OMMROHRRRRYYRRRRHSO.OTRO...',
+      '......ORROLSSSSSSSSSSSROOTRO....',
+      '.....OLHLLOHHHWWWWHHSOSROTRO....',
+      '.....OLHHLOHHWWWWWWHSOSROTRO....',
+      '......OSSSOHHWWWWWWHSOSROTO.....',
+      '.......OOOOHHWWWWWwHSOSROO......',
       '..........OHHWWWWWwHSOMSRO......',
       '..........OHHHWWWwHHSOSRRO......',
       '..........OHHHHHHHHHSORRO.......',
@@ -44,28 +46,28 @@
     ],
     up: [
       '.........OO..........OO.........',
-      '.........OLO........OSO.........',
-      '.........OLRO......ORSO.........',
-      '........OLRRROOOOOORRRSO........',
-      '........OLLLHHHHSHHHHHSO........',
-      '.......OLLLHHHHHSHHHHHSRO.......',
-      '.......OLLHHHHHHSHHHHHSRO.......',
-      '.......OLHHHHHHHSHHHHSSRO.......',
-      '.......OLHHHHHHHSHHHHSSRO.......',
-      '.......OLHHHHHHHSHHHSSRRO.......',
-      '.......OHHHHHHHHSHHHSSRRO.OOOO..',
-      '.......OHHHHHHHHSHHHSSRROOTTTRO.',
-      '........OHHHHHHHSHHSSRRO.OTTORO.',
-      '........ORRRRRRRRRRRRRRO.OTTOO..',
-      '........OLLHHHHHHHHHHSRO.OTTO...',
-      '.......OLLOHHHHHHHHSROSROOTTO...',
-      '.......OLLOHHHHHHHHSROSROOTTO...',
-      '.......OLLOHHHHHHHSSROSROOTTO...',
-      '.......OLLOHHHHHHHSSROSROOTTO...',
-      '......OMMMOHHHRTTRSSROMSROTTO...',
-      '......OMMROHHHOTTTROOOSRROTTO...',
-      '.......ORROHHHHOTTTTTORROTTTO...',
-      '........OOOSHHHOOOOOOOOOOOOO....',
+      '.........OSO........ORO.........',
+      '.........OPLO.OOOO.OSPO.........',
+      '.........OLRROLHSHORRSO.........',
+      '........OLLLHHHHSHHHMSRO........',
+      '.......OLLLHHHHHSHHHMMSRO.......',
+      '.......OLLHHHHHHSHHMMSSRO.......',
+      '.......OLHHHHHHHSHHMMSSRO.......',
+      '.......OLHHHHHHHSHHMMSSROOO.....',
+      '.......OLHHHHHHHSHMMSSSRORTO....',
+      '.......OHHHHHHHMSHMMSSRROOTO....',
+      '.......OMHHHHHMMSMMSSSRROTRO....',
+      '........OMMMMMMSSSSSSRROOTRO....',
+      '........ORRRRRRRRRRRRRROOTRO....',
+      '........OLLHgGGGGGGgHSROOTRO....',
+      '.......OLLOHHgHGHgHSROSROTRO....',
+      '.......OLLOHHHHHHHHSROSROTRO....',
+      '.......OLLOHHHHHHHSSROSROTRO....',
+      '.......OLLOHHHHHHHSSROSROTRO....',
+      '.......OMMMOHHRTTRSSOMMSOTRO....',
+      '.......OMROHHHOTTTROOSRROTRO....',
+      '........OROHHHHOTTTTTORROTRO....',
+      '.........OOSHHHOOOOOOOOOOOO.....',
       '..........OMMMROSSSRO...........',
       '..........OMMMROSSSRO...........',
       '.........OMMMMROSSSRRO..........',
@@ -73,7 +75,7 @@
     ],
   };
   // letter -> colour; costume colours rotate for the alt colourway the same way makePalette does (hue +150, hair +75)
-  const KITTABRA_COL = { O: '#232238', L: '#ffffff', H: '#dcd8ee', S: '#a8a2ca', R: '#827ca6', w: '#e6e3f2', P: '#f4a8bc', G: '#62627a', g: '#44445a',
+  const KITTABRA_COL = { O: '#232238', L: '#ffffff', H: '#dcd8ee', S: '#a8a2ca', R: '#827ca6', w: '#e6e3f2', P: '#f4a8bc', G: '#9aa0b4', g: '#767a94',
     K: '#ffe2cc', k: '#f0bca2', B: '#f79ab2', e: '#4a90d8', Y: '#f4c542', W: '#ffffff', M: '#c8c4de', T: '#a4a2be' };
   const KITTABRA_KEEP = 'OPKkBeY';
   const kittabraOw = (view) => (b, col, alt) => {

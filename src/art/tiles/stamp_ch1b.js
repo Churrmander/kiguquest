@@ -427,51 +427,56 @@
     },
   });
 
-  // A heap of measured autumn leaves: a low, wide dome (about 14 x 11 px, rising 3 px above its tile) made of three round lobes
-  // on a broad base, so the top outline is soft and bumpy rather than peaked. One orange ramp shades it: each lobe is a sphere lit
-  // from the top left in three tones (light, mid, shade) with a darker crease where a front lobe tucks under the one behind; the
-  // base darkens into the bottom-right shadow side instead of a dark band along the foot. A few separate accent leaves (pale
-  // yellow, mustard, one rust) sit on the lit top-left crest, a handful of small leaf marks break up the mid tones, and one loose
-  // leaf lies at the foot. The ground shadow falls to the bottom right.
+  // A heap of measured autumn leaves: a low, wide mound (14 x 12 px inside its outline, rising 3 px above its tile) shaded as one
+  // dome lit from the top left (light, mid, shade, deep). Its top and both shoulders are serrated: six leaf tips stick out 1 px past
+  // the round edge, with notches between them, so the outline steps around each tip and the pile reads as loose leaves, not a rock.
+  // On the lit top-left half a handful of whole leaves sit on the surface, each a small pointed leaf (a light edge, its body and a
+  // dark tip): pale yellow, mustard, light orange and rust, so it reads as mixed autumn leaves. The ground shadow falls to the
+  // bottom right.
   const LEAF_O = ['#ffdca8', '#ffb468', '#f48c40', '#cc6430', '#944424', '#5a2818'].map(col);
   const LEAF_Y = ['#fff098', '#f0c040'].map(col), LEAF_RUST = col('#b8402c');
+  // the mound's mask, rows 5-16: [first x, last x] runs per row. Tips: (5,5), (9-10,5) on top; (2,7), (1,9) on the left shoulder;
+  // (13,8), (14,10) on the right
+  const HEAP = [[[5, 5], [9, 10]], [[4, 6], [8, 11]], [[2, 2], [4, 12]], [[2, 13]], [[1, 12]], [[2, 14]], [[1, 13]], [[1, 14]], [[1, 14]],
+    [[1, 14]], [[2, 13]], [[3, 12]]];
   K.stamp('leaf_heap', {
     w: 1, h: 1, rise: 3,
     paint: () => {
       const b = K.B(16, 19), L = K.B(16, 19), o = LEAF_O;
-      // back to front: the centre lobe, the left and right shoulder lobes, then the broad base the pile sits on
-      const lobes = [[8.6, 10.2, 3.3, 3], [4.8, 11.8, 3.2, 2.8], [11.8, 11.9, 3, 2.7], [8.2, 14.4, 6.6, 3.2]];
-      const own = new Int8Array(16 * 19).fill(-1);
-      lobes.forEach(([cx, cy, rx, ry], i) => {
-        for (let y = 0; y < 18; y++) for (let x = 1; x < 15; x++) {
-          const dx = (x + 0.5 - cx) / rx, dy = (y + 0.5 - cy) / ry;
-          if (dx * dx + dy * dy > 1) continue;
-          const base = i === lobes.length - 1;
-          // the base is lit only along its top-left; lower right it falls into the deepest tone (the pile's own shadow side)
-          const l = -(dx * 0.6 + dy * 0.8) - (base ? 0.25 : 0);
-          L.set(x, y, l > 0.38 ? o[1] : l > -0.28 ? o[2] : l > -0.78 ? o[3] : o[4]);
-          own[y * 16 + x] = i;
-        }
-        // crease: where this lobe's top meets a lobe behind it, the lobe behind gets a dark pixel
-        for (let y = 1; y < 18; y++) for (let x = 0; x < 16; x++) {
-          const a = own[(y - 1) * 16 + x];
-          // the base tucks under the lobes only on the shaded right half; on the lit left the two merge softly
-          if (own[y * 16 + x] === i && a >= 0 && a !== i && (i < lobes.length - 1 || x >= 8)) L.set(x, y - 1, o[4]);
+      HEAP.forEach((runs, i) => {
+        const y = 5 + i;
+        for (const [x0, x1] of runs) for (let x = x0; x <= x1; x++) {
+          const dx = (x + 0.5 - 7.8) / 7, dy = (y + 0.5 - 11.4) / 6;
+          const l = -(dx * 0.62 + dy * 0.78);
+          L.set(x, y, l > 0.3 ? o[1] : l > -0.3 ? o[2] : l > -0.75 ? o[3] : o[4]);
         }
       });
-      // small leaf marks on the mid tones: a lit edge over a shaded underside, so the surface reads as leaves, not noise
-      for (const [x, y] of [[6, 13], [10, 14], [3, 14], [12, 12], [8, 16]]) { L.set(x, y, o[1]); L.set(x + 1, y, o[3]); }
-      // accent leaves on the lit top-left crest: pale yellow, mustard and one rust, each a tiny lens with a shaded tip
-      K.stick(L, 3, 9, ['yy.', '.mm'], { y: LEAF_Y[0], m: LEAF_Y[1] });
-      K.stick(L, 6, 8, ['.y', 'ym'], { y: LEAF_Y[0], m: LEAF_Y[1] });
-      K.stick(L, 8, 7, ['mm', '.r'], { m: LEAF_Y[1], r: o[3] });
-      K.stick(L, 5, 11, ['rr'], { r: LEAF_RUST });
-      K.stick(L, 10, 9, ['yy', '.m'], { y: o[1], m: LEAF_Y[1] });
+      // two creases where the front of the pile tucks under the back, on the shaded right
+      for (const [x, y] of [[10, 9], [11, 9], [12, 8], [9, 13], [10, 13], [11, 12]]) L.set(x, y, o[4]);
+      // whole leaves on the lit half: a: light edge, b: body, t: the dark tip. ['ab.', 'bbt'] lies flat pointing right;
+      // ['a.', 'ab', '.t'] stands pointing down
+      // each leaf casts a 1 px shadow on the pile under it (one tone darker), so it lifts off the surface
+      const step = new Map([[o[1], o[2]], [o[2], o[3]], [o[3], o[4]]]);
+      const leaf = (x, y, rows, a, bb, t) => {
+        rows.forEach((r, j) => { for (let i = 0; i < r.length; i++) if (r[i] !== '.' && (j === rows.length - 1 || r[i] !== '.' && rows[j + 1][i] === '.')) {
+          const c = L.u32[(y + j + 1) * 16 + x + i], d = step.get(c);
+          if (d !== undefined) L.u32[(y + j + 1) * 16 + x + i] = d;
+        } });
+        K.stick(L, x, y, rows, { a, b: bb, t });
+      };
+      const FLAT = ['ab.', 'bbt'], UP = ['a.', 'ab', '.t'];
+      leaf(4, 7, FLAT, LEAF_Y[0], LEAF_Y[1], o[4]);                                                   // pale yellow on the crest
+      leaf(8, 5, ['.ab', 'abt'], o[0], o[1], o[3]);                                                    // light orange, its tips on top
+      leaf(1, 9, ['ab.', '.bt'], LEAF_Y[0], o[1], o[3]);                                               // the left shoulder's tip
+      leaf(11, 7, ['ab.', '.bt'], o[1], o[2], o[3]);                                                   // the right shoulder's tip
+      leaf(6, 9, UP, LEAF_Y[0], LEAF_Y[1], o[3]);                                                      // yellow, standing
+      leaf(3, 11, FLAT, LEAF_RUST, LEAF_RUST, o[4]);                                                   // rust
+      leaf(8, 11, FLAT, LEAF_Y[1], LEAF_Y[1], o[4]);                                                   // mustard, mid body
+      leaf(2, 13, UP, LEAF_Y[0], LEAF_Y[1], o[4]);                                                     // yellow, low on the lit side
+      leaf(5, 14, FLAT, o[1], LEAF_RUST, o[4]);                                                        // rust, at the foot
       K.outer(L, o[5]);
-      K.shadow(b, 10, 18, 6, 1, 90);
+      K.shadow(b, 10, 17, 6, 1, 90);
       b.blit(L, 0, 0);
-      // one loose leaf at the foot, on the lit side
-      K.stick(b, 1, 17, ['ym', 'x.'], { y: LEAF_Y[1], m: o[3], x: o[5] });
       return b;
     },
   });
