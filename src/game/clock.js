@@ -85,18 +85,32 @@
     night: { c: [159, 183, 255], a: 0.34, len: 0.8, dim: [0.62, 0.66, 0.84] },   // moonlight blue; the room goes dim
   };
   C.roomPhase = (def) => (def && typeof def.lightPhase === 'function' && def.lightPhase()) || C.phase();
+  // In the 3D view the pools lie on the floor: each screen pixel is traced back to the floor point under it (NP.view3d.unproject)
+  // and lit by where that point falls in the patch, so the pool keeps its place and perspective instead of floating in screen space.
   function windowPools(fb, def, cx, cy) {
     const ph = C.roomPhase(def), L = WIN[ph], d = fb.data;
+    const V = NP.view3d, in3d = !!(V && V.on && V.project && V.unproject && V.state && V.state());
     if (L.dim) for (let i = 0; i < d.length; i += 4) { d[i] *= L.dim[0]; d[i + 1] *= L.dim[1]; d[i + 2] *= L.dim[2]; }
     for (const w of def.windowLight || []) {
-      const X0 = w.x * 16 - cx, Y0 = w.y * 16 - cy, W = w.w * 16, H = w.h * 16;
+      const X0 = w.x * 16, Y0 = w.y * 16, W = w.w * 16, H = w.h * 16;
       const along = w.from === 'n' || w.from === 's' ? H : W, reach = Math.max(16, along * L.len);
-      for (let j = 0; j < H; j++) {
-        const yy = Y0 + j;
-        if (yy < 0 || yy >= fb.h) continue;
-        for (let i = 0; i < W; i++) {
-          const xx = X0 + i;
-          if (xx < 0 || xx >= fb.w) continue;
+      // the screen box to scan: the patch's rectangle (flat), or the box round its four projected corners (3D)
+      let sx0, sy0, sx1, sy1;
+      if (in3d) {
+        const cs = [[X0, Y0], [X0 + W, Y0], [X0, Y0 + H], [X0 + W, Y0 + H]].map(([x, y]) => V.project(x, y));
+        if (cs.some((q) => !q)) continue;
+        sx0 = Math.floor(Math.min(...cs.map((q) => q.x))); sx1 = Math.ceil(Math.max(...cs.map((q) => q.x)));
+        sy0 = Math.floor(Math.min(...cs.map((q) => q.y))); sy1 = Math.ceil(Math.max(...cs.map((q) => q.y)));
+      } else { sx0 = X0 - cx; sy0 = Y0 - cy; sx1 = sx0 + W; sy1 = sy0 + H; }
+      for (let yy = Math.max(0, sy0); yy < Math.min(fb.h, sy1); yy++) {
+        for (let xx = Math.max(0, sx0); xx < Math.min(fb.w, sx1); xx++) {
+          let i, j;
+          if (in3d) {
+            const q = V.unproject(xx + 0.5, yy + 0.5);
+            if (!q) continue;
+            i = Math.floor(q.x - X0); j = Math.floor(q.y - Y0);
+            if (i < 0 || j < 0 || i >= W || j >= H) continue;
+          } else { i = xx - sx0; j = yy - sy0; }
           // distance from the window side, and from the patch's long edges (soft sides)
           const t = w.from === 'n' ? j : w.from === 's' ? H - 1 - j : w.from === 'w' ? i : W - 1 - i;
           const side = w.from === 'n' || w.from === 's' ? Math.min(i, W - 1 - i) : Math.min(j, H - 1 - j);
@@ -109,7 +123,11 @@
         }
       }
     }
-    if (ph === 'night') for (const g of def.nightGlow || []) glow(fb, g.x * 16 + (g.w || 1) * 8 - cx, g.y * 16 + 6 - cy, 14 + 6 * (g.w || 1), 0.45);
+    if (ph === 'night') for (const g of def.nightGlow || []) {
+      const wx = g.x * 16 + (g.w || 1) * 8, wy = g.y * 16 + 6, rad = 14 + 6 * (g.w || 1);
+      if (in3d) { const q = V.project(wx, wy); if (q) glow(fb, q.x, q.y, Math.max(4, Math.round(rad * q.scale)), 0.45); }
+      else glow(fb, wx - cx, wy - cy, rad, 0.45);
+    }
   }
   C.drawRoom = function (fb, def, cx, cy) { if (def && def.indoor && (def.windowLight || def.nightGlow)) windowPools(fb, def, cx, cy); };
 

@@ -208,6 +208,14 @@
     return { x: CX + u * scale, y: st.hz + st.hh * scale, scale, v };
   }
   V.project = (x, y) => (V._last ? project(V._last, x, y) : null);
+  /** the inverse of project on the ground plane: screen (X, Y) -> the map point { x, y } (px) on the floor there, or null above the horizon */
+  function unproject(st, X, Y) {
+    const scale = (Y - st.hz) / st.hh;
+    if (!(scale > 0)) return null;
+    const u = (X - CX) / scale, v = st.f / scale - st.f;
+    return { x: st.px + u * st.Rx + v * st.Fx, y: st.py + u * st.Ry + v * st.Fy };
+  }
+  V.unproject = (X, Y) => (V._last ? unproject(V._last, X, Y) : null);
   V.state = () => V._last;
 
   // ------------------------------------------------------------------------------------------------ sky

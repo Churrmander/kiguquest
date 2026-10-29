@@ -5,11 +5,13 @@
   const D = K.define;
 
   // Kittabra's 32 px overworld views, drawn by hand from her battle sprite (rows 4-30, feet outline on row 30): a pale lilac-white
-  // hood in 3 tones lit from the top left with two tall pointed cat ears (4 px, pink inside from the front, a shaded crease from
-  // behind), dark grey hair framing the face, small blue sleepy eyes with blush, a gold bell on the collar, the white belly patch,
-  // arms down at her sides ending in round grey-lilac mitts, and her grey tail with a darker tip curling up on her right. From
-  // behind, a dark rim band at the neck separates the hood from the onesie and the tail starts at the tailbone, runs out to the
-  // right past her hip (behind the mitt) and curls up.
+  // hood lit from the top left with two tall pointed cat ears (pink inside from the front, a dark crease line along their base from
+  // behind), dark grey hair framing the face, small blue sleepy eyes with blush, a gold bell on the collar and a soft shadow under
+  // her chin. From the front she raises one paw beside her face, beckoning (the other arm hangs at her side); the white belly patch
+  // is shaded along its lower-right edge; her right arm and leg sit in a cool grey-violet shade, and her grey tail curls up on her
+  // right with a hooked darker tip. From behind, a seam runs down the middle of the hood, the right side falls into two shade
+  // tones, a dark rim band at the neck separates the hood from the onesie, and the tail grows out of the rump, runs right behind
+  // her mitt and curls up.
   const KITTABRA_OW = {
     down: [
       '.........OO..........OO.........',
@@ -21,57 +23,57 @@
       '.......OLHGGGGGGGGGGGGHSO.......',
       '.......OLGGgGGGgGGGgGGGSO.......',
       '.......OLGGKgKKKKgKKKGGSO.......',
-      '.......OLGGKKOKKKKOKKGGSO.......',
-      '.......OLGGKKeKKKKeKKGGSO.......',
-      '.......OLGgKBBKkkKBBKgGSO..OO...',
-      '.......OHGgkKKKKKKKKkgGSO.ORRO..',
-      '........OSHRRRRYYRRRRHSO..ORTO..',
-      '........OLLHHHHHHHHHHHSO..OTTO..',
-      '.......OLLOHHWWWWWWHSOHSO.OTTO..',
-      '.......OLLOHWWWWWWWWSOHSOOTTO...',
-      '.......OLLOHWWWWWWWWSOHSOTTO....',
-      '.......OLLOHWWWWWWWWSOHSOTO.....',
-      '......OMMMOHWWWWWWWWSOMMRO......',
-      '......OMMROHHWWWWWWHSOMRRO......',
-      '.......ORROHHHWWWWHHSORRO.......',
-      '........OOOSHHHHHHHHSOOO........',
-      '..........OMMMROOMMMRO..........',
-      '..........OMMMROOMMMRO..........',
-      '.........OMMMMROOMMMMRO.........',
-      '.........OOOOOO..OOOOOO.........',
+      '.......OLGGKKOKKKKOKKGGSO.OOOO..',
+      '.......OLGGKKeKKKKeKKGGSOOTTTRO.',
+      '...OOO.OLGgKBBKkkKBBKgGSOOTTORO.',
+      '..OMMMOOHGgkKKKKKKKKkgGSO.OTTOO.',
+      '..OMMRO.OSHRRRRYYRRRRHSO..OTTO..',
+      '...ORRO.OLLSSSSSSSSSSSRO..OTTO..',
+      '...OLHOOLLOHHHWWWWHHSOSRO.OTTO..',
+      '...OLHHHLLOHHWWWWWWHSOSROOTTO...',
+      '....OSSSSOOHHWWWWWWHSOSROTTO....',
+      '.....OOOO.OHHWWWWWwHSOSROTO.....',
+      '..........OHHWWWWWwHSOMSRO......',
+      '..........OHHHWWWwHHSOSRRO......',
+      '..........OHHHHHHHHHSORRO.......',
+      '..........OSHHHHHHHHSOOO........',
+      '..........OMMMROSSSRO...........',
+      '..........OMMMROSSSRO...........',
+      '.........OMMMMROSSSRRO..........',
+      '.........OOOOOOOOOOOOO..........',
     ],
     up: [
       '.........OO..........OO.........',
       '.........OLO........OSO.........',
       '.........OLRO......ORSO.........',
-      '........OLLHHOOOOOOHHHSO........',
-      '........OLLLHHHHHHHHHHSO........',
-      '.......OLLLHHHHHHHHHHHHSO.......',
-      '.......OLLHHHHHHHHHHHHHSO.......',
-      '.......OLHHHHHHHHHHHHHHSO.......',
-      '.......OLHHHHHHHHHHHHHSSO.......',
-      '.......OLHHHHHHHHHHHHHSSO.......',
-      '.......OHHHHHHHHHHHHHHSSO.......',
-      '.......OHHHHHHHHHHHHHSSSO.OO....',
-      '........OHHHHHHHHHHHSSSO.ORRO...',
-      '........ORRRRRRRRRRRRRRO.ORTO...',
-      '........OLLHHHHHHHHHHHSO.OTTO...',
-      '.......OLLOHHHHHHHHHSOHSOOTTO...',
-      '.......OLLOHHHHHHHHHSOHSOOTTO...',
-      '.......OLLOHHHHHHHHSSOHSOOTTO...',
-      '.......OLLOHHHHHHHHSSOHSOOTTO...',
-      '......OMMMOHHHHHHHHSSOMMROTTO...',
-      '......OMMROHHHHOOOOOOOMRROTTO...',
-      '.......ORROHHHOTTTTTTORROTTTO...',
+      '........OLRRROOOOOORRRSO........',
+      '........OLLLHHHHSHHHHHSO........',
+      '.......OLLLHHHHHSHHHHHSRO.......',
+      '.......OLLHHHHHHSHHHHHSRO.......',
+      '.......OLHHHHHHHSHHHHSSRO.......',
+      '.......OLHHHHHHHSHHHHSSRO.......',
+      '.......OLHHHHHHHSHHHSSRRO.......',
+      '.......OHHHHHHHHSHHHSSRRO.OOOO..',
+      '.......OHHHHHHHHSHHHSSRROOTTTRO.',
+      '........OHHHHHHHSHHSSRRO.OTTORO.',
+      '........ORRRRRRRRRRRRRRO.OTTOO..',
+      '........OLLHHHHHHHHHHSRO.OTTO...',
+      '.......OLLOHHHHHHHHSROSROOTTO...',
+      '.......OLLOHHHHHHHHSROSROOTTO...',
+      '.......OLLOHHHHHHHSSROSROOTTO...',
+      '.......OLLOHHHHHHHSSROSROOTTO...',
+      '......OMMMOHHHRTTRSSROMSROTTO...',
+      '......OMMROHHHOTTTROOOSRROTTO...',
+      '.......ORROHHHHOTTTTTORROTTTO...',
       '........OOOSHHHOOOOOOOOOOOOO....',
-      '..........OMMMROOMMMRO..........',
-      '..........OMMMROOMMMRO..........',
-      '.........OMMMMROOMMMMRO.........',
-      '.........OOOOOO..OOOOOO.........',
+      '..........OMMMROSSSRO...........',
+      '..........OMMMROSSSRO...........',
+      '.........OMMMMROSSSRRO..........',
+      '.........OOOOOOOOOOOOO..........',
     ],
   };
   // letter -> colour; costume colours rotate for the alt colourway the same way makePalette does (hue +150, hair +75)
-  const KITTABRA_COL = { O: '#232238', L: '#ffffff', H: '#dcd8ee', S: '#b2acd0', R: '#8a84ac', P: '#f4a8bc', G: '#62627a', g: '#44445a',
+  const KITTABRA_COL = { O: '#232238', L: '#ffffff', H: '#dcd8ee', S: '#a8a2ca', R: '#827ca6', w: '#e6e3f2', P: '#f4a8bc', G: '#62627a', g: '#44445a',
     K: '#ffe2cc', k: '#f0bca2', B: '#f79ab2', e: '#4a90d8', Y: '#f4c542', W: '#ffffff', M: '#c8c4de', T: '#a4a2be' };
   const KITTABRA_KEEP = 'OPKkBeY';
   const kittabraOw = (view) => (b, col, alt) => {
@@ -83,7 +85,7 @@
     b.u32.fill(0);
     rows.forEach((r, i) => { for (let x = 0; x < r.length && x < W; x++) if (map[r[x]]) b.u32[(4 + i) * W + x] = map[r[x]]; });
   };
-  const CAT = { main: '#eceef4', sub: '#ffffff', hair: '#9aa0b4', mitt: '#c7cbd8', foot: '#c7cbd8', eye: '#4aa0d8', inner: '#ffb7c5', acc: '#ffc940', gold: '#f4c542', patch: '#9aa0b4' };
+  const CAT = { main: ['#aca6cc', '#eceef4', '#ffffff', '#8a84ac'], sub: '#ffffff', hair: '#9aa0b4', mitt: '#c7cbd8', foot: '#c7cbd8', eye: '#4aa0d8', inner: '#ffb7c5', acc: '#ffc940', gold: '#f4c542', patch: '#9aa0b4' };
   D('kittabra', {
     name: 'Kittabra', stage: 1, size: 64, rise: 9, pal: CAT,
     hood: { type: 'up', ears: { kind: 'tri', h: 7, w: 4.5, lean: 2 } },
