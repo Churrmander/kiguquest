@@ -169,6 +169,7 @@
   };
   K.stamp('tea_house', {
     w: 5, h: 4, rise: 17, solid: solidRows(5, 4, 2),
+    boxSides: [false, true],   // `boxes: true` adds only the east box: the west window already has its own sill box
     paint: (variant, f, mode) => S.house(OPT_TEA(mode)),
     vol: () => S.houseVol(OPT_TEA('3d')),
   });

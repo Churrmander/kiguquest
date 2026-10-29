@@ -24,7 +24,7 @@ assert.equal(t.ow.map.id, 'route1', 'now on route1: ' + t.pos());
 assert.ok(t.travel(12, 0, 900), 'cross route 1; at ' + t.pos());
 assert.equal(t.ow.map.id, 'basting_green', 'arrived in Basting Green: ' + t.pos());
 // Tidy Day: the parade holds the north road, so the way on is east round Ribbon Loop
-assert.ok(t.travel(11, 12, 300), 'up the green; at ' + t.pos());
+assert.ok(t.travel(11, 17, 300), 'up the green; at ' + t.pos());
 assert.ok(st.flags.tidy_seen, 'the Tidy Day scene played on the way through');
 assert.ok(!t.travel(11, 0, 300) && t.ow.map.id === 'basting_green', 'the parade blocks the north road');
 assert.ok(t.travel(23, 11, 600), 'east road; at ' + t.pos());
@@ -74,11 +74,6 @@ assert.ok(t.mash(() => t.idle(), 4000), 'shop closed');
 assert.ok(t.travel(4, 7), 'store exit');
 assert.equal(t.ow.map.id, 'thimble');
 
-// Poppy's yarn basket is in the flowers by the road (the Salon's pre-quest)
-assert.ok(t.travel(10, 16), 'to the yarn basket');
-t.tap('down'); t.tick(6); t.tap('a');
-assert.ok(t.mash(() => t.idle(), 3000) && st.flags.yarn_basket, 'picked up the yarn basket');
-
 // the salon: walking north towards the door triggers Rival #2 (Tomo, fresh from losing to Poppy): a conversation and a gift, no fight
 assert.ok(t.travel(12, 6, 900), 'salon door');
 assert.ok(st.flags.rival2_done, 'rival #2 met us outside the salon');
@@ -90,7 +85,21 @@ assert.ok(t.travel(4, 7, 600)); t.mash(() => t.idle(), 20000);
 if (!st.flags.tr_salon_salon_t2) { t.tap('up'); t.tick(4); t.tap('a'); t.mash(() => t.idle() && st.flags.tr_salon_salon_t2, 30000); }
 if (!st.flags.tr_salon_salon_t1) { assert.ok(t.travel(4, 9, 600)); t.tap('right'); t.tick(4); t.tap('a'); t.mash(() => t.idle() && st.flags.tr_salon_salon_t1, 30000); }
 assert.ok(st.flags.tr_salon_salon_t1 && st.flags.tr_salon_salon_t2, 'beat Ren and Noa');
+// first talk: Mimi is showing Poppy her costume drawing (scene 1), then Poppy asks for her yarn basket (no battle yet)
 assert.ok(t.travel(4, 4, 600), 'walk to poppy, at ' + t.pos());
+t.tap('up'); t.tick(6);
+t.tap('a');
+assert.ok(t.mash(() => t.idle() && st.flags.mimi_salon, 20000), 'Mimi scene 1 resolves');
+assert.ok(st.flags.poppy_asked && !st.badges[0] && st.flags.mimi_gift, 'Poppy asks for her basket; Mimi gives a Silk Spool');
+// the basket is in the square with a Kittabra napping on it: the lead Kigu dances her off it
+assert.ok(t.travel(4, 11), 'salon exit for the basket');
+assert.equal(t.ow.map.id, 'thimble');
+assert.ok(t.travel(11, 9), 'to the yarn basket, at ' + t.pos());
+t.tap('down'); t.tick(6); t.tap('a');
+assert.ok(t.mash(() => t.idle(), 6000) && st.flags.yarn_basket, 'picked up the yarn basket');
+assert.ok(t.travel(12, 6, 600), 'back into the salon');
+assert.equal(t.ow.map.id, 'salon');
+assert.ok(t.travel(4, 4, 600), 'walk to poppy again, at ' + t.pos());
 t.tap('up'); t.tick(6);
 t.tap('a');
 assert.ok(t.mash(() => t.idle(), 60000), 'poppy fight resolves');

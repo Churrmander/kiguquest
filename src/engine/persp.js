@@ -40,6 +40,11 @@
   const { Bitmap } = NP;
   const T = 16, SW = NP.W, SH = NP.H, CX = SW / 2, CY = SH / 2, MARGIN = 14;
 
+  /** maps the 3D view can't show faithfully stay flat: the player's house has thin partition walls on tile edges (def.edgeWalls) that
+   *  only the flat renderer draws, and in 3D they'd be invisible walls; `def.flat3d` opts a map out (Ribbon Loop's hedge maze, whose
+   *  paths can't be read as billboard foliage) */
+  const flatOnly = (def) => !!(def && (def.flat3d || (def.edgeWalls && def.edgeWalls.length)));
+
   const PRESETS = {
     street: { f: 185, hz: 22, pivotRow: 124, fogStart: 110, fogEnd: 640, fog: '#d2e7f7', sky: ['#6eb4ec', '#d2e7f7'], nearFade: [0.52, 0.58], fadeBand: 10, behindFrom: 16, behindSpan: 5, behindBand: 58 },
     town: { f: 165, hz: -26, pivotRow: 122, fogStart: 130, fogEnd: 700, fog: '#d4e8f6', sky: ['#78b8ee', '#d4e8f6'], nearFade: [0.52, 0.58], fadeBand: 10, behindFrom: 16, behindSpan: 5, behindBand: 58 },
@@ -89,12 +94,13 @@
       const indoor = !!(def && def.indoor);
       if (V.mode === 'on') V.on = true;
       else if (V.mode === 'auto') V.on = !indoor;
+      if (flatOnly(def)) V.on = false;   // thin edge walls (def.edgeWalls) only exist in the flat renderer
       if (V.on) V.preset((def && def.view) || (indoor ? 'flat-ish' : 'street'));
     },
     /** the V key: 3D off -> on (automatic mode), 3D on -> flat. Returns whether 3D is showing now. */
     toggle() {
       if (V.on) { V.mode = 'flat'; V.on = false; }
-      else { V.mode = 'auto'; V.on = true; if (V._lastDef) V.preset(V._lastDef.view || (V._lastDef.indoor ? 'flat-ish' : 'street')); }
+      else { V.mode = 'auto'; V.on = !flatOnly(V._lastDef); if (V.on && V._lastDef) V.preset(V._lastDef.view || (V._lastDef.indoor ? 'flat-ish' : 'street')); }
       return V.on;
     },
   };

@@ -516,8 +516,9 @@
   });
 
   K.stamp('fridge', {
-    w: 1, h: 2,
-    paint: () => {
+    // `drawings`: the family fridge, crayon drawings and magnets all over the doors (the player's kitchen)
+    w: 1, h: 2, variants: ['default', 'drawings'],
+    paint: (v) => {
       const b = K.B(16, 32);
       const m = K.ramp('mint');
       b.fillRect(2, 1, 12, 29, m[2]);
@@ -528,6 +529,18 @@
       b.blit(K.spr(['.x.x.', 'xxxxx', '.xxx.', '..x..'], { x: P.red2 }), 5, 4);
       b.fillRect(5, 17, 4, 4, P.p0); b.fillRect(6, 18, 2, 2, P.bl1);
       b.set(5, 10, P.yl2); b.set(8, 9, P.pk2);
+      if (v === 'drawings') {
+        // a crayon sun and a stick-figure family on paper, a kite drawing below, round magnets holding them
+        b.fillRect(3, 2, 7, 8, P.p0); b.hline(3, 9, 7, P.p2);
+        b.circle(5, 4, 1, P.yl2, true); b.set(7, 3, P.yl3); b.set(8, 5, P.yl3);
+        b.vline(5, 6, 3, P.bl2); b.vline(8, 6, 3, P.red2); b.set(4, 7, P.bl2); b.set(9, 7, P.red2);
+        b.set(6, 2, P.red2);                                                            // magnet
+        b.fillRect(3, 15, 7, 9, P.yl0); b.hline(3, 23, 7, P.p2);
+        b.set(6, 16, P.red2); b.set(5, 17, P.red2); b.set(7, 17, P.yl2); b.set(6, 18, P.yl2);   // diamond kite
+        b.set(6, 19, P.n3); b.set(7, 20, P.n3); b.set(6, 21, P.pk2); b.set(7, 22, P.bl2);       // wonky tail
+        b.set(9, 15, P.bl2);                                                            // magnet
+        b.fillRect(4, 26, 3, 2, P.pk1); b.set(4, 26, P.pk0);                            // a heart magnet
+      }
       b.fillRect(3, 30, 2, 1, P.n5); b.fillRect(11, 30, 2, 1, P.n5);
       K.outer(b, S.omap([[S.tones(m), m[5]]], 'ink'));
       K.shadow(b, 8, 31, 7, 1);

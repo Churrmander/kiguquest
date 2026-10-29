@@ -46,15 +46,17 @@
   };
 
   /** Cached stamp bitmap (w*16 x h*16). variant: name or index (default first). Do not mutate. */
-  tiles.stamp = function (id, variant, frame) {
+  /** deco (optional): a per-placement decoration painted over the art (K.DECO[deco](bitmap, stampDef, variant, mode)), e.g. 'boxes' */
+  tiles.stamp = function (id, variant, frame, deco) {
     const s = stampDef(id);
     let v = variant;
     if (typeof v === 'number') v = s.variants[mod(v, s.variants.length)];
     if (v === undefined || v === null || s.variants.indexOf(v) < 0) v = s.variants[0];
     const f = mod(frame, s.frames);
-    const key = id + '|' + v + '|' + f;
+    const dk = deco && K.DECO && K.DECO[deco] ? deco : '';
+    const key = id + '|' + v + '|' + f + (dk ? '|' + dk : '');
     let b = sCache.get(key);
-    if (!b) { b = s.draw(v, f); sCache.set(key, b); }
+    if (!b) { b = s.draw(v, f); if (dk) b = K.DECO[dk](b.clone(), s, v, '2d').quantize15(); sCache.set(key, b); }
     return b;
   };
 

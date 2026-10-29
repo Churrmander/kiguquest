@@ -58,6 +58,9 @@ forced('crisp_1', [7, 10], [[14, 2]], 'the stairs up (past Fold)');
 forced('crisp_2', [1, 3], [[14, 2]], 'the stairs up (past Pinch and Lint)');
 forced('crisp_3', [1, 3], [[6, 6], [7, 6], [12, 6]], 'the Staff door and the manager (past Brim)');
 
+// Route 1 (Meadow Lane): the ledge rows funnel the walk north past Lia, Bo and Suzu
+forced('route1', [12, 38], [[12, 0], [13, 0]], 'Basting Green (the north exit)');
+
 // Route 3 (the Seam Road): the river can only be crossed by paddling until Zip's Button mends the bridge; from wherever you land
 // on the far bank, the road to Seamstead still passes every Tailor
 NP.state.flags = {};
@@ -81,4 +84,17 @@ NP.state.flags = {};
 forced('hemline_river', [11, 1], [[10, 45], [11, 45], [12, 45]], 'Hemline Lake (the riverside path)');
 NP.state.flags = { sal4_a1: true, sal4_a2: true };
 forced('quarry_salon', [5, 14], [[10, 5], [11, 6]], 'lever 3 (past Mica)', ['sal4_t2']);
+// Ribbon Loop (Ch1): the Ribbon Maze is closed by two Society guards standing in its gates until Poppy is beaten, so the whole loop
+// and all four Tailors are forced on the way from Basting Green to Thimble; after Poppy (badge1) the guards are gone and the maze opens
+NP.state.flags = {};
+forced('ribbon_loop', [2, 20], [[0, 4], [0, 5]], "Thimble's east gate (past Tam, Pim, Oki and Rio)");
+assert.ok(!reach('ribbon_loop', [2, 20], [[13, 11]], false), 'ribbon_loop: the maze centre can be reached before Poppy (a gate is open)');
+assert.ok(!reach('ribbon_loop', [2, 4], [[13, 11]], false), 'ribbon_loop: the maze centre can be reached from the top lane before Poppy');
+NP.state.flags = { badge1: true };
+assert.ok(reach('ribbon_loop', [2, 20], [[14, 11], [12, 11]], false), 'ribbon_loop: the maze centre is still shut after Poppy');
+// the blind corners with the hidden items (the lost Kittabra stands in H5, so check the tile in front of her)
+for (const [x, y] of [[4, 8], [6, 7], [12, 7], [10, 11], [20, 9], [6, 15]]) {
+  assert.ok(reach('ribbon_loop', [2, 20], [[x, y]], false), 'ribbon_loop: blind corner ' + x + ',' + y + ' unreachable after Poppy');
+}
+NP.state.flags = {};
 console.log('routing ok');

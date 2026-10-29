@@ -22,6 +22,7 @@
     api.has = (id) => Object.prototype.hasOwnProperty.call(table, id);
     api.ids = () => Object.keys(table);
     api.overworld = (id) => memo('ow', id, (S) => L.ow.build(S));
+    api.asleep = (id) => memo('asleep', id, (S) => L.ow.asleep(S));
     api.front = (id) => memo('front', id, (S) => L.trainer.render(S, 'front'));
     api.back = (id) => memo('back', id, (S) => L.trainer.render(S, 'back'));
     /** Back view in a send-out pose: 'ready' (same bitmap as back()) | 'windup' | 'throw' | 'follow'. */

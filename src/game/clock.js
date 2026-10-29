@@ -10,7 +10,7 @@
 (function (root) {
   'use strict';
   const NP = (root.NP = root.NP || {});
-  const C = (NP.Clock = { fake: null });
+  const C = (NP.Clock = { fake: null, fakeDay: null });
   C.PHASES = ['morning', 'day', 'evening', 'night'];
   C.LABEL = { morning: 'Morning', day: 'Day', evening: 'Evening', night: 'Night' };
 
@@ -23,6 +23,12 @@
     const pin = PIN_HOUR[opt()];
     if (pin !== null && pin !== undefined) return pin;
     return new Date().getHours();
+  };
+  /** today's date as a day number (local days since 1970): for once-a-day things like shaking a tree. Tests: NP.Clock.fakeDay = n. */
+  C.day = function () {
+    if (C.fakeDay !== null && C.fakeDay !== undefined) return C.fakeDay;
+    const d = new Date();
+    return Math.floor((d.getTime() - d.getTimezoneOffset() * 60000) / 86400000);
   };
   C.minute = function () { return (C.fake !== null && C.fake !== undefined) || opt() ? 0 : new Date().getMinutes(); };
   C.phaseAt = (h) => (h >= 5 && h < 10 ? 'morning' : h >= 10 && h < 17 ? 'day' : h >= 17 && h < 20 ? 'evening' : 'night');
@@ -68,7 +74,47 @@
       }
     }
   }
+  // ---- light through the windows of a room (opt-in: def.windowLight, def.nightGlow; the player's house)
+  //  def.windowLight = [{ x, y, w, h, from: 'n'|'s'|'e'|'w' }] = the patch of floor the window lights (tiles), brightest on the `from` side.
+  //  def.nightGlow = [{ x, y, w }] = lamps and screens that glow at night (a warm pool centred on the tile row).
+  //  def.lightPhase() -> phase | null overrides the clock (the first morning in the house is always morning).
+  const WIN = {
+    morning: { c: [255, 197, 138], a: 0.42, len: 1 },     // peach, a long low beam
+    day: { c: [255, 242, 176], a: 0.36, len: 0.5 },       // pale yellow, a short pool under the window
+    evening: { c: [255, 155, 94], a: 0.44, len: 1 },      // orange, long again
+    night: { c: [159, 183, 255], a: 0.34, len: 0.8, dim: [0.62, 0.66, 0.84] },   // moonlight blue; the room goes dim
+  };
+  C.roomPhase = (def) => (def && typeof def.lightPhase === 'function' && def.lightPhase()) || C.phase();
+  function windowPools(fb, def, cx, cy) {
+    const ph = C.roomPhase(def), L = WIN[ph], d = fb.data;
+    if (L.dim) for (let i = 0; i < d.length; i += 4) { d[i] *= L.dim[0]; d[i + 1] *= L.dim[1]; d[i + 2] *= L.dim[2]; }
+    for (const w of def.windowLight || []) {
+      const X0 = w.x * 16 - cx, Y0 = w.y * 16 - cy, W = w.w * 16, H = w.h * 16;
+      const along = w.from === 'n' || w.from === 's' ? H : W, reach = Math.max(16, along * L.len);
+      for (let j = 0; j < H; j++) {
+        const yy = Y0 + j;
+        if (yy < 0 || yy >= fb.h) continue;
+        for (let i = 0; i < W; i++) {
+          const xx = X0 + i;
+          if (xx < 0 || xx >= fb.w) continue;
+          // distance from the window side, and from the patch's long edges (soft sides)
+          const t = w.from === 'n' ? j : w.from === 's' ? H - 1 - j : w.from === 'w' ? i : W - 1 - i;
+          const side = w.from === 'n' || w.from === 's' ? Math.min(i, W - 1 - i) : Math.min(j, H - 1 - j);
+          if (t >= reach) continue;
+          let k = L.a * (1 - t / reach) * Math.min(1, (side + 1) / 4);
+          k = Math.round(k * 8) / 8;                         // stepped, so the pool reads as pixel-art bands, not a blur
+          if (k <= 0) continue;
+          const p = (yy * fb.w + xx) * 4;
+          d[p] += (L.c[0] - d[p]) * k; d[p + 1] += (L.c[1] - d[p + 1]) * k; d[p + 2] += (L.c[2] - d[p + 2]) * k;
+        }
+      }
+    }
+    if (ph === 'night') for (const g of def.nightGlow || []) glow(fb, g.x * 16 + (g.w || 1) * 8 - cx, g.y * 16 + 6 - cy, 14 + 6 * (g.w || 1), 0.45);
+  }
+  C.drawRoom = function (fb, def, cx, cy) { if (def && def.indoor && (def.windowLight || def.nightGlow)) windowPools(fb, def, cx, cy); };
+
   C.draw = function (fb, def, cx, cy) {
+    if (def && def.indoor) { C.drawRoom(fb, def, cx, cy); return; }
     if (!C.outdoors(def)) return;
     const ph = C.phase(), t = TINT[ph];
     if (t) tint(fb, t);

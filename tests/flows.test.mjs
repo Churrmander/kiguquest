@@ -128,16 +128,16 @@ console.log('>> a trainer spots you, walks up and fights (Lia on R');
 console.log('>> text override hook');
 {
   const { t, NP, ow, G, st } = fresh(7);
-  ow.loadMap('button_town', 16, 14, 'up', { noEnter: true });     // kid_a stands at (16,13)
+  ow.loadMap('button_town', 15, 12, 'up', { noEnter: true });   // kid_a stands at (15,11)
   t.tick(3);
   t.tap('a'); t.tick(4);
   assert.ok(ow.msg.screens.flat().join(' ').includes('someday'), 'inline dialogue without NP.text');
   t.mash(() => t.idle(), 2000);
-  NP.text = { get: (k) => (k === 'button_town.kid_a' ? ['Hello from the writer, {player}!'] : k === 'button_town@11,10' ? ['SIGN TEXT'] : null) };
+  NP.text = { get: (k) => (k === 'button_town.kid_a' ? ['Hello from the writer, {player}!'] : k === 'button_town@10,10' ? ['SIGN TEXT'] : null) };
   t.tap('a'); t.tick(4);
   assert.equal(ow.msg.screens.flat().join(' '), 'Hello from the writer, Ren!');
   t.mash(() => t.idle(), 2000);
-  ow.player.x = 11; ow.player.y = 11; ow.player.dir = 'up';
+  ow.player.x = 10; ow.player.y = 9; ow.player.dir = 'down';
   t.tap('a'); t.tick(4);
   assert.equal(ow.msg.screens.flat().join(' '), 'SIGN TEXT');
   NP.text = { get() { throw new Error('boom'); } };

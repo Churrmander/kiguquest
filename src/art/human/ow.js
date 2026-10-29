@@ -113,4 +113,16 @@
     frames.right = [frames.left[0].flippedX(), frames.left[2].flippedX(), frames.left[1].flippedX()];
     return { w: 32, h: 32, frames };
   };
+
+  /** Asleep in bed: the down-facing head only (eyes closed), cropped at the chin, on a 32x32 cell with the head at the top
+   *  (the bed's pillow row). The body is under the blanket, so nothing below the chin is drawn and there is no shadow. */
+  OW.asleep = function (S) {
+    const S2 = Object.assign({}, S, { face: Object.assign({}, S.face, { eyes: 'closed', mouth: 'flat' }) });
+    const full = renderFrame(S2, 'down', 0);
+    const R = L.rig(S2, 'ow', 'down', 0);
+    const chin = Math.min(full.h, R.hy + R.hh + 1);
+    const out = new NP.Bitmap(full.w, full.h);
+    for (let y = 0; y < chin; y++) for (let x = 0; x < full.w; x++) out.u32[y * full.w + x] = full.u32[y * full.w + x];
+    return out;
+  };
 })(typeof globalThis !== 'undefined' ? globalThis : window);

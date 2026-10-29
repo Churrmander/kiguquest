@@ -44,10 +44,10 @@
     // pre-Salon quest (padding): her yarn basket first, then her two apprentices. Both are a few steps away and both are friendly,
     // so it reads as "help Poppy get ready", not as a locked door
     if (!c.flag('yarn_basket')) {
-      c.set('poppy_asked');
-      yield* c.sayT('script.poppy.basket.1', 'Poppy: Oh, a challenger! How lovely, come in, come in!\\pBut, oh dear... I can\'t find my yarn basket anywhere.');
-      yield* c.sayT('script.poppy.basket.2', 'Poppy: My Kigu won\'t battle without their cardigans done up.\\pI last saw a little Kittabra batting my yarn about outside.');
-      yield* c.sayT('script.poppy.basket.3', 'Poppy: Would you be a dear and look for it? Try the flowers by the road.');
+      // first talk: Mimi is here showing Poppy her costume drawing (scene 1, thimble.js), and Poppy asks for the basket there
+      const mimi = c.npc('mimi_salon');
+      if (!c.flag('mimi_salon') && mimi && mimi.visible && S.mimiSalon) { yield* S.mimiSalon(c); return; }
+      yield* S.poppyBasket(c);
       return;
     }
     if (!c.flag('poppy_basket_back')) {
@@ -79,6 +79,13 @@
     NP.State.healAll();
     yield* c.sayT('script.poppy.tea2', 'Your Kigu are feeling much better!');
     yield* c.sayT('script.poppy.9', 'Poppy: Now go and see Tsumugi, {player}. There\'s so much more out there.\\pAnd remember: every stitch counts!');
+  };
+  /** Poppy asks for her yarn basket (a Kittabra is napping on it in Thimble's square); the reminder on later talks too. */
+  S.poppyBasket = function* (c) {
+    c.set('poppy_asked');
+    yield* c.sayT('script.poppy.basket.1', 'Poppy: Oh, a challenger! How lovely, come in, come in!\\pBut, oh dear... I can\'t find my yarn basket anywhere.');
+    yield* c.sayT('script.poppy.basket.2', 'Poppy: My Kigu won\'t battle without their cardigans done up.');
+    yield* c.sayT('script.poppy.basket.3', 'Poppy: Would you be a dear and look for it? I think I saw a Kittabra curled up in the square.');
   };
   S.bryn = function* (c) {
     const st = c.state;

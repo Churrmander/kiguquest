@@ -299,9 +299,21 @@
   // `shove: true` makes it pushable with Disc: Shove (overworld.js). It sits on fresh scrape marks and has a crack across it,
   // so it reads as different from the fixed `boulder`.
   K.stamp('shove_rock', {
-    w: 1, h: 1, shove: true, variants: ['desert', 'cave', 'magnet'],
+    w: 1, h: 1, shove: true, variants: ['desert', 'cave', 'magnet', 'grass'],
     paint: (v) => {
       const b = K.B(16, 16);
+      // `grass`: a mossy warm-grey loose boulder (Basting Green) with a crack and fresh scrapes torn in the turf either side
+      if (v === 'grass') {
+        const tn = ['#ccc8bc', '#b8b4a8', '#a09c90', '#8c887c', '#7a766c'].map(col), moss = K.tn('f1', 'f2', 'f3', 'f4', 'f5');   // a warm meadow grey
+        K.blob(b, 8, 8, 7, 6, tn);
+        K.lobe(b, 6, 4, 4, 2, moss, { hi: true }); b.set(10, 3, P.f2); b.set(11, 4, P.f3); b.set(3, 7, P.f3);
+        b.line(9, 6, 7, 9, tn[4]); b.line(7, 9, 9, 12, tn[4]); b.set(10, 9, tn[3]);
+        b.set(4, 9, tn[0]); b.set(3, 10, tn[1]);
+        K.outer(b, S.omap([[tn, col('#4a463e')], [moss, P.f6]], col('#4a463e')));
+        for (const x of [0, 13]) { b.hline(x, 14, 3, P.d3); b.hline(x, 15, 3, P.d4); b.set(x + 1, 13, P.d2); }   // torn turf
+        K.shadow(b, 8, 14, 7, 2);
+        return b;
+      }
       // `magnet`: a charged lodestone from the Spark Cellar, slate blue with a yellow bolt where it hums
       const tn = v === 'cave' ? K.tn('cv0', 'cv1', 'cv2', 'cv3', 'cv4') : v === 'magnet' ? K.tn('st0', 'st1', 'st2', 'st3', 'st4') : K.tn('ss0', 'ss1', 'ss2', 'ss3', 'ss4');
       K.blob(b, 8, 8, 7, 6, tn);
