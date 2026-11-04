@@ -110,7 +110,8 @@ for (const id of ids) {
   const onFoot = flood(false), withMoves = flood(true);
   const reach = (x, y) => tm.inBounds(x, y) && onFoot[y * tm.w + x];
   const reachWith = (x, y) => tm.inBounds(x, y) && withMoves[y * tm.w + x];
-  for (const w of tm.warps.values()) if (!reach(w.x, w.y)) bad(id, 'warp tile ' + w.x + ',' + w.y + ' (to ' + w.to + ') cannot be reached from any spawn');
+  // a warp may sit behind a field move (the tree house clearing is grown over until you can Snip), but never out of reach
+  for (const w of tm.warps.values()) if (!reachWith(w.x, w.y)) bad(id, 'warp tile ' + w.x + ',' + w.y + ' (to ' + w.to + ') cannot be reached from any spawn');
   const touch = (x, y) => [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => reach(x + dx, y + dy));
   const touchWith = (x, y) => [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => reachWith(x + dx, y + dy));
   for (const p of def.props || []) {

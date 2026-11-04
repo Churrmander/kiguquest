@@ -53,9 +53,9 @@
     yield* c.sayT('button_town.morning.3', '{rival}: Look, it\'s our old kite, the one with the wonky tail.\\pWe made it in the tree house, remember?');
     yield* treehouseMemory(c);
     t = c.npc('tomo_bt');   // the town was reloaded behind the memory, so this is a fresh actor
-    yield* c.sayT('button_town.morning.7', '{rival}: It still counts, you know. Every single Salon.\\pNow come on! Professor Bobbin said nine sharp. ...It IS nine.');
-    // the hint for the hidden path at K1-K4 (plan v13, exact sentence)
-    yield* c.sayT('button_town.morning.hint', '{rival}: Our old shortcut\'s still there, you know. Through the trees, west of your house.');
+    yield* c.sayT('button_town.morning.7', '{rival}: It still counts, you know. Every single Salon.\\pNow come on! Professor Bobbin is waiting for us.');
+    // the hint for the hidden path at K1-K4 (owner's exact line, 2026-11-04): the shrubs have grown over the way in
+    yield* c.sayT('button_town.morning.hint', '{rival}: I went and checked the treehouse entrance, it looks like the shrubs took it back.');
     yield* c.sayT('button_town.morning.8', '{rival}: Race you to the lab!');
     // (7,2) down behind the house, east along row D past the tree and the flower strip, down the main road, along row J, up the
     // lab's lane to its door (25,7)
@@ -179,11 +179,7 @@
   M.npc('dockhand', 19, 19, 'builder_m', 'down', 'Half the crates on the cargo boat lately are white uniforms from Crisp & Co. in Seamstead. Who needs that many uniforms?');
   M.npc('pier_fisher', 12, 20, 'fisher', 'left', 'There\'s an old angler at Hemline Lake who swears a golden fish Kigu lives under the water there. Nobody believes him.');
   M.npc('old_sailor', 25, 12, 'elder_m', 'right', 'Something shines in that little cave across the pond. You\'d need a Kigu who can paddle to find out what.');
-  // the shopkeepers wait in their own recessed doorways (row R is the only lane past the rowhouses, so they stay off it)
-  M.npc('postmaster', 14, 16, 'courier', 'down', 'We\'re waiting on the morning boat like everyone else. Nothing to sort until it\'s unloaded.');
-  M.npc('baker', 18, 16, 'cook', 'down', 'The oven\'s still heating up. Come back after your adventure and I\'ll have buns. Don\'t tell your mum I said mine are better.');
-  M.npc('tackle_owner', 20, 16, 'shopkeeper', 'down', 'No rods until the new stock comes in. Gus on Route 2 has a spare, if you can beat him.');
-  M.npc('haberdasher', 22, 16, 'lady', 'down', 'Nobody buys ribbon any more since Tidy Day started. Buttons, though? Buttons always sell.');
+  // the ground-floor shops are set dressing: closed, with nobody out front (owner, 2026-11-04)
 
   // -- the secret: a Wish Candy glinting in the pond grotto, visible from the shore, reached only by paddling
   M.pickup('wish_candy', 30, 13, 'wish_candy', 1, 'glinting in the pond grotto, Paddle only');
@@ -220,7 +216,7 @@
     'TTTT......TTTT',
     'TTT......ffTTT',
     'TT..........TT',
-    'TT..........hh',
+    'TT............',
     'TT....p.....TT',
     'TT..........TT',
     'TTTff......TTT',
@@ -232,7 +228,10 @@
   C.stamp('tyre_swing', 9, 6);
   C.sign(8, 6, 'SECRET BASE. No grown-ups allowed (except Mom, if she brings snacks).', 'hand-painted sign');
   C.stamp('stump', 3, 5).stamp('stump', 3, 6);                           // the two stumps you used as chairs
-  C.spawn('east', 11, 5, 'left');
+  // the way in has grown over (owner, 2026-11-04): you arrive at the east edge facing a shrub that needs Snip, with the clearing
+  // and the tree house in view beyond it
+  C.stamp('bush', 12, 5);
+  C.spawn('east', 13, 5, 'left');
   C.edge('e', 5, 5, 'button_town', 'west');                              // the way back to town (F13-F14)
   C.reg();
 

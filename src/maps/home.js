@@ -39,7 +39,7 @@
       yield* c.wait(16);
       yield* c.emote('mom', 'exclaim');
       yield* c.approach('mom');
-      yield* c.sayT('player_house.wake.1', 'Mom: Morning, love! Did Nibblenna get you up?\\pToday\'s your big day! Professor Bobbin is expecting you at nine.');
+      yield* c.sayT('player_house.wake.1', 'Mom: Morning, love! Did Nibblenna get you up?\\pToday\'s your big day! Professor Bobbin is expecting you at her lab.');
       yield* c.sayT('player_house.wake.2', 'Mom: Before you go, would you peg the sheets out for me?\\pThe washing line is round the back of the house. Thank you, love!');
       yield* c.walkTo('mom', 4, 3);
       yield* c.face('mom', 'down');
@@ -200,17 +200,9 @@
   R.stamp('bed_blanket', 5, 8, null, { goneIf: 'woke' });
   R.stamp('nightstand', 4, 10, 'lamp').stamp('nightstand', 7, 10, 'alarm');
   R.stamp('window_edge', 5, 11, 's').stamp('window_edge', 6, 11, 's_tincan');
-  // walk-over clutter
-  const CLUTTER = [
-    ['clothes', 7, 9, 'It\'s yesterday\'s outfit, kicked off and forgotten.'],
-    ['socks', 8, 6, 'A pair of odd socks. Neither of them matches anything you own.'],
-    ['controller', 5, 6, 'Your controller and a pile of snack cake wrappers, right where you left them.'],
-    ['figures', 7, 5, 'Little Konko, Ottopi and Sprubun figures are set up mid-battle on the rug.'],
-    ['plushies', 2, 9, 'Kigu plushies are spilling out of the toy chest. One of them is a homemade Nibblenna.'],
-    ['comic', 2, 6, 'An open comic, face down to keep your page. It\'s issue 12 of The Wandering Tailor.'],
-    ['sneakers', 10, 8, 'Your sneakers are lying in the middle of the floor. One of them has fallen on its side.'],
-  ];
-  for (const [v, x, y, line] of CLUTTER) R.stamp('floor_clutter', x, y, v).interact(x, y, line);
+  // walk-over clutter: it's just there to look lived-in, so it has nothing to say (owner, 2026-11-04)
+  const CLUTTER = [['clothes', 7, 9], ['socks', 8, 6], ['controller', 5, 6], ['figures', 7, 5], ['plushies', 2, 9], ['comic', 2, 6], ['sneakers', 10, 8]];
+  for (const [v, x, y] of CLUTTER) R.stamp('floor_clutter', x, y, v);
 
   R.npc('nibblenna_up', 12, 4, 'kigu:nibblenna', 'down', null, { hidden: true, note: 'only in the wake-up scene' });
 
