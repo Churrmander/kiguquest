@@ -341,7 +341,7 @@
   NP.maps.salon.poppyTeam = L.team([
     ['nibblit', 12],
     ['chirpadee', 12, { moves: ['pounce', 'tail_wag', 'sweet_talk'] }],
-    ['wiskedabra', 14, { moves: ['quick_dash', 'sweet_talk', 'flurry_swipe', 'snack_time'], nature: 'jolly', item: 'lucky_thimble' }],
+    ['wiskedabra', 12, { moves: ['quick_dash', 'sweet_talk', 'flurry_swipe', 'snack_time'], nature: 'jolly', item: 'lucky_thimble' }],
   ]);
 
   // -------------------------------------------------------------------------------------- houses
