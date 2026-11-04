@@ -61,6 +61,24 @@
     return { id, x, y, look: L.look(look, 'tailor_f'), dir: dir || 'down', trainer: tr, note: o.note };
   };
 
+  /** What's on TV (owner, 2026-11-04): every TV in the world shows the same channel, and it moves on with the story. It's news
+   *  about the world or a show with an in-universe nod, never about the player. Latest stage first; text keys tv.<stage>. */
+  L.TV = [
+    ['badge5', (f) => L.badges() >= 5, 'The weather report says snow is coming early to Woolen Peak this year.\\pIt also says the old mill up there has had its lights on all night, every night.'],
+    ['lights', (f) => f.shibuyarn_lights, 'The news says the lights are back on all over Shibuyarn.\\pThe arcade owner is on screen, cheering so hard his hat falls off.'],
+    ['badge4', (f) => L.badges() >= 4, 'A late-night show is on. The host jokes that the slabs coming out of Bobbin Quarry are so flat you could iron a shirt on them.'],
+    ['crisp', (f) => f.crisp_done, 'The news says Crisp & Co. closed early for stocktaking.\\pA reporter outside says the basement doors have been locked all week.'],
+    ['badge2', (f) => L.badges() >= 2, 'An advert for Crisp & Co. is on. Every shirt in it looks exactly the same, and they\'re all on sale.'],
+    ['shrine', (f) => f.shrine1_done, 'The news says the Spindle Shrine had visitors in white uniforms this week.\\pA shrine maiden on screen just smiles and says the ward is holding.'],
+    ['badge1', (f) => L.badges() >= 1, 'The news says whole streets have woken up with their hedges trimmed flat, and nobody saw who did it.'],
+    ['tidy', () => true, 'The news is all about Tidy Day. The roads to Thimble have never looked so neat.'],
+  ];
+  L.tvNews = function* (c) {
+    const f = (NP.state && NP.state.flags) || {};
+    const [stage, , line] = L.TV.find(([, when]) => when(f));
+    yield* c.sayT('tv.' + stage, line);
+  };
+
   /** Script factory: pages spoken in order, each through c.sayT('<mapId>.<npcId>.<n>') so the writer can override them. */
   L.talk = (lines) => function* (c, n) {
     for (let i = 0; i < lines.length; i++) yield* c.sayT(c.map.id + '.' + n.id + '.' + (i + 1), lines[i]);

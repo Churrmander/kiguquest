@@ -870,6 +870,9 @@
         a = this.actors.find((q) => q.visible && q.kind === 'npc' && q.def && q.x === x + dx && q.y === y + dy);
         if (a) { this.talkTo(a); return; }
       }
+      // any TV without its own line shows the world's channel, which moves on with the story (NP.levels.tvNews)
+      const tv = m.placements.find((q) => (q.id === 'tv' || (q.id === 'tv_wide' && q.variant !== 'console')) && x >= q.x && x < q.x + q.w && y >= q.y && y < q.y + q.h);
+      if (tv && NP.levels && NP.levels.tvNews) { NP.snd.sfx('select'); this.runScript(NP.levels.tvNews); return; }
       // field move: a bush in front of you can be snipped away
       const bush = m.placements.find((q) => q.id === 'bush' && q.x === x && q.y === y);
       if (bush) { NP.snd.sfx('select'); this.runScript(function* (c) { yield* c.snip(bush); }); return; }

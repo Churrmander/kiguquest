@@ -117,13 +117,7 @@
   H.interact(6, 2, 'Through the window over the sink you can see the washing line out back.');
   H.interact(1, 7, 'It\'s a photo of you and {rival} as little kids, holding up a kite with a wonky tail.');
   H.interact(2, 8, function* (c) { yield* c.say('The grandfather clock says it\'s ' + NP.Clock.text() + '.'); });
-  const tv = function* (c) {
-    const n = L.badges();
-    if (n < 1) yield* c.sayT('player_house.tv.1', 'The news is all about Tidy Day. The roads to Thimble have never looked so neat.');
-    else if (n < 3) yield* c.sayT('player_house.tv.2', 'An advert for Crisp & Co. is on. Every shirt in it looks exactly the same, and they\'re all on sale.');
-    else yield* c.sayT('player_house.tv.3', 'The news says whole streets have woken up with their hedges trimmed flat, and nobody saw who did it.');
-  };
-  H.interact(8, 8, tv).interact(9, 8, tv);
+  H.interact(8, 8, L.tvNews).interact(9, 8, L.tvNews);   // the same channel as every TV in the world (lib.js L.TV)
   each(H, [[13, 8], [13, 9]], 'It\'s full of cookbooks. Tucked in at the end is an old festival programme from Loomhaven.');
   H.interact(11, 10, 'It\'s Mom\'s sewing basket. Every hem in it is finished with a neat double knot.');
   const coat = function* (c) {
