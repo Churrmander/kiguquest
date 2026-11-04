@@ -34,7 +34,7 @@ const LIT = /'((?:[^'\\\n]|\\.)*)'|"((?:[^"\\\n]|\\.)*)"|`((?:[^`\\]|\\.)*)`/g;
 const hits = [];
 let scanned = 0;
 for (const f of files) {
-  if (SKIP_FILES.has(f)) continue;
+  if (SKIP_FILES.has(f.split(path.sep).join('/'))) continue; // path.join gives backslashes on Windows
   const src = strip(fs.readFileSync(path.join(ROOT, f), 'utf8'));
   let m;
   while ((m = LIT.exec(src))) {
