@@ -249,9 +249,17 @@
       'TbbbbbbboT',
       'TTTTTTTTTT',
     ],
-    stamps: [{ id: 'window', x: 2, y: 1 }, { id: 'window', x: 4, y: 1 }, { id: 'window', x: 6, y: 1 }, { id: 'table_s', x: 7, y: 3 },
+    // a few years on and still loved (owner, 2026-11-04): bleached curtains, the drawings and poster faded on the wall, a cobweb
+    // in the corner, a worn track in the boards, a patched rag rug, sun-bleached cushions, an old soft ball, and the kite kit and snack tin
+    stamps: [{ id: 'window', x: 2, y: 1, variant: 'faded' }, { id: 'window', x: 4, y: 1, variant: 'faded' }, { id: 'window', x: 6, y: 1, variant: 'faded' },
+      { id: 'table_s', x: 7, y: 3, variant: 'kite_kit' },
       { id: 'tree', x: 0, y: 4 }, { id: 'tree', x: 9, y: 5 }, { id: 'tree_big', x: 0, y: 0 }, { id: 'tree_big', x: 8, y: 0 },
-      { id: 'plant', x: 1, y: 3 }, { id: 'ladder', x: 8, y: 4 }],
+      { id: 'plant', x: 1, y: 3 }, { id: 'ladder', x: 8, y: 4 },
+      { id: 'cobweb', x: 8, y: 2, variant: 'ne' }, { id: 'kid_drawings', x: 2, y: 2 }, { id: 'poster', x: 5, y: 2, variant: 'faded' },
+      { id: 'floor_aged', x: 7, y: 6, variant: 'track' }, { id: 'floor_aged', x: 7, y: 5, variant: 'track' }, { id: 'floor_aged', x: 7, y: 4, variant: 'track' },
+      { id: 'floor_aged', x: 6, y: 4, variant: 'track_w' }, { id: 'floor_aged', x: 5, y: 6, variant: 'scuff' }, { id: 'floor_aged', x: 2, y: 3, variant: 'dust_leaf' },
+      { id: 'rug_rag', x: 3, y: 4 }, { id: 'floor_cushion', x: 2, y: 4, variant: 'pink' }, { id: 'floor_cushion', x: 6, y: 5, variant: 'blue' },
+      { id: 'floor_aged', x: 2, y: 6, variant: 'old_ball' }],
     npcs: [], props: [], triggers: [], interact: [],
     warps: [{ x: 8, y: 6, to: 'treehouse_clearing', door: 'treehouse', sound: 'door' }],   // the ladder hole
     spawns: { door: { x: 7, y: 6, dir: 'up' } },

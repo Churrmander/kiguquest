@@ -1032,4 +1032,186 @@
       return b;
     },
   });
+
+  // ============================================================================================ the tree house, years later
+  // Small pieces for the present-day tree house room (the sepia memory room keeps the old furniture). Everything here has aged a
+  // few years and been loved: colours bleached toward cream, darns and patches, dust.
+  const C = NP.Color;
+  const fade = (c, t) => C.mix(col(c), P.p1, t === undefined ? 0.4 : t);
+
+  // Two crayon drawings pinned to the plank wall, the paper gone cream and the crayon faded: the tree house with its two builders,
+  // and a kite over the hill. The east one has lost its bottom pin and curls forward.
+  K.stamp('kid_drawings', {
+    w: 2, h: 1,
+    paint: () => {
+      const b = K.B(32, 16);
+      // cream paper with a 1-px pale edge (no dark frame), shaded a step on its east and bottom edges
+      const paper = (x, y, w, h) => { b.fillRect(x, y, w, h, P.s0); b.strokeRect(x, y, w, h, P.s3); b.vline(x + w - 1, y + 1, h - 2, P.s2); };
+      // the tree house drawing: a green scribble canopy, a red roof on a brown box hut with a window, a 2-px trunk with a separate
+      // ladder beside it, and the two builders (a dark-haired kid and an orange-haired one) on a scribbled grass line
+      paper(2, 1, 13, 12);
+      K.stick(b, 3, 2, [
+        '..gggGggg..',
+        'ggGgggGgggg',
+        '..rrrrrrr..',
+        '.rrrrrrrrr.',
+        '...bkbbb...',
+        '...bbbbb...',
+        '.d.tt.l.lo.',
+        '.f.tt.lllf.',
+        '.c.tt.l.lC.',
+        '.c.tt.lllC.',
+      ], { g: fade(P.g2, 0.3), G: fade(P.g4, 0.3), r: fade(P.red1, 0.3), b: fade(P.b1, 0.3), k: fade(P.ink, 0.5), t: fade(P.b3, 0.3), l: fade(P.o3, 0.3),
+        d: fade(P.b4, 0.2), o: fade(P.l3, 0.15), f: fade(SKIN, 0.05), c: fade(P.bl2, 0.25), C: fade(P.red2, 0.3) });
+      b.hline(3, 12, 11, fade(P.g3, 0.35));                                                             // the scribbled grass line
+      // the kite drawing: a pale sky wash, a 2x2 sun, a clean diamond kite with an ink cross, a red crayon squiggle tail, a green hill
+      paper(18, 2, 12, 11);
+      b.fillRect(19, 3, 10, 6, fade(P.bl0, 0.3));
+      b.fillRect(27, 3, 2, 2, fade(P.yl2, 0.25));
+      // (each quadrant one colour, split by an ink cross drawn as lines tip to tip)
+      K.stick(b, 19, 3, ['....k....', '..PpkyY..', '.PkkkkkY.', '..YykpP..', '..YykpP..', '...YkP...', '....k....'],
+        { p: fade(P.pk2, 0.1), y: fade(P.yl2, 0.1), P: fade(P.pk3, 0.2), Y: fade(P.yl3, 0.2), k: fade(P.ink, 0.75) });   // a short spar that stops inside the paper, crayon edges
+      for (const [x, y] of [[22, 10], [21, 11], [20, 10], [19, 11]]) b.set(x, y, fade(P.red2, 0.3));   // the red crayon tail, from the foot
+      for (let x = 19; x < 29; x++) b.set(x, 11 - (x > 23 && x < 28 ? 1 : 0), fade(P.g3, 0.35));
+      // the curl: the bottom-right corner folds up, showing the paper's back
+      b.set(29, 12, 0); b.set(28, 12, 0); b.set(29, 11, 0);
+      b.set(27, 12, P.s3); b.set(28, 11, P.s3); b.set(28, 10, P.s2);
+      for (const [x, y] of [[8, 1], [23, 2]]) { b.set(x, y, P.red3); b.set(x, y - 1 < 0 ? y : y - 1, P.red4); }   // drawing pins (the east sheet lost its bottom one)
+      b.set(2, 12, P.s3);
+      return b;
+    },
+  });
+
+  // A cobweb strung across a corner where the wall's top beam meets a post: anchor threads lying along the beam and the post,
+  // two spokes and two rings whose rim sags past the spokes, in a dusty grey-brown thread with one bright dew pixel.
+  // The corner is inset to sit against the tree house's corner posts: `nw` has its corner at tile x 5 (the west post's edge in
+  // the room), `ne` at tile x 10 (the east post's edge), both on the tile's top row.
+  // Its solid row is '.' (pure decor): it always sits on a wall row, which blocks by itself, and may share a tile with a post.
+  K.stamp('cobweb', {
+    w: 1, h: 1, solid: ['.'], variants: ['nw', 'ne'],
+    paint: (v) => {
+      const web = K.B(16, 16);
+      const L = C.mix(P.n1, P.o3, 0.4), Lw = C.mix(L, P.o3, 0.5);
+      // hand-placed threads (corner at 0,0): two spokes at about 27 and 63 degrees, an inner ring as straight chords that sag
+      // toward the corner, and an outer rim that sags past the spokes' ends
+      const SPOKES = [[2, 1], [3, 1], [4, 2], [5, 2], [6, 3], [7, 3], [8, 4], [1, 2], [1, 3], [2, 4], [2, 5], [3, 6], [3, 7], [4, 8]];
+      const RINGS = [[4, 1], [3, 3], [1, 4], [8, 1], [8, 2], [8, 3], [7, 5], [6, 6], [5, 7], [3, 8], [2, 8], [1, 8]];
+      for (const [x, y] of SPOKES.concat(RINGS)) web.set(x, y, L);
+      for (let i = 0; i < 8; i++) { const c = i % 3 === 2 ? Lw : L; web.set(i, 0, c); web.set(0, i, c); }   // anchors: threads on the beam and post
+      web.set(6, 6, P.n0);                                                                                    // one dew drop
+      const b = K.B(16, 16);
+      if (v === 'ne') b.blit(web.flippedX(), -5, 0); else b.blit(web, 5, 0);
+      return b;
+    },
+  });
+
+  // A round braided rag rug, a few years and a lot of muddy shoes on: its rings faded to soft rose, sky, cream and sage, a square
+  // gingham patch sewn over a worn spot with big stitches, a frayed loop on the west rim and a scuff of dust. Walk-over floor layer.
+  K.stamp('rug_rag', {
+    w: 3, h: 2, layer: 'floor', solid: ['...', '...'],
+    paint: () => {
+      const b = K.B(48, 32);
+      const RING = [fade(P.red2, 0.4), fade(P.p2, 0.15), fade(P.bl2, 0.4), fade(P.p2, 0.15), fade(P.g3, 0.4), fade(P.p2, 0.15)];
+      const cx = 23.5, cy = 16, ax = 22.5, ay = 13.5;
+      for (let y = 0; y < 32; y++) for (let x = 0; x < 48; x++) {
+        const dx = (x - cx) / ax, dy = (y - cy) / ay, r = Math.sqrt(dx * dx + dy * dy);
+        if (r > 1) continue;
+        const ring = Math.floor((1 - r) * 7), ex = (x - cx) / 2.6, ey = (y - cy) / 1.7;
+        const c = ring >= 6 && ex * ex + ey * ey > 1 ? RING[5] : RING[ring % RING.length];          // a round red centre, not a bar
+        const u = ring & 1 ? x + y : x - y, k = (ring & 1 ? x - y : x + y) >> 1;                       // 2-px diagonal dashes, alternating per ring
+        const braid = (u + 96) % 6 === 0 && (k + 96) % 4 < 2;
+        b.set(x, y, r > 0.94 ? fade(P.o4, 0.2) : braid ? C.mix(c, P.o4, 0.35) : c);
+      }
+      // the gingham patch with big blanket stitches
+      // (nothing on the patch is lighter than the rug's cream rings, so it reads as sewn in, not stuck on)
+      S.gingham(b, 28, 10, 8, 6, fade(P.p2, 0.15), fade(P.bl1, 0.45), fade(P.bl2, 0.5), 2);
+      b.strokeRect(27, 9, 10, 8, fade(P.bl2, 0.55));
+      for (let x = 28; x < 37; x += 2) { b.set(x, 9, fade(P.p2, 0.3)); b.set(x, 16, fade(P.p2, 0.3)); }
+      // a frayed loop come loose on the west rim, and the dust scuff by the ladder side
+      b.set(1, 15, fade(P.red2, 0.45)); b.set(0, 16, fade(P.red2, 0.45)); b.set(0, 17, fade(P.red2, 0.45)); b.set(1, 18, fade(P.red2, 0.45));
+      for (let i = 0; i < 10; i++) { const h = K.h32(i, 7, 9); b.set(8 + (h % 12), 19 + ((h >> 8) % 5), fade(P.o3, 0.3)); }
+      return b;
+    },
+  });
+
+  // A square floor cushion, sun-bleached: the top half (the side that faced the window) has faded almost to cream, the shaded
+  // lower half keeps its colour; piping round the edge and a button in the middle. Walk-over floor layer.
+  K.stamp('floor_cushion', {
+    w: 1, h: 1, layer: 'floor', solid: ['.'], variants: ['pink', 'blue'],
+    paint: (v) => {
+      const b = K.B(16, 16);
+      const r0 = K.ramp(v === 'blue' ? 'sky' : 'pink'), r = r0.map((c, i) => (i < 5 ? fade(c, 0.3) : c));   // the whole cover has paled
+      // a plump square cushion seen from above: the top face ~12x10 with its corners pulled out to points and each side pinched in
+      // at the middle, a 2-px front side below. Bleached clean in two tones: the sun-facing top-left half paler.
+      // shallow concave sides (a 4-px, 1-px-deep curve in the middle of each side) and corners pulled out to points
+      const inTop = (x, y) => {
+        if (x < 2 || x > 13 || y < 2 || y > 11) return false;
+        if ((y === 2 || y === 11) && x >= 6 && x <= 9) return false;
+        if ((x === 2 || x === 13) && y >= 5 && y <= 8) return false;
+        return true;
+      };
+      const top = (x, y) => ((x - 2) + (y - 2) < 10 ? fade(r[1], 0.55) : r[1]);
+      for (let y = 2; y <= 11; y++) for (let x = 2; x <= 13; x++) if (inTop(x, y)) b.set(x, y, top(x, y));
+      b.set(1, 1, top(1, 1)); b.set(14, 1, top(14, 1));
+      // the 2-px front side under the bottom edge, rising with the curve in the middle, and the two front corners pulled out
+      for (let x = 2; x <= 13; x++) { const mid = x >= 6 && x <= 9; b.set(x, 12, r[3]); if (mid) b.set(x, 11, r[3]); if (x > 2 && x < 13) b.set(x, 13, r[4]); }   // one level bottom edge
+      b.set(1, 12, r[3]); b.set(14, 12, r[3]);
+      // the tuft: a 2x2 pinch in the middle, short crease lines running out toward the four corners
+      b.fillRect(7, 6, 2, 2, r[3]);
+      for (const [x, y] of [[6, 5], [9, 5], [6, 8], [9, 8]]) b.set(x, y, r[2]);
+      K.outer(b, r[5]);
+      K.shadow(b, 8, 14, 6, 1, 70);
+      return b;
+    },
+  });
+
+  // Walk-over floor-layer wear for a well-used plank floor (laid over `floor_wood`, whose boards run east-west, 8 px per board):
+  // track: the boards worn pale down their middles where feet have gone back and forth for years; scuff: a few shoe scuffs;
+  // dust_leaf: a dust bunny and a dry leaf blown in; old_ball: a sun-faded play ball gone soft and slumped on one side.
+  K.stamp('floor_aged', {
+    w: 1, h: 1, layer: 'floor', solid: ['.'], variants: ['track', 'track_w', 'scuff', 'dust_leaf', 'old_ball'],
+    paint: (v) => {
+      const b = K.B(16, 16);
+      if (v === 'track' || v === 'track_w') {
+        // a translucent pale wash over the middle of each board, so the boards' own grain, joints and seams show through
+        // (the same planks, just paler): solid across rows 3-4, softer and shorter on rows 2 and 5. No holes, no ragged edge.
+        const worn = K.alpha(P.o0, 96), soft = K.alpha(P.o0, 48);
+        for (const y0 of [0, 8]) {
+          b.fillRect(0, y0 + 3, 16, 2, worn);
+          b.fillRect(4, y0 + 2, 8, 1, soft); b.fillRect(4, y0 + 5, 8, 1, soft);
+        }
+        // track_w: the trail's west end, fading in over its first 8 px instead of stopping at a hard edge mid-board
+        if (v === 'track_w') for (let y = 0; y < 16; y++) for (let x = 0; x < 8; x++) {
+          const c = b.u32[y * 16 + x];
+          if (c >>> 24) b.u32[y * 16 + x] = ((c & 0xffffff) | (Math.round((c >>> 24) * (x + 1) / 9) << 24)) >>> 0;
+        }
+      } else if (v === 'scuff') {
+        for (const [x, y, w] of [[3, 3, 3], [9, 5, 4], [5, 11, 3], [11, 12, 2]]) { b.hline(x, y, w, C.mix(P.o2, P.o4, 0.4)); b.set(x + w, y - 1, C.mix(P.o2, P.o4, 0.25)); }
+      } else if (v === 'dust_leaf') {
+        // a soft grey dust bunny: an irregular clump, one highlight and one shadow pixel, stray hairs and a wisp
+        const dust = K.B(16, 16);
+        K.stick(dust, 2, 9, ['.bab.', 'babbb', '.bcb.'], { a: P.n1, b: P.n2, c: P.n3 });   // fluff has no outline
+        dust.set(1, 10, P.n2); dust.set(7, 11, P.n2); dust.set(3, 8, C.mix(P.n2, P.o2, 0.5));
+        // a curled dry oak leaf beside it, stem to the north-east, in a soft brown edge
+        const leaf = K.B(16, 16);
+        K.stick(leaf, 10, 9, ['....s', '..sl.', '.lLLl', 'lLLl.', '.ll..'], { l: P.l3, L: P.yl3, s: P.o4 });
+        K.outer(leaf, C.mix(P.o4, P.l3, 0.4));
+        b.blit(dust, 0, 0); b.blit(leaf, 0, 0);
+      } else {
+        // a play ball, its red and cream panels faded, gone soft so it slumps flat on its south-east side
+        const red = C.mix(P.red1, P.p1, 0.35), cream = P.p1, sh = C.mix(P.red2, P.p1, 0.35);
+        for (let y = 4; y <= 12; y++) for (let x = 3; x <= 13; x++) {
+          const dx = (x - 8) / 5.2, dy = (y - 8.3) / (y > 8 ? 4.2 : 4.6), d = dx * dx + dy * dy;
+          if (d > 1 || (y === 12 && (x < 5 || x > 8)) || (y === 11 && x > 11)) continue;                // slumped flat on the south-east
+          const band = Math.abs(x - 8 + (y - 8) * 0.5) < 1.6;                                      // one cream band round the middle
+          b.set(x, y, band ? (x + y > 17 ? P.p2 : cream) : (x + y > 18 ? sh : red));
+        }
+        b.set(6, 5, P.p0); b.set(5, 6, P.p0);                                                         // the dull shine
+        b.hline(8, 11, 3, C.mix(P.red2, P.o4, 0.3)); b.set(11, 10, C.mix(P.red2, P.o4, 0.3)); b.set(10, 10, C.mix(P.red2, P.o4, 0.3));           // the soft crease where it sags
+        K.outer(b, C.mix(P.red4, P.o5, 0.3));
+        K.shadow(b, 8, 13, 6, 1, 70);
+      }
+      return b;
+    },
+  });
 })(typeof globalThis !== 'undefined' ? globalThis : window);

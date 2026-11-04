@@ -179,37 +179,103 @@
 
   // ============================================================================================ the tree house (3x3)
   // A plank hut with a patchwork roof, built on a platform in a big oak. The ladder in the middle of the bottom row is the door.
+  // Seen in the present day, a few years after the kids built it (the childhood room is the sepia memory map): the planks have
+  // weathered to silver-brown with two newer honey boards nailed over the worst spots, the red roof has faded to dusty rose with
+  // one bright replacement shingle patch, moss creeps along the eaves and the foot of the walls, ivy climbs the trunk and a post,
+  // the bunting under the eave and the pennant have bleached pale (one flag gone), and the painted flower by the door has faded.
+  const TH_ROOF = ['#f4cab8', '#e0a49a', '#c4807c', '#a0646a', '#7a4c58', '#4a2c38'].map(col);   // the sun-faded red
+  const TH_OLD = [P.r0, P.r1, P.r2, P.r3, P.r4];                                                   // weathered planks
+  const TH_MOSS = [P.t1, P.t2];   // eave and platform moss
+  const TH_FLAGS = ['#e48c9c', '#8cacdc', '#e4c470', '#9cc884'].map(col);                          // bleached bunting
   K.stamp('treehouse', {
     w: 3, h: 3, rise: 16, solid: ['###', '###', '#D#'],
     paint: () => {
       const W = 48, H = 64, b = K.B(W, H);
-      // the oak's canopy behind the hut: chunky lobes, lime highlights on their top-left, dark green undersides
-      for (const [x, y, rx, ry] of [[7, 19, 6, 5], [41, 18, 6, 5], [12, 12, 9, 8], [36, 11, 9, 8], [24, 7, 10, 7], [16, 4, 6, 4], [32, 4, 6, 4]]) K.lobe(b, x, y, rx, ry, K.TN.leaf);
+      const moss = (x, y, n, seed) => { for (let i = 0; i < n; i++) { const hx = K.h32(seed, i, 3); b.set(x + i, y - (hx % 3 === 0 ? 1 : 0), hx % 4 === 0 ? P.f1 : (hx % 4 === 1 ? P.t2 : P.t1)); } };
+      // the oak's canopy behind the hut: chunky lobes, lime highlights on their top-left, dark green undersides (a little fuller now)
+      for (const [x, y, rx, ry] of [[7, 19, 6, 5], [41, 18, 6, 5], [12, 12, 9, 8], [36, 11, 9, 8], [24, 7, 10, 7], [16, 4, 6, 4], [32, 4, 6, 4], [3, 14, 3, 4]]) K.lobe(b, x, y, rx, ry, K.TN.leaf);
       for (const [x, y] of [[8, 7], [21, 2], [29, 1], [33, 6], [4, 15], [13, 1], [39, 13]]) { b.hline(x, y, 3, P.f0); b.set(x, y + 1, P.f1); b.set(x + 1, y + 1, P.f0); }
       // trunk and roots behind the ladder
       K.cyl(b, 30, 30, 10, 32, K.TN.bark);
       b.fillRect(27, H - 4, 16, 3, P.b3); b.set(26, H - 3, P.b3); b.set(43, H - 2, P.b3);
-      // hut: plank walls, a red patchwork roof, a round window and a pennant
-      b.fillRect(8, 22, 30, 16, P.o2);
-      for (let y = 24; y < 38; y += 3) b.hline(8, y, 30, P.o3);
-      b.vline(8, 22, 16, P.o1); b.vline(37, 22, 16, P.o4);
-      K.roof(b, 5, 11, 41, 23, R('red'), { inset: 7, row: 4 });
-      b.circle(13, 30, 3, P.o5, true); b.circle(13, 30, 2, P.gl3, true); b.set(12, 29, P.gl1);
-      // the doorway, right over the ladder: a lit frame, the dark inside and a glimpse of the floor
-      b.fillRect(19, 26, 10, 12, P.o1); b.vline(28, 26, 12, P.o3); b.hline(19, 26, 10, P.o0);
-      b.fillRect(20, 27, 8, 11, P.ink2); b.fillRect(20, 35, 8, 3, P.o5); b.hline(20, 35, 8, P.o4); b.hline(20, 27, 8, P.ink);
-      b.vline(40, 3, 9, P.o4); b.fillRect(41, 3, 5, 2, P.yl2); b.fillRect(41, 5, 3, 1, P.yl2);   // pennant
-      // platform
-      b.fillRect(3, 38, 42, 4, P.o3); b.hline(3, 38, 42, P.o1); b.hline(3, 41, 42, P.o4);
-      for (let x = 6; x < 44; x += 6) b.set(x, 39, P.o4);
-      // posts holding the platform
-      b.fillRect(6, 42, 3, H - 44, P.o3); b.vline(6, 42, H - 44, P.o2);
-      // the ladder (the door tile, x 16-31)
-      for (const x of [18, 28]) { b.fillRect(x, 42, 2, H - 43, P.o2); b.vline(x + 1, 42, H - 43, P.o4); }
-      for (let y = 45; y < H - 1; y += 4) b.hline(20, y, 8, P.o1);
-      // a rope with a bucket on the side
-      b.vline(42, 42, 10, P.hy2); b.fillRect(40, 52, 5, 4, P.n2); b.hline(40, 52, 5, P.n1);
-      K.outer(b, S.omap([[K.TN.leaf, P.f6], [K.TN.bark, P.b4], [S.tones(R('red')), R('red')[5]], [[P.hy2], P.o6], [STONE, P.n5]], 'o6'));
+      // hut: weathered silver-brown plank walls (alternate planks a shade apart), knots and a few dark weather streaks
+      b.fillRect(8, 22, 30, 16, P.r2);
+      for (let y = 22, i = 0; y < 38; y += 3, i++) if (i & 1) b.fillRect(8, y + 1, 30, 2, P.v1);
+      for (let y = 24; y < 38; y += 3) b.hline(8, y, 30, P.r3);
+      for (const [x, y] of [[11, 26], [24, 23], [35, 29], [15, 35]]) { b.set(x, y, P.r4); b.set(x + 1, y, P.r3); }
+      for (const x of [10, 17, 33]) { b.set(x, 25, P.r3); b.set(x, 28, P.r3); }                     // rain streaks under the eave
+      b.vline(8, 22, 16, P.r1); b.vline(37, 22, 16, P.r4);
+      // a newer honey board nailed over the lower right, and the faded painted flower above it
+      b.fillRect(29, 34, 8, 2, P.o2); b.hline(29, 34, 8, P.o1); b.hline(29, 36, 8, P.o3);
+      b.set(30, 35, P.n3); b.set(35, 35, P.n3);
+      K.stick(b, 30, 28, [
+        '..pp..',
+        '.pPPp.',
+        'pPyyPp',
+        '.pyyp.',
+        '..pp..',
+        '...s..',
+      ], { p: TH_ROOF[0], P: TH_FLAGS[0], y: TH_FLAGS[2], s: P.t2 });
+      // the roof: faded to dusty rose, one patch of bright new shingles, moss along the eave
+      K.roof(b, 5, 11, 41, 23, TH_ROOF, { inset: 7, row: 4 });
+      const RR = R('red');
+      // the replacement patch: two shingles of the old bright red, one course, with their own seams and catch-light
+      const RP = RR.map((c) => NP.Color.mix(c, TH_ROOF[2], 0.3));                  // newer, but already toned by a summer
+      for (let y = 18; y <= 21; y++) for (let x = 26; x <= 33; x++) b.set(x, y, y === 21 || x === 26 || x === 30 || y === 20 ? RP[3] : y === 18 ? RP[1] : RP[2]);
+      // moss in three clumps along the eave: a dark foot row, a lit cushion above, one lime tip
+      for (const [x, w] of [[7, 5], [20, 4], [33, 5]]) { b.hline(x, 22, w, P.t2); b.hline(x + 1, 21, w - 2, P.t1); b.set(x + 1, 21, P.f1); }
+      // the round window (glass gone a little dull) in a greyed frame
+      b.circle(13, 30, 3, P.r4, true); b.circle(13, 30, 2, P.gl3, true); b.set(13, 31, P.gl2); b.set(14, 30, P.gl2); b.set(12, 29, P.gl1); b.set(13, 28, P.gl1);
+      // the doorway, right over the ladder: a weathered frame, the dark inside and a glimpse of the floor
+      b.fillRect(19, 26, 10, 12, P.r1); b.vline(28, 26, 12, P.r3); b.hline(19, 26, 10, P.r0);
+      b.fillRect(20, 27, 8, 11, P.ink2); b.fillRect(20, 35, 8, 3, P.o5); b.hline(20, 35, 8, P.o4); b.hline(20, 27, 8, P.o6);
+      // bleached bunting under the eave, sagging from corner to corner; one flag has blown away (a gap on the string)
+      // (flags fill rows 24-26 only, so they clear the round window and the painted flower; the gap is over the door)
+      const sag = (x) => 23 + Math.round(Math.sin(Math.PI * (x - 7) / 32));
+      for (let x = 7; x <= 39; x++) b.set(x, sag(x), P.r4);
+      [[9, 0], [15, 1], [27, 2], [33, 3]].forEach(([x, c]) => {
+        const y = 24, f = TH_FLAGS[c];
+        b.hline(x, y, 5, f); b.hline(x + 1, y + 1, 3, f); b.set(x + 2, y + 2, f); b.set(x + 4, y, P.r0); b.set(x + 3, y + 1, P.r0);   // bleached paler on the east
+      });
+      // the pennant on its pole: bleached pale, its tail frayed into a notch
+      b.vline(40, 3, 9, P.r3); b.vline(40, 3, 1, P.r1);
+      b.fillRect(41, 3, 5, 2, TH_FLAGS[2]); b.fillRect(41, 5, 3, 1, TH_FLAGS[2]); b.set(45, 4, 0); b.set(44, 3, P.r0);
+      // platform: grey old boards with one new honey board at the east end, moss tufts on its lip
+      b.fillRect(3, 38, 42, 4, P.r3); b.hline(3, 38, 42, P.r1); b.hline(3, 39, 42, P.r2); b.hline(3, 41, 42, P.r4);
+      for (let x = 6; x < 44; x += 6) b.set(x, 39, P.r4);
+      b.fillRect(34, 38, 10, 4, P.o2); b.hline(34, 38, 10, P.o1); b.hline(34, 41, 10, P.o4); b.set(35, 39, P.n3); b.set(42, 39, P.n3);
+      moss(4, 38, 5, 4); moss(13, 38, 3, 5); moss(9, 37, 4, 6);
+      // posts holding the platform, ivy winding up the west one
+      b.fillRect(6, 42, 3, H - 44, P.r3); b.vline(6, 42, H - 44, P.r2); b.vline(8, 42, H - 44, P.r4);
+      // the ladder (the door tile, x 16-31): grey rails, worn rungs, the second rung a fresh replacement
+      for (const x of [18, 28]) { b.fillRect(x, 42, 2, H - 43, P.r2); b.vline(x, 42, H - 43, P.r1); b.vline(x + 1, 42, H - 43, P.r3); }
+      for (let y = 45, i = 0; y < H - 1; y += 4, i++) b.hline(20, y, 8, i === 1 ? P.o1 : P.r1);
+      // ivy: a stem wandering up the trunk east of the ladder and up the west post, leaves in pairs, a lit tip on each
+      // (painted on its own layer after the outline: a broken f3 stem, f2/f1 leaves, and an f5 edge only where it hangs past the wood)
+      const vine = K.B(W, H);
+      const ivy = (x0, y0, y1, ph) => {
+        for (let y = y0, i = 0; y >= y1; y--, i++) {
+          const x = x0 + Math.round(1.3 * Math.sin((y + ph) / 3));
+          if (i % 3 !== 2) vine.set(x, y, P.f3);
+          if ((y + ph) % 3 === 0) { const sd = ((y + ph) / 3) & 1 ? 1 : -1; vine.set(x + sd, y, P.f2); vine.set(x + sd * 2, y, P.f2); vine.set(x + sd, y - 1, P.f1); }
+        }
+      };
+      ivy(34, 62, 43, 0); ivy(7, 62, 46, 1);
+      // a rope with an old bucket on the side, rust on its rim
+      b.vline(42, 42, 10, P.r3); b.fillRect(40, 52, 5, 4, P.n3); b.hline(40, 52, 5, P.n1); b.hline(41, 53, 3, P.n5); b.set(40, 55, 0); b.set(44, 55, 0); b.set(41, 54, P.o3);
+      // moss and fern at the roots
+      moss(27, H - 5, 4, 7); moss(37, H - 4, 5, 8);
+      K.outer(b, S.omap([[K.TN.leaf, P.f6], [K.TN.bark, P.b4], [S.tones(TH_ROOF), TH_ROOF[5]], [S.tones(RP), RR[5]], [TH_OLD, P.r5], [TH_MOSS, P.f5],
+        [TH_FLAGS, P.r4], [STONE, P.n5]], 'o6'));
+      const before = b.u32.slice();
+      b.blit(vine, 0, 0);
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+        if (!(vine.u32[y * W + x] >>> 24)) continue;
+        for (const [dx, dy] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
+          const xx = x + dx, yy = y + dy;
+          if (xx >= 0 && yy >= 0 && xx < W && yy < H && !(before[yy * W + xx] >>> 24) && !(vine.u32[yy * W + xx] >>> 24)) b.set(xx, yy, P.f5);
+        }
+      }
       K.shadow(b, 24, H - 2, 18, 2);
       return b;
     },
