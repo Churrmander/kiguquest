@@ -58,11 +58,11 @@
   sp('waddlecoat', 'Waddlecoat', ['gale'], [64, 62, 55, 52, 58, 70], { catch: 190, exp: 62, ab: ['keen_eye'], cry: 'Quack-quack!',
     ls: [[1, 'pip_peck'], [1, 'bubble_pop'], [6, 'gust_puff'], [11, 'duck_dive'], [17, 'wing_flutter'], [24, 'bubble_beam']],
     dex: 'A duck onesie with a flat yellow rain-cape. Her wing-sleeves flap when she\'s pleased, which is most of the time.' });
-  sp('jellybob', 'Jellybob', ['spook', 'tide'], [50, 30, 45, 60, 70, 45], { catch: 150, exp: 60, ab: ['run_away'], cry: 'Pom-pom!', evo: [{ to: 'pompola', level: 22, time: 'night' }],
-    ls: [[1, 'bubble_pop'], [1, 'drift_sting'], [7, 'shadow_lick'], [13, 'lantern_glow'], [19, 'bubble_beam']],
+  sp('jellybob', 'Jellybob', ['nettle', 'spook'], [50, 30, 45, 60, 70, 45], { catch: 150, exp: 60, ab: ['run_away'], cry: 'Pom-pom!', evo: [{ to: 'pompola', level: 22, time: 'night' }],
+    ls: [[1, 'spine_jab'], [1, 'drift_sting'], [7, 'shadow_lick'], [13, 'lantern_glow'], [19, 'tail_sting']],
     dex: 'A jellyfish hat with pom-pom tentacles and a soft glow. She drifts calmly from place to place and never seems to be in a hurry.' });
-  sp('pompola', 'Pompola', ['spook', 'tide'], [80, 45, 70, 95, 105, 60], { catch: 60, exp: 165, ab: ['run_away'], cry: 'Pom-OOO.', stage: 2, family: 'jellybob',
-    ls: [[1, 'drift_sting'], [1, 'lantern_glow'], [22, 'wisp_drift'], [28, 'tide_wave'], [36, 'moon_wail']],
+  sp('pompola', 'Pompola', ['nettle', 'spook'], [80, 45, 70, 95, 105, 60], { catch: 60, exp: 165, ab: ['run_away'], cry: 'Pom-OOO.', stage: 2, family: 'jellybob',
+    ls: [[1, 'drift_sting'], [1, 'lantern_glow'], [1, 'tail_sting'], [22, 'wisp_drift'], [28, 'tide_wave'], [36, 'moon_wail']],
     dex: 'A lantern-jellyfish gown of pom-pom tassels. On dark nights she lights the way for boats coming home.' });
   sp('clawdet', 'Clawdet', ['tide', 'brawl'], [52, 70, 68, 30, 40, 48], { catch: 190, exp: 62, ab: ['sturdy_soul'], cry: 'Clack-clack!', evo: [{ to: 'crabmiral', level: 24 }],
     ls: [[1, 'pounce'], [1, 'pinch_clamp'], [6, 'bubble_pop'], [12, 'shell_guard'], [18, 'aqua_dash']],
