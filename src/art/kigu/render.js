@@ -705,6 +705,22 @@
   K.back = (id, opts) => get(id, 'back', !!(opts && opts.alt), undefined, (opts && opts.frame) || 0);
   /** ow(id, 'down'|'up', {alt}) -> Bitmap 32x32: the overworld walking sprite (front for down, back for up), feet outline on row 30. */
   K.ow = (id, view, opts) => get(id, view === 'up' ? 'owb' : 'owf', !!(opts && opts.alt), undefined, 0);
+  /** Does this Kigu have hand-drawn 32 px side views (a look's `owSide(b, col, alt, frame)` drawer)? */
+  K.hasOwSide = (id) => !!(K.looks[id] && K.looks[id].owSide);
+  /** owSide(id, frame, {alt}) -> Bitmap 32x32 facing LEFT (frame 0 stand, 1 and 2 walk), feet outline on row 30, or null when the
+   *  look has no side drawer (the engine then leans the front view, see NP.assets.kiguOverworld). */
+  K.owSide = (id, frame, opts) => {
+    const P = K.looks[id];
+    if (!P || !P.owSide) return null;
+    const f = frame | 0, alt = !!(opts && opts.alt), key = id + '|ows|' + (alt ? 1 : 0) + '|' + f;
+    let b = cache.get(key);
+    if (!b) {
+      b = new Bitmap(32, 32);
+      P.owSide(b, (hex) => NP.Color.q15(NP.Color.parse(hex)), alt, f);
+      cache.set(key, b);
+    }
+    return b;
+  };
   K.icon = (id, frame, opts) => get(id, 'icon', !!(opts && opts.alt), opts && opts.pose, frame ? 1 : 0);
   /** Number of idle-animation frames (they loop; frame 0 = rest pose). */
   K.idleFrames = (id) => idleN(K.looks[id] || {});

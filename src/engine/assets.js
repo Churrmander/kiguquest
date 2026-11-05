@@ -163,14 +163,15 @@
     const h = art().human;
     return !!(h && h.has && h.has(look));
   };
-  /** The asleep-in-bed frame (head on the pillow, eyes closed; 32x32, head at the top), or null for looks without one. */
+  /** The asleep-in-bed frame (head upside down on a south pillow, eyes closed; 32x16, crown on the bottom row), or null for looks without one. */
   A.humanAsleep = function (look) {
     look = rl(look);
     const h = art().human;
     return h && h.asleep && h.has && h.has(look) ? tryit(() => memo('hz|' + look, () => h.asleep(look)), null) : null;
   };
   /** Overworld sprite set for a Kigu walking about ('kigu:<species>' looks): the same { w, h, frames } shape as a human look.
-   *  down = front view, up = back view; the side views are the front view leaning one pixel into the walk (mirrored for right).
+   *  down = front view, up = back view; the side views are the look's hand-drawn `owSide` views when it has them, otherwise the
+   *  front view leaning one pixel into the walk (mirrored for right).
    *  Walk frames: the body drops a pixel and one foot lifts, like the people. */
   A.kiguOverworld = function (sp) {
     const K = art().kigu;
@@ -192,6 +193,13 @@
         return out;
       };
       const set = (b, lean) => [step(b, 0, lean), step(b, -1, lean), step(b, 1, lean)];
+      // a look with hand-drawn side views (`owSide` on the look, NP.art.kigu.owSide) uses them; mirrored for right, where the
+      // stride frames swap like the people's (the character's other foot leads)
+      if (K.hasOwSide && K.hasOwSide(sp)) {
+        const left = [0, 1, 2].map((f) => K.owSide(sp, f));
+        const right = [left[0].flippedX(), left[2].flippedX(), left[1].flippedX()];
+        return { w: 32, h: 32, kigu: sp, frames: { down: set(down, 0), up: set(up, 0), left, right } };
+      }
       const left = set(down, -1);
       return { w: 32, h: 32, kigu: sp, frames: { down: set(down, 0), up: set(up, 0), left, right: left.map((f) => f.flippedX()) } };
     }), null);

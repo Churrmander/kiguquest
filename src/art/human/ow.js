@@ -114,15 +114,74 @@
     return { w: 32, h: 32, frames };
   };
 
-  /** Asleep in bed: the down-facing head only (eyes closed), cropped at the chin, on a 32x32 cell with the head at the top
-   *  (the bed's pillow row). The body is under the blanket, so nothing below the chin is drawn and there is no shadow. */
+  /** Asleep in bed, lying on her back with her head on a pillow at the SOUTH end of the bed (the player's bed has its headboard and
+   *  pillows south). Built from the down-facing head (eyes closed, no hat or bag; a ponytail or pigtails let down for bed) turned upside
+   *  down, so the chin points north under the sheet and the crown rests on the pillow; flipped top to bottom rather than rotated, so
+   *  the light still comes from the left. Upside-down faces are read as upright, so the hair is re-shaped to say "head on a pillow":
+   *  the turned-down sheet covers the neck right to the chin (no collar), the hair fans out two pixels each side from eye level so it
+   *  frames the face, the crown is a rounded arc with a parting running up from it, and the fringe's dark edge (which would sit
+   *  under the eyes like a moustache) is lit. A 32x16 cell, head centred, rows 0-1 empty (the sheet's hem covers them) and the face from row 2; the engine shows rows 0-12 (the
+   *  rest is behind the headboard), so the crown is shaped on the last row that shows. */
   OW.asleep = function (S) {
-    const S2 = Object.assign({}, S, { face: Object.assign({}, S.face, { eyes: 'closed', mouth: 'flat' }) });
+    const down = /^(ponytail|pigtails)$/.test(S.hair.style) ? Object.assign({}, S.hair, { style: 'long' }) : S.hair;
+    const S2 = Object.assign({}, S, { acc: [], hair: down, face: Object.assign({}, S.face, { eyes: 'closed', mouth: 'flat' }) });
     const full = renderFrame(S2, 'down', 0);
+    // the same head with marker colours for the hair, to find which pixels are hair
+    const MK = [0xff005000, 0xff008800, 0xff00c000, 0xff00f800];   // pure greens (they survive the 15-bit palette)
+    const isMk = (c) => (c & 255) < 16 && ((c >> 16) & 255) < 16 && ((c >> 8) & 255) > 48;
+    const marked = renderFrame(Object.assign({}, S2, { hair: Object.assign({}, S2.hair, { ramp: MK }) }), 'down', 0);
     const R = L.rig(S2, 'ow', 'down', 0);
-    const chin = Math.min(full.h, R.hy + R.hh + 1);
-    const out = new NP.Bitmap(full.w, full.h);
-    for (let y = 0; y < chin; y++) for (let x = 0; x < full.w; x++) out.u32[y * full.w + x] = full.u32[y * full.w + x];
+    const chin = Math.min(full.h, R.hy + R.hh);
+    let top = 0;
+    while (top < chin && !full.u32.subarray(top * full.w, (top + 1) * full.w).some((c) => c >>> 24)) top++;
+    // upside down into a tall scratch cell, then shifted so the face starts on row 2 (rows 0-1 take the sheet's hem); whatever
+    // falls below row 12 is behind the headboard in the bed, so the crown is shaped on the last row that shows
+    const W = full.w, T = 32, tmp = new Uint32Array(W * T), tmpHair = new Uint8Array(W * T);
+    for (let y = top; y < chin; y++) {
+      const oy = T - 1 - (y - top);
+      for (let x = 0; x < W; x++) { const i = y * W + x; tmp[oy * W + x] = full.u32[i]; if (isMk(marked.u32[i])) tmpHair[oy * W + x] = 1; }
+    }
+    const skin0 = new Set(S.skin.map((c) => NP.Color.q15(c) >>> 0).concat(S.skin.map((c) => c >>> 0)));
+    let ft = 0;
+    for (let y = 0; y < T; y++) { let n = 0; for (let x = 0; x < W; x++) if (!tmpHair[y * W + x] && skin0.has(tmp[y * W + x] >>> 0)) n++; if (n >= 4) { ft = y; break; } }
+    const H = 16, faceTop = 2, out = new NP.Bitmap(W, H), hair = new Uint8Array(W * H);
+    for (let y = 0; y < H; y++) { const sy = ft - faceTop + y; if (sy < 0 || sy >= T) continue; for (let x = 0; x < W; x++) { out.u32[y * W + x] = tmp[sy * W + x]; hair[y * W + x] = tmpHair[sy * W + x]; } }
+    let CROWN = 0;
+    for (let y = 0; y < H; y++) if (out.u32.subarray(y * W, (y + 1) * W).some((c) => c >>> 24)) CROWN = y;
+    CROWN = Math.min(12, CROWN);
+    for (let y = CROWN + 1; y < H; y++) for (let x = 0; x < W; x++) out.u32[y * W + x] = 0;
+    const lum = (c) => (c & 255) + ((c >> 8) & 255) + ((c >> 16) & 255);
+    const ramp = S.hair.ramp.slice().sort((p, q) => lum(p) - lum(q));                                // dark to light
+    const at = (x, y) => (x >= 0 && x < W && y >= 0 && y < H ? out.u32[y * W + x] : 0);
+    const put = (x, y, c) => { if (x >= 0 && x < W && y >= 0 && y < H) out.u32[y * W + x] = c; };
+    const isHair = (x, y) => x >= 0 && x < W && y >= 0 && y < H && hair[y * W + x];
+    const ink = (() => { let d = 0, best = 1e9; for (const c of out.u32) if (c >>> 24 && lum(c) < best) { best = lum(c); d = c; } return d; })();
+    const span = (y) => { let x0 = -1, x1 = -1; for (let x = 0; x < W; x++) if (at(x, y) >>> 24) { if (x0 < 0) x0 = x; x1 = x; } return [x0, x1]; };
+    const eyeRow = faceTop + 2;
+    // 1. the fringe's shaded lower edge (now just under the eyes) is lit instead
+    for (let y = 1; y <= CROWN; y++) for (let x = 0; x < W; x++) if (isHair(x, y) && !isHair(x, y - 1) && at(x, y - 1) >>> 24) put(x, y, ramp[2]);
+    // 2. hair fanned over the pillow: from the eye row down, two more pixels each side (one on the eye row itself), its old outline
+    //    turned to hair, a new outline outside
+    for (let y = eyeRow; y <= CROWN - 1; y++) {
+      const [x0, x1] = span(y), d = y === eyeRow ? 1 : 2;
+      if (x0 < 0) continue;
+      for (let k = 0; k < d; k++) { put(x0 - k, y, ramp[2]); put(x1 + k, y, ramp[2]); }
+      put(x0 - d, y, ink); put(x1 + d, y, ink);
+      for (let k = 0; k <= d; k++) { hair[y * W + x0 - k] = 1; hair[y * W + x1 + k] = 1; }
+    }
+    // 3. a rounded crown: the last two rows pulled in (2 px, then 4 px each side) and re-inked
+    const [fx0, fx1] = span(eyeRow + 1);
+    for (const [y, inset] of [[CROWN - 1, 1], [CROWN, 3]]) {
+      for (let x = 0; x < W; x++) if (x < fx0 + inset || x > fx1 - inset) put(x, y, 0);
+      const [x0, x1] = span(y);
+      if (x0 >= 0) { put(x0, y, ink); put(x1, y, ink); for (let x = x0 + 1; x < x1; x++) if (y === CROWN) put(x, y, ink); }
+    }
+    for (let y = CROWN - 1; y <= CROWN; y++) { const [x0, x1] = span(y); if (x0 >= 0) for (let x = x0 + 1; x < x1; x++) if (y < CROWN && !(at(x, y + 1) >>> 24)) put(x, y + 1, ink); }
+    // 4. a parting running up from the crown towards the face (a darker line where the hair divides)
+    const cx = (fx0 + fx1) >> 1;
+    for (let y = CROWN - 1; y >= CROWN - 3; y--) if (isHair(cx, y)) put(cx, y, ramp[0]);
+    // 5. nothing above the face: the neck and collar are under the sheet, whose turned-down hem (bed_blanket) the chin tucks under
+    for (let y = 0; y < faceTop; y++) for (let x = 0; x < W; x++) put(x, y, 0);
     return out;
   };
 })(typeof globalThis !== 'undefined' ? globalThis : window);

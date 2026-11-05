@@ -337,19 +337,98 @@
     },
   });
 
-  // One-wide tall bookshelf (1x2). cookbooks: warm spines and one festival programme; comics: bright thin spines.
+  // One-wide tall bookshelf (1x2) standing side-on against a side wall, its open front facing into the room: _w = against the EAST
+  // wall, facing west; _e = against the WEST wall, facing east (drawn as _w and mirrored). Side-wall pieces follow the side windows
+  // (window_edge w/e): across the tile runs from the wall up to the room side, so the unit's top board lies against the wall, and
+  // the open front fills the room side: the plinth and a shelf board seen edge-on as upright strips, each with its row of books
+  // standing on it, their spines facing the room as coloured bars packed north to south (the odd gap). The unit's south side
+  // panel closes it off at the bottom, facing the camera, with a contact shadow on the floor.
+  // cookbooks: warm spines and one festival programme (pink, a lantern); comics: bright thin spines and one comic lying flat.
+  // In 3D (prism3d) it is a real box against its wall: the open front (the same shelves and spines, front-on, since the camera
+  // now sees that face in perspective), the top board and the south end panel.
+  function bookshelfPrism(v) {
+    const [what, face] = v.split('_'), comics = what === 'comics', east = face === 'e';
+    const D = 9, Y0 = 1, Y1 = 31, L = Y1 - Y0, H = 28;                                               // depth from the wall, length, height
+    const names = comics ? ['red', 'sky', 'yellow', 'mint'] : ['red', 'brown', 'gold'];
+    const front = K.B(L, H);
+    shelfFrame(front, 0, L, H, P.o5, [9, 18, 26]);
+    // the open front is usually seen at a steep angle, so its books are drawn blocky: runs of 3-5 same-coloured 2-3 px spines
+    // with a dark gap between runs, which still reads as bands of books when the face is squeezed
+    const run = (bot, seed) => {
+      let x = 3, i = 0, c = K.h32(seed, 0, 23) % names.length;
+      while (x < L - 4) {
+        const n = 3 + (K.h32(seed, i, 7) % 3), r = K.ramp(names[c]);
+        for (let k = 0; k < n && x + 2 <= L - 3; k++) {
+          const h = K.h32(seed, i, k), w = 2 + (h & 1), tall = 6 + ((h >> 2) % 2);
+          const ww = Math.min(w, L - 3 - x);
+          front.fillRect(x, bot - tall, ww, tall, r[2]); front.vline(x, bot - tall, tall, r[1]); front.hline(x, bot - tall + 2, ww, r[0]);
+          x += ww;
+        }
+        x += 1; i++; c = (c + 1 + (K.h32(seed, i, 23) % (names.length - 1))) % names.length;
+      }
+    };
+    run(9, comics ? 7 : 3); run(18, comics ? 8 : 4); run(26, comics ? 9 : 5);
+    if (comics) { front.fillRect(15, 23, 6, 3, P.yl1); front.hline(15, 23, 6, P.yl0); }
+    else { front.fillRect(12, 12, 3, 6, P.pk1); front.vline(12, 12, 6, P.pk0); front.set(13, 14, P.l2); front.set(13, 15, P.l3); }
+    const top = K.B(D, L); top.fillRect(0, 0, D, L, P.o2); top.vline(0, 0, L, P.o1); top.hline(0, 0, D, P.o1); top.vline(D - 1, 0, L, P.o3);
+    // the south end panel, the face the camera sees head-on: plain wood with the shelf boards' edges showing as lines and the
+    // ends of the nearest books peeking past the open edge, so the box still reads as a bookcase when the front is edge-on
+    const end = K.B(D, H); end.fillRect(0, 0, D, H, P.o3); end.hline(0, 0, D, P.o1); end.vline(0, 0, H, P.o2); end.hline(0, H - 1, D, P.o4);
+    const oe = east ? D - 1 : 0;                                                                     // the open edge's column
+    [9, 18, 26].forEach((y, s) => {
+      end.hline(1, y, D - 2, P.o2); end.hline(1, y + 1, D - 2, P.o4);                                // a shelf board's edge
+      const r1 = K.ramp(names[s % names.length]), r2 = K.ramp(names[(s + 1) % names.length]);
+      end.vline(oe, y - 6, 3, r1[1]); end.vline(oe, y - 3, 3, r2[2]);                                // spine tips past the edge
+    });
+    const xf = east ? D : 16 - D, xb = east ? 0 : 16;                                                // the open front's x, the wall's x
+    const a = Math.min(xf, xb), b = Math.max(xf, xb);
+    return [
+      // the open front: seen from the room, north is on the viewer's left facing east (west wall) and on the right facing west
+      { tex: front, pts: east ? [[xf, Y1, 0], [xf, Y0, 0], [xf, Y0, H], [xf, Y1, H]] : [[xf, Y0, 0], [xf, Y1, 0], [xf, Y1, H], [xf, Y0, H]], n: [east ? 1 : -1, 0, 0] },
+      { tex: top, pts: [[a, Y1, H], [b, Y1, H], [b, Y0, H], [a, Y0, H]], n: [0, 0, 1] },
+      { tex: end, pts: [[a, Y1, 0], [b, Y1, 0], [b, Y1, H], [a, Y1, H]], n: [0, 1, 0] },
+    ];
+  }
   K.stamp('bookshelf_narrow', {
-    w: 1, h: 2, variants: ['cookbooks', 'comics'],
+    w: 1, h: 2, variants: ['cookbooks_w', 'cookbooks_e', 'comics_w', 'comics_e'],
+    prism3d: (v) => bookshelfPrism(v),
     paint: (v) => {
-      const b = K.B(16, 32);
-      shelfFrame(b, 0, 16, 31, P.o5, [10, 20, 29]);
-      const names = v === 'comics' ? ['red', 'sky', 'yellow', 'pink', 'mint', 'orange', 'lilac'] : ['red', 'orange', 'brown', 'yellow', 'gold'];
-      spines(b, 3, 13, 10, names, v === 'comics' ? 7 : 3, v === 'comics');
-      spines(b, 3, 13, 20, names, v === 'comics' ? 8 : 4, v === 'comics');
-      spines(b, 3, 13, 29, names, v === 'comics' ? 9 : 5, v === 'comics');
-      if (v === 'cookbooks') { b.fillRect(9, 13, 3, 7, P.pk1); b.vline(9, 13, 7, P.pk0); b.set(10, 15, P.l2); b.set(10, 16, P.l3); }   // festival programme: a lantern
-      else { b.fillRect(8, 24, 5, 2, P.yl1); b.hline(8, 24, 5, P.yl0); }                              // a comic lying flat
+      let b = K.B(16, 32);
+      const [what, face] = v.split('_'), comics = what === 'comics';
+      const names = comics ? ['red', 'sky', 'yellow', 'mint'] : ['red', 'brown', 'gold'];
+      const Y0 = 2, Y1 = 25;                                                                         // the open front, north to south
+      // the carcass: the back panel in deep shadow, the north end panel's thin edge, the top board against the wall (x 13-14)
+      b.fillRect(2, 0, 13, 26, P.o5);
+      b.fillRect(2, 0, 13, 2, P.o3); b.hline(2, 0, 13, P.o2);                                        // north end panel, its top edge lit
+      b.fillRect(13, 0, 2, 26, P.o2); b.vline(13, 0, 26, P.o1); b.vline(14, 2, 24, P.o3);            // top board
+      // the plinth at the room side (x 2-3, its kick face darker) and the middle shelf board (x 8), seen edge-on
+      b.fillRect(2, Y0, 2, Y1 - Y0 + 1, P.o3); b.vline(2, Y0, Y1 - Y0 + 1, P.o4);
+      b.fillRect(8, Y0, 1, Y1 - Y0 + 1, P.o2);
+      // books packed along each shelf, north to south: each spine a bar standing on its board (its left end), 1-2 px thick, 3 px
+      // tall; the books come in runs of 2-4 in one colour (a set, a series), a 1-px gap every 6-8 spines and the odd book out.
+      // The column just under the next board up (x 7, x 12) stays in shadow, so the open side reads as open.
+      const shelf = (x0, seed) => {
+        let y = Y0 + 1, i = 0, n = 0, c = K.h32(seed, 0, 23) % names.length, r = K.ramp(names[c]), next = 6 + (K.h32(seed, 1, 29) % 3);
+        while (y < Y1) {
+          const h = K.h32(seed, i++, 9), t = comics ? 1 : 1 + ((h >> 1) & 1), len = 3 - ((h >> 3) % 4 === 0 ? 1 : 0);
+          if (y + t > Y1) break;
+          if (h % 13 === 0 || n >= next) { y += 1; n = 0; next = 6 + (K.h32(seed, i, 29) % 3); continue; }   // a gap
+          if (i > 1 && (K.h32(seed, i, 31) & 3) === 0) { c = (c + 1 + (K.h32(seed, i, 23) % (names.length - 1))) % names.length; r = K.ramp(names[c]); }
+          b.fillRect(x0, y, len, t, r[t > 1 || !(n & 1) ? 2 : 3]); b.set(x0 + len - 1, y, r[1]);      // thin comics alternate tones
+          if (t > 1) { b.hline(x0, y + 1, len, r[3]); b.set(x0 + 1, y, r[0]); }                     // a title band
+          y += t; n++;
+        }
+      };
+      shelf(4, comics ? 7 : 3); shelf(9, comics ? 8 : 4);
+      b.vline(7, Y0, Y1 - Y0 + 1, P.o5); b.vline(12, Y0, Y1 - Y0 + 1, P.o5);                          // shadow under each board
+      b.vline(12, Y0, 2, P.o6); b.vline(7, Y0, 2, P.o6);                                              // deepest at the back corner
+      if (comics) { b.fillRect(9, 15, 3, 4, P.yl1); b.vline(9, 15, 4, P.yl0); b.hline(9, 18, 3, P.yl3); }   // a comic lying flat on the top shelf
+      else { b.fillRect(4, 11, 3, 3, P.pk1); b.hline(4, 11, 3, P.pk0); b.set(5, 12, P.l2); b.hline(4, 13, 3, P.pk3); }   // the festival programme, a lantern on it
+      // the south side panel, facing the camera: the whole unit's end in plain wood (5 rows, so the box has depth), its top edge
+      // lit, the bottom shelf board's edge showing through as a line, a darker foot
+      b.fillRect(2, 26, 13, 5, P.o3); b.hline(2, 26, 13, P.o1); b.hline(3, 28, 10, P.o4); b.hline(2, 30, 13, P.o4); b.vline(14, 26, 5, P.o4);
       K.outer(b, WOOD_OUT);
+      if (face === 'e') b = b.flippedX();
       return b;
     },
   });
@@ -482,41 +561,59 @@
     },
   });
 
-  // Coat hooks on the wall with a shoe rack under them. satchel: the hero's satchel hangs on a hook; empty: it's gone.
+  // Coat hooks on the SOUTH wall by the front door, seen from the room side, i.e. from behind and above (the south wall is cut away,
+  // like the sofa's back): the peg rail runs across in front at hanging height and hides the pegs, so what shows is the BACK of
+  // everything hung on it. Each coat hangs by its hood loop: the hood droops down the coat's back towards us (its rim and dark
+  // inside showing), the back panel has a centre seam and a vent at the hem, the sleeves hang at the sides. The satchel shows its
+  // plain leather back with a stitched edge, the top of its flap folded over beyond it, and its strap looping up over the rail.
+  // satchel: the hero's satchel hangs from the middle peg; empty: it's gone and the bare peg tip shows over the rail.
   K.stamp('coat_rack', {
     w: 2, h: 1, variants: ['satchel', 'empty'],
     paint: (v) => {
       const b = K.B(32, 16);
-      // a wooden peg rail screwed straight onto the wall (no box), three brass pegs
-      b.fillRect(1, 2, 30, 2, P.o2); b.hline(1, 2, 30, P.o1); b.hline(1, 3, 30, P.o3);
-      b.set(2, 2, P.gd3); b.set(29, 2, P.gd3);                                                       // screws
-      // coats hung by the collar from the outer pegs: narrow shoulders, wider hems, a darker fold line and buttons
-      const coat = (x, c) => K.stick(b, x, 5, [
-        '..abbc..',
-        '.abbbbc.',
-        '.ab3bbc.',
-        'aab3bgcc',
-        'abb3bbbc',
-        'abb3bgbc',
-        'ab33bbcc',
-        'a33bbbcc',
-        '44444444',
-      ], { a: c[1], b: c[2], 3: c[3], 4: c[4], c: c[3], g: P.gd2 });
-      coat(3, K.ramp('red'));
+      // a coat from behind, x .. x+9: its hood loop bunched over the peg just shows above the rail (row 2, the peg's shadow in its
+      // middle); under the rail the shoulders slope out from the hook, the sleeves hang down both sides as separate tubes (lit a,
+      // shaded c, a dark gap k against the back) to their cuffs (u), the hood (H, the lit fabric lying on top) droops down the back
+      // to a single point, a half-belt (t) crosses the back, and the hem flares out under the cuffs with a centre vent (v). c = ramp
+      const coat = (x, c) => K.stick(b, x, 1, [
+        '..........',
+        '...hggh...',
+        '..........',
+        '..........',
+        '..........',
+        '...aHHc...',
+        '..aHHHHc..',
+        '.aaHHHHcc.',
+        'aakHHHHkcc',
+        'aakbHHbkcc',
+        'aakbbkbkcc',
+        'aakttttkcc',
+        'uukbvbbkuu',
+        'bbbbvbbbbb',
+      ], { a: c[1], b: c[2], c: c[3], h: c[2], g: c[3], H: c[1], k: c[4], t: c[3], v: c[4], u: c[3] });
+      coat(1, K.ramp('red'));
       coat(21, K.ramp('blue'));
       if (v === 'satchel') {
-        // the hero's satchel hangs from the middle peg by its strap: a flap with a brass buckle
-        b.line(16, 5, 13, 9, P.b2); b.line(16, 5, 19, 9, P.b2);
-        K.stick(b, 12, 9, [
-          'aaaaaaaa',
-          'abbbbbbc',
-          'abbbgbbc',
-          'cccdcccc',
+        // the strap loops up from the bag's top corners and over the rail onto the peg (the arch above the rail)
+        K.stick(b, 13, 0, ['..ss..', '.sggs.', '.s..s.', '.s..s.', '.s..s.', '.s..s.', 's....s'], { s: P.b2, g: P.gd2 });   // round the brass peg
+        // the bag's plain leather back: the top of its flap folded over beyond it (lit), a stitched edge, a shaded base
+        K.stick(b, 12, 7, [
+          'ffffffff',
           'eeeeeeee',
-        ], { a: P.b0, b: P.b1, c: P.b2, g: P.gd2, d: P.gd3, e: P.b3 });
+          'abbbbbbc',
+          'a.b.b.bc',
+          'abbbbbbc',
+          'abbbbbbc',
+          'cccccccc',
+        ].map((r) => r.replace(/\./g, 'd')), { a: P.b0, b: P.b1, c: P.b2, d: P.b2, e: P.b2, f: P.b0 });
       }
-      K.outer(b, S.omap([[WOOD, P.o6], [[P.b0, P.b1, P.b2, P.b3, P.b4, P.gd2, P.gd3], P.b4], [S.tones(K.ramp('red')), P.red4], [S.tones(K.ramp('blue')), P.bl4]], 'o6'));
-      for (const x of [7, 16, 25]) { b.set(x, 4, P.gd2); b.set(x, 5, P.gd3); b.set(x - 1, 4, P.gd1); }   // the pegs, over the collars
+      K.outer(b, S.omap([[[P.b0, P.b1, P.b2, P.b3, P.b4], P.b4], [S.tones(K.ramp('red')), P.red4], [S.tones(K.ramp('blue')), P.bl4]], 'o6'));
+      // the peg rail in front of it all at hanging height: a 2 px board, lit along its top edge, darker underside, outlined
+      b.fillRect(0, 3, 32, 3, P.o6);
+      b.hline(1, 4, 30, P.o2); b.hline(1, 3, 30, P.o1); b.hline(1, 5, 30, P.o4);
+      b.set(0, 4, P.o6); b.set(31, 4, P.o6);
+      for (const x of [2, 29]) b.set(x, 4, P.o3);                                                   // its screw plugs
+      if (v === 'empty') { b.set(16, 2, P.gd2); b.set(15, 2, P.gd1); b.set(16, 1, P.o6); b.set(15, 1, P.o6); b.set(17, 2, P.o6); b.set(14, 2, P.o6); }   // the bare peg tip
       return b;
     },
   });
@@ -856,6 +953,47 @@
   /** the made-up quilt and the white sheet folded back over its pillow (south) edge, rows 5..29 */
   function sheetFold(b) { b.fillRect(2, 26, 27, 4, P.p0); b.hline(2, 28, 27, P.p1); b.hline(2, 29, 27, P.p2); b.set(2, 26, P.p1); }
   function madeQuilt(b, lump) { quilt(b, 3, lump); sheetFold(b); }
+  // Asleep (the opening): the quilt is pulled up to the sleeper's chin, so it is one patch row shorter (rows 5..16) and the sheet
+  // folds back over it at rows 16..19; her head lies upside down on the west pillow below that (the actor's 'asleep' pose, head
+  // centre x 12: the chin at row 22, just under the sheet's hem, the crown running behind the headboard at row 33), with her body a lump under the
+  // quilt running north from it.
+  const SLEEP_HEAD_X = 12;
+  function sleepQuilt(b, lump) {
+    const x0 = 3, y0 = 5, w = 25, h = 12, bx = SLEEP_HEAD_X, by = 10;
+    b.fillRect(x0, y0, w, h, P.p1);
+    for (let y = y0 + 1; y < y0 + h; y++) for (let x = x0 + 1; x < x0 + w - 1; x++) {
+      const lx = x - x0 - 1, ly = y - y0 - 1;
+      const q = QUILT[(((lx / 6) | 0) + ((ly / 7) | 0)) % QUILT.length];
+      let dark = lx >= w - 4;
+      if (lump) { const d = ((x + 0.5 - bx) / 6) ** 2 + ((y + 0.5 - by) / 9) ** 2; if (d <= 1) dark = x > bx + 1; else if (d <= 1.5 && x > bx) dark = true; }
+      b.set(x, y, dark ? q[1] : q[0]);
+    }
+    // the sheet folded back over the quilt's edge: a lit top, a crease, and the fold's shaded underside along the bottom
+    b.fillRect(2, 16, 27, 4, P.p0); b.hline(2, 18, 27, P.p1); b.hline(2, 19, 27, P.p2); b.set(2, 16, P.p1);
+    if (lump) for (let x = bx - 4; x <= bx + 4; x++) b.set(x, 16, P.white);                        // it rides up over her shoulders
+  }
+  /** the two pillows; the sleeping bed's are plumper (rows 24..32) so the head has room to lie on one */
+  function pillows(b, tall) {
+    const rows = tall ? [
+      '..wwwwwwwwwww..',
+      '.wwwwwwwwwwwwws',
+      'wwwwwwwwwwwwwws',
+      'wwwwwwwwwwwwwws',
+      'wwwwwwwwwwwwwws',
+      'wwwwwwwwwwwwwss',
+      'wwwwwwwwwwwwwss',
+      '.wwwwwwwwwwwss.',
+      '..sssssssssss..',
+    ] : [
+      '.wwwwwwwww.',
+      'wwwwwwwwwws',
+      'wwwwwwwwwws',
+      'wwwwwwwwwss',
+      '.ssssssss..',
+    ];
+    const y = tall ? 24 : 29;
+    for (const x of tall ? [3, 16] : [4, 17]) K.stick(b, x, y, rows, { w: P.p0, s: P.p2 });
+  }
   K.stamp('bed_double', {
     w: 2, h: 3, variants: ['sleeping', 'unmade', 'made'],
     paint: (v) => {
@@ -866,17 +1004,11 @@
       b.hline(1, 1, 30, P.o1); b.fillRect(1, 2, 30, 2, P.o4); b.hline(1, 3, 30, P.o5);
       // the mattress: a lit top-left edge, darker right edge
       b.fillRect(3, 4, 26, 33, P.p1); b.hline(3, 4, 26, P.p0); b.vline(3, 4, 33, P.p0); b.vline(28, 5, 32, P.p2); b.hline(3, 36, 26, P.p3);
-      if (v === 'sleeping') madeQuilt(b);                                                         // the quilt is pulled up (bed_blanket lies over it)
+      if (v === 'sleeping') sleepQuilt(b);                                                        // the quilt is pulled up (bed_blanket lies over it)
       if (v === 'unmade') { quilt(b, 1, false); b.fillRect(3, 13, 25, 2, P.p0); b.hline(3, 15, 25, P.p3); }   // thrown back: a lit fold on a shadow line
       if (v === 'made') madeQuilt(b);
       // pillows: soft cream, one shadow tone along the lower right, rounded corners, no inner lines
-      for (const x of [5, 17]) K.stick(b, x, 29, [
-        '.wwwwwwww.',
-        'wwwwwwwwws',
-        'wwwwwwwwws',
-        'wwwwwwwwss',
-        '.sssssss..',
-      ], { w: P.p0, s: P.p2 });
+      pillows(b, v === 'sleeping');
       // the tall headboard at the south (pillow) end, seen from behind: it stands up in front of the pillows' lower edge, a rounded
       // capped top rail lit along its top, a panelled back face, and two posts down to the floor
       K.stick(b, 1, 33, [
@@ -899,14 +1031,18 @@
     },
   });
 
-  // The patchwork blanket with a body-shaped lump, drawn ABOVE actors (over: 2) so the sleeping hero looks tucked in. goneIf woke.
+  // The patchwork blanket with a body-shaped lump, drawn ABOVE actors (over: 2) so the sleeping hero looks tucked in, pulled up to
+  // her chin (sleepQuilt): her head lies on the pillow south of it. goneIf woke.
   K.stamp('bed_blanket', {
     w: 2, h: 2, over: 2, solid: ['..', '..'],
     paint: () => {
       const b = K.B(32, 32);
-      madeQuilt(b, true);
+      sleepQuilt(b, true);
       K.outer(b, 'o6');
-      b.hline(3, 30, 25, P.p3);                                                                     // its soft shadow on the pillows' edge
+      // the sheet's turned-down hem below the fold (rows 20-21, no outline under it), so her chin tucks under it, and the quilt's
+      // soft shadow on the empty pillow beside her
+      b.hline(3, 20, 25, P.p1); b.hline(3, 21, 25, P.p2); b.set(2, 20, P.o6); b.set(2, 21, P.o6); b.set(28, 20, P.o6); b.set(28, 21, P.o6);
+      b.hline(17, 22, 11, P.p3);
       return b;
     },
   });

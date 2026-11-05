@@ -75,10 +75,12 @@
         if (d.glint) drawGlint(fb, X + 8 + (d.glintDx | 0), Y + 2, frame);   // a periodic sparkle so a far-off item catches the eye
         return;
       }
-      // asleep in bed (the opening): just the head on the pillow, eyes closed, centred on a 2-wide bed (+8 px), no shadow
+      // asleep in bed (the opening): just the head, upside down on the west pillow of the 2-wide bed (head centre 12 px into the
+      // tile), the chin tucked under the sheet just below the blanket's fold (bed_double 'sleeping'), the crown on the pillow just
+      // above the headboard (its top rail is 1 px below this tile's top edge, so the sprite is cut off there)
       if (this.pose === 'asleep') {
         const z = A().humanAsleep(this.look);
-        if (z) { fb.blit(z, X + ((16 - z.w) >> 1) + 8, Y - 3); return; }
+        if (z) { fb.blit(z, X + 12 - (z.w >> 1), Y - 12, { sh: 13 }); return; }
       }
       const spr = A().human(this.look);
       const vd = NP.view3d ? NP.view3d.viewDir(this.dir) : this.dir;
@@ -188,7 +190,7 @@
       yield* this.ow.fadeIn(10);
       NP.snd.play(this.ow.musicId, { fadeMs: 300 });
     }
-    *heal(text) { NP.State.healAll(); NP.snd.sfx('save'); if (text) yield* this.say(text); this.setHealPoint(); }
+    *heal(text) { NP.State.healAll(); NP.snd.sfx('save'); if (text) yield* this.say(text); this.setHealPoint(); this.ow.autosavePending = true; }
     *shop(list) { const s = new NP.ShopScene(list); NP.Game.push(s); yield* this.ow.waitFor(() => s.finished); }
     /** the Shibuyarn arcade: a cabinet ('cab_1'..), 'coins' or 'prizes' (src/game/arcade/core.js) */
     *arcade(id, o) { return yield* NP.arcade.run(this, id, o); }
@@ -396,6 +398,7 @@
       this.weather = NP.Weather.now = NP.Weather ? NP.Weather.roll(def) : null;
       NP.Weather.dark = !!def.dark;   // caves count as night for evolutions   // rolled each time you enter (src/game/weather.js)
       if (def.onEnter && !o.noEnter) this.runScript(def.onEnter);
+      this.autosavePending = !def.memory;   // saved once the player is free to move here (see update)
     }
 
     find(id) { return this.actors.find((a) => a.id === id) || null; }
@@ -641,6 +644,8 @@
       if (NP.state.evoPending) { NP.state.evoPending = false; this.spawn(this.evolutions(), 'evolve'); return; }
       this.npcAI();
       if (p.moving) return;
+      // autosave (owner 2026-11-05: a browser reload wiped a playtest): each new area and after a heal, once no scene is running.
+      if (this.autosavePending) { this.autosavePending = false; if (NP.state.flags.woke) NP.State.save(); }
       if (Input.pressed.start) { this.runMenu(); return; }
       if (Input.pressed.a) { this.interact(); return; }
       if (Input.pressed.select && this.useRegistered()) return;   // Select: the key item registered in the Bag (a rod; bikes later)

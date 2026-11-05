@@ -2,7 +2,7 @@
  *  player_house = downstairs (kitchen, hall, stair room, living room), 15x15 with walls; plan tile (px, py) = game (px + 1, py + 2).
  *  player_room  = upstairs, your room, 15x12. A new game starts here, asleep in bed; Nibblenna comes up to wake you.
  * The plan draws the room walls on tile edges, so they are def.edgeWalls (thin partitions), not wall tiles.
- * Window light follows the clock (def.windowLight, opt-in); on the first morning, until you first step outside, it is always morning. */
+ * Window light follows the clock (def.windowLight, opt-in; each patch starts on the tile right beside its window); on the first morning, until you first step outside, it is always morning. */
 (function (root) {
   'use strict';
   const NP = root.NP, L = NP.levels;
@@ -24,9 +24,9 @@
       { h: 8, x0: 6, x1: 13 },   // hall + stair room | living room
     ],
     windowLight: [
-      { x: 6, y: 3, w: 1, h: 2, from: 'n' },     // kitchen window over the sink
-      { x: 1, y: 6, w: 3, h: 2, from: 'w' },     // hall window
-      { x: 10, y: 11, w: 2, h: 2, from: 's' },   // living-room window
+      { x: 6, y: 2, w: 1, h: 3, from: 'n', k: 0.75 },   // kitchen window over the sink: from the sink down onto the floor (softer, so the sink still reads)
+      { x: 1, y: 6, w: 5, h: 2, from: 'w', skew: 0 },   // hall window: boxed in by the kitchen and living-room walls, so it runs straight
+      { x: 10, y: 11, w: 2, h: 3, from: 's' },   // living-room window (south wall row 14): rows 13 up to 11
     ],
     nightGlow: [{ x: 8, y: 8, w: 2 }],           // the TV
     lightPhase: firstMorning,
@@ -77,7 +77,7 @@
   // hall
   H.stamp('window_edge', 0, 6, 'w').stamp('side_table', 1, 7).stamp('plant', 13, 7);
   // living room
-  H.stamp('grandfather_clock', 2, 8).stamp('tv_wide', 8, 8, 'plain').stamp('bookshelf_narrow', 13, 8, 'cookbooks');
+  H.stamp('grandfather_clock', 2, 8).stamp('tv_wide', 8, 8, 'plain').stamp('bookshelf_narrow', 13, 8, 'cookbooks_w');
   H.stamp('sofa', 7, 10).stamp('sewing_basket', 11, 10).stamp('armchair', 12, 10, 'back');   // both seen from behind, facing the TV
   H.stamp('coat_rack', 6, 13); L.variantByFlag(H.def.stamps[H.def.stamps.length - 1], 'kite_call', 'satchel', 'empty');
   H.stamp('window_edge', 10, 14, 's').stamp('window_edge', 11, 14, 's').stamp('plant', 13, 13);
@@ -132,9 +132,9 @@
     id: 'player_room', name: 'Your Room', w: 15, h: 12, doorX: 4, exit: null,
     legend: { b: 'carpet_blue', d: 'stairs_down' },
     windowLight: [
-      { x: 5, y: 8, w: 2, h: 2, from: 's' },    // window over the bed
-      { x: 2, y: 7, w: 2, h: 2, from: 'w' },    // west window, onto the beanbag
-      { x: 11, y: 4, w: 2, h: 2, from: 'e' },   // east window
+      { x: 5, y: 8, w: 2, h: 3, from: 's', k: 0.35 },   // window over the bed (south wall row 11): across the bed, rows 10 up to 8; softer, so the sleeper's face reads
+      { x: 1, y: 7, w: 3, h: 2, from: 'w' },    // west window (wall column 0), onto the beanbag
+      { x: 8, y: 4, w: 6, h: 2, from: 'e' },    // east window (wall column 14): the long morning beam reaches the rug
     ],
     nightGlow: [{ x: 4, y: 10, w: 1 }, { x: 3, y: 5, w: 2 }],   // the bedside lamp and the TV
     lightPhase: firstMorning,
@@ -182,7 +182,7 @@
   R.stamp('wall_map', 4, 1); L.variantBy(R.def.stamps[R.def.stamps.length - 1], () => 'pins' + Math.min(8, L.badges()));
   R.stamp('calendar', 8, 1).stamp('kigu_poster', 9, 1);
   // west side
-  R.stamp('laundry_basket', 1, 4, 'overflow').stamp('bookshelf_narrow', 1, 5, 'comics').stamp('toy_chest', 1, 9);
+  R.stamp('laundry_basket', 1, 4, 'overflow').stamp('bookshelf_narrow', 1, 5, 'comics_e').stamp('toy_chest', 1, 9);
   R.stamp('window_edge', 0, 7, 'w').stamp('window_edge', 0, 8, 'w');
   R.stamp('tv_wide', 3, 5, 'console').stamp('beanbag', 3, 6);
   // east side

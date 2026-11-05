@@ -126,6 +126,96 @@
       ['shapes', { stage: 'headgear', at: 'face', m: true, g: 'cheeks', list: [['e', 9, 6, 3.5, 4, 'sub'], ['d', 9, 6, 'seed', -1]] }],
     ],
   });
+  // Nibblenna's 32 px side view (facing left; the engine mirrors it for right), drawn by hand to match her rendered front and back
+  // views: the same chef hat (rows 1-10, white with a cream band), the tan hood with a round ear (pink inner) poking out behind the
+  // hat, her dark auburn twin tail hanging behind her cheek as a rounded puff with lit strands (the same dark mass the front view
+  // has beside her face), the back of the hood and body in the darker tan, the face in profile (fringe, one dark eye, blush, a
+  // little nose), the white apron bib and skirt down her front with its red pocket, the near arm bent forward with a cream mitt
+  // holding a wicker basket of two buns by its handle, a round puff tail at the back and cream feet. Light from the top left: the
+  // front of her is lit and the back shades to orange. Frame 0 stands; frames 1 and 2 drop the body a pixel and stride (1: the
+  // near foot forward and the far foot lifted behind; 2: the other way round), like the people. Feet outline on row 30.
+  const NIBBLENNA_SIDE = {
+    head: [
+      '................................',
+      '.............OOOOO..............',
+      '...........OOWWWWWOO............',
+      '..........OWWWWWWWWwO...........',
+      '.........OWWWWWWWWWwwO..........',
+      '.........OWWWWWWWWWWwO..........',
+      '.........OWWWwWWWWwwwO..........',
+      '.........OwWWWwwWWwwwO..........',
+      '..........OwwwwwwwwwwOOO........',
+      '..........OWWWWWWWWWODPEO.......',
+      '.........OOwwwwwwwwwODPEO.......',
+      '........OHHHDDDDDDDJJJEOO.......',
+      '.......OHHHHHDDOHIOJJJEO........',
+      '.......OHIHHIKOHHIIOJJEO........',
+      '......OLKKIKKKOHIIIIOJEO........',
+      '......OLKNKKKKOHHIIIOJEO........',
+      '.....OLKKNKKKKOHIIHIOJEO........',
+      '......OKKKPPKKOHIIIIOEEO........',
+      '.......ONKKKKKOIHIIIOEEO........',
+      '........OOKKKOOHIIIOJEO.........',
+    ],
+    // rows 20-31 of each frame (on the step frames the head above also drops a pixel)
+    body: [[
+      '......IIII..OWWOIIOJEO..........',
+      '.....IO..OI.OWWOOOJOEEO.........',
+      '....ORJOOROOOWWODJJOEEO.........',
+      '...ORJJHROQQQOODDJOJEEOOO.......',
+      '...ORRRRROQSSDDDJOJJEEODDO......',
+      '...OJHJHJHOOOOOOOJJJEEDQDEO.....',
+      '....OIHIHIHOTWWwwJJJEEDDEEO.....',
+      '.....OOOOOOOwwwwwJEEEEOEEO......',
+      '...........OOODDOOEEOO.OO.......',
+      '..........OQQQSSOSSSSO..........',
+      '...........OOOOO.OOOO...........',
+      '................................',
+    ], [
+      '.............OOOOOOOO...........',
+      '......IIII..OWWOIIOJEO..........',
+      '.....IO..OI.OWWOOOJOEEO.........',
+      '....ORJOOROOOWWODJJOEEO.........',
+      '...ORJJHROQQQOODDJOJEEOOO.......',
+      '...ORRRRROQSSDDDJOJJEEODDO......',
+      '...OJHJHJHOOOOOOOJJJEEDQDEO.....',
+      '....OIHIHIHOTWWwwJJJEEDDEEO.....',
+      '.....OOOOOOOwDwwwJESSSSEEO......',
+      '........OQQQSSOOOOOOOOOOO.......',
+      '.........OOOOO..................',
+      '................................',
+    ], [
+      '.............OOOOOOOO...........',
+      '......IIII..OWWOIIOJEO..........',
+      '.....IO..OI.OWWOOOJOEEO.........',
+      '....ORJOOROOOWWODJJOEEO.........',
+      '...ORJJHROQQQOODDJOJEEOOO.......',
+      '...ORRRRROQSSDDDJOJJEEODDO......',
+      '...OJHJHJHOOOOOOOJJJEEDQDEO.....',
+      '....OIHIHIHOTWWwwJJJEEDDEEO.....',
+      '.....OOOOOOOwwEwwQQQSSOEEO......',
+      '.........OSSSSOOOOOOOO.OO.......',
+      '..........OOOO..................',
+      '................................',
+    ]],
+  };
+  // the colours of her rendered 32 px front view; the alt colourway rotates the costume (hue +150) and hair (+75) like Kittabra's
+  const NIBBLENNA_COL = { O: '#311010', W: '#fffff7', w: '#ffdebd', D: '#efc68c', J: '#de9c52', E: '#e78c4a', R: '#debd7b', H: '#c66329',
+    I: '#943118', K: '#ffb594', L: '#ffe7ce', P: '#ff9cad', N: '#391810', Q: '#fff7de', S: '#ffdead', T: '#e7525a' };
+  const NIBBLENNA_KEEP = 'OKLPNT';
+  const nibblennaSide = (b, col, alt, frame) => {
+    const Cl = root.NP.Color, map = {}, W = b.w;
+    for (const k in NIBBLENNA_COL) {
+      const deg = !alt || NIBBLENNA_KEEP.includes(k) ? 0 : 'HI'.includes(k) ? 75 : 150;
+      map[k] = col(deg ? Cl.hex(Cl.adjust(NIBBLENNA_COL[k], { h: deg })) : NIBBLENNA_COL[k]);
+    }
+    const S = NIBBLENNA_SIDE, body = S.body[frame] || S.body[0], dy = frame ? 1 : 0;
+    b.u32.fill(0);
+    const paint = (r, y) => { for (let x = 0; x < r.length && x < W; x++) if (map[r[x]]) b.u32[y * W + x] = map[r[x]]; };
+    S.head.forEach((r, i) => paint(r, i + dy));
+    // the body block is painted after the head: on a step frame its row 20 holds only the torso's top outline, under the chin
+    body.forEach((r, i) => { for (let x = 0; x < r.length && x < W; x++) if (r[x] !== '.' && !(r[x] === 'O' && b.u32[(20 + i) * W + x] >>> 24)) b.u32[(20 + i) * W + x] = map[r[x]]; });
+  };
   D('nibblenna', {
     name: 'Nibblenna', stage: 2, size: 75, rise: 14, pal: HAM,
     hood: { type: 'up', ears: { kind: 'round', h: 2, w: 3.2, lean: 1, dy: 1, over: true } },
@@ -136,7 +226,8 @@
       ['belly', { kind: 'apron', mat: 'apron', pocket: 'red' }],
       ['hat', { kind: 'chef', mat: 'apron' }],
       ['shapes', { stage: 'front', at: 'handR', g: 'basket', list: [['e', 0, 0, 6, 3.5, 'bun'], ['e', -2, -3, 2.6, 2.3, 'bun', 1], ['e', 2, -3, 2.6, 2.3, 'bun', 1], ['e', 0, -4, 2.4, 2, 'sub']] }],
-    ],
+    ],    // the 32 px side views (left, mirrored for right) are drawn by hand (NIBBLENNA_SIDE above)
+    owSide: nibblennaSide,
   });
 
   const SPR = { main: '#e6b84a', sub: '#fff0c0', hair: '#c88a3a', mitt: '#c88a3a', foot: '#e89a3a', eye: '#3a2a20', inner: '#ffb7c5', acc: '#8a5a3a', acc2: '#4ea0e0', note: '#3a4a80', page: '#fff8e8' };

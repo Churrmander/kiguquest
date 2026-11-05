@@ -75,15 +75,23 @@
     }
   }
   // ---- light through the windows of a room (opt-in: def.windowLight, def.nightGlow; the player's house)
-  //  def.windowLight = [{ x, y, w, h, from: 'n'|'s'|'e'|'w' }] = the patch of floor the window lights (tiles), brightest on the `from` side.
+  //  def.windowLight = [{ x, y, w, h, from: 'n'|'s'|'e'|'w', k? }] = the patch of floor the window lights (tiles), brightest on the `from`
+  //  side; k (default 1) scales its strength (e.g. a softer pool over a bed, so a sleeper's face stays readable).
   //  def.nightGlow = [{ x, y, w }] = lamps and screens that glow at night (a warm pool centred on the tile row).
   //  def.lightPhase() -> phase | null overrides the clock (the first morning in the house is always morning).
+  //  Each pool starts right at its window (the patch's `from` edge is the window wall) and fades towards its far end in stepped bands.
+  //  The light pulls each pixel towards c (by up to a, more in the bright core by the window); the window's cross bar shows as a
+  //  2 px darker cross through the pool, applied after the banding so it never rounds away. `skew` slants the beam: each pixel
+  //  further from the window is shifted that many pixels sideways (+ = towards the south for side windows, towards the east for
+  //  north/south ones), so the low morning and evening sun rakes across the floor while the midday pool stays square under the
+  //  window. A patch can scale it (`skew: 0` for a pool boxed in by walls). Morning also scatters a few dust motes in the core.
   const WIN = {
-    morning: { c: [255, 197, 138], a: 0.42, len: 1 },     // peach, a long low beam
-    day: { c: [255, 242, 176], a: 0.36, len: 0.5 },       // pale yellow, a short pool under the window
-    evening: { c: [255, 155, 94], a: 0.44, len: 1 },      // orange, long again
-    night: { c: [159, 183, 255], a: 0.34, len: 0.8, dim: [0.62, 0.66, 0.84] },   // moonlight blue; the room goes dim
+    morning: { c: [255, 216, 140], a: 0.85, len: 1, core: 0.35, skew: 0.3, motes: true },   // low early sun: long, warm peach-gold, raking
+    day: { c: [255, 244, 196], a: 0.34, len: 0.35, skew: 0 },                                 // pale yellow, a short square pool under the window
+    evening: { c: [255, 160, 96], a: 0.44, len: 1, skew: -0.3 },                            // orange, long again, raking the other way
+    night: { c: [159, 183, 255], a: 0.34, len: 0.8, skew: 0, dim: [0.62, 0.66, 0.84] },     // moonlight blue; the room goes dim
   };
+  const MOTE = [255, 244, 208];
   C.roomPhase = (def) => (def && typeof def.lightPhase === 'function' && def.lightPhase()) || C.phase();
   // In the 3D view the pools lie on the floor: each screen pixel is traced back to the floor point under it (NP.view3d.unproject)
   // and lit by where that point falls in the patch, so the pool keeps its place and perspective instead of floating in screen space.
@@ -92,16 +100,20 @@
     const V = NP.view3d, in3d = !!(V && V.on && V.project && V.unproject && V.state && V.state());
     if (L.dim) for (let i = 0; i < d.length; i += 4) { d[i] *= L.dim[0]; d[i + 1] *= L.dim[1]; d[i + 2] *= L.dim[2]; }
     for (const w of def.windowLight || []) {
-      const X0 = w.x * 16, Y0 = w.y * 16, W = w.w * 16, H = w.h * 16;
-      const along = w.from === 'n' || w.from === 's' ? H : W, reach = Math.max(16, along * L.len);
-      // the screen box to scan: the patch's rectangle (flat), or the box round its four projected corners (3D)
+      const X0 = w.x * 16, Y0 = w.y * 16, W = w.w * 16, H = w.h * 16, ns = w.from === 'n' || w.from === 's';
+      const along = ns ? H : W, span = ns ? W : H, reach = Math.max(16, along * L.len);
+      const skew = (L.skew || 0) * (w.skew === undefined ? 1 : w.skew), shift = Math.ceil(reach * Math.abs(skew));
+      // the area the slanted pool can reach: the patch widened sideways by the slant
+      const BX0 = ns ? X0 - shift : X0, BY0 = ns ? Y0 : Y0 - shift, BW = ns ? W + 2 * shift : W, BH = ns ? H : H + 2 * shift;
+      // the screen box to scan: that rectangle (flat), or the box round its four projected corners (3D)
       let sx0, sy0, sx1, sy1;
       if (in3d) {
-        const cs = [[X0, Y0], [X0 + W, Y0], [X0, Y0 + H], [X0 + W, Y0 + H]].map(([x, y]) => V.project(x, y));
+        const cs = [[BX0, BY0], [BX0 + BW, BY0], [BX0, BY0 + BH], [BX0 + BW, BY0 + BH]].map(([x, y]) => V.project(x, y));
         if (cs.some((q) => !q)) continue;
         sx0 = Math.floor(Math.min(...cs.map((q) => q.x))); sx1 = Math.ceil(Math.max(...cs.map((q) => q.x)));
         sy0 = Math.floor(Math.min(...cs.map((q) => q.y))); sy1 = Math.ceil(Math.max(...cs.map((q) => q.y)));
-      } else { sx0 = X0 - cx; sy0 = Y0 - cy; sx1 = sx0 + W; sy1 = sy0 + H; }
+      } else { sx0 = BX0 - cx; sy0 = BY0 - cy; sx1 = sx0 + BW; sy1 = sy0 + BH; }
+      const bar = Math.round(reach * 0.42), mid = span >> 1;
       for (let yy = Math.max(0, sy0); yy < Math.min(fb.h, sy1); yy++) {
         for (let xx = Math.max(0, sx0); xx < Math.min(fb.w, sx1); xx++) {
           let i, j;
@@ -109,17 +121,21 @@
             const q = V.unproject(xx + 0.5, yy + 0.5);
             if (!q) continue;
             i = Math.floor(q.x - X0); j = Math.floor(q.y - Y0);
-            if (i < 0 || j < 0 || i >= W || j >= H) continue;
-          } else { i = xx - sx0; j = yy - sy0; }
-          // distance from the window side, and from the patch's long edges (soft sides)
+          } else { i = xx + cx - X0; j = yy + cy - Y0; }
+          // distance from the window side, then the sideways position with the slant taken out
           const t = w.from === 'n' ? j : w.from === 's' ? H - 1 - j : w.from === 'w' ? i : W - 1 - i;
-          const side = w.from === 'n' || w.from === 's' ? Math.min(i, W - 1 - i) : Math.min(j, H - 1 - j);
-          if (t >= reach) continue;
-          let k = L.a * (1 - t / reach) * Math.min(1, (side + 1) / 4);
+          if (t < 0 || t >= reach) continue;
+          const a = (ns ? i : j) - Math.round(t * skew);
+          if (a < 0 || a >= span) continue;
+          const side = Math.min(a, span - 1 - a);
+          let k = L.a * (w.k || 1) * (1 - t / reach) * Math.min(1, (side + 1) / 4);
+          if (L.core && t < reach * 0.35) k += L.core * (w.k || 1) * (1 - t / (reach * 0.35));   // the bright spill right under the sill
           k = Math.round(k * 8) / 8;                         // stepped, so the pool reads as pixel-art bands, not a blur
+          if (a === mid || a === mid - 1 || t === bar || t === bar + 1) k *= 0.35;            // the window's cross bar
+          if (L.motes && t < reach * 0.35 && (((i * 73856093) ^ (j * 19349663) ^ (w.x * 83492791)) >>> 0) % 211 === 0) k = 1;   // a dust mote
           if (k <= 0) continue;
-          const p = (yy * fb.w + xx) * 4;
-          d[p] += (L.c[0] - d[p]) * k; d[p + 1] += (L.c[1] - d[p + 1]) * k; d[p + 2] += (L.c[2] - d[p + 2]) * k;
+          const p = (yy * fb.w + xx) * 4, c = k === 1 ? MOTE : L.c;
+          d[p] += (c[0] - d[p]) * k; d[p + 1] += (c[1] - d[p + 1]) * k; d[p + 2] += (c[2] - d[p + 2]) * k;
         }
       }
     }
