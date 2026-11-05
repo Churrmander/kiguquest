@@ -119,7 +119,7 @@
    *  down, so the chin points north under the sheet and the crown rests on the pillow; flipped top to bottom rather than rotated, so
    *  the light still comes from the left. Upside-down faces are read as upright, so the hair is re-shaped to say "head on a pillow":
    *  the turned-down sheet covers the neck right to the chin (no collar), the hair fans out two pixels each side from eye level so it
-   *  frames the face, the crown is a rounded arc with a parting running up from it, and the fringe's dark edge (which would sit
+   *  frames the face, the crown is a rounded arc, a small mouth sits above the closed eyes (the clearest upside-down cue), and the fringe's dark edge (which would sit
    *  under the eyes like a moustache) is lit. A 32x16 cell, head centred, rows 0-1 empty (the sheet's hem covers them) and the face from row 2; the engine shows rows 0-12 (the
    *  rest is behind the headboard), so the crown is shaped on the last row that shows. */
   OW.asleep = function (S) {
@@ -177,9 +177,11 @@
       if (x0 >= 0) { put(x0, y, ink); put(x1, y, ink); for (let x = x0 + 1; x < x1; x++) if (y === CROWN) put(x, y, ink); }
     }
     for (let y = CROWN - 1; y <= CROWN; y++) { const [x0, x1] = span(y); if (x0 >= 0) for (let x = x0 + 1; x < x1; x++) if (y < CROWN && !(at(x, y + 1) >>> 24)) put(x, y + 1, ink); }
-    // 4. a parting running up from the crown towards the face (a darker line where the hair divides)
-    const cx = (fx0 + fx1) >> 1;
-    for (let y = CROWN - 1; y >= CROWN - 3; y--) if (isHair(cx, y)) put(cx, y, ramp[0]);
+    // 4. a mouth ABOVE the closed eyes (between them and the chin): the strongest "this face is upside down" cue, so the head can't
+    //    be read as an upright face with a beard. 2x1 in the skin's darkest tone, centred between the eyes, one row above them.
+    const skinDark = NP.Color.q15(S.skin.slice().sort((p, q) => lum(p) - lum(q))[0]);
+    const cx = (fx0 + fx1) >> 1, my = eyeRow - 1;
+    put(cx, my, skinDark); put(cx + 1, my, skinDark);
     // 5. nothing above the face: the neck and collar are under the sheet, whose turned-down hem (bed_blanket) the chin tucks under
     for (let y = 0; y < faceTop; y++) for (let x = 0; x < W; x++) put(x, y, 0);
     return out;

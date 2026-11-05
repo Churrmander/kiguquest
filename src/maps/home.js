@@ -132,7 +132,7 @@
     id: 'player_room', name: 'Your Room', w: 15, h: 12, doorX: 4, exit: null,
     legend: { b: 'carpet_blue', d: 'stairs_down' },
     windowLight: [
-      { x: 5, y: 8, w: 2, h: 3, from: 's', k: 0.35 },   // window over the bed (south wall row 11): across the bed, rows 10 up to 8; softer, so the sleeper's face reads
+      { x: 5, y: 8, w: 2, h: 3, from: 's', k: 0.2 },   // window over the bed (south wall row 11): across the bed, rows 10 up to 8; softer, so the sleeper's face reads
       { x: 1, y: 7, w: 3, h: 2, from: 'w' },    // west window (wall column 0), onto the beanbag
       { x: 8, y: 4, w: 6, h: 2, from: 'e' },    // east window (wall column 14): the long morning beam reaches the rug
     ],
