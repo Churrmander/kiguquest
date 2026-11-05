@@ -121,13 +121,13 @@
    *  and the quilt. 12 px wide, centred over the west pillow (cell x 9-20), so the white pillow shows on both sides. */
   const SHORT_HAIR = new Set(['short', 'spiky', 'messy', 'sidepart', 'cropped', 'curly', 'fluff', 'bald']);
   const SLEEP_SHORT = [
-    '...osssso...',
+    '...ssssss...',
     '..ossddsso..',
     '.oassssssao.',
     'oseesssseemo',
     'olssssssssmo',
     'oHhsssssshko',
-    'oHhhshhshhko',
+    'oHhhhhhhhhko',
     '.oHhhhhhhko.',
     '..ohhhhhko..',
     '...oooooo...',
@@ -140,7 +140,7 @@
     const k = bald ? sk[2] : hr[1];
     const map = { o: ink, e: ink, l: sk[0], s: sk[1], m: sk[2], a: sk[2], d: sk[sk.length - 1], H, h, k };
     const out = new NP.Bitmap(32, 16);
-    SLEEP_SHORT.forEach((row, y) => { for (let x = 0; x < row.length; x++) if (map[row[x]]) out.u32[(y + 2) * 32 + 9 + x] = q(map[row[x]]); });
+    SLEEP_SHORT.forEach((row, y) => { for (let x = 0; x < row.length; x++) if (map[row[x]]) out.u32[(y + 1) * 32 + 9 + x] = q(map[row[x]]); });
     return out;
   }
 
@@ -150,7 +150,7 @@
    *  the light still comes from the left. Upside-down faces are read as upright, so the hair is re-shaped to say "head on a pillow":
    *  the turned-down sheet covers the neck right to the chin (no collar), the hair fans out two pixels each side from eye level so it
    *  frames the face, the crown is a rounded arc, a small mouth sits above the closed eyes (the clearest upside-down cue), and the fringe's dark edge (which would sit
-   *  under the eyes like a moustache) is lit. A 32x16 cell, head centred, rows 0-1 empty (the sheet's hem covers them) and the face from row 2; the engine shows rows 0-12 (the
+   *  under the eyes like a moustache) is lit. A 32x16 cell, head centred, row 0 empty (the sheet's hem covers it) and the face from row 1, its chin running on under the hem; the engine shows rows 0-12 (the
    *  rest is behind the headboard), so the crown is shaped on the last row that shows. */
   OW.asleep = function (S) {
     if (SHORT_HAIR.has(S.hair.style)) return asleepShort(S);
@@ -165,7 +165,7 @@
     const chin = Math.min(full.h, R.hy + R.hh);
     let top = 0;
     while (top < chin && !full.u32.subarray(top * full.w, (top + 1) * full.w).some((c) => c >>> 24)) top++;
-    // upside down into a tall scratch cell, then shifted so the face starts on row 2 (rows 0-1 take the sheet's hem); whatever
+    // upside down into a tall scratch cell, then shifted so the face starts on row 1 (row 0 takes the sheet's hem); whatever
     // falls below row 12 is behind the headboard in the bed, so the crown is shaped on the last row that shows
     const W = full.w, T = 32, tmp = new Uint32Array(W * T), tmpHair = new Uint8Array(W * T);
     for (let y = top; y < chin; y++) {
@@ -175,7 +175,7 @@
     const skin0 = new Set(S.skin.map((c) => NP.Color.q15(c) >>> 0).concat(S.skin.map((c) => c >>> 0)));
     let ft = 0;
     for (let y = 0; y < T; y++) { let n = 0; for (let x = 0; x < W; x++) if (!tmpHair[y * W + x] && skin0.has(tmp[y * W + x] >>> 0)) n++; if (n >= 4) { ft = y; break; } }
-    const H = 16, faceTop = 2, out = new NP.Bitmap(W, H), hair = new Uint8Array(W * H);
+    const H = 16, faceTop = 1, out = new NP.Bitmap(W, H), hair = new Uint8Array(W * H);
     for (let y = 0; y < H; y++) { const sy = ft - faceTop + y; if (sy < 0 || sy >= T) continue; for (let x = 0; x < W; x++) { out.u32[y * W + x] = tmp[sy * W + x]; hair[y * W + x] = tmpHair[sy * W + x]; } }
     let CROWN = 0;
     for (let y = 0; y < H; y++) if (out.u32.subarray(y * W, (y + 1) * W).some((c) => c >>> 24)) CROWN = y;
@@ -215,6 +215,8 @@
     put(cx, my, skinDark); put(cx + 1, my, skinDark);
     // 5. nothing above the face: the neck and collar are under the sheet, whose turned-down hem (bed_blanket) the chin tucks under
     for (let y = 0; y < faceTop; y++) for (let x = 0; x < W; x++) put(x, y, 0);
+    // the first face row runs on under the sheet's hem: no chin outline there (an ink pixel takes the skin below it, or goes)
+    for (let x = 0; x < W; x++) if ((at(x, faceTop) >>> 0) === (ink >>> 0)) { const c = at(x, faceTop + 1); put(x, faceTop, c >>> 24 && (c >>> 0) !== (ink >>> 0) ? c : 0); }
     return out;
   };
 })(typeof globalThis !== 'undefined' ? globalThis : window);
