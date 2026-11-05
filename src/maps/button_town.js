@@ -108,7 +108,8 @@
     view: 'street',   // 3D camera preset (street | town | flat-ish), see src/engine/persp.js
     town: true,       // no tree shaking in town (src/game/treeshake.js)
     legend: { '.': 'grass', T: 'treeline', p: 'path', c: 'cobble', f: 'flowers', w: 'sea', o: 'water', '<': 'bridge_v_w', '>': 'bridge_v_e', B: 'bridge_v',
-      d: 'boardwalk', m: 'mulch', e: 'worn_grass', h: 'treeline_secret', k: 'grotto_floor' },
+      d: 'boardwalk', m: 'mulch', e: 'worn_grass', h: 'treeline_secret', k: 'grotto_floor', r: 'grotto_rock', q: 'grotto_water',
+      Q: 'grotto_water_deep', u: 'grotto_shore' },
     onEnter: function* (c) {
       // saves from before the morning and parcel beats existed carry on as if both had happened
       if (c.flag('has_starter')) c.set('morning_done');
@@ -121,9 +122,14 @@
     },
   });
   M.ascii(0, 0, ROWS);
-  // the sea (rows U-X) can't be paddled; the pond (L27-R30) can, and the grotto mouth (N30-O30) is only reached across it
-  M.rect(26, 11, 4, 7, 'o').set(29, 13, 'k').set(29, 14, 'k');
-  M.stamp('grotto_arch', 29, 13);   // the low rock arch that makes the 2x2 floor read as a cave mouth (walk-over: the floor stays paddle-reachable)
+  // the sea (rows U-X) can't be paddled; the pond (L27-R30) can. Its east bank is a low outcrop of mossy boulders (K30-Q32, with a
+  // spur at M30) with the grotto in it: the mouth (N30-O30) is a low overhang open to the pond on the west and round its south-west
+  // corner, so you paddle straight in over water that darkens into shadow, to a rock ledge at N31 (the Wish Candy) with deep water
+  // below it at O31
+  M.rect(26, 11, 4, 7, 'o').rect(30, 10, 2, 7, 'r').set(29, 10, 'r').set(29, 12, 'r');
+  M.set(29, 11, 'r').set(29, 15, 'u').set(29, 16, 'u');   // rock straight down x29 to the brow; south of it the pond laps the rock
+  M.set(29, 13, 'q').set(29, 14, 'q').set(30, 13, 'k').set(30, 14, 'Q');
+  M.stamp('grotto_mouth', 29, 13);   // the overhang (flat) and the cave's roof with its west-facing arch (3D); walk-over
   // the pier (U13-V14) is a 2-wide deck; the jetty at x18 stays a single plank walk
   M.rect(12, 20, 1, 2, '<').rect(13, 20, 1, 2, '>');
 
@@ -154,7 +160,7 @@
   // -- Kigu Park (D15-I21): no fence, mulch underfoot, a big shade tree in the middle
   M.stamp('swing_set', 14, 3).stamp('slide', 20, 3);
   M.stamp('spring_rider', 14, 7, 'konko').stamp('spring_rider', 16, 7, 'ottopi').stamp('spring_rider', 15, 8, 'sprubun');
-  M.stamp('obstacle_course', 19, 7);
+  M.stamp('obstacle_course', 18, 7);   // flat on the mulch: tyres, stumps, the crawl log and the balance beam
   M.tree(17, 5);
 
   // -- the harbour: the pier crate (Bobbin's parcel), a barrel, and the little shipyard on rows S-T with two boats moored below
@@ -173,7 +179,7 @@
   M.npc('kid_a', 15, 11, 'child_m', 'down', 'Is that {player}? Are you getting a Kigu today?\\pI\'m going to have one someday. Mom says I must be taller first.', { move: 'turn' });
   M.npc('elder_a', 10, 15, 'elder_f', 'right', 'A Kigu chooses the people she trusts, you know.\\pYou can\'t force it, and you shouldn\'t try.');
   M.npc('park_kid_tag', 15, 4, 'child_f', 'down', 'Tag! You\'re it! ...Oh, you\'ve got a Kigu now? Okay, she can be it too.', { move: 'turn', showIf: 'has_starter' });
-  M.npc('park_kid_beam', 19, 6, 'child_m', 'down', 'I did the balance beam without falling off! Well, I fell off once. Twice.', { move: 'turn' });
+  M.npc('park_kid_beam', 21, 8, 'child_m', 'left', 'I did the balance beam without falling off! Well, I fell off once. Twice.', { move: 'turn' });
   M.npc('park_kid_shake', 16, 6, 'net_kid', 'right', 'I shook a tree on Meadow Lane once and a Chirpadee fell right on my head! I think she was even more surprised than I was.', { note: 'tree-shake hint' });
   M.npc('sailor_bt', 16, 18, 'sailor', 'down', 'We ship lanterns to Loomhaven every year for the Lantern Festival. This year\'s order is the biggest I\'ve ever seen.');
   M.npc('dockhand', 19, 19, 'builder_m', 'down', 'Half the crates on the cargo boat lately are white uniforms from Crisp & Co. in Seamstead. Who needs that many uniforms?');
@@ -183,7 +189,7 @@
 
   // -- the secret: a Wish Candy glinting in the pond grotto, visible from the shore, reached only by paddling
   M.pickup('wish_candy', 30, 13, 'wish_candy', 1, 'glinting in the pond grotto, Paddle only');
-  Object.assign(M.def.props[M.def.props.length - 1], { gate: 'paddle', glint: true, glintDx: -3 });   // glint inside the cave, clear of the pillar
+  Object.assign(M.def.props[M.def.props.length - 1], { gate: 'paddle', glint: true, glintDx: -3 });   // the glint, on the ledge at the back of the cave
 
   // -- ways in and out
   // the nudge sits on row B (inside the tree gap), not row C, so walking along row C past the road behind your house is never stopped

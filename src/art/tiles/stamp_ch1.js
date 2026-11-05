@@ -604,42 +604,124 @@
     },
   });
 
-  // Stepping stumps, a balance beam, a crawl tunnel and a set of tyres: four pieces with grass between them so it reads as a course
-
-  K.stamp('obstacle_course', {
-    w: 2, h: 2,
-    paint: () => {
-      const b = K.B(32, 32), t = R('orange');
-      const SH = '#102438';
-      // a sand pad with a darker border, and a worn trail running from the tunnel (top left) to the finish flag (bottom right)
-      b.fillRect(1, 1, 30, 30, P.s2);
-      for (let y = 2; y < 30; y++) for (let x = 2; x < 30; x++) { const h = K.h32(x, y, 77) % 11; if (h === 0) b.set(x, y, P.s3); else if (h === 1) b.set(x, y, P.s1); }
-      b.strokeRect(1, 1, 30, 30, P.s4);
-      for (let i = 0; i < 18; i++) { const x = 9 + i, y = 12 + Math.round(i * 0.6); if (i % 3 !== 2) { b.set(x, y, P.s3); b.set(x, y + 1, P.s3); } }
-      // cast shadows first (falling to the south-east), then the pieces
-      b.blendRect(4, 10, 14, 2, SH, 0.3); b.blendRect(16, 7, 2, 4, SH, 0.3);
-      b.blendRect(14, 19, 9, 2, SH, 0.3);
-      b.blendRect(13, 27, 14, 2, SH, 0.3);
-      b.blendRect(28, 25, 2, 3, SH, 0.3);
-      const L = K.B(32, 32);
-      // 1) the crawl tunnel, top left: three tones along its length, hoop ribs, its open mouth at the west end
-      for (let y = 3; y <= 9; y++) for (let x = 6; x <= 16; x++) L.set(x, y, y <= 4 ? t[1] : y >= 8 ? t[4] : y >= 7 ? t[3] : t[2]);
-      for (let x = 9; x < 17; x += 3) for (let y = 3; y <= 9; y++) L.set(x, y, y <= 4 ? t[0] : y >= 7 ? t[4] : t[3]);
-      L.ellipse(5, 6, 3, 3.5, t[1], true); L.ellipse(5, 6, 2, 2.5, P.o5, true); L.hline(4, 4, 3, P.o6); L.set(2, 5, t[0]);
-      // 2) two tyres lying flat in the middle: dark rubber with a lit top arc, the hole showing the sand
-      const TYRE = ['.hhhhh.', 'hhrrrhr', 'hr...rr', 'rrrrrrd', '.ddddd.'];
-      for (const [x, y] of [[11, 14], [16, 16]]) K.stick(L, x, y, TYRE, { h: P.n3, r: P.n4, d: P.n5 });
-      // 3) the balance beam, bottom right: a lit plank on two short legs
-      L.fillRect(12, 23, 14, 3, P.o2); L.hline(12, 23, 14, P.o0); L.hline(12, 25, 14, P.o4); L.vline(12, 23, 3, P.o1);
-      for (const x of [14, 23]) { L.fillRect(x, 26, 2, 2, P.o4); L.set(x, 26, P.o3); }
-      // the finish flag at the end of the beam: a thin pole and a red pennant
-      L.vline(28, 16, 10, P.n2); L.set(28, 16, P.n0); L.set(28, 25, P.n4);
-      K.stick(L, 24, 16, ['rrrr', '.rRR', '..RR'], { r: R('red')[1], R: R('red')[2] });
-      out(L, [[S.tones(t), t[5]], [[P.n0, P.n2, P.n3, P.n4, P.n5], P.n6], [[R('red')[1], R('red')[2]], R('red')[4]]]);
-      for (const [x, y] of [[11, 14], [16, 16]]) for (let i = 2; i <= 4; i++) L.set(x + i, y + 2, 0);       // the holes show the sand
+  // The obstacle course, laid out on the park's mulch and drawn from above (owner, playtest 1: it stood up like a billboard in 3D and
+  // its sand pad read as a sandbox). A row of five painted tyres lying flat across the top to hop through, a blue balance beam on two
+  // red blocks, three stepping stumps, and a hollow log on its side to crawl through (open end west). No pad under it: the mulch
+  // shows between the pieces, and nothing is painted in the mulch's own browns (critic, round 1), so every piece stands off it.
+  //  3D (prism3d, like the side-on bench): each piece is a low box of a few px (tyres 4, stumps 4, beam 5, log 7) with its top
+  //  painted by the same code as the flat art, so the course still lies on the ground but keeps enough height to read at the
+  //  street camera's foreshortening.
+  const OC = (() => {
+    const red = R('red'), blue = R('blue'), PAINT = ['red', 'yellow', 'blue', 'red', 'yellow'].map(R);
+    const TYRES = [[4.5, 5], [13.5, 5], [22.5, 5], [31.5, 5], [40.5, 5]];
+    const STUMPS = [[4.5, 27, 3.4], [12.5, 28.2, 3.2], [20.5, 27, 3.4]];
+    const LOG = { x0: 28, x1: 43, y: 23.5, r: 4.5 };
+    const BEAM = { x0: 3, x1: 23, y: 13, blocks: [5, 19] };
+    const ell = (bm, cx, cy, rx, ry, fn) => {
+      for (let y = Math.floor(cy - ry - 1); y <= Math.ceil(cy + ry + 1); y++) for (let x = Math.floor(cx - rx - 1); x <= Math.ceil(cx + rx + 1); x++) {
+        const dx = (x + 0.5 - cx) / rx, dy = (y + 0.5 - cy) / ry, d = dx * dx + dy * dy;
+        if (d <= 1) fn(x, y, dx, dy, d);
+      }
+    };
+    const outline = (L) => K.outer(L, S.omap([[[P.n3, P.n4, P.n5, P.n6], P.n6], ...PAINT.map((r) => [[r[1], r[2], r[3]], r[5]]),
+      [[blue[1], blue[2], blue[3], blue[4], P.n0], blue[5]], [[red[2], red[3], red[4]], red[5]],
+      [[P.o0, P.o1, P.o3, P.o5], P.o6], [[P.b0, P.b1, P.b2, P.b3, P.b4], P.o6], [[P.v6], P.o6]], 'o6'));
+    // the pieces, each painted onto L (side: also its 3/4-view side, which the flat view shows and the 3D tops leave to quads)
+    const tyre = (L, k, side) => {
+      const [cx, cy] = TYRES[k], r = PAINT[k];
+      if (side) ell(L, cx, cy + 1, 4.2, 3.2, (x, y) => L.set(x, y, P.n5));                         // the black tread below the top
+      ell(L, cx, cy, 4.2, 3.2, (x, y, dx, dy) => L.set(x, y, dx + dy < -0.7 ? r[1] : dx + dy < 0.5 ? r[2] : r[3]));
+      ell(L, cx, cy, 2.8, 1.9, (x, y) => L.set(x, y, P.n5));                                       // the hole's bare rubber wall
+    };
+    const tyreHoles = (b) => { for (const [cx, cy] of TYRES) ell(b, cx, cy - 0.3, 2.2, 1.2, (x, y) => b.set(x, y, 0)); };
+    const stump = (L, k, side) => {
+      const [cx, cy, r] = STUMPS[k];
+      if (side) ell(L, cx, cy + 1.2, r, r * 0.7, (x, y) => L.set(x, y, P.b3));
+      // the cut top: pale wood in a bark rim, its heart a darker dot with one lit pixel of ring beside it
+      ell(L, cx, cy, r, r * 0.7, (x, y, dx, dy, d) => L.set(x, y, d > 0.72 ? (dx + dy < 0 ? P.b2 : P.b3) : P.o1));
+      L.set(Math.floor(cx), Math.floor(cy), P.o3); L.set(Math.floor(cx) - 1, Math.floor(cy) - 1, P.o0);
+    };
+    const log = (L) => {
+      const { x0, x1, y: ly, r: lr } = LOG;
+      for (let x = x0; x <= x1; x++) for (let y = Math.ceil(ly - lr); y <= Math.floor(ly + lr); y++) {
+        const t = (y + 0.5 - ly) / lr;
+        let c = t < -0.6 ? P.b0 : t < -0.2 ? P.b1 : t < 0.3 ? P.b2 : t < 0.7 ? P.b3 : P.b4;          // a lit crown, a dark underside
+        if ((x + (y >> 1) * 3) % 6 === 0 && t > -0.7 && t < 0.3) c = P.b3;                         // bark seams
+        if ((x * 7 + y * 3) % 11 === 0 && t < -0.2) c = P.b2;                                       // lit bark flecks
+        L.set(x, y, c);
+      }
+      L.set(37, 21, P.b4); L.set(38, 21, P.b4);                                                     // a knot
+      ell(L, x1 + 0.5, ly, 1.6, lr, (x, y, dx, dy, d) => L.set(x, y, d > 0.5 ? P.o3 : P.o1));        // the east cut face
+      ell(L, x0, ly, 2.2, lr, (x, y, dx, dy, d) => L.set(x, y, d > 0.45 ? P.o1 : P.o0));             // the west cut face, a pale ring...
+      ell(L, x0, ly + 0.3, 1.2, lr - 1.5, (x, y) => L.set(x, y, P.v6));                             // ...round the dark hollow
+    };
+    const beam = (L, side) => {
+      const { x0, x1, y: by, blocks } = BEAM, w = x1 - x0 + 1;
+      if (side) for (const x of blocks) { L.fillRect(x, by + 3, 3, 4, red[2]); L.vline(x, by + 3, 4, red[2]); L.vline(x + 2, by + 3, 4, red[4]); L.hline(x, by + 6, 3, red[3]); }
+      L.fillRect(x0, by, w, 3, blue[2]); L.hline(x0, by, w, blue[1]);
+      if (side) { L.fillRect(x0, by + 3, w, 2, blue[3]); L.hline(x0, by + 4, w, blue[4]); }
+      for (const x of [10, 16]) L.set(x, by + 1, blue[3]);                                          // plank joints
+      L.fillRect(x0 + 1, by, 1, side ? 5 : 3, P.n0); L.fillRect(x1 - 1, by, 1, side ? 5 : 3, P.n0); // white tape at the start and end
+    };
+    // ---- flat: all of it, outlined, a soft v5 shadow 1 right and 2 down on the mulch, then the tyre holes opened
+    const flat = () => {
+      const b = K.B(48, 32), L = K.B(48, 32);
+      for (let k = 0; k < TYRES.length; k++) tyre(L, k, true);
+      for (let k = 0; k < STUMPS.length; k++) stump(L, k, true);
+      log(L); beam(L, true);
+      outline(L);
+      for (let y = 0; y < 30; y++) for (let x = 0; x < 47; x++) if ((L.u32[y * 48 + x] >>> 24) && !(L.u32[(y + 2) * 48 + x + 1] >>> 24)) b.set(x + 1, y + 2, P.v5);
       b.blit(L, 0, 0);
+      tyreHoles(b);
       return b;
-    },
+    };
+    // ---- 3D: the low boxes. top(x0, y0, w, h, z, paintFn) crops a piece's top, painted and outlined on its own; front(...) is a
+    //      south-facing wall from z0 to z1 in flat bands of colour (top row lit, bottom row darkest)
+    const prism = () => {
+      const faces = [];
+      const top = (x0, y0, w, h, z, fn) => {
+        const L = K.B(48, 32); fn(L); outline(L);
+        const t = K.B(w, h); t.blit(L, -x0, -y0);
+        faces.push({ tex: t, pts: [[x0, y0 + h, z], [x0 + w, y0 + h, z], [x0 + w, y0, z], [x0, y0, z]], n: [0, 0, 1] });
+        return t;
+      };
+      const wall = (w, h, bands) => { const t = K.B(w, h); for (let y = 0; y < h; y++) t.hline(0, y, w, bands[Math.min(bands.length - 1, Math.floor(y * bands.length / h))]); return t; };
+      const front = (x0, x1, y, z0, z1, bands) => faces.push({ tex: wall(x1 - x0, Math.max(1, z1 - z0), bands), pts: [[x0, y, z0], [x1, y, z0], [x1, y, z1], [x0, y, z1]], n: [0, 1, 0] });
+      const side = (x, y0, y1, z0, z1, bands, west) => faces.push({ tex: wall(y1 - y0, Math.max(1, z1 - z0), bands),
+        pts: west ? [[x, y0, z0], [x, y1, z0], [x, y1, z1], [x, y0, z1]] : [[x, y1, z0], [x, y0, z0], [x, y0, z1], [x, y1, z1]], n: [west ? -1 : 1, 0, 0] });
+      for (let k = 0; k < TYRES.length; k++) {
+        const [cx, cy] = TYRES[k], x0 = Math.floor(cx - 5), y0 = Math.floor(cy - 4);
+        const t = top(x0, y0, 10, 8, 4, (L) => tyre(L, k, false));
+        // the holes, in the cropped top's own coordinates
+        ell(t, cx - x0, cy - 0.3 - y0, 2.2, 1.2, (x, y) => t.set(x, y, 0));
+        front(x0 + 1, x0 + 9, cy + 3.2, 0, 4, [PAINT[k][2], PAINT[k][3], PAINT[k][4], P.n6]);   // painted side, rubber at the foot
+      }
+      for (let k = 0; k < STUMPS.length; k++) {
+        const [cx, cy, r] = STUMPS[k], x0 = Math.floor(cx - r - 1), y0 = Math.floor(cy - r);
+        top(x0, y0, Math.ceil(2 * r + 2), Math.ceil(2 * r), 4, (L) => stump(L, k, false));
+        front(x0 + 2, x0 + Math.ceil(2 * r), cy + r * 0.7, 0, 4, [P.b1, P.b3, P.b3, P.b4]);
+      }
+      const { x0: bx0, x1: bx1, y: by, blocks } = BEAM;
+      top(bx0 - 1, by - 1, bx1 - bx0 + 3, 5, 5, (L) => beam(L, false));
+      front(bx0 - 1, bx1 + 2, by + 3.5, 3, 5, [blue[3], blue[4]]);
+      for (const x of blocks) { front(x, x + 3, by + 3, 0, 3, [red[2], red[3], red[4]]); side(x, by, by + 3, 0, 3, [red[2], red[3]], true); }
+      const { x0: lx0, x1: lx1, y: ly, r: lr } = LOG;
+      top(lx0 - 3, Math.floor(ly - lr - 1), lx1 - lx0 + 6, Math.ceil(2 * lr + 2), 7, (L) => log(L));
+      front(lx0, lx1 + 1, ly + lr, 0, 7, [P.b1, P.b2, P.b2, P.b3, P.b3, P.b4, P.o6]);   // the log's round flank, lit on top
+      // the west end standing up: a cut face with the dark hollow, so you see into the tunnel
+      const end = K.B(10, 7);
+      for (let y = 0; y < 7; y++) for (let x = 0; x < 10; x++) {
+        const dx = (x + 0.5 - 5) / 5, dy = (y + 0.5 - 3.5) / 3.5, d = dx * dx + dy * dy;
+        if (d <= 1) end.set(x, y, d > 0.75 ? P.o6 : d > 0.3 ? P.o1 : P.v6);
+      }
+      faces.push({ tex: end, pts: [[lx0 - 2, ly - 5, 0], [lx0 - 2, ly + 5, 0], [lx0 - 2, ly + 5, 7], [lx0 - 2, ly - 5, 7]], n: [-1, 0, 0] });
+      return faces;
+    };
+    return { flat, prism };
+  })();
+  K.stamp('obstacle_course', {
+    w: 3, h: 2, prism3d: () => OC.prism(),
+    paint: () => OC.flat(),
   });
 
   // Mom's wooden herb planters: herbs (mint and basil), tomato (a staked plant with ripe tomatoes), flowers (pink and yellow)
@@ -775,54 +857,96 @@
     },
   });
 
-  // ============================================================================================ the pond grotto's rock arch
-  // Walk-over 2x2 (all '.', the terrain under it does the blocking): the mouth of a little cave over a 2x2 grotto floor, open to the
-  // west onto the water. A heavy mossy lintel across the top (rising 14 px over the bank behind), a rock pillar down each side, and
-  // between them the cave's dark back wall, deepest right under the lintel. The back wall stops above the floor, so whatever sits
-  // on the cave floor (Button Town's Wish Candy at its north-east tile) shows against the dark.
-  //  3D view (art3d + anchor3d 'back'): the billboard stands at the BACK of the footprint and is painted with the whole mouth dark
-  //  down to the floor, so the cave reads as a hole in a rock face with the floor (and the candy) in front of it, not a see-through
-  //  dolmen.
-  K.stamp('grotto_arch', {
-    // clear3d: in 3D the forest tiles south-east of it and the column just east of it (in front of the camera) get no billboard
-    // trees, so the cave mouth stands up in view
-    w: 2, h: 2, rise: 14, solid: ['..', '..'], clear3d: [[1, 2, 2, 4], [2, 0, 1, 2]], art3d: true, anchor3d: 'back',
-    paint: (v, f, mode) => {
-      const b = K.B(32, 46), RK = K.TN.rock, is3d = mode === '3d';
-      // the cave's interior: a back wall in deep shade between the pillars, darkest under the lintel, its bottom edge ragged where
-      // the wall meets the floor (2D: it ends above the floor; 3D: it runs down to the ground)
-      const bottom = (x) => (is3d ? 44 : 17 + ((x * 7) % 3 === 0 ? 1 : 0) + (x > 9 && x < 14 ? 1 : 0));
-      for (let x = 4; x < 28; x++) for (let y = 6; y <= bottom(x); y++) b.set(x, y, y < 12 ? P.r6 : y < (is3d ? 30 : 15) ? P.v6 : P.r5);
-      for (let x = 4; x < 28; x++) { const y = bottom(x); b.set(x, y, P.r5); }
-      if (is3d) {                                                                                     // the floor lip at the mouth, lit
-        for (let x = 5; x < 27; x++) { b.set(x, 43, P.r4); b.set(x, 44, P.r3); b.set(x, 45, P.r4); }
-        for (const [x, y] of [[9, 24], [20, 30], [14, 36]]) { b.set(x, y, P.r5); b.set(x + 1, y, P.r5); }   // a few rock seams in the dark
-      } else {
-        for (const [x, y] of [[9, 13], [20, 14]]) b.set(x, y, P.r5);
+  // ============================================================================================ the pond grotto's mouth
+  // Button Town's grotto is a hollow in a low outcrop of mossy boulders (terrain `grotto_rock`) on the pond's east bank. The mouth
+  // opens WEST onto the pond: you paddle in over `grotto_water` (darkening into shadow) to a rock ledge with the Wish Candy at the back.
+  // This walk-over 2x1 sits on the mouth row (the terrain does the blocking); its footprint is the cave's top row, its 3D roof covers
+  // the 2x2 cave.
+  //  Flat: the overhang's dark lip along the north wall's foot, with moss and a fern hanging from it and drips below; nothing on
+  //  the water itself, so whoever paddles in is drawn over it.
+  //  3D (prism3d): the cave's roof as quads: a mossy top level with the outcrop, a west face of boulders with a ragged arch cut
+  //  out of it (transparent texels, so you look into the cave), and dark inner walls (back, north and south) so the inside reads as
+  //  shadow, not as the lit rock of the blocks around it.
+  const GH = 30, LINTEL = 7;
+  function grottoMouthFaces() {
+    const tl = NP.art.tiles, ink = P.r5;
+    // the roof: the outcrop's mossy top, two tiles wide
+    const top = K.B(32, 32);
+    for (let y = 0; y < 32; y++) for (let x = 0; x < 32; x++) top.set(x, y, tl.grottoTop(x & 15, y & 15, ((x >> 4) + (y >> 4)) & 1));
+    // a face with its opening cut out: open(x) = the first open row (row 0 is the top), GH = solid. The lintel's lower edge is
+    // ragged, inked, and hung with moss strands.
+    const cut = (tex, open, moss) => {
+      for (let x = 0; x < tex.w; x++) { const y0 = open(x); for (let y = y0; y < GH; y++) tex.set(x, y, 0); }
+      for (let y = 0; y < GH; y++) for (let x = 0; x < tex.w; x++) {
+        if (!tex.get(x, y)) continue;
+        if (!tex.get(x, y + 1 < GH ? y + 1 : y) || (x > 0 && !tex.get(x - 1, y)) || (x < tex.w - 1 && !tex.get(x + 1, y))) tex.set(x, y, ink);
       }
-      // the pillars: two stacked boulders each side, the lower ones wider at the foot (the west one slimmer, it faces the water)
-      K.lobe(b, 3, 38, 3, 7, RK); K.lobe(b, 3, 24, 3, 7, RK);
-      K.lobe(b, 28, 38, 4, 7, RK); K.lobe(b, 28, 25, 4, 7, RK);
-      // the lintel: a row of overlapping boulders across the whole mouth
-      K.lobe(b, 5, 7, 6, 5, RK); K.lobe(b, 15, 6, 7, 5, RK); K.lobe(b, 25, 7, 7, 5, RK);
-      // the lintel's underside and the pillars' inner faces in deep shade, framing the dark
-      for (let x = 4; x < 28; x++) for (let y = 10; y < 18; y++) {
-        const c = b.u32[y * 32 + x];
-        if (c === RK[0] || c === RK[1] || c === RK[2] || c === RK[3] || c === RK[4]) { if (!(b.u32[(y + 1) * 32 + x] === RK[0] || b.u32[(y + 1) * 32 + x] === RK[1] || b.u32[(y + 1) * 32 + x] === RK[2] || b.u32[(y + 1) * 32 + x] === RK[3] || b.u32[(y + 1) * 32 + x] === RK[4])) b.set(x, y, P.r5); }
+      for (const [x, n] of moss) { const y0 = open(x); if (y0 >= GH) continue; for (let k = 0; k < n; k++) tex.set(x, y0 + k, k === n - 1 ? P.f4 : k & 1 ? P.f2 : P.f3); }
+      return tex;
+    };
+    const jag = (x, s) => (K.h32(x, s, 91) % 4 === 0 ? 1 : K.h32(x, s, 92) % 5 === 0 ? -1 : 0);
+    // west face (texture x runs north to south): the rock comes down to the water at the north end, then a wide low opening that
+    // runs out round the south-west corner
+    const west = cut(tl.grottoFace3d(32, 0, 0, GH), (x) => {
+      if (x < 3) return GH;
+      const t = Math.min(1, (x - 3) / 8);
+      return Math.round(GH - (GH - LINTEL) * Math.sqrt(t * (2 - t))) + jag(x, 3);
+    }, [[8, 3], [12, 5], [13, 2], [18, 4], [22, 6], [23, 3], [27, 4], [30, 2]]);
+    // south face of the west half (texture x runs west to east): open from the corner to the outcrop's south spur
+    const south = cut(tl.grottoFace3d(16, 1, 0, GH), (x) => (x > 13 ? GH : x > 11 ? LINTEL + 6 + (x - 12) * 6 : LINTEL + jag(x, 5)), [[2, 4], [5, 2], [9, 5]]);
+    // the inside: deep shade, a little light near the openings, wet glints on the back wall, a dark band at the waterline
+    // the inside, up to the ceiling (CZ): deep shade, a little light near the openings, wet glints on the back wall, a dark band
+    // at the waterline
+    const CZ = GH - LINTEL;
+    const dark = (w, lightFrom) => {
+      const b = K.B(w, CZ);
+      for (let y = 0; y < CZ; y++) for (let x = 0; x < w; x++) {
+        const lt = lightFrom === 'w' ? x : lightFrom === 'e' ? w - 1 - x : 99;
+        const n = K.hf(x >> 1, y >> 1, 93);
+        let c = lt < 3 ? P.r4 : lt < 7 ? (n > 0.5 ? P.r5 : P.v5) : n > 0.78 ? P.v5 : P.v6;
+        if (y >= CZ - 2) c = y === CZ - 1 ? P.w6 : P.v6;
+        b.set(x, y, c);
       }
-      for (let y = 14; y < 44; y++) { if (b.u32[y * 32 + 6] === RK[3] || b.u32[y * 32 + 6] === RK[2]) b.set(6, y, RK[4]); if (b.u32[y * 32 + 24] >>> 24) b.set(24, y, RK[4]); }
-      // moss along the top of the lintel
-      for (let x = 1; x < 31; x++) { for (let y = 0; y < 12; y++) if (b.u32[y * 32 + x] >>> 24) { b.set(x, y, P.g2); if (b.u32[(y + 1) * 32 + x] >>> 24) b.set(x, y + 1, P.g3); break; } }
-      // cracks, each a dark line with a lit lip on its upper-left
-      for (const pts of [[[13, 2], [15, 5], [14, 8]], [[23, 3], [25, 6], [24, 9]], [[28, 28], [27, 31]], [[29, 36], [28, 40]], [[3, 34], [2, 37]]]) {
-        for (let i = 1; i < pts.length; i++) b.line(pts[i - 1][0], pts[i - 1][1], pts[i][0], pts[i][1], P.r4);
-        for (const [x, y] of pts) b.set(x - 1, y, P.r1);
+      if (lightFrom === undefined) for (const [x, y] of [[6, 5], [13, 10], [22, 4], [27, 13], [18, 16]]) { b.set(x, y, P.w5); b.set(x, y + 1, P.v5); }
+      return b;
+    };
+    return [
+      { tex: top, pts: [[0, 32, GH], [32, 32, GH], [32, 0, GH], [0, 0, GH]], n: [0, 0, 1] },
+      { tex: west, pts: [[0, 0, 0], [0, 32, 0], [0, 32, GH], [0, 0, GH]], n: [-1, 0, 0] },
+      { tex: south, pts: [[0, 32, 0], [16, 32, 0], [16, 32, GH], [0, 32, GH]], n: [0, 1, 0] },
+      // the roof's south edge over the east half (the outcrop's own blocks south of it may stand lower than the roof)
+      { tex: tl.grottoFace3d(16, 0, 0, GH), pts: [[16, 32, 0], [32, 32, 0], [32, 32, GH], [16, 32, GH]], n: [0, 1, 0] },
+      { tex: dark(32), pts: [[31, 0, 0], [31, 32, 0], [31, 32, CZ], [31, 0, CZ]], n: [-1, 0, 0], noCull: true, shade: 210 },
+      { tex: dark(32, 'w'), pts: [[0, 0.5, 0], [31, 0.5, 0], [31, 0.5, CZ], [0, 0.5, CZ]], n: [0, 1, 0], noCull: true, shade: 220 },
+      { tex: dark(16, 'e'), pts: [[31, 31.5, 0], [16, 31.5, 0], [16, 31.5, CZ], [31, 31.5, CZ]], n: [0, -1, 0], noCull: true, shade: 200 },
+      // the ceiling, so looking up under the overhang never shows the sky
+      { tex: dark(32), pts: [[0.5, 0, CZ], [0.5, 32, CZ], [31, 32, CZ], [31, 0, CZ]], n: [0, 0, -1], noCull: true, shade: 180 },
+    ];
+  }
+  K.stamp('grotto_mouth', {
+    // clear3d: the forest tiles just south of the outcrop (in front of the camera) get no billboard trees, so the mouth stays in view
+    w: 2, h: 1, solid: ['..'], clear3d: [1, 4, 2, 2], prism3d: () => grottoMouthFaces(),
+    paint: () => {
+      // the brow: the rock face of the overhang hanging 6-9 px down over the mouth (deeper toward the back), a boulder face lit from
+      // the top left with a dark underside, its shadow dithered over the water below, and moss and a fern hanging off it
+      const b = K.B(32, 16);
+      const depth = (x) => 6 + (x > 6 ? 1 : 0) + (x > 18 ? 1 : 0) + (K.h32(x, 1, 95) % 3 === 0 ? 1 : 0);
+      for (let x = 0; x < 32; x++) {
+        const d = depth(x), seam = (x % 6 === 0) || (x % 6 === 5 && K.h32(x, 2, 96) & 1);
+        for (let y = 0; y < d; y++) {
+          let c = y === d - 1 ? P.r6 : y === d - 2 ? P.r5 : seam ? P.r4 : y < 2 ? P.r2 : P.r3;
+          if (!seam && y < d - 2 && (x % 6 === 1 || x % 6 === 2) && y < 3) c = P.r2;            // each boulder's lit upper left
+          if (y === 0 && K.h32(x, 0, 97) % 3 !== 0) c = P.f3;                                     // moss on the brow's top edge
+          b.set(x, y, c);
+        }
+        for (let y = d; y < d + 2 && y < 16; y++) if ((x + y) & 1) b.set(x, y, P.v6);           // its shadow on the water
       }
-      // ferns at the pillars' feet and one hanging from the lintel into the dark
-      b.line(24, 45, 23, 41, P.f3); b.line(25, 45, 25, 42, P.f2);
-      b.line(6, 45, 7, 42, P.f3);
-      b.line(9, 12, 8, 15, P.f3); b.set(10, 13, P.f2);
-      K.outer(b, S.omap([[RK, P.r6], [[P.r4, P.r5, P.r6], P.r6], [[P.g2, P.g3], P.g6], [[P.f2, P.f3], P.f6]], 'r6'));
+      for (const [x, n] of [[2, 3], [3, 5], [8, 4], [12, 6], [13, 3], [19, 5], [24, 3], [28, 4], [29, 6]]) {
+        const y0 = depth(x) - 1;
+        for (let k = 0; k < n && y0 + k < 16; k++) b.set(x, y0 + k, k === n - 1 ? P.f4 : k & 1 ? P.f2 : P.f3);
+        if (x % 3 === 0 && y0 + n + 2 < 16) b.set(x, y0 + n + 2, P.w4);                         // a drip
+      }
+      K.stick(b, 4, 4, ['g.g', '.f.', 'f.f'], { g: P.g2, f: P.f3 });
       return b;
     },
   });

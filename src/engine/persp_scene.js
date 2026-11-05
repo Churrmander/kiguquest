@@ -123,17 +123,29 @@
     // ---- cliffs (terrains with `cliff3d`): each tile stands up as a block; a face on every side open to lower ground, a top cap
     sc.cliffs = [];
     if (tiles.cliff3d) {
-      const Hc = tiles.CLIFF_H || 22;
+      // a terrain kind may set its own height, per tile if it likes (tiles.cliffHeight(kind, x, y): Button Town's grotto outcrop is
+      // a jumble of boulders 26-35 px tall). A face is drawn on every side where the ground (or the next block) is lower, from that
+      // height up; texture row = texture height - z, so the foot of the face texture always sits at the ground.
+      const hOf = (k, x, y) => (tiles.cliffHeight && tiles.cliffHeight(k, x, y)) || tiles.CLIFF_H || 22;
       const isC = (x, y) => { const id = tm.idAt(x, y); return id !== null && !!A.terrainDef(id).cliff3d; };
+      const hAt = (x, y) => (isC(x, y) ? hOf(A.terrainDef(tm.idAt(x, y)).cliff3d, x, y) : 0);
       for (let y = 0; y < tm.h; y++) for (let x = 0; x < tm.w; x++) {
         const kind = A.terrainDef(tm.grid[y * tm.w + x]).cliff3d;
         if (!kind) continue;
-        const x0 = x * T, y0 = y * T, x1 = x0 + T, y1 = y0 + T, v = h32(x, y, 41) & 1, quads = [];
+        const Hc = hOf(kind, x, y), x0 = x * T, y0 = y * T, x1 = x0 + T, y1 = y0 + T, v = h32(x, y, 41) & 1, quads = [];
+        const th = tiles.cliff3d(kind, 'face', v).h;
         quads.push({ part: 'top', v, pts: [[x0, y1, Hc], [x1, y1, Hc], [x1, y0, Hc], [x0, y0, Hc]], uv: [[0, 16], [16, 16], [16, 0], [0, 0]], n: [0, 0, 1], shade: 256 });
-        if (tm.inBounds(x, y + 1) && !isC(x, y + 1)) quads.push({ part: 'face', v, pts: [[x0, y1, 0], [x1, y1, 0], [x1, y1, Hc], [x0, y1, Hc]], uv: [[0, Hc], [16, Hc], [16, 0], [0, 0]], n: [0, 1, 0], shade: 236 });
-        if (tm.inBounds(x, y - 1) && !isC(x, y - 1)) quads.push({ part: 'face', v, pts: [[x1, y0, 0], [x0, y0, 0], [x0, y0, Hc], [x1, y0, Hc]], uv: [[0, Hc], [16, Hc], [16, 0], [0, 0]], n: [0, -1, 0], shade: 200 });
-        if (tm.inBounds(x - 1, y) && !isC(x - 1, y)) quads.push({ part: 'face', v, pts: [[x0, y0, 0], [x0, y1, 0], [x0, y1, Hc], [x0, y0, Hc]], uv: [[0, Hc], [16, Hc], [16, 0], [0, 0]], n: [-1, 0, 0], shade: 256 });
-        if (tm.inBounds(x + 1, y) && !isC(x + 1, y)) quads.push({ part: 'face', v, pts: [[x1, y1, 0], [x1, y0, 0], [x1, y0, Hc], [x1, y1, Hc]], uv: [[0, Hc], [16, Hc], [16, 0], [0, 0]], n: [1, 0, 0], shade: 196 });
+        const face = (nx, ny, pts, n, shade) => {
+          if (!tm.inBounds(nx, ny)) return;
+          const lo = hAt(nx, ny);
+          if (lo >= Hc) return;
+          const [[ax, ay], [bx, by]] = pts;
+          quads.push({ part: 'face', v, pts: [[ax, ay, lo], [bx, by, lo], [bx, by, Hc], [ax, ay, Hc]], uv: [[0, th - lo], [16, th - lo], [16, th - Hc], [0, th - Hc]], n, shade });
+        };
+        face(x, y + 1, [[x0, y1], [x1, y1]], [0, 1, 0], 236);
+        face(x, y - 1, [[x1, y0], [x0, y0]], [0, -1, 0], 200);
+        face(x - 1, y, [[x0, y0], [x0, y1]], [-1, 0, 0], 256);
+        face(x + 1, y, [[x1, y1], [x1, y0]], [1, 0, 0], 196);
         sc.cliffs.push({ x: x0 + 8, y: y0 + 8, kind, quads });
       }
     }
