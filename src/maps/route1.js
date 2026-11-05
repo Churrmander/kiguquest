@@ -46,9 +46,9 @@
     'TTT.....,,,.pp,,,,,,,..TTT',
     'TTT.....,,,.pp.........TTT',
     'TTT.....fff.pp.........TTT',
-    'TTTTTTTTTTT.pp.TT.TTggTTTT',
-    'TTTTTTTTTTT.pp.TT...ggTTTT',
-    'TTTTTTTTTTT.pp.TTTTTTTTTTT',
+    'TTTT..f.....pp.TT.TTggTTTT',   // a little clearing south-west of the lane so Mimi isn't hidden behind the trees (owner 2026-11-04)
+    'TTTTT.......pp.TT...ggTTTT',
+    'TTTTTT......pp.TTTTTTTTTTT',
   ];
 
   const M = L.map({
