@@ -164,7 +164,7 @@ const KIGU_KEEP = {
   ],
 };
 // colours that are drawn without an outline (floating sparks): the edge redraw would turn them into black flecks
-const KIGU_GLOW = { scurrent: ['edbd16', 'c18919'] };
+const KIGU_GLOW = { scurrent: ['edbd16', 'c18919'], arcorn: ['ffe25c', 'e2b21e'] };
 const native = {};
 for (const f of fs.readdirSync(SRC).sort()) {
   const m = /^([a-z]+)-(base|pose|back)\.png$/.exec(f);

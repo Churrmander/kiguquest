@@ -1365,10 +1365,10 @@
     },
     back: {
       parts: [
-        { name: 'sparkR', polys: [box(45, 31, 55, 38)], z: 5, parent: 'head' },
-        { name: 'tail', polys: [[[0, 31], [20, 31], [20, 52], [16, 60], [0, 60]]], z: 0.5, pivot: [19, 52], comp: 'main', extend: [box(15, 40, 24, 62)] },
-        { name: 'head', polys: [[[14, 0], [56, 0], [56, 32], [26, 32], [24, 29], [14, 29]]], z: 3, pivot: [36, 34], parent: 'upper', comp: 'main', fill: [['upper', [box(16, 26, 56, 35)]]] },
-        ...breathe(60, 56, 71),
+        { name: 'sparkR', polys: [box(45, 37, 55, 44)], z: 5, parent: 'head' },
+        { name: 'tail', polys: [[[0, 37], [20, 37], [20, 58], [16, 66], [0, 66]]], z: 0.5, pivot: [19, 58], comp: 'main', extend: [box(15, 46, 24, 68)] },
+        { name: 'head', polys: [[[14, 0], [56, 0], [56, 38], [26, 38], [24, 35], [14, 35]]], z: 3, pivot: [36, 40], parent: 'upper', comp: 'main', fill: [['upper', [box(16, 32, 56, 41)]]] },
+        ...breathe(66, 56, 77),
       ],
       anim: { upper: BOB, head: { ang: ['tab', 'SWAY', 1.5, 2] }, tail: { ang: ['tab', 'SWAY', -2, 0] } },
     },
