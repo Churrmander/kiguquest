@@ -8,7 +8,7 @@
   const W = 28, H = 24;
 
   const M = L.map({
-    id: 'hemline', name: 'Hemline', music: 'town_thimble', battleBg: 'grass', border: 'treeline', w: W, h: H,
+    id: 'hemline', name: 'Hemline', music: 'town_thimble', battleBg: 'grass', border: 'treeline', w: W, h: H, town: true,
     view: 'street',   // 3D camera preset (street | town | flat-ish), see src/engine/persp.js
     legend: { '.': 'grass', T: 'treeline', c: 'cobble', f: 'flowers', F: 'fence', p: 'path' },
     // Mimi runs ahead to Hemline once the shrine incident is over

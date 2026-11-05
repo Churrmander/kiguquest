@@ -76,9 +76,22 @@
 
   // ============================================================================================ bush (1x1)
   K.stamp('bush', {
-    w: 1, h: 1,
-    paint: () => {
+    // `hedge_tree`: a clipped sapling (a dense leaf ball on a short trunk) that reads as something a Kigu could Snip. Same id, so
+    // c.snip / syncSnips treat it exactly like the plain bush.
+    w: 1, h: 1, variants: ['default', 'hedge_tree'],
+    paint: (v) => {
       const b = K.B(16, 16);
+      if (v === 'hedge_tree') {
+        K.cyl(b, 7, 9, 3, 5, K.TN.bark);
+        b.set(6, 13, P.b2); b.set(10, 13, P.b3);                                     // root flare
+        K.lobe(b, 8, 6, 6, 5, LEAF);
+        K.lobe(b, 6, 4, 3, 2, K.TN.leafLight, { hi: true });
+        for (const [x, y] of [[4, 8], [12, 7], [9, 10], [11, 4]]) b.set(x, y, P.f5);   // clipped facets
+        b.hline(4, 11, 9, P.f5);                                                      // the flat clipped underside
+        K.outer(b, S.omap([[LEAF, P.f6], [K.TN.leafLight, P.f6], [K.TN.bark, P.b4]], 'f6'));
+        K.shadow(b, 8, 14, 5, 2);
+        return b;
+      }
       for (const [cx, cy, rx, ry] of [[5, 9, 4, 4], [11, 9, 4, 4], [8, 7, 5, 5]]) K.lobe(b, cx, cy, rx, ry, LEAF);
       for (const [x, y] of [[5, 8], [10, 6], [8, 10], [12, 10]]) { b.set(x, y, P.pk2); b.set(x, y + 1, P.pk3); }
       K.outer(b, LEAF_OUT);

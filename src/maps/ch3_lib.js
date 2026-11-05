@@ -33,11 +33,5 @@
     L.syncStamps(c);   // a door stamp whose look follows the gate flag swings open
   };
 
-  /** stairs: one terrain cell ('stairs_up'|'stairs_down' via legend chars u/d) plus the warp. */
-  L.stairs = (M, x, y, dir, to, spawn) => {
-    M.legend('u', 'stairs_up').legend('d', 'stairs_down');
-    M.set(x, y, dir === 'up' ? 'u' : 'd');
-    M.warp({ x, y, to, spawn, sound: 'door' });
-    return M;
-  };
+  // L.stairs moved to lib.js (Chapter 1 maps need it at build time)
 })(typeof globalThis !== 'undefined' ? globalThis : window);

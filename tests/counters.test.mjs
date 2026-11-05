@@ -6,7 +6,7 @@ import { boot } from './harness.mjs';
 
 const t = boot(777);
 const { NP } = t;
-const COUNTERS = /^(counter_[lmrc]|tea_healer|display_case|honey_stall)$/;
+const COUNTERS = /^(counter_[lmrc]|tea_healer|display_case|honey_stall|tea_stall|market_cart)$/;
 const DIRS = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
 const OPP = { up: 'down', down: 'up', left: 'right', right: 'left' };
 

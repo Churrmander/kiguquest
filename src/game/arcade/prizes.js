@@ -59,7 +59,7 @@
   AR.catalogue = function () {
     const items = [
       ['plum_treat', 150], ['wish_candy', 250], ['snack_bag', 300], ['quick_claw', 450],
-      ['expert_belt', 700], ['sturdy_sash', 700], ['coin_charm', 900],
+      ['expert_belt', 700], ['sturdy_sash', 700], ['lucky_thimble', 800], ['coin_charm', 900],
     ].filter(([id]) => NP.data.items[id]).map(([id, price]) => ({ kind: 'item', id, price, name: NP.data.items[id].name, desc: NP.data.items[id].desc }));
     const pins = Object.keys(NP.data.types).filter((t) => NP.data.items['pin_' + t])
       .map((t) => ({ kind: 'item', id: 'pin_' + t, price: 400, name: NP.data.items['pin_' + t].name, desc: NP.data.items['pin_' + t].desc }));

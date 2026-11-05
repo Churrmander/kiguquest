@@ -27,11 +27,18 @@
   }
 
   // ============================================================================================ walls decor
+  // faded: the present-day tree house (a few years on): sun-bleached curtains, a dusty pane, a dry leaf on the sill
+  const BLEACHED = ['#fff4f4', '#f4dce0', '#e4c0c8', '#c8a0ac', '#a07c8c', '#6c5060'].map(K.col);
   K.stamp('window', {
-    w: 1, h: 1,
-    paint: () => {
+    w: 1, h: 1, variants: ['default', 'faded'],
+    paint: (v) => {
       const b = K.B(16, 16);
-      S.window(b, 4, 3, 8, 7, { curtain: K.ramp('pink') });
+      S.window(b, 4, 3, 8, 7, { curtain: v === 'faded' ? BLEACHED : K.ramp('pink') });
+      if (v === 'faded') {
+        for (const [x, y] of [[9, 7], [10, 8], [5, 8], [6, 7]]) b.set(x, y, P.gl2);                // a dusty film on the lower panes
+        b.set(10, 4, BLEACHED[3]); b.set(5, 6, BLEACHED[2]); b.set(6, 6, BLEACHED[2]);            // a curtain slipped from its tie
+        b.set(10, 11, P.l3); b.set(10, 12, P.l4);                                                 // a dry leaf blown onto the sill
+      }
       K.outer(b, S.omap([], 'o6'));
       return b;
     },
@@ -53,9 +60,10 @@
     },
   });
 
+  // faded: the present-day tree house: the same poster bleached by years of sun, one pin lost so its corner curls forward
   K.stamp('poster', {
-    w: 1, h: 1,
-    paint: () => {
+    w: 1, h: 1, variants: ['default', 'faded'],
+    paint: (v) => {
       const b = K.B(16, 16);
       b.fillRect(3, 2, 10, 12, P.p1);
       b.fillRect(3, 2, 10, 1, P.p0); b.fillRect(3, 13, 10, 1, P.p3);
@@ -65,6 +73,12 @@
       b.fillRect(5, 5, 2, 3, P.yl2); b.fillRect(10, 5, 2, 3, P.yl2); b.set(5, 5, 0); b.set(11, 5, 0);   // animal-hood ears
       b.set(7, 9, P.ink2); b.set(9, 9, P.ink2); b.set(6, 10, P.pk2); b.set(10, 10, P.pk2);
       b.set(3, 2, P.red2); b.set(12, 2, P.red2);
+      if (v === 'faded') {
+        K.recolor(b, (c) => NP.Color.mix(c, P.p1, 0.45));
+        b.set(12, 2, 0); b.set(11, 2, 0); b.set(12, 3, 0);                                        // the lost pin: the corner folds down
+        b.set(10, 2, P.p3); b.set(11, 3, P.p2); b.set(12, 4, P.p3); b.set(11, 4, P.p3); b.set(10, 3, P.p0);
+        b.set(3, 2, P.red3);
+      }
       K.outer(b, S.omap([], 'o6'));
       return b;
     },
@@ -180,17 +194,58 @@
     b.set(x + 4, y + 1, P.p2); b.set(x + 4, y + 2, P.p2);
   };
 
+  // kite_kit: the present-day tree house's table, a few years on. The check cloth has faded to blush and been darned; on it the
+  // old kite-making kit (a half-built paper diamond kite on its cross sticks, a spool of string, a paint pot) and the round
+  // snack-cake tin the kids kept stocked, its lid leaning against it.
   K.stamp('table_s', {
-    w: 2, h: 1, solid: ['##'],
-    paint: () => {
+    w: 2, h: 1, solid: ['##'], variants: ['default', 'kite_kit'],
+    paint: (v) => {
       const b = K.B(32, 16);
       for (const x of [2, 28]) b.fillRect(x, 12, 2, 3, P.o4);
       b.fillRect(1, 3, 30, 8, P.o2);                      // table top
       b.fillRect(1, 3, 30, 1, P.o0); b.fillRect(1, 3, 1, 8, P.o1);
       b.fillRect(1, 11, 30, 2, P.o3); b.fillRect(1, 12, 30, 1, P.o4);
-      cloth(b, 6, 3, 20, 8, 11, P.p1, P.red0, P.red1);
-      teacup(b, 14, 4);
-      K.outer(b, WOOD_OUT);
+      if (v !== 'kite_kit') {
+        cloth(b, 6, 3, 20, 8, 11, P.p1, P.red0, P.red1);
+        teacup(b, 14, 4);
+        K.outer(b, WOOD_OUT);
+        K.shadow(b, 16, 15, 14, 1);
+        return b;
+      }
+      const C = NP.Color;
+      cloth(b, 15, 3, 15, 8, 11, P.p1, C.mix(P.red0, P.p1, 0.5), C.mix(P.red1, P.p1, 0.45));
+      for (const x of [19, 21, 23]) b.set(x, 12, P.bl1);                                          // a darn in the hem, in blue thread
+      // the kite: a 9x7 paper diamond lying flat on the bare wood, four faded panels (pink top-left and bottom-right, yellow the
+      // others) split by its o4 cross sticks running tip to tip, outlined in o4 on its own layer
+      // (each panel edged in its own darker tone rather than a wood-brown outline, so it reads as paper, not a window)
+      const kite = K.B(32, 16);
+      const pk = C.mix(P.pk1, P.p1, 0.15), pkE = C.mix(P.pk3, P.p1, 0.2), yl = C.mix(P.yl2, P.p1, 0.3), ylE = C.mix(P.yl3, P.p1, 0.2);
+      K.stick(kite, 2, 3, [
+        '....s....',
+        '...Psy...',
+        '..PpsyY..',
+        '.PsssssY.',
+        '..YysqP..',
+        '..YyspP..',
+        '...ysP...',
+        '....s....',
+      ], { s: C.mix(P.o3, P.p1, 0.35), p: P.pk1, P: P.pk3, y: P.yl1, Y: P.yl3, q: P.pk1 });   // pale spars on the paper, the spar in the upper third
+      b.blit(kite, 0, 0);
+      // its tail: a 1-px pale string wiggling off the foot with two bows
+      for (const [x, y] of [[7, 10], [8, 9], [9, 9], [10, 10], [11, 10], [12, 9], [13, 9]]) b.set(x, y, P.p3);
+      b.fillRect(8, 10, 2, 2, P.pk1); b.fillRect(12, 10, 2, 2, P.bl1);
+      // the string spool: o3 flanges top and bottom round a pale string core
+      b.hline(12, 3, 5, P.o3); b.hline(12, 7, 5, P.o4); b.fillRect(13, 4, 3, 3, C.mix(P.p2, P.o2, 0.35)); b.vline(15, 4, 3, P.p3); b.set(14, 5, P.o4);
+      // the snack-cake tin in 3/4 view, its teal paled with years: an elliptical rim round the dark open mouth, a cream band, the
+      // lid laid flat in front of it; a few crumbs
+      const tl = K.ramp('teal').map((c) => C.mix(c, P.p1, 0.25));
+      b.fillRect(19, 5, 7, 5, tl[2]); b.vline(19, 5, 5, tl[1]); b.vline(25, 5, 5, tl[3]); b.hline(20, 9, 5, tl[4]);
+      b.set(19, 9, 0); b.set(25, 9, 0);
+      b.hline(20, 3, 5, tl[1]); b.set(19, 4, tl[1]); b.set(25, 4, tl[1]); b.hline(20, 4, 5, tl[4]); b.hline(21, 5, 3, tl[1]);   // rim arc + mouth
+      b.hline(19, 7, 7, P.p1); b.hline(20, 7, 2, P.p0); b.set(23, 7, P.pk1);
+      b.hline(26, 9, 2, tl[1]); b.hline(25, 10, 4, tl[2]); b.hline(26, 11, 2, tl[3]); b.set(27, 10, P.p1);   // the lid, flat, inside the top
+      b.set(17, 9, P.o1); b.set(18, 10, P.o0);
+      K.outer(b, S.omap([[WOOD, P.o6], [S.tones(tl), tl[5]]], 'o6'));
       K.shadow(b, 16, 15, 14, 1);
       return b;
     },
@@ -516,8 +571,9 @@
   });
 
   K.stamp('fridge', {
-    w: 1, h: 2,
-    paint: () => {
+    // `drawings`: the family fridge, crayon drawings and magnets all over the doors (the player's kitchen)
+    w: 1, h: 2, variants: ['default', 'drawings'],
+    paint: (v) => {
       const b = K.B(16, 32);
       const m = K.ramp('mint');
       b.fillRect(2, 1, 12, 29, m[2]);
@@ -528,6 +584,18 @@
       b.blit(K.spr(['.x.x.', 'xxxxx', '.xxx.', '..x..'], { x: P.red2 }), 5, 4);
       b.fillRect(5, 17, 4, 4, P.p0); b.fillRect(6, 18, 2, 2, P.bl1);
       b.set(5, 10, P.yl2); b.set(8, 9, P.pk2);
+      if (v === 'drawings') {
+        // a crayon sun and a stick-figure family on paper, a kite drawing below, round magnets holding them
+        b.fillRect(3, 2, 7, 8, P.p0); b.hline(3, 9, 7, P.p2);
+        b.circle(5, 4, 1, P.yl2, true); b.set(7, 3, P.yl3); b.set(8, 5, P.yl3);
+        b.vline(5, 6, 3, P.bl2); b.vline(8, 6, 3, P.red2); b.set(4, 7, P.bl2); b.set(9, 7, P.red2);
+        b.set(6, 2, P.red2);                                                            // magnet
+        b.fillRect(3, 15, 7, 9, P.yl0); b.hline(3, 23, 7, P.p2);
+        b.set(6, 16, P.red2); b.set(5, 17, P.red2); b.set(7, 17, P.yl2); b.set(6, 18, P.yl2);   // diamond kite
+        b.set(6, 19, P.n3); b.set(7, 20, P.n3); b.set(6, 21, P.pk2); b.set(7, 22, P.bl2);       // wonky tail
+        b.set(9, 15, P.bl2);                                                            // magnet
+        b.fillRect(4, 26, 3, 2, P.pk1); b.set(4, 26, P.pk0);                            // a heart magnet
+      }
       b.fillRect(3, 30, 2, 1, P.n5); b.fillRect(11, 30, 2, 1, P.n5);
       K.outer(b, S.omap([[S.tones(m), m[5]]], 'ink'));
       K.shadow(b, 8, 31, 7, 1);

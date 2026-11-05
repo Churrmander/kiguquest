@@ -87,7 +87,7 @@
   }
 
   const M = L.map({
-    id: 'shibuyarn', name: 'Shibuyarn', music: 'city_shibuyarn', battleBg: 'city', border: 'treeline', w: W, h: H, view: 'town',
+    id: 'shibuyarn', name: 'Shibuyarn', music: 'city_shibuyarn', battleBg: 'city', border: 'treeline', w: W, h: H, view: 'town', town: true,
     legend: { p: 'pavement', a: 'asphalt', z: 'zebra', T: 'treeline', A: 'alley', F: 'fence', r: 'rail_v', B: 'barrier', g: 'grass', f: 'flowers', ',': 'tallgrass' },
     fill: 'p',
     onEnter: function* (c) {

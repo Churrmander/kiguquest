@@ -4,7 +4,90 @@
   const K = root.NP.art.kigu;
   const D = K.define;
 
-  const CAT = { main: '#eceef4', sub: '#ffffff', hair: '#9aa0b4', mitt: '#c7cbd8', foot: '#c7cbd8', eye: '#4aa0d8', inner: '#ffb7c5', acc: '#ffc940', gold: '#f4c542', patch: '#9aa0b4' };
+  // Kittabra's 32 px overworld views, drawn by hand from her battle sprite (rows 4-30, feet outline on row 30): a pale lilac-white
+  // hood lit from the top left with two tall pointed cat ears (pink inside from the front), light grey hair framing the face (her
+  // battle sprite's hair), sleepy half-closed blue eyes (a 2 px lid line over a 1 px pupil) with blush, a gold bell on the collar
+  // and a soft shadow under her chin. From the front she raises one paw beside her cheek, the mitt over the hood's edge so she stays
+  // about 24 px wide like the other Kigu; the white belly patch is shaded along its lower-right edge; her right arm and leg sit in a
+  // cool grey-violet shade, and her grey tail rises behind her right arm in a small S and curls in at the top with a darker hooked
+  // tip. From behind (about 21 px wide): the hood is a dome, its crown bulging up between the ears, with darker ear tips and a pink
+  // edge on the ears' outer sides, a seam down the middle, a mid tone and two shade tones falling to a dark rim down the right side,
+  // and a dark band where the hood's edge meets the onesie; a fringe of grey hair shows at the nape under it, and the tail rises
+  // beside her right mitt and curls in towards the hood.
+  const KITTABRA_OW = {
+    down: [
+      '.........OO..........OO.........',
+      '.........OLO........OSO.........',
+      '.........OLPO......OPSO.........',
+      '........OLLPPOOOOOOPPHSO........',
+      '........OLLLHHHHHHHHHHSO........',
+      '.......OLLHHHHHHHHHHHHHSO.......',
+      '.......OLHGGGGGGGGGGGGHSO.......',
+      '.......OLGGgGGGgGGGgGGGSO.......',
+      '.......OLGGKgKKKKgKKKGGSO.......',
+      '.......OLGGKOOKKKKOOKGGSOOOO....',
+      '.......OLGGKKeKKKKeKKGGSORTTO...',
+      '......OOOGgKBBKkkKBBKgGSOROTO...',
+      '.....OMMMOgkKKKKKKKKkgGSOOTRO...',
+      '.....OMMROHRRRRYYRRRRHSO.OTRO...',
+      '......ORROLSSSSSSSSSSSROOTRO....',
+      '.....OLHLLOHHHWWWWHHSOSROTRO....',
+      '.....OLHHLOHHWWWWWWHSOSROTRO....',
+      '......OSSSOHHWWWWWWHSOSROTO.....',
+      '.......OOOOHHWWWWWwHSOSROO......',
+      '..........OHHWWWWWwHSOMSRO......',
+      '..........OHHHWWWwHHSOSRRO......',
+      '..........OHHHHHHHHHSORRO.......',
+      '..........OSHHHHHHHHSOOO........',
+      '..........OMMMROSSSRO...........',
+      '..........OMMMROSSSRO...........',
+      '.........OMMMMROSSSRRO..........',
+      '.........OOOOOOOOOOOOO..........',
+    ],
+    up: [
+      '.........OO..........OO.........',
+      '.........OSO........ORO.........',
+      '.........OPLO.OOOO.OSPO.........',
+      '.........OLRROLHSHORRSO.........',
+      '........OLLLHHHHSHHHMSRO........',
+      '.......OLLLHHHHHSHHHMMSRO.......',
+      '.......OLLHHHHHHSHHMMSSRO.......',
+      '.......OLHHHHHHHSHHMMSSRO.......',
+      '.......OLHHHHHHHSHHMMSSROOO.....',
+      '.......OLHHHHHHHSHMMSSSRORTO....',
+      '.......OHHHHHHHMSHMMSSRROOTO....',
+      '.......OMHHHHHMMSMMSSSRROTRO....',
+      '........OMMMMMMSSSSSSRROOTRO....',
+      '........ORRRRRRRRRRRRRROOTRO....',
+      '........OLLHgGGGGGGgHSROOTRO....',
+      '.......OLLOHHgHGHgHSROSROTRO....',
+      '.......OLLOHHHHHHHHSROSROTRO....',
+      '.......OLLOHHHHHHHSSROSROTRO....',
+      '.......OLLOHHHHHHHSSROSROTRO....',
+      '.......OMMMOHHRTTRSSOMMSOTRO....',
+      '.......OMROHHHOTTTROOSRROTRO....',
+      '........OROHHHHOTTTTTORROTRO....',
+      '.........OOSHHHOOOOOOOOOOOO.....',
+      '..........OMMMROSSSRO...........',
+      '..........OMMMROSSSRO...........',
+      '.........OMMMMROSSSRRO..........',
+      '.........OOOOOOOOOOOOO..........',
+    ],
+  };
+  // letter -> colour; costume colours rotate for the alt colourway the same way makePalette does (hue +150, hair +75)
+  const KITTABRA_COL = { O: '#232238', L: '#ffffff', H: '#dcd8ee', S: '#a8a2ca', R: '#827ca6', w: '#e6e3f2', P: '#f4a8bc', G: '#9aa0b4', g: '#767a94',
+    K: '#ffe2cc', k: '#f0bca2', B: '#f79ab2', e: '#4a90d8', Y: '#f4c542', W: '#ffffff', M: '#c8c4de', T: '#a4a2be' };
+  const KITTABRA_KEEP = 'OPKkBeY';
+  const kittabraOw = (view) => (b, col, alt) => {
+    const rows = KITTABRA_OW[view], W = b.w, Cl = root.NP.Color, map = {};
+    for (const k in KITTABRA_COL) {
+      const deg = !alt || KITTABRA_KEEP.includes(k) ? 0 : 'Gg'.includes(k) ? 75 : 150;
+      map[k] = col(deg ? Cl.hex(Cl.adjust(KITTABRA_COL[k], { h: deg })) : KITTABRA_COL[k]);
+    }
+    b.u32.fill(0);
+    rows.forEach((r, i) => { for (let x = 0; x < r.length && x < W; x++) if (map[r[x]]) b.u32[(4 + i) * W + x] = map[r[x]]; });
+  };
+  const CAT = { main: ['#aca6cc', '#eceef4', '#ffffff', '#8a84ac'], sub: '#ffffff', hair: '#9aa0b4', mitt: '#c7cbd8', foot: '#c7cbd8', eye: '#4aa0d8', inner: '#ffb7c5', acc: '#ffc940', gold: '#f4c542', patch: '#9aa0b4' };
   D('kittabra', {
     name: 'Kittabra', stage: 1, size: 64, rise: 9, pal: CAT,
     hood: { type: 'up', ears: { kind: 'tri', h: 7, w: 4.5, lean: 2 } },
@@ -15,6 +98,8 @@
       ['belly', { mat: 'sub' }],
       ['bell', { at: 'head', dy: 7, dx: 6, r: 2 }],
     ],
+    // the 32 px overworld views are drawn by hand (KITTABRA_OW above)
+    owFront: kittabraOw('down'), owBack: kittabraOw('up'),
   });
   D('wiskedabra', {
     name: 'Wiskedabra', stage: 2, size: 80, rise: 11, pal: Object.assign({}, CAT, { main: '#33334a', sub: '#ffffff', hair: '#55556e', mitt: '#ffffff', foot: '#ffffff', acc: '#d8405a', eye: '#f0c030' }),
@@ -41,6 +126,96 @@
       ['shapes', { stage: 'headgear', at: 'face', m: true, g: 'cheeks', list: [['e', 9, 6, 3.5, 4, 'sub'], ['d', 9, 6, 'seed', -1]] }],
     ],
   });
+  // Nibblenna's 32 px side view (facing left; the engine mirrors it for right), drawn by hand to match her rendered front and back
+  // views: the same chef hat (rows 1-10, white with a cream band), the tan hood with a round ear (pink inner) poking out behind the
+  // hat, her dark auburn twin tail hanging behind her cheek as a rounded puff with lit strands (the same dark mass the front view
+  // has beside her face), the back of the hood and body in the darker tan, the face in profile (fringe, one dark eye, blush, a
+  // little nose), the white apron bib and skirt down her front with its red pocket, the near arm bent forward with a cream mitt
+  // holding a wicker basket of two buns by its handle, a round puff tail at the back and cream feet. Light from the top left: the
+  // front of her is lit and the back shades to orange. Frame 0 stands; frames 1 and 2 drop the body a pixel and stride (1: the
+  // near foot forward and the far foot lifted behind; 2: the other way round), like the people. Feet outline on row 30.
+  const NIBBLENNA_SIDE = {
+    head: [
+      '................................',
+      '.............OOOOO..............',
+      '...........OOWWWWWOO............',
+      '..........OWWWWWWWWwO...........',
+      '.........OWWWWWWWWWwwO..........',
+      '.........OWWWWWWWWWWwO..........',
+      '.........OWWWwWWWWwwwO..........',
+      '.........OwWWWwwWWwwwO..........',
+      '..........OwwwwwwwwwwOOO........',
+      '..........OWWWWWWWWWODPEO.......',
+      '.........OOwwwwwwwwwODPEO.......',
+      '........OHHHDDDDDDDJJJEOO.......',
+      '.......OHHHHHDDOHIOJJJEO........',
+      '.......OHIHHIKOHHIIOJJEO........',
+      '......OLKKIKKKOHIIIIOJEO........',
+      '......OLKNKKKKOHHIIIOJEO........',
+      '.....OLKKNKKKKOHIIHIOJEO........',
+      '......OKKKPPKKOHIIIIOEEO........',
+      '.......ONKKKKKOIHIIIOEEO........',
+      '........OOKKKOOHIIIOJEO.........',
+    ],
+    // rows 20-31 of each frame (on the step frames the head above also drops a pixel)
+    body: [[
+      '......IIII..OWWOIIOJEO..........',
+      '.....IO..OI.OWWOOOJOEEO.........',
+      '....ORJOOROOOWWODJJOEEO.........',
+      '...ORJJHROQQQOODDJOJEEOOO.......',
+      '...ORRRRROQSSDDDJOJJEEODDO......',
+      '...OJHJHJHOOOOOOOJJJEEDQDEO.....',
+      '....OIHIHIHOTWWwwJJJEEDDEEO.....',
+      '.....OOOOOOOwwwwwJEEEEOEEO......',
+      '...........OOODDOOEEOO.OO.......',
+      '..........OQQQSSOSSSSO..........',
+      '...........OOOOO.OOOO...........',
+      '................................',
+    ], [
+      '.............OOOOOOOO...........',
+      '......IIII..OWWOIIOJEO..........',
+      '.....IO..OI.OWWOOOJOEEO.........',
+      '....ORJOOROOOWWODJJOEEO.........',
+      '...ORJJHROQQQOODDJOJEEOOO.......',
+      '...ORRRRROQSSDDDJOJJEEODDO......',
+      '...OJHJHJHOOOOOOOJJJEEDQDEO.....',
+      '....OIHIHIHOTWWwwJJJEEDDEEO.....',
+      '.....OOOOOOOwDwwwJESSSSEEO......',
+      '........OQQQSSOOOOOOOOOOO.......',
+      '.........OOOOO..................',
+      '................................',
+    ], [
+      '.............OOOOOOOO...........',
+      '......IIII..OWWOIIOJEO..........',
+      '.....IO..OI.OWWOOOJOEEO.........',
+      '....ORJOOROOOWWODJJOEEO.........',
+      '...ORJJHROQQQOODDJOJEEOOO.......',
+      '...ORRRRROQSSDDDJOJJEEODDO......',
+      '...OJHJHJHOOOOOOOJJJEEDQDEO.....',
+      '....OIHIHIHOTWWwwJJJEEDDEEO.....',
+      '.....OOOOOOOwwEwwQQQSSOEEO......',
+      '.........OSSSSOOOOOOOO.OO.......',
+      '..........OOOO..................',
+      '................................',
+    ]],
+  };
+  // the colours of her rendered 32 px front view; the alt colourway rotates the costume (hue +150) and hair (+75) like Kittabra's
+  const NIBBLENNA_COL = { O: '#311010', W: '#fffff7', w: '#ffdebd', D: '#efc68c', J: '#de9c52', E: '#e78c4a', R: '#debd7b', H: '#c66329',
+    I: '#943118', K: '#ffb594', L: '#ffe7ce', P: '#ff9cad', N: '#391810', Q: '#fff7de', S: '#ffdead', T: '#e7525a' };
+  const NIBBLENNA_KEEP = 'OKLPNT';
+  const nibblennaSide = (b, col, alt, frame) => {
+    const Cl = root.NP.Color, map = {}, W = b.w;
+    for (const k in NIBBLENNA_COL) {
+      const deg = !alt || NIBBLENNA_KEEP.includes(k) ? 0 : 'HI'.includes(k) ? 75 : 150;
+      map[k] = col(deg ? Cl.hex(Cl.adjust(NIBBLENNA_COL[k], { h: deg })) : NIBBLENNA_COL[k]);
+    }
+    const S = NIBBLENNA_SIDE, body = S.body[frame] || S.body[0], dy = frame ? 1 : 0;
+    b.u32.fill(0);
+    const paint = (r, y) => { for (let x = 0; x < r.length && x < W; x++) if (map[r[x]]) b.u32[y * W + x] = map[r[x]]; };
+    S.head.forEach((r, i) => paint(r, i + dy));
+    // the body block is painted after the head: on a step frame its row 20 holds only the torso's top outline, under the chin
+    body.forEach((r, i) => { for (let x = 0; x < r.length && x < W; x++) if (r[x] !== '.' && !(r[x] === 'O' && b.u32[(20 + i) * W + x] >>> 24)) b.u32[(20 + i) * W + x] = map[r[x]]; });
+  };
   D('nibblenna', {
     name: 'Nibblenna', stage: 2, size: 75, rise: 14, pal: HAM,
     hood: { type: 'up', ears: { kind: 'round', h: 2, w: 3.2, lean: 1, dy: 1, over: true } },
@@ -51,7 +226,8 @@
       ['belly', { kind: 'apron', mat: 'apron', pocket: 'red' }],
       ['hat', { kind: 'chef', mat: 'apron' }],
       ['shapes', { stage: 'front', at: 'handR', g: 'basket', list: [['e', 0, 0, 6, 3.5, 'bun'], ['e', -2, -3, 2.6, 2.3, 'bun', 1], ['e', 2, -3, 2.6, 2.3, 'bun', 1], ['e', 0, -4, 2.4, 2, 'sub']] }],
-    ],
+    ],    // the 32 px side views (left, mirrored for right) are drawn by hand (NIBBLENNA_SIDE above)
+    owSide: nibblennaSide,
   });
 
   const SPR = { main: '#e6b84a', sub: '#fff0c0', hair: '#c88a3a', mitt: '#c88a3a', foot: '#e89a3a', eye: '#3a2a20', inner: '#ffb7c5', acc: '#8a5a3a', acc2: '#4ea0e0', note: '#3a4a80', page: '#fff8e8' };
@@ -80,6 +256,16 @@
       ['shapes', { stage: 'front', at: 'handL', g: 'songbook', list: [['r', -3, -4, 7, 6, 'note'], ['r', -2, -3, 5, 4, 'page'], ['d', 0, -2, 'note']] }],
     ],
   });
+  // at 32 px (overworld) she was wide and busy: smaller plain wings, no songbook, a single crest tuft
+  K.looks.lyripip.ow = {
+    parts: [
+      ['wings', { kind: 'feather', mat: 'hair', mat2: 'hair', sz: 0.45, over: false }],
+      ['skirt', { mat: 'main', len: 3, flare: 3, scallop: 6, up: 8, trim: 'sub' }],
+      ['belly', { mat: 'sub' }],
+      ['hat', { kind: 'tuft', n: 2, mat: 'hair', lean: 1.2 }],
+      ['hat', { kind: 'headband', mat: 'acc2' }],
+    ],
+  };
   D('larkestra', {
     name: 'Larkestra', stage: 3, size: 85, rise: 11, pal: Object.assign({}, SPR, { main: '#c88a4a', hair: '#7a4a2a', sub: '#fff0c8', acc2: '#5ab0f0', gold: '#f4c542' }),
     hood: { type: 'none' },

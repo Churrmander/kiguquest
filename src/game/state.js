@@ -7,6 +7,19 @@
   NP.fmtVars = NP.fmtVars || {};
   NP.fmtVars.player = () => (NP.state && NP.state.name) || 'Hero';
   NP.fmtVars.rival = () => (NP.state && NP.state.rival) || 'Draco';
+  /** {kigu}: the lead Kigu's name (the first one who can still battle, else the first in the party). */
+  NP.leadKigu = () => {
+    const party = (NP.state && NP.state.party) || [];
+    return party.find((q) => q.hp > 0) || party[0] || null;
+  };
+  NP.fmtVars.kigu = () => { const k = NP.leadKigu(); return k && NP.Kigu ? NP.Kigu.displayName(k) : 'your Kigu'; };
+  /** {starter}: the party Kigu from the starter's family (the one Professor Bobbin gave you, evolved or not), else the lead Kigu. */
+  NP.fmtVars.starter = () => {
+    const st = NP.state, party = (st && st.party) || [], sp = st && st.starter;
+    const fam = (id) => { const d = NP.data && NP.data.species[id]; return d ? d.family : id; };
+    const k = sp ? party.find((q) => q.species === sp || fam(q.species) === fam(sp)) : null;
+    return k && NP.Kigu ? NP.Kigu.displayName(k) : NP.fmtVars.kigu();
+  };
 
   // Lore: the two protagonists are Dahlia (girl) and Draco (boy), childhood friends. You play one (and may rename them); the other is your
   // friendly rival. Defaults: girl = Dahlia, boy = Draco. If you give yourself the rival's default name, the rival gets a near-twin instead.
@@ -24,7 +37,7 @@
       return {
         v: 1, name: name || defaultName(gender), gender: gender || 'm', rival: rivalNameFor(name || defaultName(gender), gender || 'm'),
         party: [], box: [], bag: {}, money: 1000, flags: {}, badges: [], steps: 0, frames: 0, repel: 0,
-        pos: { map: 'player_house', x: 6, y: 3, dir: 'down' },
+        pos: { map: 'player_room', x: 5, y: 10, dir: 'down' },   // asleep in bed upstairs (src/maps/home.js)
         healPoint: { map: 'player_house', spawn: 'door' },
         visited: {},
         dex: { seen: {}, caught: {} }, starter: null, rivalStarter: null,

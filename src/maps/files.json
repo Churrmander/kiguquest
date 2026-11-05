@@ -3,6 +3,7 @@
 "src/maps/lib.js",
 "src/maps/scripts.js",
 "src/maps/button_town.js",
+"src/maps/home.js",
 "src/maps/route1.js",
 "src/maps/basting_green.js",
 "src/maps/ribbon_loop.js",

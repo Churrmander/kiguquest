@@ -72,7 +72,7 @@ for (const id of ids) {
   // people and pickups must stand on walkable ground
   for (const n of def.npcs || []) {
     if (tm.solid(n.x, n.y)) bad(id, 'npc ' + n.id + ' is inside something solid at ' + n.x + ',' + n.y);
-    if (n.look && !/^(rival|player_kid|rival_kid)$/.test(n.look) && NP.art.human.has && !NP.art.human.has(n.look)) bad(id, 'npc ' + n.id + ' has unknown look ' + n.look);
+    if (n.look && !NP.assets.hasLook(n.look)) bad(id, 'npc ' + n.id + ' has unknown look ' + n.look);
     const tr = n.trainer;
     if (tr) for (const t of tr.team) if (!NP.data.species[t.sp]) bad(id, 'trainer ' + n.id + ' uses unknown species ' + t.sp);
   }
@@ -110,7 +110,8 @@ for (const id of ids) {
   const onFoot = flood(false), withMoves = flood(true);
   const reach = (x, y) => tm.inBounds(x, y) && onFoot[y * tm.w + x];
   const reachWith = (x, y) => tm.inBounds(x, y) && withMoves[y * tm.w + x];
-  for (const w of tm.warps.values()) if (!reach(w.x, w.y)) bad(id, 'warp tile ' + w.x + ',' + w.y + ' (to ' + w.to + ') cannot be reached from any spawn');
+  // a warp may sit behind a field move (the tree house clearing is grown over until you can Snip), but never out of reach
+  for (const w of tm.warps.values()) if (!reachWith(w.x, w.y)) bad(id, 'warp tile ' + w.x + ',' + w.y + ' (to ' + w.to + ') cannot be reached from any spawn');
   const touch = (x, y) => [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => reach(x + dx, y + dy));
   const touchWith = (x, y) => [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => reachWith(x + dx, y + dy));
   for (const p of def.props || []) {

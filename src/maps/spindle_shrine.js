@@ -98,7 +98,7 @@
   }
 
   const M = L.map({
-    id: 'spindle_shrine', name: 'Spindle Shrine', music: 'forest_gingham', battleBg: 'forest', border: 'treeline', w: 20, h: 18, fill: 'T',
+    id: 'spindle_shrine', name: 'Spindle Shrine', music: 'forest_gingham', battleBg: 'forest', border: 'treeline', w: 20, h: 18, fill: 'T', town: true,
     view: 'town',   // 3D camera preset (street | town | flat-ish), see src/engine/persp.js
     legend: { '.': 'grass', T: 'treeline', p: 'path', d: 'dirt', f: 'flowers' },
     onEnter: function* (c) { L.syncStamps(c); },

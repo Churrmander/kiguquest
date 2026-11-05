@@ -303,7 +303,8 @@
       const from = mon.hp;
       mon.hp = from - amount;
       this.add({ t: 'hp', who: mon, from, to: mon.hp, max: mon.maxhp, cause: info.cause || 'hit' });
-      if (mon.hp <= 0) this.faint(mon, info);
+      // info.holdFaint: the caller announces the faint itself once the hit's own lines (crit, effectiveness, hit count) are out
+      if (mon.hp <= 0) { if (!info.holdFaint) this.faint(mon, info); }
       else this.checkItems(mon);
       return amount;
     }

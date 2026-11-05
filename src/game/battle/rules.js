@@ -175,6 +175,8 @@
       const r = battle.rand(8);
       hits = lo + (hi > lo ? (r < 3 ? 0 : r < 6 ? 1 : r < 7 ? 2 : 3) : 0);
       hits = Math.min(hi, hits);
+      // held items and abilities may change the count (the Lucky Thimble makes a 2-5 hit move land 4 or 5 times)
+      hits = Math.max(lo, Math.min(hi, battle.chain('modMultiHits', mon, hits, { move, target })));
     }
     let total = 0, n = 0;
     for (let i = 0; i < hits && !target.fainted && !mon.fainted; i++) {
@@ -182,7 +184,7 @@
       n++;
       battle.add({ t: 'hit', who: target, from: mon, move: move.id, eff: r.eff, crit: r.crit });
       if (r.eff === 0) { battle.msg("It doesn't affect " + target.label() + '...'); return; }
-      const dealt = battle.damage(target, r.dmg, { cause: 'hit', source: mon, move });
+      const dealt = battle.damage(target, r.dmg, { cause: 'hit', source: mon, move, holdFaint: true });
       total += dealt;
       target.lastHit = { amount: dealt, category: move.category, source: mon, move: move.id, turn: battle.turn };
       if (r.crit) battle.msg('A critical hit!');
@@ -192,6 +194,8 @@
       }
     }
     if (move.multi && n > 1) battle.msg('Hit ' + n + ' times!');
+    // a knockout is announced after the hit's own lines, so 'A critical hit!' and 'Hit 4 times!' never follow 'too sleepy to go on'
+    if (target.fainted) battle.faint(target, { cause: 'hit', source: mon, move });
     // secondary effects
     if (move.drain && total > 0 && !mon.fainted) {
       battle.heal(mon, Math.max(1, Math.floor(total * move.drain)), { cause: 'drain' });

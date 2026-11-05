@@ -100,8 +100,8 @@ for (const id of outdoors) {
   ok(V.scene.get(tm).trees.length === sc.trees.length, 'and putting it back restores it');
 }
 { // fences: rails + tops per connected side, a post in the middle
-  const tm = ow.tileMap('thimble'), sc = V.scene.get(tm), n = tm.grid.filter((id) => id === 'fence').length;
-  ok(n > 0 && sc.fences.length === n, 'thimble fence tiles become fence geometry');
+  const tm = ow.tileMap('seamstead'), sc = V.scene.get(tm), n = tm.grid.filter((id) => id === 'fence').length;
+  ok(n > 0 && sc.fences.length === n, 'seamstead fence tiles become fence geometry');
   ok(sc.fences.every((f) => f.quads.length % 2 === 0 && f.quads.length >= 2), 'two quads (rail + top) per connected side');
 }
 
@@ -122,7 +122,7 @@ ok(fb.u32.some((c, i) => c !== fb2.u32[i]), 'the water moves');
   ok(V.stats.bakes === b0 + 1, 'changing the terrain (a gate opening) re-bakes the ground once');
   tm.grid[i] = old; ow.draw(fb, 0);
 }
-ow.loadMap('thimble', 12, 12, 'down', { noEnter: true });
+ow.loadMap('thimble', 12, 14, 'down', { noEnter: true });
 NP.Game.frame = 100; ow.draw(fb, 0); NP.Game.frame = 100; ow.draw(fb2, 0);
 ok(fb.u32.every((c, i) => c === fb2.u32[i]), 'same tick, same picture');
 
@@ -141,7 +141,7 @@ V.hero.on = false;
 
 // ------------------------------------------------------------------------------------------------ the rasterizer
 {
-  ow.loadMap('thimble', 12, 12, 'down', { noEnter: true });
+  ow.loadMap('thimble', 12, 14, 'down', { noEnter: true });
   V.yaw = 0; ow.draw(fb, 0);
   const st = V.state(), pr = V.cfg.pivotRow, R = V.raster, red = new NP.Bitmap(8, 8); red.clear('#ff0000');
   const wall = (y, z0) => [[st.px - 20, y, z0], [st.px + 20, y, z0], [st.px + 20, y, z0 + 30], [st.px - 20, y, z0 + 30]];

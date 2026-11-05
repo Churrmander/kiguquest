@@ -105,6 +105,25 @@
     return H.done(b, '#2a1a5a', 'plum_treat');
   });
 
+  // Lucky Thimble: a brass sewing thimble (dome top, dimpled sides, rolled rim) with a little green four-leaf clover stamped on it
+  H.add('lucky_thimble', 'held', false, (b) => {
+    const Br = R('#e8b448'), Rim = R('#f6d478'), Cv = R('#4cb850');
+    const half = (y) => (y < 6 ? 3.6 + (y - 2) * 1.2 : 8.4 + (y - 6) * 0.1);
+    H.part(b, (x, y) => y >= 2 && y <= 18 && Math.abs(x - 11.5) <= half(y), Br, { mode: 'cyl' });
+    // dimples: staggered rows of dark dots across the dome and the sides
+    for (let y = 4; y <= 16; y += 2) for (let x = 4 + ((y >> 1) & 1); x <= 19; x += 2) if (Math.abs(x - 11.5) <= half(y) - 1.2) b.set(x, y, P(Br.d1));
+    // rolled rim at the open end
+    H.part(b, (x, y) => y >= 17 && y <= 21 && Math.abs(x - 11.5) <= 10.4 - (y === 21 ? 1 : 0), Rim, { mode: 'cyl' });
+    b.hline(2, 17, 20, P(Br.d2));
+    // clover: four round leaves round a centre, a short stem
+    for (const [cx, cy] of [[11, 8], [11, 12], [9, 10], [13, 10]]) H.pxs(b, [[cx, cy], [cx + 1, cy], [cx, cy + 1], [cx + 1, cy + 1]], Cv.m);
+    H.pxs(b, [[11, 8], [9, 10], [11, 12], [13, 10]], Cv.l1);
+    H.pxs(b, [[11, 10], [12, 10], [11, 11], [12, 11]], Cv.d1);
+    H.pxs(b, [[13, 14], [14, 15]], Cv.d1);
+    H.twinkle(b, 5, 5, '#ffffff');
+    return H.done(b, '#5a3a10', 'lucky_thimble');
+  });
+
   H.add('honey_treat', 'held', false, (b) => {
     const Hn = R('#f2a220'), Cl = R('#f58ab0');
     // gingham cloth lid tied with string

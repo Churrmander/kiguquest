@@ -50,9 +50,21 @@
 
   // ============================================================================================ bench (2x1)
   K.stamp('bench', {
-    w: 2, h: 1,
-    paint: () => {
+    // `back`: the same bench seen from behind (backrest towards the camera), for benches that face away, e.g. towards a statue
+    w: 2, h: 1, variants: ['default', 'back'],
+    paint: (v) => {
       const b = K.B(32, 16);
+      if (v === 'back') {
+        // seen from behind: the backrest is the near (south) face, the seat only peeks out 2px above it
+        b.fillRect(2, 3, 28, 2, P.o2); b.hline(2, 3, 28, P.o0); b.hline(2, 4, 28, P.o3);                // the seat's far edge
+        b.fillRect(1, 5, 30, 3, P.o2); b.hline(1, 5, 30, P.o1); b.hline(1, 7, 30, P.o4);                // upper backrest slat
+        b.fillRect(1, 9, 30, 3, P.o2); b.hline(1, 9, 30, P.o1); b.hline(1, 11, 30, P.o4);               // lower backrest slat
+        b.hline(1, 8, 30, P.o5);                                                                         // the gap between the slats
+        for (const x of [5, 25]) { b.fillRect(x, 5, 2, 10, P.o3); b.vline(x, 5, 10, P.o2); b.set(x + 1, 14, P.o4); }   // two vertical supports down to the ground
+        K.outer(b, WOOD_OUT);
+        K.shadow(b, 16, 14, 14, 2);
+        return b;
+      }
       // legs and back posts
       for (const x of [3, 26]) { b.fillRect(x, 10, 3, 4, P.o4); b.fillRect(x, 10, 1, 4, P.o3); }
       for (const x of [3, 26]) { b.fillRect(x, 2, 3, 8, P.o3); b.fillRect(x, 2, 1, 8, P.o2); }
@@ -70,22 +82,77 @@
     },
   });
 
-  K.stamp('bench_v', {
-    // the same park bench turned side-on (1x2), for a path that runs north-south: seat facing west, backrest on the east
-    w: 1, h: 2,
-    paint: () => {
-      const b = K.B(16, 32);
-      // backrest (east): two rails with a dark gap, joined to the seat by a dark post at each end
-      b.fillRect(12, 2, 3, 26, P.o3); b.hline(12, 2, 3, P.o1); b.vline(13, 3, 24, P.o5); b.vline(14, 3, 24, P.o4);
-      b.set(11, 6, P.o5); b.set(11, 23, P.o5);
-      // seat: two lengthwise slats with a dark gap, plain end caps top and bottom
-      b.fillRect(5, 4, 6, 24, P.o2); b.vline(5, 4, 24, P.o1); b.vline(8, 4, 24, P.o4); b.vline(10, 4, 24, P.o3);
-      for (const y of [3, 26]) { b.fillRect(5, y, 6, 2, P.o3); b.hline(5, y, 6, y === 3 ? P.o1 : P.o2); }
-      // legs poking out under the west edge, near each end
-      for (const y of [6, 22]) { b.fillRect(3, y, 2, 3, P.o4); b.vline(3, y, 3, P.o3); }
-      K.outer(b, WOOD_OUT);
-      K.shadowRect(b, 1, 5, 2, 23, 70);   // its shadow falls along the long west side
+  /** the side-on bench in 3D. Local px in its 16x32 footprint (x east, y south, z up): the seat a slab x 4..11, y 3..29, its top at
+   *  z 7; legs at both ends down to the ground; the backrest one rail along x 12.5 at z 9..12 on two end posts, open below so the
+   *  seat shows through. east = mirrored (backrest west). */
+  function benchPrism(east) {
+    const L = 26, SZ = 7, X0 = 4, X1 = 11.5, BX = 12.5, Y0 = 3, Y1 = 29, BZ = 12;
+    // seat top: three lengthwise slats (lit column, mid column) with dark gaps, matching the flat art
+    const top = K.B(8, L);
+    top.fillRect(0, 0, 8, L, P.o2);
+    for (const x of [0, 3, 6]) top.vline(x, 0, L, P.o1);
+    for (const x of [2, 5]) top.vline(x, 0, L, P.o4);
+    top.hline(0, 0, 8, P.o0); top.hline(0, L - 1, 8, P.o3);
+    // seat side (west / east): the slab's 2 px edge, a leg at each end down to the ground, open below
+    const side = (lit) => {
+      const b = K.B(L, SZ);
+      b.fillRect(0, 0, L, 2, lit ? P.o2 : P.o3); b.hline(0, 0, L, lit ? P.o1 : P.o2); b.hline(0, 2, L, P.o5);
+      for (const x of [1, L - 4]) { b.fillRect(x, 2, 3, SZ - 2, P.o4); b.vline(x, 2, SZ - 2, lit ? P.o3 : P.o4); b.vline(x + 2, 2, SZ - 2, P.o5); }
       return b;
+    };
+    // seat ends (north / south): the slats' end grain and two legs
+    const end = () => {
+      const b = K.B(8, SZ);
+      b.fillRect(0, 0, 8, 2, P.o3); b.hline(0, 0, 8, P.o2); b.set(2, 0, P.o5); b.set(5, 0, P.o5); b.hline(0, 2, 8, P.o5);
+      for (const x of [0, 5]) { b.fillRect(x, 2, 3, SZ - 2, P.o4); b.vline(x, 2, SZ - 2, P.o3); b.vline(x + 2, 2, SZ - 2, P.o5); }
+      return b;
+    };
+    // backrest: one rail on two posts that run down to the ground behind the seat; open between the rail and the seat
+    const back = K.B(L, BZ);
+    for (const x of [1, L - 3]) { back.fillRect(x, 0, 2, BZ, P.o4); back.vline(x, 0, BZ, P.o3); }
+    back.fillRect(0, 0, L, 3, P.o2); back.hline(0, 0, L, P.o0); back.hline(0, 1, L, P.o1); back.hline(0, 3, L, P.o5);
+    const S1 = side(true), S2 = side(false), E = end();
+    let faces = [
+      { tex: top, pts: [[X0, Y1, SZ], [X1, Y1, SZ], [X1, Y0, SZ], [X0, Y0, SZ]], n: [0, 0, 1] },
+      { tex: S1, pts: [[X0, Y0, 0], [X0, Y1, 0], [X0, Y1, SZ], [X0, Y0, SZ]], n: [-1, 0, 0] },
+      { tex: S2, pts: [[X1, Y1, 0], [X1, Y0, 0], [X1, Y0, SZ], [X1, Y1, SZ]], n: [1, 0, 0] },
+      { tex: E, pts: [[X0, Y1, 0], [X1, Y1, 0], [X1, Y1, SZ], [X0, Y1, SZ]], n: [0, 1, 0] },
+      { tex: E, pts: [[X1, Y0, 0], [X0, Y0, 0], [X0, Y0, SZ], [X1, Y0, SZ]], n: [0, -1, 0] },
+      { tex: back, pts: [[BX, Y0, 0], [BX, Y1, 0], [BX, Y1, BZ], [BX, Y0, BZ]], n: [-1, 0, 0], noCull: true, shade: 236 },
+    ];
+    if (east) faces = faces.map((f) => ({ tex: f.tex, noCull: f.noCull, shade: f.shade, n: [-f.n[0], f.n[1], f.n[2]],
+      pts: (f.n[0] !== 0 || f.n[2] !== 0 ? [f.pts[1], f.pts[0], f.pts[3], f.pts[2]] : f.pts).map(([x, y, z]) => [16 - x, y, z]) }));
+    return faces;
+  }
+
+  K.stamp('bench_v', {
+    // the same park bench turned side-on (1x2), for a path that runs north-south. default: seat facing west, backrest on the east;
+    // east: the mirror image, seat facing east and backrest on the west (a pair of benches facing each other across a square)
+    // prism3d: in the 3D view it is built as a low bench out of a few quads (a slatted seat on four legs and a backrest rail on two
+    // posts), so it stands up as a bench from any heading (a billboard stood up like a door; baked flat it read as a pallet)
+    w: 1, h: 2, variants: ['default', 'east'], prism3d: (v) => benchPrism(v === 'east'),
+    paint: (v) => {
+      const b = K.B(16, 32), seat = K.B(16, 32), rail = K.B(16, 32);
+      // seat: three slats running the bench's length, each a lit column and a mid column, with 1 px dark gaps between them; the
+      // north end is the slats' lit top face, the south end shows their front face and the two front legs under it
+      for (const x of [3, 6, 9]) { seat.fillRect(x, 4, 2, 22, P.o2); seat.vline(x, 4, 22, P.o1); seat.set(x, 4, P.o0); seat.set(x + 1, 4, P.o1); }
+      for (const x of [5, 8]) seat.vline(x, 5, 21, P.o4);
+      seat.hline(3, 4, 8, P.o0); seat.hline(3, 26, 8, P.o3); seat.hline(3, 27, 8, P.o4); seat.set(5, 26, P.o5); seat.set(8, 26, P.o5);
+      for (const x of [3, 9]) { seat.fillRect(x, 28, 2, 2, P.o4); seat.set(x, 28, P.o3); }
+      // leg stubs poking out on the open (west) side near each end, each with a lit top
+      for (const y of [6, 22]) { seat.fillRect(1, y, 2, 3, P.o3); seat.hline(1, y, 2, P.o1); seat.set(1, y + 2, P.o4); }
+      // the posts that carry the backrest, from the seat's back edge across to the rail
+      for (const y of [6, 22]) { seat.fillRect(11, y, 2, 2, P.o4); seat.hline(11, y, 2, P.o3); }
+      K.outer(seat, WOOD_OUT);
+      // backrest: one thin rail (2 px: a lit west face and a shaded top) behind a strip of ground, its own outline on the far side
+      rail.fillRect(13, 3, 2, 24, P.o2); rail.vline(13, 3, 24, P.o1); rail.hline(13, 3, 2, P.o0); rail.hline(13, 26, 2, P.o4); rail.set(14, 27, P.o5); rail.set(13, 27, P.o4);
+      K.outer(rail, WOOD_OUT);
+      for (let y = 0; y < 32; y++) if (seat.u32[y * 16 + 11] >>> 24) rail.set(12, y, 0);                   // no rail outline on the seat side: ground shows
+      // soft contact shadow round the foot and under the open side
+      K.shadow(b, 8, 29, 7, 2);
+      K.shadowRect(b, 0, 9, 1, 13, 50);
+      b.blit(seat, 0, 0); b.blit(rail, 0, 0);
+      return v === 'east' ? b.flippedX() : b;
     },
   });
 
