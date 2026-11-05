@@ -55,14 +55,14 @@
     dex: 'She wears a sea-lantern crest and a teacup-saucer hat, and she takes her tea very slowly.' });
 
   // ---- Paddling
-  sp('waddlecoat', 'Waddlecoat', ['gale', 'tide'], [64, 62, 55, 52, 58, 70], { catch: 190, exp: 62, ab: ['keen_eye'], cry: 'Quack-quack!',
+  sp('waddlecoat', 'Waddlecoat', ['gale'], [64, 62, 55, 52, 58, 70], { catch: 190, exp: 62, ab: ['keen_eye'], cry: 'Quack-quack!',
     ls: [[1, 'pip_peck'], [1, 'bubble_pop'], [6, 'gust_puff'], [11, 'duck_dive'], [17, 'wing_flutter'], [24, 'bubble_beam']],
     dex: 'A duck onesie with a flat yellow rain-cape. Her wing-sleeves flap when she\'s pleased, which is most of the time.' });
-  sp('jellybob', 'Jellybob', ['tide', 'spook'], [50, 30, 45, 60, 70, 45], { catch: 150, exp: 60, ab: ['run_away'], cry: 'Pom-pom!', evo: [{ to: 'pompola', level: 22, time: 'night' }],
-    ls: [[1, 'bubble_pop'], [1, 'drift_sting'], [7, 'shadow_lick'], [13, 'lantern_glow'], [19, 'bubble_beam']],
+  sp('jellybob', 'Jellybob', ['nettle', 'spook'], [50, 30, 45, 60, 70, 45], { catch: 150, exp: 60, ab: ['run_away'], cry: 'Pom-pom!', evo: [{ to: 'pompola', level: 22, time: 'night' }],
+    ls: [[1, 'spine_jab'], [1, 'drift_sting'], [7, 'shadow_lick'], [13, 'lantern_glow'], [19, 'tail_sting']],
     dex: 'A jellyfish hat with pom-pom tentacles and a soft glow. She drifts calmly from place to place and never seems to be in a hurry.' });
-  sp('pompola', 'Pompola', ['tide', 'spook'], [80, 45, 70, 95, 105, 60], { catch: 60, exp: 165, ab: ['run_away'], cry: 'Pom-OOO.', stage: 2, family: 'jellybob',
-    ls: [[1, 'drift_sting'], [1, 'lantern_glow'], [22, 'wisp_drift'], [28, 'tide_wave'], [36, 'moon_wail']],
+  sp('pompola', 'Pompola', ['nettle', 'spook'], [80, 45, 70, 95, 105, 60], { catch: 60, exp: 165, ab: ['run_away'], cry: 'Pom-OOO.', stage: 2, family: 'jellybob',
+    ls: [[1, 'drift_sting'], [1, 'lantern_glow'], [1, 'tail_sting'], [22, 'wisp_drift'], [28, 'tide_wave'], [36, 'moon_wail']],
     dex: 'A lantern-jellyfish gown of pom-pom tassels. On dark nights she lights the way for boats coming home.' });
   sp('clawdet', 'Clawdet', ['tide', 'brawl'], [52, 70, 68, 30, 40, 48], { catch: 190, exp: 62, ab: ['sturdy_soul'], cry: 'Clack-clack!', evo: [{ to: 'crabmiral', level: 24 }],
     ls: [[1, 'pounce'], [1, 'pinch_clamp'], [6, 'bubble_pop'], [12, 'shell_guard'], [18, 'aqua_dash']],
@@ -71,14 +71,15 @@
     ls: [[1, 'pinch_clamp'], [1, 'shell_guard'], [24, 'mitt_punch'], [30, 'paddle_slap'], [38, 'tide_wave']],
     dex: 'A sailor-crab coat with an anchor-shaped shield and a whistle on a cord. She runs the rock pools like a ship.' });
 
-  // ---- crocodile (Paddling, rivers and lakes): the army line, recruit to captain to the river's tyrant-general (owner, 2026-10-28)
-  sp('alligrunt', 'Alligrunt', ['tide', 'pebble'], [55, 66, 62, 34, 42, 41], { growth: 'mediumSlow', catch: 120, exp: 64, ab: ['torrent'], cry: 'Hup-hup!', evo: [{ to: 'snaptain', level: 18 }],
-    ls: [[1, 'pounce'], [1, 'bubble_pop'], [5, 'pebble_toss'], [9, 'aqua_dash'], [13, 'rock_roll'], [17, 'mud_shot']],
+  // ---- crocodile (Paddling, rivers and lakes): the army line, recruit to captain to the river's tyrant-general (owner, 2026-10-28).
+  // Retyped in the type audit (owner, 2026-11-05): was Tide/Pebble. Army = Brawl, mud bank = Terra, and the tyrant-general is a Drake.
+  sp('alligrunt', 'Alligrunt', ['terra', 'brawl'], [55, 66, 62, 34, 42, 41], { growth: 'mediumSlow', catch: 120, exp: 64, ab: ['sturdy_soul'], cry: 'Hup-hup!', evo: [{ to: 'snaptain', level: 18 }],
+    ls: [[1, 'pounce'], [1, 'mitt_punch'], [5, 'dust_up'], [9, 'aqua_dash'], [13, 'earth_thump'], [17, 'mud_shot']],
     dex: 'A little alligator recruit in an army helmet a size too big. She marches everywhere and repeats every order at the top of her voice.' });
-  sp('snaptain', 'Snaptain', ['tide', 'pebble'], [70, 88, 82, 44, 56, 55], { growth: 'mediumSlow', catch: 45, exp: 150, ab: ['torrent'], cry: 'Ten-HUT!', stage: 2, family: 'alligrunt', evo: [{ to: 'tyranodile', level: 36 }],
-    ls: [[1, 'pounce'], [1, 'pebble_toss'], [1, 'aqua_dash'], [18, 'stone_wall'], [22, 'paddle_slap'], [27, 'shade_bite'], [32, 'slab_slam']],
+  sp('snaptain', 'Snaptain', ['terra', 'brawl'], [70, 88, 82, 44, 56, 55], { growth: 'mediumSlow', catch: 45, exp: 150, ab: ['sturdy_soul'], cry: 'Ten-HUT!', stage: 2, family: 'alligrunt', evo: [{ to: 'tyranodile', level: 36 }],
+    ls: [[1, 'pounce'], [1, 'mitt_punch'], [1, 'earth_thump'], [18, 'stone_wall'], [22, 'paddle_slap'], [27, 'shade_bite'], [32, 'quarry_quake']],
     dex: 'An army captain with bars on her helmet and the strap done up tight. She gives orders with a snap of her jaw-hood, and the whole riverbank listens.' });
-  sp('tyranodile', 'Tyranodile', ['tide', 'pebble'], [92, 120, 102, 58, 70, 68], { growth: 'mediumSlow', catch: 45, exp: 236, ab: ['torrent'], cry: 'HRRAAH!', stage: 3, family: 'alligrunt',
-    ls: [[1, 'shade_bite'], [1, 'stone_wall'], [1, 'slab_slam'], [36, 'mitt_punch'], [42, 'tide_wave']],
+  sp('tyranodile', 'Tyranodile', ['drake', 'brawl'], [92, 120, 102, 58, 70, 68], { growth: 'mediumSlow', catch: 45, exp: 236, ab: ['sturdy_soul'], cry: 'HRRAAH!', stage: 3, family: 'alligrunt',
+    ls: [[0, 'temper_tantrum'], [1, 'shade_bite'], [1, 'stone_wall'], [1, 'quarry_quake'], [36, 'tail_swat'], [42, 'tide_wave']],
     dex: 'The tyrant-general of the river, in a crocodile greatcoat covered in medals. Nobody crosses her river without saluting first.' });
 })(typeof globalThis !== 'undefined' ? globalThis : window);
