@@ -52,6 +52,11 @@ const run = (t, ow, fn) => { ow.runScript(fn); settle(t); };
     for (const [kind, list] of Object.entries(def.encounters || {})) for (const e of list) assert.ok(!STARTERS.has(e.sp), id + ' ' + kind + ': starter ' + e.sp + ' in the wild');
     for (const r of Object.keys((def.fishing && def.fishing.kigu) || {})) for (const [sp] of def.fishing.kigu[r]) assert.ok(!STARTERS.has(sp), id + ': starter ' + sp + ' on a rod');
   }
+  // ...and no ordinary trainer owns one, so players never think a starter is catchable (owner, 2026-11-05). Rival teams are built in scripts.
+  for (const [id, def] of Object.entries(NP.maps)) for (const n of def.npcs || []) if (n.trainer) for (const k of n.trainer.team || []) {
+    const sp = k.sp || k.species || k[0];
+    assert.ok(!STARTERS.has(sp), id + ': trainer ' + n.trainer.name + ' owns starter ' + sp);
+  }
   // fresh and salt never mix; the oasis only has pupfish; the oasis pupfish takes an Old Rod (the Good Rod's payoff)
   assert.ok(F.fishFor({ water: 'salt' }, 'button_town', 3, false).every((f) => f.water === 'salt'));
   assert.equal(F.fishFor(NP.maps.dust_oasis.fishing, 'dust_oasis', 1, false).map((f) => f.id).join(), 'desert_pupfish');
