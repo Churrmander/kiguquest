@@ -148,7 +148,13 @@
   };
   A.human = function (look) {
     look = rl(look);
-    if (typeof look === 'string' && look.indexOf('kigu:') === 0) { const k = A.kiguOverworld(look.slice(5)); if (k) return k; }
+    if (typeof look === 'string' && look.indexOf('kigu:') === 0) {
+      // 'kigu:<species>~pressed': the same Kigu after the Starch Society pressed her (bleached to white and pale blue-grey)
+      const [sp, mod] = look.slice(5).split('~');
+      const k = A.kiguOverworld(sp);
+      if (k && mod === 'pressed') return memo('kowp|' + sp, () => pressedSet(k));
+      if (k) return k;
+    }
     const h = art().human;
     if (h && h.has && h.overworld) {
       const v = tryit(() => (h.has(look) ? memo('ho|' + look, () => h.overworld(look)) : null), null);
@@ -156,10 +162,29 @@
     }
     return fallbackHuman(look || 'npc');
   };
+  /** a Kigu overworld set drained to the Society's pressed colours: each pixel's brightness picks a step of a pale blue-grey ramp
+   *  (the outline stays dark), so she reads as the same Kigu, ironed white */
+  const PRESSED = ['#ffffff', '#eef2f8', '#d4dcea', '#aab6cc', '#8492ac', '#4c5470', '#2c3048'].map((c) => NP.Color.parse(c));
+  function pressedSet(k) {
+    const map = (b) => {
+      const o = b.clone(), u = o.u32;
+      for (let i = 0; i < u.length; i++) {
+        const c = u[i], a = c >>> 24;
+        if (!a) continue;
+        const l = 0.3 * (c & 255) + 0.59 * ((c >>> 8) & 255) + 0.11 * ((c >>> 16) & 255);
+        const step = l > 225 ? 0 : l > 190 ? 1 : l > 150 ? 2 : l > 110 ? 3 : l > 75 ? 4 : l > 45 ? 5 : 6;
+        u[i] = ((PRESSED[step] & 0xffffff) | (a << 24)) >>> 0;
+      }
+      return o;
+    };
+    const frames = {};
+    for (const d of Object.keys(k.frames)) frames[d] = k.frames[d].map(map);
+    return Object.assign({}, k, { frames });
+  }
   /** Is `look` something A.human can draw for real (a human look, or 'kigu:<species>' with Kigu art)? Tests use it. */
   A.hasLook = (look) => {
     if (/^(rival|player_kid|rival_kid)$/.test(look)) return true;
-    if (typeof look === 'string' && look.indexOf('kigu:') === 0) return !!(NP.data && NP.data.species[look.slice(5)]) && A.kiguHas(look.slice(5));
+    if (typeof look === 'string' && look.indexOf('kigu:') === 0) { const sp = look.slice(5).split('~')[0]; return !!(NP.data && NP.data.species[sp]) && A.kiguHas(sp); }
     const h = art().human;
     return !!(h && h.has && h.has(look));
   };

@@ -31,7 +31,7 @@
     const want = String(s).split('|')[0];
     if (/^(rival|player_kid|rival_kid)$/.test(want)) return want;
     // a Kigu walking about: 'kigu:<species>' (NP.assets.kiguOverworld draws it from the Kigu art)
-    if (want.indexOf('kigu:') === 0) return NP.data.species[want.slice(5)] ? want : pick('look', {}, s, d || 'villager_m1');
+    if (want.indexOf('kigu:') === 0) return NP.data.species[want.slice(5).split('~')[0]] ? want : pick('look', {}, s, d || 'villager_m1');
     return pick('look', NP.art && NP.art.human && NP.art.human.looks, s, d || 'villager_m1');
   };
   L.hasItem = (id) => !!(NP.data.items && NP.data.items[id]);
