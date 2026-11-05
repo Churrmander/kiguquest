@@ -114,6 +114,36 @@
     return { w: 32, h: 32, frames };
   };
 
+  /** Short hair (a boy's cut, a crop, spikes, a bald head): the flipped overworld head is mostly hair from the eye line down, so
+   *  upside down it reads as a beard or a bun. These heads are hand-shaped instead, still upside down (chin north under the sheet,
+   *  crown south on the pillow): a bigger face (6 skin rows: chin, mouth ABOVE the closed eyes, cheeks, forehead), the hair only
+   *  as a rim round the crown and a little at the temples, in his own hair tones with the dark outline so it stands off the wood
+   *  and the quilt. 12 px wide, centred over the west pillow (cell x 9-20), so the white pillow shows on both sides. */
+  const SHORT_HAIR = new Set(['short', 'spiky', 'messy', 'sidepart', 'cropped', 'curly', 'fluff', 'bald']);
+  const SLEEP_SHORT = [
+    '...osssso...',
+    '..ossddsso..',
+    '.oassssssao.',
+    'oseesssseemo',
+    'olssssssssmo',
+    'oHhsssssshko',
+    'oHhhshhshhko',
+    '.oHhhhhhhko.',
+    '..ohhhhhko..',
+    '...oooooo...',
+  ];
+  function asleepShort(S) {
+    const lum = (c) => (c & 255) + ((c >> 8) & 255) + ((c >> 16) & 255), q = (c) => NP.Color.q15(c);
+    const sk = S.skin.slice().sort((p, r) => lum(r) - lum(p)), hr = S.hair.ramp.slice().sort((p, r) => lum(p) - lum(r));
+    const bald = S.hair.style === 'bald';
+    const ink = q(0xff291831), H = bald ? sk[0] : hr[Math.min(3, hr.length - 1)], h = bald ? sk[1] : hr[Math.min(2, hr.length - 1)];
+    const k = bald ? sk[2] : hr[1];
+    const map = { o: ink, e: ink, l: sk[0], s: sk[1], m: sk[2], a: sk[2], d: sk[sk.length - 1], H, h, k };
+    const out = new NP.Bitmap(32, 16);
+    SLEEP_SHORT.forEach((row, y) => { for (let x = 0; x < row.length; x++) if (map[row[x]]) out.u32[(y + 2) * 32 + 9 + x] = q(map[row[x]]); });
+    return out;
+  }
+
   /** Asleep in bed, lying on her back with her head on a pillow at the SOUTH end of the bed (the player's bed has its headboard and
    *  pillows south). Built from the down-facing head (eyes closed, no hat or bag; a ponytail or pigtails let down for bed) turned upside
    *  down, so the chin points north under the sheet and the crown rests on the pillow; flipped top to bottom rather than rotated, so
@@ -123,6 +153,7 @@
    *  under the eyes like a moustache) is lit. A 32x16 cell, head centred, rows 0-1 empty (the sheet's hem covers them) and the face from row 2; the engine shows rows 0-12 (the
    *  rest is behind the headboard), so the crown is shaped on the last row that shows. */
   OW.asleep = function (S) {
+    if (SHORT_HAIR.has(S.hair.style)) return asleepShort(S);
     const down = /^(ponytail|pigtails)$/.test(S.hair.style) ? Object.assign({}, S.hair, { style: 'long' }) : S.hair;
     const S2 = Object.assign({}, S, { acc: [], hair: down, face: Object.assign({}, S.face, { eyes: 'closed', mouth: 'flat' }) });
     const full = renderFrame(S2, 'down', 0);
