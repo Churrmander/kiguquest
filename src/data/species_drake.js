@@ -30,6 +30,6 @@
     ls: [[1, 'tail_swat'], [1, 'cinder'], [1, 'wyrm_breath'], [1, 'scorch_tail'], [30, 'temper_tantrum'], [36, 'heat_haze'], [42, 'drake_dive'], [48, 'shade_bite']],
     dex: 'She hates being told what to do and loses her temper over almost anything. Tailors say the only way to work with one is to let her think it was her idea.' });
   sp('empyress', 'Empyress', ['drake', 'shade'], [92, 115, 85, 110, 85, 93], { growth: 'slow', catch: 45, exp: 270, ab: ['sturdy_soul'], cry: 'Kyaaah!', stage: 3, family: 'smolava',
-    ls: [[0, 'royal_pyre'], [1, 'temper_tantrum'], [1, 'wyrm_breath'], [1, 'shade_bite'], [55, 'royal_pyre'], [60, 'drake_dive'], [66, 'dusk_cloak']],
+    ls: [[0, 'pyre_blast'], [1, 'temper_tantrum'], [1, 'wyrm_breath'], [1, 'shade_bite'], [55, 'pyre_blast'], [60, 'drake_dive'], [66, 'dusk_cloak']],
     dex: 'A proud dragon who only takes orders from a Tailor she judges to be the best. It\'s said that no Empyress has ever willingly chosen a Tailor.' });
 })(typeof globalThis !== 'undefined' ? globalThis : window);

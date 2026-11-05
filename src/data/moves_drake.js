@@ -15,5 +15,5 @@
   M('wyrm_breath', 'Wyrm Breath', 'drake', S, 60, 100, 20, { status: st('par', 20) }, 'A hot, rumbling breath. May paralyse.');
   M('temper_tantrum', 'Temper Tantrum', 'drake', P, 85, 90, 10, { recoil: 0.25 }, 'Flails about in a temper. She hurts herself a little too.');
   M('drake_dive', 'Drake Dive', 'drake', P, 100, 85, 10, { flinch: 20 }, 'Folds her wings and dives. May make the foe flinch.');
-  M('royal_pyre', 'Royal Pyre', 'ember', S, 100, 90, 5, { status: st('brn', 20) }, 'A crown of fire, called down on the foe. May burn.');
+  M('pyre_blast', 'Pyre Blast', 'ember', S, 100, 90, 5, { status: st('brn', 20) }, 'A roaring blast of fire. May burn.');
 })(typeof globalThis !== 'undefined' ? globalThis : window);
