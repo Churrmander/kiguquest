@@ -345,7 +345,7 @@ stone lanterns, a gravel path, a tiered wooden hall with sweeping curved roofs, 
 interior is a tall hall with wooden pillars; the altar stands at the back on raised steps, and the Everspool sits high on a pedestal above
 it, with its golden-green thread circling the altar in a slow loop. The woven ward shows as a shimmering curtain of thread across the inner
 doorway. The Mikoga shrine maiden wears shrine-maiden colours (white and red) on her moth-wing robe. Stay in the Black/White sprite style.
-(The current map is still the old open clearing with the spool on a stump; rebuilding it is a follow-up.) Hemline: Bryn;
+(Built 2026-11-05: `spindle_shrine` is the grounds, `spindle_shrine_hall` the hall. Scene order: Pin and Welt outside with Pin's Wyvrant lounging on the steps; inside, Crease, the snip, Mimi rinses the Vowspun (the ward rises) and then the head Mikoga; Pin's Wyvrant crashes in for the set-piece fight (her hits leave you at 1 HP at worst, the Mikoga heal 50% and Gust each turn, she can hardly aim once they help, and she sulks off at 10% HP; no exp, no catch); the Mikoga line up and the Pressers leave by the side door.) Hemline: Bryn;
 the hemmers' grievance; Bryn gives a length of Everspool silk. *Scenes:* `route2_inspectors`, `spindle_shrine`, `rinse`, `script.bryn`.
 **Ch. 3 — Seamstead City (Salon 3, Volt).** Big, bright, jazzy. **Rival #3** on the plaza: the rival defends Crisp & Co. ("my dad works there"). **Crisp & Co. raid:** a department-store dungeon (Linens, Uniforms, Hats...), Pleat Serge's
 smile, the basement **Pressing Floor** where a hundred white Kigu stand in rows. The rival's dad is on the floor, pleasant and empty. Serge fights; then Madame Damask appears for the first time and invites the hero to tea

@@ -43,27 +43,41 @@ console.log('route 2 done', Date.now() - t0, 'ms; party', st.party.map((k) => k.
 assert.ok(t.travel(14, 0, 1500), 'cross the woods; at ' + t.pos());
 at('spindle_shrine');
 assert.ok(!st.flags.shrine1_done);
-assert.equal(t.ow.map.def.stamps.find((s) => s.id === 'shrine').variant, 'pressed', 'the shrine looks pressed before the incident');
-assert.equal(t.ow.find('vowspun').look, 'cocoona_pressed');
+assert.equal(t.ow.map.def.stamps.find((s) => s.id === 'temple').variant, 'pressed', 'the temple looks pressed before the incident');
 
-// ---- the incident: Pin, Welt, then Pleat Crease; Mimi's Soft Rinse
-assert.ok(t.travel(9, 13, 100), 'walk up to the clearing; at ' + t.pos());
+// ---- outside: Pin and Welt guard the hall steps (Pin's Wyvrant ignores him)
+assert.ok(t.travel(12, 19, 100), 'walk up the approach to the torii; at ' + t.pos());
 t.go('up');
-assert.ok(t.mash(() => t.idle() && st.flags.shrine1_done, 60000), 'shrine incident resolves; flags ' + JSON.stringify(st.flags));
-assert.ok(st.flags.shrine_pin && st.flags.shrine_welt && st.flags.rinse_done);
-assert.equal(t.ow.find('vowspun').look, 'vowspun', 'the Soft Rinse worked');
-assert.ok(!t.ow.find('crease').visible, 'Crease has gone');
-assert.equal(t.ow.map.placements.find((p) => p.id === 'shrine').variant, 'default', 'the shrine looks like itself again');
+assert.ok(t.mash(() => t.idle() && st.flags.shrine_outside, 30000), 'the Pressers outside are beaten; flags ' + JSON.stringify(st.flags));
+assert.ok(st.flags.shrine_pin && st.flags.shrine_welt);
+assert.ok(t.travel(12, 7, 100), 'up the steps into the hall; at ' + t.pos());
+at('spindle_shrine_hall');
+assert.equal(t.ow.find('vowspun').look, 'cocoona_pressed');
+assert.equal(t.ow.find('mikoga').look, 'kigu:mikoga~pressed');
+assert.equal(t.ow.map.placements.find((p) => p.id === 'ward' && p.x === 7).variant, 'down', 'the ward hangs slack');
+
+// ---- inside: Pleat Crease, the snip, Mimi's Soft Rinse (twice), then Pin's Wyvrant
+t.go('up');
+assert.ok(t.mash(() => t.idle() && st.flags.shrine1_done, 90000), 'shrine incident resolves; flags ' + JSON.stringify(st.flags));
+assert.ok(st.flags.rinse_done && st.flags.shrine_wyvrant && st.flags.shrine_ward);
+assert.ok(st.party.every((k) => k.hp > 0), 'nobody fainted against the Wyvrant');
+assert.equal(t.ow.find('vowspun').look, 'kigu:vowspun', 'the Soft Rinse worked');
+assert.equal(t.ow.find('mikoga').look, 'kigu:mikoga', 'the head Mikoga was rinsed too');
+assert.ok(!t.ow.find('crease').visible && !t.ow.find('pin').visible && !t.ow.find('wyvrant').visible, 'the Society and the Wyvrant have gone');
+assert.equal(t.ow.map.placements.find((p) => p.id === 'ward' && p.x === 7).variant, 'up', 'the ward is back up');
 // the Vowspun now rests your Kigu
 st.party[0].hp = 1;
-assert.ok(t.travel(9, 10), 'step up to the Vowspun; at ' + t.pos());
+assert.ok(t.travel(7, 7), 'step up to the Vowspun through the ward; at ' + t.pos());
 faceUp(); t.tap('a');
 assert.ok(t.mash(() => t.idle(), 5000));
 assert.equal(st.party[0].hp, NP.Kigu.maxHp(st.party[0]), 'the Vowspun healed the party');
+assert.ok(t.travel(7, 14, 200), 'back out of the hall; at ' + t.pos());
+at('spindle_shrine');
+assert.equal(t.ow.map.placements.find((p) => p.id === 'temple').variant, 'default', 'the temple looks like itself again');
 console.log('shrine done', Date.now() - t0, 'ms');
 
 // ---- Hemline
-assert.ok(t.travel(19, 9, 200), 'take the east road; at ' + t.pos());
+assert.ok(t.travel(25, 11, 300), 'take the east road; at ' + t.pos());
 at('hemline');
 st.party[0].hp = 1;
 assert.ok(t.travel(5, 7, 300), 'to the Tea House door; at ' + t.pos());
