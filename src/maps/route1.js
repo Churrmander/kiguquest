@@ -122,7 +122,7 @@
     intro: 'I befriended my Kittabra in this very grass!', win: 'She fell asleep on me...', after: 'Kittabra naps a lot, but she naps fiercely.' });
   // Suzu comes straight after the rival with no rest in between, and both her Kigu resist Sprout: Chirpadee Lv6, not 7 (QA: a solo Lv9-10
   // Sprubun won 14-58% against Lv7; 29-88% against Lv6)
-  M.trainer('suzu', 11, 5, 'picnicker', 'right', { cls: 'Picnicker', name: 'Suzu', sight: 2, reward: 6, ai: 1, team: [['sprubun', 6], ['chirpadee', 6]],
+  M.trainer('suzu', 11, 5, 'picnicker', 'right', { cls: 'Picnicker', name: 'Suzu', sight: 2, reward: 6, ai: 1, team: [['daisip', 6], ['chirpadee', 6]],
     intro: 'My picnic is over, so now it\'s battle time! Ready?', win: 'My sandwiches are going to get cold...', after: 'There\'s a Salon in Thimble with a real Master Tailor. Pack a snack first!' });
 
   // ---------------------------------------------------------------------------------------------------------- Mimi (plan MI)

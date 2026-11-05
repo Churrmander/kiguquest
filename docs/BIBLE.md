@@ -63,7 +63,7 @@ Every new or changed Kigu name must pass all of these, and **the owner approves 
 1. **Ending budget.** No ending is shared by more than 3 family base names. The "ee" ending (-i, -ie, -y) is closed for new
    families unless it is a real word or a clear reference that earns it (Musubi, Chirpadee). Stage 2 and 3 names follow the
    same cap for endings like -ora, -ina, -ika, -ara, -essa.
-2. **No chop-and-add.** Never an English word cut short plus a cute ending (the old Cactli, Slatli, Glowli). Blend two ideas:
+2. **No chop-and-add.** Never a plain word, whole or cut short, with a cute sound spliced on (the old Cactli, Slatli, Glowli, and Boil + -rina = Boilerina). A blend only counts when both halves are real ideas the reader recognises (Swellegant = swell + elegant). Blend two ideas:
    the creature plus her costume, her habit or a pun (Rockabye, Hedgehug, Aviatrix). Words from other languages are welcome
    and need no explanation (Lumipom, Kuurlace, Tomibou).
 3. **Mix the shapes.** Consonant endings, compounds, real words with a twist.

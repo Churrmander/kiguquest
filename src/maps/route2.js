@@ -81,7 +81,7 @@
   M.spawn('south', 10, 43, 'up').spawn('north', 10, 2, 'down');
   M.edge('s', 10, 11, 'thimble', 'north').edge('n', 10, 11, 'gingham_woods', 'south');
 
-  M.trainer('reed', 13, 35, 'camper', 'left', { cls: 'Camper', name: 'Reed', sight: 3, reward: 6, ai: 0, team: [['sprubun', 8], ['kittabra', 8]],
+  M.trainer('reed', 13, 35, 'camper', 'left', { cls: 'Camper', name: 'Reed', sight: 3, reward: 6, ai: 0, team: [['daisip', 8], ['kittabra', 8]],
     intro: 'This trail is my campsite! Well, the bit beside it is.\\pLet\'s see whose Kigu sleeps better!', win: 'My Kigu really did need a nap...', after: 'The bridge is just up ahead. Take it slowly, because it creaks a lot.' });
   M.trainer('mina', 4, 32, 'schoolgirl', 'right', { cls: 'Schoolgirl', name: 'Mina', sight: 3, reward: 6, ai: 0, team: [['nibblit', 8], ['chirpadee', 9]],
     intro: 'I walked all the way from Hemline for a field trip.\\pSo I\'m going to battle everyone on the way home!', win: 'Teacher says to learn from every loss. This is a lot of learning.', after: 'Hemline is past the woods. They hem everything there, even the curtains.' });

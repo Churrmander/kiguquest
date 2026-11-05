@@ -43,11 +43,11 @@
   M.spawn('south', 13, 38, 'up').spawn('north', 14, 2, 'down');
   M.edge('s', 13, 14, 'route2', 'north').edge('n', 14, 15, 'spindle_shrine', 'south');
 
-  M.trainer('pete', 7, 26, 'camper', 'right', { cls: 'Camper', name: 'Pete', sight: 4, reward: 7, ai: 1, team: [['sprubun', 10], ['buzzlet', 10], ['molli', 11]],
+  M.trainer('pete', 7, 26, 'camper', 'right', { cls: 'Camper', name: 'Pete', sight: 4, reward: 7, ai: 1, team: [['daisip', 10], ['buzzlet', 10], ['molli', 11]],
     intro: 'Shh! You\'ll wake the trees! ...Oh, you want to battle? All right, but quietly.', win: 'That was a very polite way to lose.', after: 'Stick to the dirt paths. There are Kigu napping all through that grass.' });
   M.trainer('tess', 25, 22, 'picnicker', 'left', { cls: 'Picnicker', name: 'Tess', sight: 5, reward: 8, ai: 1, team: [['daisip', 11], ['acolarva', 11]],
     intro: 'A picnic in the woods is the best picnic, and it\'s even better with a battle!', win: 'My sandwiches have gone all soft...', after: 'The Spindle Shrine is just past the north clearing. Everyone whispers up there.' });
-  M.trainer('yuki', 17, 6, 'schoolgirl', 'down', { cls: 'Schoolgirl', name: 'Yuki', sight: 4, reward: 8, ai: 1, team: [['chirpadee', 11], ['sprubun', 11]],
+  M.trainer('yuki', 17, 6, 'schoolgirl', 'down', { cls: 'Schoolgirl', name: 'Yuki', sight: 4, reward: 8, ai: 1, team: [['chirpadee', 11], ['daisip', 11]],
     intro: 'We\'re not supposed to battle in the woods. ...But a quiet one is okay, right?', win: 'Teacher\'s going to ask why I\'m out of breath.', after: 'The Pressers came through here yesterday, measuring the paths. Rude!' });
   M.trainer('riku', 4, 16, 'net_kid', 'right', { cls: 'Net Kid', name: 'Riku', sight: 2, reward: 7, ai: 1, team: [['spinnet', 12], ['buzzlet', 11]],
     intro: 'You found my glade, so you have to battle me. That\'s the rule!', win: 'Okay, okay. You can use the glade too.', after: 'In the mornings the webs here get all dewy. They look like little lace doilies!' });
