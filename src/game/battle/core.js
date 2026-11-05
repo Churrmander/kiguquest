@@ -306,6 +306,7 @@
       // info.holdFaint: the caller announces the faint itself once the hit's own lines (crit, effectiveness, hit count) are out
       if (mon.hp <= 0) { if (!info.holdFaint) this.faint(mon, info); }
       else this.checkItems(mon);
+      if (!mon.fainted) this.fire('onAfterDamage', mon, Object.assign({ amount }, info));   // set pieces (src/game/battle/setpiece.js)
       return amount;
     }
 
@@ -591,6 +592,8 @@
       }
       // the map's weather (overworld mood) is already blowing when the battle starts, and lasts the whole battle
       if (this.cfg.mood && B.COND.weather[this.cfg.mood]) this.setWeather(this.cfg.mood, null, -1);
+      // a story set piece (src/game/battle/setpiece.js) lasts the whole battle
+      if (this.cfg.setPiece && B.COND.field.set_piece) { this.field.set_piece = { source: null, turns: Infinity }; }
       // entry effects for everyone, fastest first
       for (const m of this.activeBySpeed()) this.enterEffects(m, { initial: true });
     }

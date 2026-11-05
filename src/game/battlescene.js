@@ -135,6 +135,8 @@
         data: { badges: st.badges.filter(Boolean).length },
         expShare: !!(st.bag && st.bag.exp_share) && !st.flags.exp_share_off,   // Prof. Bobbin's Exp Share (key item, on unless switched off)
         mood: cfg.mood || null,   // the map's weather, carried into the battle (src/game/weather.js)
+        setPiece: cfg.setPiece || null,   // a story fight that can't be lost (src/game/battle/setpiece.js)
+        canRun: cfg.setPiece ? false : undefined,
       });
       if (cfg.trainer) this.foeTrainer = { x: this.bgInfo.enemyBase.x };
       this.hero = { x: this.bgInfo.playerBase.x };
@@ -260,7 +262,7 @@
             this.disp[1].alpha = 0; this.disp[1].offx = 60;
             NP.snd.cry(mon.kigu.species);
             for (let i = 1; i <= 18; i++) { this.disp[1].offx = 60 * (1 - i / 18); this.disp[1].alpha = Math.min(1, i / 8); yield; }
-            yield* this.msgWait('A wild ' + mon.name + ' appeared!', { auto: 34 });
+            yield* this.msgWait(this.cfg.intro ? NP.fmt(this.cfg.intro) : 'A wild ' + mon.name + ' appeared!', { auto: 34 });
           } else {
             this.disp[1].vis = false;
             yield* this.msgWait(tr.cls + ' ' + tr.name + ' would like to battle!', { auto: 40 });
@@ -586,7 +588,7 @@
           return [{ type: 'switch', to: idx }];
         }
         if (pick === 'Run') {
-          if (!b.canRun) { yield* this.msgWait("No! There's no running from a Tailor battle!", { auto: 40 }); continue; }
+          if (!b.canRun) { yield* this.msgWait(this.cfg.setPiece ? "There's no running away from this one!" : "No! There's no running from a Tailor battle!", { auto: 40 }); continue; }
           return [{ type: 'run' }];
         }
       }

@@ -565,7 +565,7 @@
       const music = o.music || 'battle_wild';
       yield* this.transitionToBattle(music);
       // noCatch: true, or { first, again } lines for a Kigu who won't take a spool yet; canLose: no blackout (the scene carries on)
-      const res = yield* this.runBattle({ wild: true, foe: [foe], bg: o.bg || this.battleBg(), music, mood: this.weather, noCatch: o.noCatch || false, canLose: !!o.canLose });
+      const res = yield* this.runBattle({ wild: true, foe: [foe], bg: o.bg || this.battleBg(), music, mood: this.weather, noCatch: o.noCatch || false, canLose: !!o.canLose, setPiece: o.setPiece || null, intro: o.intro || null });
       return res;
     }
 
