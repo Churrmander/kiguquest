@@ -188,7 +188,7 @@
     yield* c.sayT(k('wyv.5'), 'The Wyvrant clearly wasn\'t doing this because Pin said so. She just wanted a fight.\\pThe shrine\'s Mikoga scattered behind the pillars. Moths with paper wings don\'t like fire.');
     yield* c.wildBattle('wyvrant', 30, {
       music: 'battle_master', noCatch: { first: 'The Wyvrant swatted the spool away. She\'s far too angry to listen!', again: 'She won\'t even look at the spool.' },
-      kigu: { moves: ['cinder', 'scorch_tail', 'wyrm_breath', 'hissy_fit'], nature: 'naughty' },
+      kigu: { moves: ['cinder', 'scorch_tail', 'wyrm_breath', 'temper_tantrum'], nature: 'naughty' },
       intro: 'Pin\'s Wyvrant wants a fight!',
       setPiece: {
         helper: 'The Mikoga', heal: 0.5, chip: 1 / 9, enrage: 0.35, endAt: 0.1,

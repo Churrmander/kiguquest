@@ -16,7 +16,7 @@ let turnsTotal = 0;
 for (let seed = 1; seed <= 25; seed++) {
   const rng = new NP.RNG(seed);
   const team = [Kigu.create('kitsuri', 13, { rng }), Kigu.create('chirpadee', 11, { rng })];
-  const foe = Kigu.create('wyvrant', 30, { rng, moves: ['cinder', 'scorch_tail', 'wyrm_breath', 'hissy_fit'] });
+  const foe = Kigu.create('wyvrant', 30, { rng, moves: ['cinder', 'scorch_tail', 'wyrm_breath', 'temper_tantrum'] });
   const bt = new B.Battle({ wild: true, noCatch: true, canRun: false, setPiece: Object.assign({}, SP), rng, sides: [{ player: true, party: team }, { party: [foe], ai: 2 }] });
   const exp0 = team.map((k) => k.exp), fmax = bt.sides[1].mons[0].maxhp;
   let s = bt.begin(), guard = 0;
