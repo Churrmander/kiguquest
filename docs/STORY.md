@@ -122,7 +122,7 @@ Reveals in Loomhaven.
 **The errand that starts the journey (owner pick, 2026-10-26).** Bobbin has been studying the Needles' disappearance and thinks they left
 a trail. Every Master Tailor's Button is sewn on with that Master's own thread, and she suspects the eight threads together matter
 somehow, though she cannot say why yet. So she sends the hero (and the rival) to collect each Master's thread along with the Button.
-Neither of them knows what it is for until the Great Loom, where the hero braids all eight and ties the twins together. This gives the
+Neither of them knows what it is for until the Great Loom, where the hero braids all eight into one cord that lets the Press's thread give. This gives the
 early game a real goal while everyone knows the Needles are gone: becoming Weave Guardian is not the reason to set out, it is where the
 road ends up. Her line to the hero at the start: "Go and see Tsumugi. Meet the Masters. The threads will show you the rest."
 
@@ -199,8 +199,10 @@ one he could still talk to. Her Needle name was **Chenille** (owner approved 202
 
 **Madame Damask.** Tall, iron-grey bun, steam-iron brooch, exquisitely polite ("Do mind the creases, dear"). Never raises her voice. Pours tea. Her weakness: she has not sewn a stitch since
 the Snarl (her mother's thimble is in Rue's drawer). Her plan: **re-weave Tsumugi as a plain weave** — over, under, over, under, no patterns — using the **Great Press** at the Starch Works and the
-twins' threads pulled taut through the **Great Loom** in Loomhaven during the Lantern Festival, then pass the pressed weave into the magic
-tapestry, which she believes will set its prisoner free: *"This year, nobody gets lost."* Her ace is the twin the hero did not save.
+Everspool thread the Society has hoarded (Crease's snip from the Spindle Shrine, the thread in Chenille's old needle) pulled taut through the **Great Loom** in Loomhaven during the Lantern Festival, then pass the pressed weave into the magic
+tapestry, which she believes will set its prisoner free: *"This year, nobody gets lost."* **Damask never holds a goddess** (owner, 2026-11-06). Her ace is
+**Heddlewyn**, the guardian of the Great Loom, who bonded with her long ago because Hester was kind and a highly skilled seamstress. Damask has Pressed her
+and uses her to run the Loom for the Press (see §7c).
 
 **The Pleats (admins)** — each with a human reason, each beaten kindly:
 
@@ -243,12 +245,49 @@ is a Kigu who briefly says something she could not know (proposed: once after th
 **Lullaby (Tea House, Tapestry, Loomhaven):** *"Warp goes up and weft goes by, / one holds fast and one runs wide. / Cross them once and tie them true, / and the world will hold for me and you."*
 
 **The truth the Society missed:** the goddess of Order is on the hero's side. Real order is a weave that holds because its threads can *give*;
-the Society's order is a copy of the tapestry. A weave only holds if its threads can *give*. The Great Press works by pulling the sisters taut *apart* — the tension is what flattens the land. Reunite them, and
-the tension slackens and colour returns.
+the Society's order is a copy of the tapestry. A weave only holds if its threads can *give*. The Great Press works by pulling the hoarded Everspool thread
+taut, and the tension is what flattens the land. The eight Button-threads, braided, give that thread some slack, and colour returns. (Owner, 2026-11-06: the sisters are no longer
+in the Press; the hoarded Everspool thread powers it.)
 
 **Astara** (Dream/Ember, white-and-crimson robe, vertical threads from her sleeves): steady, patient, remembers everything. **Anwela** (Dream/Tide, white-and-blue, horizontal ribbons): curious, restless,
-always wants to see what's over there. At the Works they are held in two tension frames. **The hero can free only one** (cut her thread with the Disc: Snip Poppy gave you — the first gift pays off):
-the one freed takes the hero's thread in her sleeve and joins the party (suggest Lv 45ish). Damask takes the other to Loomhaven. The text supports both (`{twin}` / `{twin2}`; story keys end `.warpa` / `.weftie`). The rival stands beside the hero for this choice: *"Whichever you pick, I have got your back."*
+always wants to see what's over there. At the Works they are held in two tension frames. **The hero chooses one to free** (cut her thread with the Disc: Snip Poppy gave you — the first gift pays off);
+she is the hero's **Divine** legendary (owner term, 2026-11-06). The text supports both (`{twin}` / `{twin2}`; story keys end `.warpa` / `.weftie`). The rival stands beside the hero for this choice: *"Whichever you pick, I have got your back."*
+The freeing scene and how the other twin is met are in §7c. The Society never gets the other twin (owner, 2026-11-06).
+
+### 7c. Meeting the legendaries (owner, 2026-11-06)
+
+Plan file: `/mnt/project-files/story/legendaries-plan.md`. Legendaries are always met at a fixed spot, never as random wild Kigu.
+If the hero knocks one out without bonding, she is back at her spot the next in-game day.
+
+**The Divine pick: the twin you free (Ch. 8, the Tension Hall).** The goddess speaks through the hero's lead Kigu. She says the hero's
+Kigu speak very highly of them, but if she is going to join them, she needs to see the quality of their seams. She hands the hero a
+special spool (name to be picked by the owner). Game text: *"Feels like it was made for your hands. It's light, airy, and the loose thread
+appears to move on its own."* She says that with this spool, their bonds will be forged with her and she will join the team.
+* The battle: she has a lot of HP but doesn't hit very hard (suggest Lv 45ish).
+* Using the spool before she is down to about 20% HP fails with: *"The thread tightens around your hand, indicating it doesn't think
+  you've battled enough."*
+* After the bond, she tells the hero the true story (§7): she and her sister had to make themselves Kigu in order to create Kigu and
+  fill Tsumugi with the power to keep the tapestry in check.
+* Then she says her sister has gone off to start **the Unravelling**: pulling apart the threads that separate Tsumugi from the
+  tapestry, so the sisters can go and deal with Datod once and for all.
+* The twin the hero bonds with is the one the hero takes to fight Datod.
+
+**The other twin (after Datod).** After the fight with Datod, the other twin says she will stay at **the border between worlds** so the
+hero can challenge her too. That border is the far edge of the Last Seam, past Selvage's Gate, where the goddesses finished the tapestry
+and began weaving Tsumugi with the same thread, so the two cloths touch there. She is harder than her sister, the hero only has ordinary
+spools, and she can be met once per in-game day until she joins.
+
+**The non-Divine legendaries** are ordinary meetings with ordinary spools, each at her canon home:
+* **Musubi** (Fluff/Dream), spirit of the first knot: the knot tree in Button Town. Glimpsed at dawn in Ch. 0; she waits there at dawn on
+  a windy day once the eight threads are braided at the Great Loom (dawn only if weather isn't built). Lv 50 (proposed).
+* **Heddlewyn** (Iron/Dream), guardian of the Great Loom: Damask's ace in Ch. 9 (see the climax in §8). After Damask is beaten and
+  Heddlewyn is unpressed (proposed: by Mimi's Soft Rinse), she scolds Damask for using the Press on her, when she had bonded with Damask
+  for being a kind person and a highly skilled seamstress. Then she severs their bond, gives the hero what the game describes as
+  *"A kind, but challenging look"*, and goes back to the Great Loom to sleep. This shows how powerful the legendaries are. From then on
+  she can be met there. Lv 50 (proposed).
+* **Fraywarden** (Iron/Shade), keeper of the cloth's edge: post-game, at a frayed patch on the far edge of the Last Seam, beside the
+  border between worlds. Her job of keeping the edge from fraying is what keeps the two cloths from unravelling into each other.
+  Lv 65 (proposed). Still open: her cry (it still says "Sel-sel-vi", from her old name) and whether she ties into the Datod fight.
 
 ### 7a. Datod the Weave-Eater and the magic tapestry
 
@@ -355,12 +394,12 @@ the slabs are Press plates. *Scenes:* `desert_*`, `rival4`, `script.gusset`.
 **Ch. 5 — Routes 5/6 and the cave (proposed name: Spark Cellar).** Echoes, magnets, sparks; Pressers siphoning the cave's static to run the Works. A Presser is lost and scared; the hero walks him out. Mimi's Soft Rinse, improved.
 **Ch. 6 — Kite Hill (Salon 5, Gale).** Airfield, patched balloons. **Rival #5**: the rival goes looking for their dad; Dart teases them until they laugh. Dart flies you over the pass. *Scenes:* `rival5`, `script.dart`, `balloon`.
 **Ch. 7 — Woolen Peak (Salon 6, Frost).** Snow, knit-everything. Purl's evidence: sheep-Kigu gone quiet, the old mill lit all night. He knits you a scarf. *Scenes:* `script.purl`, `mill_watch`.
-**Ch. 8 — The Starch Works.** Infiltration in a delivery cart (Mimi drives). Pleat Calender ("Right on schedule"). The Tension Hall: the twins in their frames. **Choose which twin to free.** Damask on the speaker:
-"Bring her to Loomhaven, Calender. It is nearly time." The rival finds their dad. *Scenes:* `works_*`, `twin_choice`.
+**Ch. 8 — The Starch Works.** Infiltration in a delivery cart (Mimi drives). Pleat Calender ("Right on schedule"). The Tension Hall: the twins in their frames. **Choose which twin to free**, then battle and bond with her using her spool (§7c). Her sister leaves to start the Unravelling, so
+the Society is left with nothing in the frames. Damask on the speaker: "Bring the thread to Loomhaven, Calender. It's nearly time." The rival finds their dad. *Scenes:* `works_*`, `twin_choice`.
 **Ch. 9 — Loomhaven (Salon 7, Spook) and the Great Loom.** *(Lore beats 2026-10-26: Damask learns at the Loom that she was misled; Datod
 is still bound but no longer hidden, and it becomes the end-game threat. Exact rework open, see §15.)* An old harbour city hung with lanterns for the festival; murals of the legend; Rue's Lost & Found and the thimble. **Rival #6** ("If you can't beat me you can't beat her").
-**The climax:** the Lantern Festival; Damask at the Great Loom with the other twin; the battle; she starts the Press anyway; white spreads; Bobbin arrives ("Hester."); the hero returns the thimble; the
-hero braids the eight Button-threads and ties the twins together; the Press slackens; colour returns; Mimi and the townsfolk with buckets. Damask sits down. Nobody is taken away in handcuffs; she is given tea. *Scenes:* `loom_*`, `script.rue`.
+**The climax:** the Lantern Festival; Damask at the Great Loom with the Society's hoarded Everspool thread and a Pressed Heddlewyn running the Loom; the battle (her ace is Heddlewyn); she starts the Press anyway; white spreads; Bobbin arrives ("Hester."); the hero returns the thimble; the
+hero braids the eight Button-threads and the Press's thread slackens; colour returns; Mimi and the townsfolk with buckets. Heddlewyn is rinsed, scolds Damask, severs their bond and goes back to the Loom to sleep (§7c). Damask sits down. Nobody is taken away in handcuffs; she is given tea. *Scenes:* `loom_*`, `script.rue`.
 **Ch. 10 — Selvage (Salon 8, Drake).** The border-city and the Gate. Brocade tests you with a real battle ("I want to see what you have become") and gives the last Button. *Scene:* `script.brocade`.
 **Ch. 11 — The Last Seam** (BIBLE working name: Victory Road — that is a real-franchise place-name, so in text it is **the Last Seam**; see §14). **Rival #7** in the last pass, the friendly final fight.
 **Ch. 12 — The Grand Atelier.** *(Lore beats 2026-10-26: the seamstresses speak through your lead Kigu here. The Needles have come home from
@@ -425,7 +464,7 @@ Nobody in the game dies. Pressed Kigu are cured by Soft Rinse (Mimi's invention)
 Tea Houses everywhere serve cocoa. The Starch Society's mantra is "Flat is fair." and its motto is "Perfection is just the beginning." (verbatim).
 The Needles lead the Global Tailor's Association and vanished because of Datod; the Society filled the gap. The Society was benevolent
 before its leaders found the tapestry and were misled. The legendary seamstresses (Astara and Anwela) speak through Kigu; they became Kigu by weaving Kigu with the Everspool. The tapestry is Everspool thread, and the big bad speaks to the Society through one loose thread of it. The big bad is
-**not a Kigu**: it cannot be bonded with and the Everspool cannot sway it. The rival's dad stays pressed until Chapter 8. The hero's Mom knows more than she says (she has never mentioned why she stitches her hems with a double knot — the Loomhaven way).
+**not a Kigu**: it cannot be bonded with and the Everspool cannot sway it. The rival's dad stays pressed until Chapter 8. The Society never holds a goddess; Damask's legendary is a Pressed Heddlewyn, who leaves her after Ch. 9. The hero's Mom knows more than she says (she has never mentioned why she stitches her hems with a double knot — the Loomhaven way).
 
 ## 14. Glossary: words the text must NEVER contain (enforced by `tests/text.test.mjs`)
 
@@ -455,9 +494,9 @@ is a suggestion until the owner picks.
 3. How the vanished Needles square with the Four Needles fight and Mr. Sharp.
 4. When the Needles vanished.
 5. The Guild and the Association: one body or two.
-6. Which legendaries count as the "seamstresses".
+6. ~~Which legendaries count as the "seamstresses".~~ Answered: Astara and Anwela (the Divine pair). Musubi, Heddlewyn and Fraywarden are non-Divine legendaries (§7c).
 7. The Needle called Tapestry and the magic tapestry share a name.
-8. Where and how Datod is faced, since he cannot be bonded or swayed.
+8. Where and how Datod is faced, since he cannot be bonded or swayed. Partly answered 2026-11-06: the hero fights him with the Divine twin they bonded with, after the other twin's Unravelling opens the way (§7c). Still open: where, and whether it's main story or post-game.
 9. Whether Datod caused the Great Snarl.
 10. ~~Whether Damask is the leader who was tricked~~ Answered: yes, and she is an ex-Needle. Still open: who else knows the real plan, her
     Needle name (proposed Chenille), how long she sat and why she left.
