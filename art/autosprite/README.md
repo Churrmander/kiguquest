@@ -30,6 +30,7 @@ All images are 1024x1024 on white, drawn on an 8px grid (128x128 sprites scaled 
 
 * **Everything stays inside the frame**, effects included (fire, lightning, threads, wings), with at least 16px of empty margin at 1024px. Say so in every prompt. Before posing anything with big effects, run `pad_character` to about 65-70% (1 credit). `snap.py` prints `EDGE <name>` when something gets too close.
 * Back views use the BW player-sprite angle: seen from behind, three-quarters, facing the upper right.
+* **Back stances vary (owner rule, 2026-11-23, all future Kigu):** give every back view its own stance fitting her personality or prop (hands behind back, arms crossed, holding her prop, pointing, mid-step, floating...), never the same raised hand for everyone. Add "the figure is the same size as the front view, about 80% of the frame height" to back prompts.
 
 ## Open queue
 
